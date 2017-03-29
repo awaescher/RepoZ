@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("branchalot.Console")]
+[assembly: AssemblyTitle("branch.Shared")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("branchalot.Console")]
+[assembly: AssemblyProduct("branch.Shared")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("baa23ac2-ef6d-459f-948d-27dcbfb63579")]
+[assembly: Guid("cb5943a5-c729-4205-8fd8-9a682797ef72")]
 
 // Version information for an assembly consists of the following four values:
 //
