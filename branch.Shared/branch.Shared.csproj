@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git\IRepositoryHelper.cs" />
     <Compile Include="Git\RepositoryHelper.cs" />
     <Compile Include="PathFinding\IPathFinder.cs" />
     <Compile Include="PathFinding\WindowsExplorerPathFinder.cs" />

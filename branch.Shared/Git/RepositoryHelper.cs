@@ -1,13 +1,14 @@
 ﻿using LibGit2Sharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace branch.Shared
 {
-	public class RepositoryHelper
+	public class RepositoryHelper : IRepositoryHelper
 	{
 		public RepositoryInfo ReadRepository(string path)
 		{
@@ -29,6 +30,7 @@ namespace branch.Shared
 			}
 		}
 
+		[DebuggerDisplay("{Name}")]
 		public class RepositoryInfo
 		{
 			public string Name { get; set; }
@@ -41,6 +43,8 @@ namespace branch.Shared
 				CurrentBranch = "-",
 				Path = "-"
 			};
+
+			public bool WasFound => !string.IsNullOrWhiteSpace(Path) && Path != "-";
 		}
 	}
 }
