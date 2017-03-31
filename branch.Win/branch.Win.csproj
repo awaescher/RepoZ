@@ -51,7 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileFinder.cs" />
+    <Compile Include="Crawlers\GravellPathCrawler.cs" />
+    <Compile Include="Crawlers\WindowsPathCrawler.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

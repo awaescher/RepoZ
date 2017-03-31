@@ -41,6 +41,7 @@
 			this.colRepo = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colBranch = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.buttonCrawlerTest = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -171,11 +172,22 @@
 			this.Path.ReadOnly = true;
 			this.Path.Width = 250;
 			// 
+			// buttonCrawlerTest
+			// 
+			this.buttonCrawlerTest.Location = new System.Drawing.Point(484, 41);
+			this.buttonCrawlerTest.Name = "buttonCrawlerTest";
+			this.buttonCrawlerTest.Size = new System.Drawing.Size(109, 23);
+			this.buttonCrawlerTest.TabIndex = 2;
+			this.buttonCrawlerTest.Text = "Test Crawlers";
+			this.buttonCrawlerTest.UseVisualStyleBackColor = true;
+			this.buttonCrawlerTest.Click += new System.EventHandler(this.buttonCrawlerTest_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(643, 301);
+			this.Controls.Add(this.buttonCrawlerTest);
 			this.Controls.Add(this.dataGridView1);
 			this.Controls.Add(this.lblRepository);
 			this.Controls.Add(this.lblGitBranch);
@@ -210,6 +222,7 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn colRepo;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colBranch;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Path;
+		private System.Windows.Forms.Button buttonCrawlerTest;
 	}
 }
 

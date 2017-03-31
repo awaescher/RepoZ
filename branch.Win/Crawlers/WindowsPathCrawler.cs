@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace branch.Win
+namespace branch.Win.Crawlers
 {
-	public static class FileFinder
+	public class WindowsPathCrawler
 	{
-		public static List<string> Find(string root, string searchPattern)
+		public List<string> Find(string root, string searchPattern)
 		{
 			var list = new List<string>();
 
@@ -20,8 +20,11 @@ namespace branch.Win
 			return list;
 		}
 
-		private static void Find(string root, string searchPattern, List<string> result)
+		private void Find(string root, string searchPattern, List<string> result)
 		{
+			if (root.IndexOf("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) > -1)
+				return;
+
 			foreach (string file in Directory.GetFiles(root, searchPattern))
 				result.Add(file);
 
