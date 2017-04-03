@@ -9,13 +9,13 @@ namespace RepoZ.Win.Crawlers
 {
 	// http://stackoverflow.com/questions/2106877/is-there-a-faster-way-than-this-to-find-all-the-files-in-a-directory-and-all-sub
 
-	public class GravellPathCrawler
+	public class GravellPathCrawler : IPathCrawler
 	{
-		public List<string> Find(string root, string searchPattern, Action<string> onFoundAction)
+		public List<string> Find(string root, string searchPattern, Action<string> onFoundAction, Action onQuit)
 		{
-			return FindInternal(root, searchPattern, onFoundAction).ToList();
+			return FindInternal(root, searchPattern, onFoundAction, onQuit).ToList();
 		}
-		private IEnumerable<string> FindInternal(string root, string searchPattern, Action<string> onFoundAction)
+		private IEnumerable<string> FindInternal(string root, string searchPattern, Action<string> onFound, Action onQuit)
 		{
 			var pending = new Queue<string>();
 			pending.Enqueue(root);
@@ -37,7 +37,7 @@ namespace RepoZ.Win.Crawlers
 				}
 				for (int i = 0; i < tmp.Length; i++)
 				{
-					onFoundAction?.Invoke(tmp[i]);
+					onFound?.Invoke(tmp[i]);
 					yield return tmp[i];
 				}
 				tmp = Directory.GetDirectories(root);
@@ -46,6 +46,8 @@ namespace RepoZ.Win.Crawlers
 					pending.Enqueue(tmp[i]);
 				}
 			}
+
+			onQuit?.Invoke();
 		}
 	}
 }

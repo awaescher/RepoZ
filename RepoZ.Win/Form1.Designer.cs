@@ -41,16 +41,16 @@
 			this.colRepo = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colBranch = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.buttonCrawlerTest = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// lblPathStatic
 			// 
 			this.lblPathStatic.AutoSize = true;
-			this.lblPathStatic.Location = new System.Drawing.Point(31, 46);
+			this.lblPathStatic.Location = new System.Drawing.Point(41, 57);
+			this.lblPathStatic.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblPathStatic.Name = "lblPathStatic";
-			this.lblPathStatic.Size = new System.Drawing.Size(29, 13);
+			this.lblPathStatic.Size = new System.Drawing.Size(37, 17);
 			this.lblPathStatic.TabIndex = 0;
 			this.lblPathStatic.Text = "Path";
 			// 
@@ -58,18 +58,20 @@
 			// 
 			this.lblPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblPath.Location = new System.Drawing.Point(72, 46);
+			this.lblPath.Location = new System.Drawing.Point(96, 57);
+			this.lblPath.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblPath.Name = "lblPath";
-			this.lblPath.Size = new System.Drawing.Size(559, 13);
+			this.lblPath.Size = new System.Drawing.Size(761, 16);
 			this.lblPath.TabIndex = 0;
 			this.lblPath.Text = "<path>";
 			// 
 			// lblGitBranchStatic
 			// 
 			this.lblGitBranchStatic.AutoSize = true;
-			this.lblGitBranchStatic.Location = new System.Drawing.Point(31, 96);
+			this.lblGitBranchStatic.Location = new System.Drawing.Point(41, 118);
+			this.lblGitBranchStatic.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblGitBranchStatic.Name = "lblGitBranchStatic";
-			this.lblGitBranchStatic.Size = new System.Drawing.Size(41, 13);
+			this.lblGitBranchStatic.Size = new System.Drawing.Size(53, 17);
 			this.lblGitBranchStatic.TabIndex = 0;
 			this.lblGitBranchStatic.Text = "Branch";
 			// 
@@ -77,18 +79,20 @@
 			// 
 			this.lblGitBranch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblGitBranch.Location = new System.Drawing.Point(72, 96);
+			this.lblGitBranch.Location = new System.Drawing.Point(96, 118);
+			this.lblGitBranch.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblGitBranch.Name = "lblGitBranch";
-			this.lblGitBranch.Size = new System.Drawing.Size(559, 13);
+			this.lblGitBranch.Size = new System.Drawing.Size(761, 16);
 			this.lblGitBranch.TabIndex = 0;
 			this.lblGitBranch.Text = "<Branch>";
 			// 
 			// lblRepoStatic
 			// 
 			this.lblRepoStatic.AutoSize = true;
-			this.lblRepoStatic.Location = new System.Drawing.Point(31, 71);
+			this.lblRepoStatic.Location = new System.Drawing.Point(41, 87);
+			this.lblRepoStatic.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblRepoStatic.Name = "lblRepoStatic";
-			this.lblRepoStatic.Size = new System.Drawing.Size(33, 13);
+			this.lblRepoStatic.Size = new System.Drawing.Size(42, 17);
 			this.lblRepoStatic.TabIndex = 0;
 			this.lblRepoStatic.Text = "Repo";
 			// 
@@ -96,18 +100,20 @@
 			// 
 			this.lblRepository.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblRepository.Location = new System.Drawing.Point(72, 71);
+			this.lblRepository.Location = new System.Drawing.Point(96, 87);
+			this.lblRepository.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblRepository.Name = "lblRepository";
-			this.lblRepository.Size = new System.Drawing.Size(559, 13);
+			this.lblRepository.Size = new System.Drawing.Size(761, 16);
 			this.lblRepository.TabIndex = 0;
 			this.lblRepository.Text = "<repo>";
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(31, 24);
+			this.label1.Location = new System.Drawing.Point(41, 30);
+			this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(37, 13);
+			this.label1.Size = new System.Drawing.Size(48, 17);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Found";
 			// 
@@ -115,18 +121,20 @@
 			// 
 			this.lblFound.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblFound.Location = new System.Drawing.Point(72, 24);
+			this.lblFound.Location = new System.Drawing.Point(96, 30);
+			this.lblFound.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblFound.Name = "lblFound";
-			this.lblFound.Size = new System.Drawing.Size(559, 13);
+			this.lblFound.Size = new System.Drawing.Size(761, 16);
 			this.lblFound.TabIndex = 0;
 			this.lblFound.Text = "<found>";
 			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(31, 154);
+			this.label4.Location = new System.Drawing.Point(41, 190);
+			this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(57, 13);
+			this.label4.Size = new System.Drawing.Size(75, 17);
 			this.label4.TabIndex = 0;
 			this.label4.Text = "Alternative";
 			// 
@@ -143,10 +151,11 @@
             this.colRepo,
             this.colBranch,
             this.Path});
-			this.dataGridView1.Location = new System.Drawing.Point(34, 184);
+			this.dataGridView1.Location = new System.Drawing.Point(45, 226);
+			this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.dataGridView1.Name = "dataGridView1";
 			this.dataGridView1.ReadOnly = true;
-			this.dataGridView1.Size = new System.Drawing.Size(597, 105);
+			this.dataGridView1.Size = new System.Drawing.Size(812, 444);
 			this.dataGridView1.TabIndex = 1;
 			// 
 			// colRepo
@@ -172,22 +181,11 @@
 			this.Path.ReadOnly = true;
 			this.Path.Width = 250;
 			// 
-			// buttonCrawlerTest
-			// 
-			this.buttonCrawlerTest.Location = new System.Drawing.Point(484, 41);
-			this.buttonCrawlerTest.Name = "buttonCrawlerTest";
-			this.buttonCrawlerTest.Size = new System.Drawing.Size(109, 23);
-			this.buttonCrawlerTest.TabIndex = 2;
-			this.buttonCrawlerTest.Text = "Test Crawlers";
-			this.buttonCrawlerTest.UseVisualStyleBackColor = true;
-			this.buttonCrawlerTest.Click += new System.EventHandler(this.buttonCrawlerTest_Click);
-			// 
 			// Form1
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(643, 301);
-			this.Controls.Add(this.buttonCrawlerTest);
+			this.ClientSize = new System.Drawing.Size(873, 685);
 			this.Controls.Add(this.dataGridView1);
 			this.Controls.Add(this.lblRepository);
 			this.Controls.Add(this.lblGitBranch);
@@ -198,6 +196,7 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblGitBranchStatic);
 			this.Controls.Add(this.lblPathStatic);
+			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
 			this.Name = "Form1";
 			this.Text = "RepoZ";
 			this.Load += new System.EventHandler(this.Form1_Load);
@@ -222,7 +221,6 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn colRepo;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colBranch;
 		private System.Windows.Forms.DataGridViewTextBoxColumn Path;
-		private System.Windows.Forms.Button buttonCrawlerTest;
 	}
 }
 

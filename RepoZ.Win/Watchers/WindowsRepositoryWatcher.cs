@@ -10,14 +10,14 @@ namespace RepoZ.Win
 	{
 		private string _path;
 		private FileSystemWatcher _watcher;
-		private IRepositoryHelper _repositoryHelper;
+		private IRepositoryReader _repositoryReader;
 
-		public WindowsRepositoryWatcher(IRepositoryHelper repositoryHelper)
+		public WindowsRepositoryWatcher(IRepositoryReader repositoryHelper)
 		{
-			_repositoryHelper = repositoryHelper;
+			_repositoryReader = repositoryHelper;
 		}
 
-		public Action<RepositoryHelper.RepositoryInfo> OnChangeDetected { get; set; }
+		public Action<RepositoryReader.RepositoryInfo> OnChangeDetected { get; set; }
 
 		public void Setup(string path)
 		{
@@ -69,7 +69,7 @@ namespace RepoZ.Win
 
 		private void eatRepo(string path)
 		{
-			var repo = _repositoryHelper.ReadRepository(path);
+			var repo = _repositoryReader.ReadRepository(path);
 
 			if (repo.WasFound)
 			{

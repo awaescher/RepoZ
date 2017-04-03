@@ -3,7 +3,7 @@ using LibGit2Sharp;
 
 namespace RepoZ.Shared
 {
-	public class RepositoryHelper : IRepositoryHelper
+	public class RepositoryReader : IRepositoryReader
 	{
 		public RepositoryInfo ReadRepository(string path)
 		{

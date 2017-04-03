@@ -15,6 +15,6 @@ namespace RepoZ.Win.Watchers
 
 		void Stop();
 
-		Action<RepositoryHelper.RepositoryInfo> OnChangeDetected { get; set; }
+		Action<RepositoryReader.RepositoryInfo> OnChangeDetected { get; set; }
 	}
 }

@@ -1,7 +1,7 @@
 ﻿namespace RepoZ.Shared
 {
-	public interface IRepositoryHelper
+	public interface IRepositoryReader
 	{
-		RepositoryHelper.RepositoryInfo ReadRepository(string path);
+		RepositoryReader.RepositoryInfo ReadRepository(string path);
 	}
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Win.Crawlers
 {
-	public class WindowsPathCrawler
+	public class WindowsPathCrawler 
 	{
 		public List<string> Find(string root, string searchPattern)
 		{
