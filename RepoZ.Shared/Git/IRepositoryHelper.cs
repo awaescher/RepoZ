@@ -1,7 +1,9 @@
-﻿namespace RepoZ.Shared
+﻿using RepoZ.Shared.Git;
+
+namespace RepoZ.Shared
 {
 	public interface IRepositoryReader
 	{
-		RepositoryReader.RepositoryInfo ReadRepository(string path);
+		RepositoryInfo ReadRepository(string path);
 	}
 }

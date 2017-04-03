@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using LibGit2Sharp;
+using RepoZ.Shared.Git;
 
 namespace RepoZ.Shared
 {
@@ -23,23 +24,6 @@ namespace RepoZ.Shared
 					CurrentBranch = repo.Head.FriendlyName
 				};
 			}
-		}
-
-		[DebuggerDisplay("{Name}")]
-		public class RepositoryInfo
-		{
-			public string Name { get; set; }
-			public string Path { get; set; }
-			public string CurrentBranch { get; set; }
-
-			public static RepositoryInfo Empty => new RepositoryInfo()
-			{
-				Name = "-",
-				CurrentBranch = "-",
-				Path = "-"
-			};
-
-			public bool WasFound => !string.IsNullOrWhiteSpace(Path) && Path != "-";
 		}
 	}
 }

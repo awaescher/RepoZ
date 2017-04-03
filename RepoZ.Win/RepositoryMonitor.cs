@@ -7,32 +7,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Win.Crawlers;
+using RepoZ.Shared.Git;
 
 namespace RepoZ.Win
 {
 	public class RepositoryMonitor
 	{
-		private ConcurrentDictionary<string, RepositoryReader.RepositoryInfo> _repositories = new ConcurrentDictionary<string, RepositoryReader.RepositoryInfo>();
-		private List<IRepositoryWatcher> _watchers = new List<IRepositoryWatcher>();
+		private ConcurrentDictionary<string, RepositoryInfo> _repositories = new ConcurrentDictionary<string, RepositoryInfo>();
+		private List<IRepositoryWatcher> _watchers = null;
 		private Func<IRepositoryWatcher> _repositoryWatcherFactory;
 		private Func<IPathCrawler> _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
+		private IPathProvider _pathProvider;
 
 		public RepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, Func<IRepositoryWatcher> repositoryWatcherFactory, Func<IPathCrawler> pathCrawlerFactory)
 		{
 			_repositoryReader = repositoryReader;
 			_repositoryWatcherFactory = repositoryWatcherFactory;
 			_pathCrawlerFactory = pathCrawlerFactory;
-
-			var paths = pathProvider.GetPaths();
-
-			ScanForRepositories(paths);
-			WatchForRepositoryChanges(paths);
+			_pathProvider = pathProvider;
 		}
 
-		private void ScanForRepositories(string[] paths)
+		private void ScanForRepositoriesAsync()
 		{
-			foreach (var path in paths.AsParallel())
+			foreach (var path in _pathProvider.GetPaths().AsParallel())
 			{
 				var crawler = _pathCrawlerFactory();
 				Task.Run(() => crawler.Find(path, "HEAD", file => onFound(file), null));
@@ -47,9 +45,11 @@ namespace RepoZ.Win
 		}
 
 
-		private void WatchForRepositoryChanges(string[] paths)
+		private void WatchForRepositoryChanges()
 		{
-			foreach (var path in paths)
+			_watchers = new List<IRepositoryWatcher>();
+
+			foreach (var path in _pathProvider.GetPaths())
 			{
 				var watcher = _repositoryWatcherFactory();
 				_watchers.Add(watcher);
@@ -59,9 +59,14 @@ namespace RepoZ.Win
 			}
 		}
 
-
 		public void Watch()
 		{
+			if (_watchers == null)
+			{
+				ScanForRepositoriesAsync();
+				WatchForRepositoryChanges();
+			}
+
 			_watchers.ForEach(w => w.Watch());
 		}
 
@@ -70,14 +75,14 @@ namespace RepoZ.Win
 			_watchers.ForEach(w => w.Stop());
 		}
 
-		private void OnRepositoryChangeDetected(RepositoryReader.RepositoryInfo repo)
+		private void OnRepositoryChangeDetected(RepositoryInfo repo)
 		{
 			_repositories.AddOrUpdate(repo.Path, repo, (k, v) => repo);
 			OnChangeDetected?.Invoke(repo);
 		}
 
-		public RepositoryReader.RepositoryInfo[] Repositories => _repositories.Values.ToArray();
+		public RepositoryInfo[] Repositories => _repositories.Values.ToArray();
 
-		public Action<RepositoryReader.RepositoryInfo> OnChangeDetected { get; set; }
+		public Action<RepositoryInfo> OnChangeDetected { get; set; }
 	}
 }

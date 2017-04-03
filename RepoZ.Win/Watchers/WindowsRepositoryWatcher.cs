@@ -3,6 +3,7 @@ using RepoZ.Win.Watchers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using RepoZ.Shared.Git;
 
 namespace RepoZ.Win
 {
@@ -17,7 +18,7 @@ namespace RepoZ.Win
 			_repositoryReader = repositoryHelper;
 		}
 
-		public Action<RepositoryReader.RepositoryInfo> OnChangeDetected { get; set; }
+		public Action<RepositoryInfo> OnChangeDetected { get; set; }
 
 		public void Setup(string path)
 		{

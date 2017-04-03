@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RepoZ.Win.Crawlers;
+using RepoZ.Shared.Git;
 
 namespace RepoZ.Win
 {
@@ -20,7 +21,7 @@ namespace RepoZ.Win
 		private WindowFinder _finder;
 		private RepositoryReader _reader;
 		private RepositoryMonitor _monitor;
-		private BindingList<RepositoryReader.RepositoryInfo> _dataSource = new BindingList<RepositoryReader.RepositoryInfo>();
+		private BindingList<RepositoryInfo> _dataSource = new BindingList<RepositoryInfo>();
 
 		public Form1()
 		{
@@ -56,7 +57,7 @@ namespace RepoZ.Win
 			lblGitBranch.Text = repo.CurrentBranch;
 		}
 
-		private void notifyRepoChange(RepositoryReader.RepositoryInfo repo)
+		private void notifyRepoChange(RepositoryInfo repo)
 		{
 			Action act = () =>
 			{
@@ -70,6 +71,11 @@ namespace RepoZ.Win
 			};
 
 			this.BeginInvoke(act);
+		}
+
+		private void label4_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
