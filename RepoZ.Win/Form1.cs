@@ -11,7 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using RepoZ.Win.Crawlers;
-using RepoZ.Shared.Git;
+using RepoZ.Api.Git;
+using RepoZ.Api.IO;
 
 namespace RepoZ.Win
 {

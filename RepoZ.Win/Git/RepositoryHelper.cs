@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using LibGit2Sharp;
-using RepoZ.Shared.Git;
+using RepoZ.Api.Git;
 
 namespace RepoZ.Shared
 {

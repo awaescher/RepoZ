@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Shared.Git
+namespace RepoZ.Api.Git
 {
 	[DebuggerDisplay("{Name}")]
 	public class RepositoryInfo

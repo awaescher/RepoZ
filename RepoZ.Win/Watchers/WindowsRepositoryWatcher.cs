@@ -1,9 +1,8 @@
-﻿using RepoZ.Shared;
-using RepoZ.Win.Watchers;
+﻿using RepoZ.Api.Git;
+using RepoZ.Shared;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using RepoZ.Shared.Git;
 
 namespace RepoZ.Win
 {

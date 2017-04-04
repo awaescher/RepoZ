@@ -1,6 +1,4 @@
-﻿using RepoZ.Shared.Git;
-
-namespace RepoZ.Shared
+﻿namespace RepoZ.Api.Git
 {
 	public interface IRepositoryReader
 	{

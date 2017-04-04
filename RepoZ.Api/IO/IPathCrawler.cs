@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RepoZ.Win.Crawlers
+namespace RepoZ.Api.IO
 {
 	public interface IPathCrawler
 	{

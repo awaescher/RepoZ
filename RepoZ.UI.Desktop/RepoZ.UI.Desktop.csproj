@@ -7,10 +7,11 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>RepoZ.UI.Desktop</RootNamespace>
     <AssemblyName>RepoZ.UI.Desktop</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -72,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Mac\MyApp.app\Contents\Info.plist" />
     <None Include="Mac\MyApp.app\Contents\MacOS\Launcher.exec" />
     <None Include="Mac\MyApp.app\Contents\Resources\Icon.icns" />

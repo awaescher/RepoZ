@@ -1,5 +1,4 @@
 ﻿using RepoZ.Shared;
-using RepoZ.Win.Watchers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Win.Crawlers;
-using RepoZ.Shared.Git;
+using RepoZ.Api.Git;
+using RepoZ.Api.IO;
 
 namespace RepoZ.Win
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Win
+namespace RepoZ.Api.IO
 {
 	public interface IPathProvider
 	{
