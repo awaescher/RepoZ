@@ -1,5 +1,4 @@
 ﻿using RepoZ.Api.IO;
-using RepoZ.Shared.PathFinding;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Shared
+namespace RepoZ.Win.PInvoke
 {
 	public class WindowFinder
 	{
@@ -56,7 +55,7 @@ namespace RepoZ.Shared
 			if (at > -1)
 				current = current.Substring(0, at);
 
-			if (!current.EndsWith(" "))
+			if (!current.EndsWith(" ", StringComparison.OrdinalIgnoreCase))
 				current += " ";
 
 			SetWindowText(handle, current + "@" + text);

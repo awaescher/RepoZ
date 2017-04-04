@@ -4,7 +4,7 @@ using RepoZ.Api.Git;
 
 namespace RepoZ.Shared
 {
-	public class RepositoryReader : IRepositoryReader
+	public class WindowsRepositoryReader : IRepositoryReader
 	{
 		public RepositoryInfo ReadRepository(string path)
 		{

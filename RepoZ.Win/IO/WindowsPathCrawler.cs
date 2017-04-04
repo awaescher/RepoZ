@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Win.Crawlers
+namespace RepoZ.Win.IO
 {
 	public class WindowsPathCrawler 
 	{
@@ -34,7 +34,9 @@ namespace RepoZ.Win.Crawlers
 				{
 					Find(subdirectory, searchPattern, result);
 				}
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
 				catch
+#pragma warning restore RECS0022
 				{
 					// swallow, log, whatever
 				}

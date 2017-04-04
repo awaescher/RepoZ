@@ -43,5 +43,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
+      <Project>{8f74519b-b72d-4a5e-b20b-723543676e5e}</Project>
+      <Name>RepoZ.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

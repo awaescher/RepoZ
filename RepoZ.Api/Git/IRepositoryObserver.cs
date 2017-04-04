@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Git
 {
-	public interface IRepositoryWatcher
+	public interface IRepositoryObserver
 	{
 		void Setup(string path);
 
-		void Watch();
+		void Observe();
 
 		void Stop();
 

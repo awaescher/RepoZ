@@ -1,5 +1,4 @@
 ﻿using RepoZ.Shared;
-using RepoZ.Shared.PathFinding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,9 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RepoZ.Win.Crawlers;
+using RepoZ.Win.Git;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
+using RepoZ.Win.IO;
+using RepoZ.Win.PInvoke;
 
 namespace RepoZ.Win
 {
@@ -20,8 +21,8 @@ namespace RepoZ.Win
 	{
 		private Timer _timer;
 		private WindowFinder _finder;
-		private RepositoryReader _reader;
-		private RepositoryMonitor _monitor;
+		private WindowsRepositoryReader _reader;
+		private WindowsRepositoryMonitor _monitor;
 		private BindingList<RepositoryInfo> _dataSource = new BindingList<RepositoryInfo>();
 		private WindowsExplorerHandler _explorerHandler;
 
@@ -34,7 +35,7 @@ namespace RepoZ.Win
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			_reader = new RepositoryReader();
+			_reader = new WindowsRepositoryReader();
 			_finder = new WindowFinder(new IPathFinder[] { new WindowsExplorerPathFinder() });
 			_explorerHandler = new WindowsExplorerHandler(_reader);
 
@@ -42,9 +43,9 @@ namespace RepoZ.Win
 			_timer.Tick += _timer_Tick;
 			_timer.Start();
 
-			_monitor = new RepositoryMonitor(new WindowsDriveEnumerator(), _reader, () => new WindowsRepositoryWatcher(_reader), () => new GravellPathCrawler());
+			_monitor = new WindowsRepositoryMonitor(new WindowsDriveEnumerator(), _reader, () => new WindowsRepositoryObserver(_reader), () => new GravellPathCrawler());
 			_monitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
-			_monitor.Watch();
+			_monitor.Observe();
 
 			dataGridView1.DataSource = _dataSource;
 		}

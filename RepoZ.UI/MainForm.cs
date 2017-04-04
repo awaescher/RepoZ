@@ -8,6 +8,8 @@ namespace RepoZ.UI
 {
 	public class MainForm : Form
 	{
+
+
 		class MyPoco
 		{
 			public string Text { get; set; }

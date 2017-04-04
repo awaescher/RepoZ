@@ -4,15 +4,15 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RepoZ.Win
+namespace RepoZ.Win.Git
 {
-	public class WindowsRepositoryWatcher : IRepositoryWatcher
+	public class WindowsRepositoryObserver : IRepositoryObserver
 	{
 		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
 
-		public WindowsRepositoryWatcher(IRepositoryReader repositoryHelper)
+		public WindowsRepositoryObserver(IRepositoryReader repositoryHelper)
 		{
 			_repositoryReader = repositoryHelper;
 		}
@@ -29,7 +29,7 @@ namespace RepoZ.Win
 			_watcher.IncludeSubdirectories = true;
 		}
 
-		public void Watch()
+		public void Observe()
 		{
 			_watcher.EnableRaisingEvents = true;
 		}

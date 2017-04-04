@@ -1,6 +1,8 @@
 ﻿using System;
 using Eto;
 using Eto.Forms;
+using RepoZ.Api.IO;
+using TinyIoC;
 
 namespace RepoZ.UI.Desktop
 {
@@ -9,7 +11,15 @@ namespace RepoZ.UI.Desktop
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			new Application(Platform.Detect).Run(new MainForm());
+			var container = TinyIoCContainer.Current;
+
+			//container.Register<IPathCrawler, null>();
+
+			container.Register<MainForm>();
+
+			var application = new Application(Platform.Detect);
+			var mainForm = container.Resolve<MainForm>();
+			application.Run(mainForm);
 		}
 	}
 }

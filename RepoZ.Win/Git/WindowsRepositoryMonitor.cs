@@ -5,25 +5,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RepoZ.Win.Crawlers;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 
 namespace RepoZ.Win
 {
-	public class RepositoryMonitor
+	public class WindowsRepositoryMonitor : IRepositoryMonitor
 	{
 		private ConcurrentDictionary<string, RepositoryInfo> _repositories = new ConcurrentDictionary<string, RepositoryInfo>();
-		private List<IRepositoryWatcher> _watchers = null;
-		private Func<IRepositoryWatcher> _repositoryWatcherFactory;
+		private List<IRepositoryObserver> _observers = null;
+		private Func<IRepositoryObserver> _repositoryObserverFactory;
 		private Func<IPathCrawler> _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
 
-		public RepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, Func<IRepositoryWatcher> repositoryWatcherFactory, Func<IPathCrawler> pathCrawlerFactory)
+		public WindowsRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, Func<IRepositoryObserver> repositoryObserverFactory, Func<IPathCrawler> pathCrawlerFactory)
 		{
 			_repositoryReader = repositoryReader;
-			_repositoryWatcherFactory = repositoryWatcherFactory;
+			_repositoryObserverFactory = repositoryObserverFactory;
 			_pathCrawlerFactory = pathCrawlerFactory;
 			_pathProvider = pathProvider;
 		}
@@ -45,34 +44,34 @@ namespace RepoZ.Win
 		}
 
 
-		private void WatchForRepositoryChanges()
+		private void ObserveRepositoryChanges()
 		{
-			_watchers = new List<IRepositoryWatcher>();
+			_observers = new List<IRepositoryObserver>();
 
 			foreach (var path in _pathProvider.GetPaths())
 			{
-				var watcher = _repositoryWatcherFactory();
-				_watchers.Add(watcher);
+				var observer = _repositoryObserverFactory();
+				_observers.Add(observer);
 
-				watcher.OnChangeDetected = OnRepositoryChangeDetected;
-				watcher.Setup(path);
+				observer.OnChangeDetected = OnRepositoryChangeDetected;
+				observer.Setup(path);
 			}
 		}
 
-		public void Watch()
+		public void Observe()
 		{
-			if (_watchers == null)
+			if (_observers == null)
 			{
 				ScanForRepositoriesAsync();
-				WatchForRepositoryChanges();
+				ObserveRepositoryChanges();
 			}
 
-			_watchers.ForEach(w => w.Watch());
+			_observers.ForEach(w => w.Observe());
 		}
 
 		public void Stop()
 		{
-			_watchers.ForEach(w => w.Stop());
+			_observers.ForEach(w => w.Stop());
 		}
 
 		private void OnRepositoryChangeDetected(RepositoryInfo repo)

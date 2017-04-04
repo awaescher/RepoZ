@@ -1,23 +1,31 @@
-﻿using RepoZ.Api.IO;
+﻿using RepoZ.Api.Git;
+using RepoZ.Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Shared.PathFinding
+namespace RepoZ.Win.PInvoke
 {
-	public class WindowsExplorerPathFinder : IPathFinder
+	public class WindowsExplorerHandler
 	{
+		private IRepositoryReader _repositoryReader;
 		private Type _shellApplicationType;
+
+		public WindowsExplorerHandler(IRepositoryReader repositoryReader)
+		{
+			_repositoryReader = repositoryReader;
+		}
 
 		public bool CanHandle(string processName)
 		{
 			return string.Equals("explorer", processName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		public string FindPath(IntPtr windowHandle)
+		public string Pulse()
 		{
 			if (_shellApplicationType == null)
 				_shellApplicationType = Type.GetTypeFromProgID("Shell.Application");
@@ -29,12 +37,15 @@ namespace RepoZ.Shared.PathFinding
 				for (int i = 0; i < ws.Count; i++)
 				{
 					var ie = ws.Item(i);
-					if (ie == null || ie.hwnd != (long)windowHandle)
+					if (ie == null)
 						continue;
 
-					var path = System.IO.Path.GetFileName((string)ie.FullName);
-					if (path.ToLower() == "explorer.exe")
-						return ie?.document?.focuseditem?.path;
+					var executable = System.IO.Path.GetFileName((string)ie.FullName);
+					if (executable.ToLower() == "explorer.exe")
+					{
+						string path = ie?.document?.focuseditem?.path ?? "n/a"; // ist das fokussierte, nicht das aktuelle
+						WindowHelper.AppendWindowText((IntPtr)ie.hwnd, " # ", path);
+					}
 				}
 			}
 			finally

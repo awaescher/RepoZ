@@ -1,5 +1,4 @@
-﻿using RepoZ.Shared.PathFinding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Shared
+namespace RepoZ.Win.PInvoke
 {
 	public class WindowHelper
 	{
@@ -49,7 +48,7 @@ namespace RepoZ.Shared
 		{
 			string current = GetWindowText(handle);
 
-			int at = current.IndexOf(uniqueSplitter);
+			int at = current.IndexOf(uniqueSplitter, StringComparison.OrdinalIgnoreCase);
 			if (at > -1)
 				current = current.Substring(0, at);
 
