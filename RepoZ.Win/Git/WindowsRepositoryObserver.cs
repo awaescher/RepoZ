@@ -11,9 +11,9 @@ namespace RepoZ.Win.Git
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
 
-		public WindowsRepositoryObserver(IRepositoryReader repositoryHelper)
+		public WindowsRepositoryObserver(IRepositoryReader repositoryReader)
 		{
-			_repositoryReader = repositoryHelper;
+			_repositoryReader = repositoryReader;
 		}
 
 		public Action<RepositoryInfo> OnChangeDetected { get; set; }

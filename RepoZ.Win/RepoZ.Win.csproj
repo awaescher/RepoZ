@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git\WindowsRepositoryObserverFactory.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
     <Compile Include="IO\WindowsPathCrawler.cs" />
     <Compile Include="Form1.cs">
@@ -65,6 +66,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Git\WindowsRepositoryReader.cs" />
+    <Compile Include="IO\WindowsPathCrawlerFactory.cs" />
     <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

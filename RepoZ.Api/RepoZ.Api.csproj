@@ -37,7 +37,9 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="IO\IPathCrawler.cs" />
+    <Compile Include="IO\IPathCrawlerFactory.cs" />
     <Compile Include="IO\IPathFinder.cs" />
     <Compile Include="IO\IPathProvider.cs" />
     <Compile Include="Git\IRepositoryReader.cs" />

@@ -13,12 +13,12 @@ namespace RepoZ.Win.Git
 	{
 		private ConcurrentDictionary<string, RepositoryInfo> _repositories = new ConcurrentDictionary<string, RepositoryInfo>();
 		private List<IRepositoryObserver> _observers = null;
-		private Func<IRepositoryObserver> _repositoryObserverFactory;
-		private Func<IPathCrawler> _pathCrawlerFactory;
+		private IRepositoryObserverFactory _repositoryObserverFactory;
+		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
 
-		public WindowsRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, Func<IRepositoryObserver> repositoryObserverFactory, Func<IPathCrawler> pathCrawlerFactory)
+		public WindowsRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory)
 		{
 			_repositoryReader = repositoryReader;
 			_repositoryObserverFactory = repositoryObserverFactory;
@@ -30,7 +30,7 @@ namespace RepoZ.Win.Git
 		{
 			foreach (var path in _pathProvider.GetPaths().AsParallel())
 			{
-				var crawler = _pathCrawlerFactory();
+				var crawler = _pathCrawlerFactory.Create();
 				Task.Run(() => crawler.Find(path, "HEAD", file => onFound(file), null));
 			}
 		}
@@ -49,7 +49,7 @@ namespace RepoZ.Win.Git
 
 			foreach (var path in _pathProvider.GetPaths())
 			{
-				var observer = _repositoryObserverFactory();
+				var observer = _repositoryObserverFactory.Create();
 				_observers.Add(observer);
 
 				observer.OnChangeDetected = OnRepositoryChangeDetected;

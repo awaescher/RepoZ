@@ -22,9 +22,11 @@ namespace RepoZ.UI.Desktop
 			container.Register<MainForm>();
 			container.Register<IRepositoryMonitor, WindowsRepositoryMonitor>();
 			container.Register<IRepositoryObserver, WindowsRepositoryObserver>();
+			container.Register<IRepositoryObserverFactory, WindowsRepositoryObserverFactory>();
 			container.Register<IRepositoryReader, WindowsRepositoryReader>();
 			container.Register<IPathProvider, WindowsDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
+			container.Register<IPathCrawlerFactory, WindowsPathCrawlerFactory>();
 
 			var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();

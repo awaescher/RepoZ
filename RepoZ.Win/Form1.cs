@@ -42,7 +42,7 @@ namespace RepoZ.Win
 			_timer.Tick += _timer_Tick;
 			_timer.Start();
 
-			_monitor = new WindowsRepositoryMonitor(new WindowsDriveEnumerator(), _reader, () => new WindowsRepositoryObserver(_reader), () => new GravellPathCrawler());
+			_monitor = new WindowsRepositoryMonitor(new WindowsDriveEnumerator(), _reader, new WindowsRepositoryObserverFactory(_reader), new WindowsPathCrawlerFactory());
 			_monitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
 			_monitor.Observe();
 
