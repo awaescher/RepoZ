@@ -22,6 +22,7 @@ namespace RepoZ.Win
 		private RepositoryReader _reader;
 		private RepositoryMonitor _monitor;
 		private BindingList<RepositoryInfo> _dataSource = new BindingList<RepositoryInfo>();
+		private WindowsExplorerHandler _explorerHandler;
 
 		public Form1()
 		{
@@ -34,6 +35,7 @@ namespace RepoZ.Win
 		{
 			_reader = new RepositoryReader();
 			_finder = new WindowFinder(new IPathFinder[] { new WindowsExplorerPathFinder() });
+			_explorerHandler = new WindowsExplorerHandler(_reader);
 
 			_timer = new Timer() { Interval = 1000, Enabled = true };
 			_timer.Tick += _timer_Tick;
@@ -48,13 +50,19 @@ namespace RepoZ.Win
 
 		private void _timer_Tick(object sender, EventArgs e)
 		{
-			string path = _finder.GetPathOfCurrentWindow();
-			var repo = _reader.ReadRepository(path);
+			var windowPath = _finder.GetPathOfCurrentWindow();
 
-			lblFound.Text = path;
+			var repo = _reader.ReadRepository(windowPath?.Path);
+
+			lblFound.Text = windowPath?.Path ?? "n/a";
 			lblPath.Text = repo.Path;
 			lblRepository.Text = repo.Name;
 			lblGitBranch.Text = repo.CurrentBranch;
+
+			string repoBranch = repo?.CurrentBranch ?? "";
+			//_finder.SetW(windowPath.Handle, repoBranch);
+
+			_explorerHandler.Pulse();
 		}
 
 		private void notifyRepoChange(RepositoryInfo repo)

@@ -72,6 +72,7 @@
     <Compile Include="Watchers\IRepositoryWatcher.cs" />
     <Compile Include="Watchers\WindowsRepositoryWatcher.cs" />
     <Compile Include="WindowsDriveEnumerator.cs" />
+    <Compile Include="WindowsExplorerHandler.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

@@ -57,6 +57,7 @@
     <Compile Include="PathFinding\IPathFinder.cs" />
     <Compile Include="PathFinding\WindowsExplorerPathFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowHelper.cs" />
     <Compile Include="WindowFinder.cs" />
   </ItemGroup>
   <ItemGroup>
