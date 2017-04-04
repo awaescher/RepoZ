@@ -3,12 +3,14 @@ using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using RepoZ.Api.Git;
 
 namespace RepoZ.UI
 {
 	public class MainForm : Form
 	{
-
+		private IRepositoryMonitor _repositoryMonitor;
+		private ObservableCollection<RepositoryInfo> _dataSource;
 
 		class MyPoco
 		{
@@ -19,21 +21,28 @@ namespace RepoZ.UI
 			public string[] Branches { get; set; }
 		}
 
-		public MainForm()
+		public MainForm(IRepositoryMonitor repositoryMonitor)
 		{
+			_repositoryMonitor = repositoryMonitor;
+			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
+			_repositoryMonitor.Observe();
+
 			Title = "RepoZ";
-			this.Maximizable = false;
-			ClientSize = new Size(405, 350);
+			Maximizable = false;
+			ClientSize = new Size(805, 600);
 
-			var collection = new ObservableCollection<MyPoco>();
-			collection.Add(new MyPoco { Text = "Repo 1", CurrentBranch = "master", Branches = new string[] { "master", "dbless", "global-text-management" } });
-			collection.Add(new MyPoco { Text = "Repo 2", CurrentBranch = "global-text-management", Branches = new string[] { "master", "dbless", "global-text-management" } });
+			_dataSource = new ObservableCollection<RepositoryInfo>();
 
-			var grid = new GridView { DataStore = collection };
+			createGrid();
+		}
+
+		private void createGrid()
+		{
+			var grid = new GridView { DataStore = _dataSource };
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell { Binding = Binding.Property<MyPoco, string>(r => r.Text) },
+				DataCell = new TextBoxCell(nameof(RepositoryInfo.Name)),
 				Sortable = true,
 				Width = 200,
 				HeaderText = "Repository"
@@ -41,18 +50,51 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new ComboBoxCell("CurrentRepoZ")
-				{
-					Binding = Binding.Property<MyPoco, object>(r => r.CurrentBranch),
-					DataStore = new string[] { "master", "dbless", "global-text-management" }
-
-				},
+				DataCell = new TextBoxCell(nameof(RepositoryInfo.CurrentBranch)),
+				Sortable = true,
 				Width = 200,
-				HeaderText = "Branch",
-				Editable = true,
+				HeaderText = "Current Branch"
 			});
 
+			grid.Columns.Add(new GridColumn()
+			{
+				DataCell = new TextBoxCell(nameof(RepositoryInfo.Path)),
+				Sortable = true,
+				Width = 400,
+				HeaderText = "Location"
+			});
+
+			//grid.Columns.Add(new GridColumn()
+			//{
+			//	DataCell = new ComboBoxCell("CurrentRepoZ")
+			//	{
+			//		Binding = Binding.Property<MyPoco, object>(r => r.CurrentBranch),
+			//		DataStore = new string[] { "master", "dbless", "global-text-management" }
+
+			//	},
+			//	Width = 200,
+			//	HeaderText = "Branch",
+			//	Editable = true,
+			//});
+
 			Content = grid;
+		}
+
+		private void notifyRepoChange(RepositoryInfo repo)
+		{
+			Application.Instance.Invoke(() =>
+			{
+				try
+				{
+					_dataSource.Remove(repo);
+					_dataSource.Add(repo);
+				}
+				catch (Exception ex)
+				{
+
+					throw;
+				}
+			});
 		}
 	}
 }

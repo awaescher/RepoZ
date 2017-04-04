@@ -1,7 +1,6 @@
 ﻿using System;
-using RepoZ.Api.Git;
 
-namespace RepoZ.Win
+namespace RepoZ.Api.Git
 {
 	public interface IRepositoryMonitor
 	{

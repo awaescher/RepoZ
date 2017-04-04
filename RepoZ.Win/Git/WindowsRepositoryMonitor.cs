@@ -1,5 +1,4 @@
-﻿using RepoZ.Shared;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 
-namespace RepoZ.Win
+namespace RepoZ.Win.Git
 {
 	public class WindowsRepositoryMonitor : IRepositoryMonitor
 	{

@@ -1,5 +1,4 @@
 ﻿using RepoZ.Api.Git;
-using RepoZ.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

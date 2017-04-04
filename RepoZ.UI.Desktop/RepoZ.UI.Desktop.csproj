@@ -71,6 +71,10 @@
       <Project>{96888219-0d2c-4c62-b32c-a51d8181ffb8}</Project>
       <Name>RepoZ.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Win\RepoZ.Win.csproj">
+      <Project>{85c75358-4e23-4074-9376-8079c874bd1e}</Project>
+      <Name>RepoZ.Win</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

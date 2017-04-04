@@ -16,11 +16,20 @@ namespace RepoZ.Api.Git
 
 		public static RepositoryInfo Empty => new RepositoryInfo()
 		{
-			Name = "-",
-			CurrentBranch = "-",
-			Path = "-"
+			Name = "",
+			CurrentBranch = "",
+			Path = ""
 		};
 
-		public bool WasFound => !string.IsNullOrWhiteSpace(Path) && Path != "-";
+		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
+
+		public override bool Equals(object obj)
+		{
+			var other = obj as RepositoryInfo;
+			if (other == null)
+				return false;
+
+			return string.Equals(other.Path, this.Path);
+		}
 	}
 }
