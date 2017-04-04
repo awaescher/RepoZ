@@ -23,6 +23,10 @@ namespace RepoZ.Api.Git
 
 		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
 
+		public int? AheadBy { get; set; }
+
+		public int? BehindBy { get; set; }
+
 		public override bool Equals(object obj)
 		{
 			var other = obj as Repository;

@@ -25,6 +25,7 @@ namespace RepoZ.UI.Desktop
 			container.Register<IPathProvider, WindowsDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathCrawlerFactory, WindowsPathCrawlerFactory>();
+			container.Register<IPathNavigator, WindowsPathNavigator>();
 
 			var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();

@@ -21,8 +21,10 @@ namespace RepoZ.Win.Git
 				{
 					Name = new System.IO.DirectoryInfo(repo.Info.WorkingDirectory).Name,
 					Path = repo.Info.WorkingDirectory,
-					CurrentBranch = repo.Head.FriendlyName
-				};
+					CurrentBranch = repo.Head.FriendlyName,
+					AheadBy = repo.Head.TrackingDetails?.AheadBy,
+					BehindBy = repo.Head.TrackingDetails?.BehindBy
+			};
 			}
 		}
 	}

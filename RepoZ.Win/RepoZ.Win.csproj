@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Git\WindowsRepositoryReader.cs" />
     <Compile Include="IO\WindowsPathCrawlerFactory.cs" />
+    <Compile Include="IO\WindowsPathNavigator.cs" />
     <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

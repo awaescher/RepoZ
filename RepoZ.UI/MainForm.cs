@@ -4,6 +4,7 @@ using Eto.Drawing;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using RepoZ.Api.Git;
+using RepoZ.Api.IO;
 
 namespace RepoZ.UI
 {
@@ -11,25 +12,19 @@ namespace RepoZ.UI
 	{
 		private IRepositoryMonitor _repositoryMonitor;
 		private ObservableCollection<Repository> _dataSource = new ObservableCollection<Repository>();
+		private IPathNavigator _pathNavigator;
 
-		class MyPoco
-		{
-			public string Text { get; set; }
-
-			public string CurrentBranch { get; set; }
-
-			public string[] Branches { get; set; }
-		}
-
-		public MainForm(IRepositoryMonitor repositoryMonitor)
+		public MainForm(IRepositoryMonitor repositoryMonitor, IPathNavigator pathNavigator)
 		{
 			_repositoryMonitor = repositoryMonitor;
 			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
 			_repositoryMonitor.Observe();
 
+			_pathNavigator = pathNavigator;
+
 			Title = "RepoZ";
 			Maximizable = false;
-			ClientSize = new Size(805, 600);
+			ClientSize = new Size(955, 600);
 
 			createGrid();
 		}
@@ -65,6 +60,22 @@ namespace RepoZ.UI
 				HeaderText = "Location"
 			});
 
+			grid.Columns.Add(new GridColumn()
+			{
+				DataCell = new TextBoxCell(nameof(Repository.AheadBy)),
+				Sortable = true,
+				Width = 75,
+				HeaderText = "AheadBy"
+			});
+
+			grid.Columns.Add(new GridColumn()
+			{
+				DataCell = new TextBoxCell(nameof(Repository.BehindBy)),
+				Sortable = true,
+				Width = 75,
+				HeaderText = "BehindBy"
+			});
+
 			//grid.Columns.Add(new GridColumn()
 			//{
 			//	DataCell = new ComboBoxCell("CurrentRepoZ")
@@ -77,7 +88,17 @@ namespace RepoZ.UI
 			//	HeaderText = "Branch",
 			//	Editable = true,
 			//});
+
+			grid.CellDoubleClick += Grid_CellDoubleClick;
+
 			Content = grid;
+		}
+
+		private void Grid_CellDoubleClick(object sender, GridViewCellEventArgs e)
+		{
+			var repo = e.Item as Repository;
+			if (repo != null && repo.WasFound)
+				_pathNavigator.Navigate(repo.Path);
 		}
 
 		private void notifyRepoChange(Repository repo)
@@ -89,9 +110,9 @@ namespace RepoZ.UI
 					_dataSource.Remove(repo);
 					_dataSource.Add(repo);
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
-
+					// happened to be swallowed by Eto
 					throw;
 				}
 			});
