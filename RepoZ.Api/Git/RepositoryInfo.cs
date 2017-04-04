@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace RepoZ.Api.Git
 {
 	[DebuggerDisplay("{Name}")]
-	public class RepositoryInfo
+	public class Repository
 	{
 		public string Name { get; set; }
 		public string Path { get; set; }
 		public string CurrentBranch { get; set; }
 
-		public static RepositoryInfo Empty => new RepositoryInfo()
+		public static Repository Empty => new Repository()
 		{
 			Name = "",
 			CurrentBranch = "",
@@ -25,7 +25,7 @@ namespace RepoZ.Api.Git
 
 		public override bool Equals(object obj)
 		{
-			var other = obj as RepositoryInfo;
+			var other = obj as Repository;
 			if (other == null)
 				return false;
 

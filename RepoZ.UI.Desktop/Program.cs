@@ -17,8 +17,6 @@ namespace RepoZ.UI.Desktop
 		{
 			var container = TinyIoCContainer.Current;
 
-			//container.Register<IPathCrawler, null>();
-
 			container.Register<MainForm>();
 			container.Register<IRepositoryMonitor, WindowsRepositoryMonitor>();
 			container.Register<IRepositoryObserver, WindowsRepositoryObserver>();

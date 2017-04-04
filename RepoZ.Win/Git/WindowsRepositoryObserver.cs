@@ -16,7 +16,7 @@ namespace RepoZ.Win.Git
 			_repositoryReader = repositoryReader;
 		}
 
-		public Action<RepositoryInfo> OnChangeDetected { get; set; }
+		public Action<Repository> OnChangeDetected { get; set; }
 
 		public void Setup(string path)
 		{

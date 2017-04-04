@@ -10,7 +10,7 @@ namespace RepoZ.UI
 	public class MainForm : Form
 	{
 		private IRepositoryMonitor _repositoryMonitor;
-		private ObservableCollection<RepositoryInfo> _dataSource;
+		private ObservableCollection<Repository> _dataSource = new ObservableCollection<Repository>();
 
 		class MyPoco
 		{
@@ -31,26 +31,27 @@ namespace RepoZ.UI
 			Maximizable = false;
 			ClientSize = new Size(805, 600);
 
-			_dataSource = new ObservableCollection<RepositoryInfo>();
-
 			createGrid();
 		}
 
 		private void createGrid()
 		{
-			var grid = new GridView { DataStore = _dataSource };
+			var filtered = new FilterCollection<Repository>(_dataSource);
+			filtered.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+
+			var grid = new GridView { DataStore = filtered };
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(RepositoryInfo.Name)),
+				DataCell = new TextBoxCell(nameof(Repository.Name)),
 				Sortable = true,
 				Width = 200,
-				HeaderText = "Repository"
+				HeaderText = "Repository",
 			});
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(RepositoryInfo.CurrentBranch)),
+				DataCell = new TextBoxCell(nameof(Repository.CurrentBranch)),
 				Sortable = true,
 				Width = 200,
 				HeaderText = "Current Branch"
@@ -58,7 +59,7 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(RepositoryInfo.Path)),
+				DataCell = new TextBoxCell(nameof(Repository.Path)),
 				Sortable = true,
 				Width = 400,
 				HeaderText = "Location"
@@ -76,11 +77,10 @@ namespace RepoZ.UI
 			//	HeaderText = "Branch",
 			//	Editable = true,
 			//});
-
 			Content = grid;
 		}
 
-		private void notifyRepoChange(RepositoryInfo repo)
+		private void notifyRepoChange(Repository repo)
 		{
 			Application.Instance.Invoke(() =>
 			{

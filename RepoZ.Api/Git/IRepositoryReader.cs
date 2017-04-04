@@ -2,6 +2,6 @@
 {
 	public interface IRepositoryReader
 	{
-		RepositoryInfo ReadRepository(string path);
+		Repository ReadRepository(string path);
 	}
 }

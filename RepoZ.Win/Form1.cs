@@ -22,7 +22,7 @@ namespace RepoZ.Win
 		private WindowFinder _finder;
 		private WindowsRepositoryReader _reader;
 		private WindowsRepositoryMonitor _monitor;
-		private BindingList<RepositoryInfo> _dataSource = new BindingList<RepositoryInfo>();
+		private BindingList<Repository> _dataSource = new BindingList<Repository>();
 		private WindowsExplorerHandler _explorerHandler;
 
 		public Form1()
@@ -66,7 +66,7 @@ namespace RepoZ.Win
 			_explorerHandler.Pulse();
 		}
 
-		private void notifyRepoChange(RepositoryInfo repo)
+		private void notifyRepoChange(Repository repo)
 		{
 			Action act = () =>
 			{

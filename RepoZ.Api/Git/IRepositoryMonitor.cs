@@ -4,8 +4,8 @@ namespace RepoZ.Api.Git
 {
 	public interface IRepositoryMonitor
 	{
-		Action<RepositoryInfo> OnChangeDetected { get; set; }
-		RepositoryInfo[] Repositories { get; }
+		Action<Repository> OnChangeDetected { get; set; }
+		Repository[] Repositories { get; }
 
 		void Stop();
 

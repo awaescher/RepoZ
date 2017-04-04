@@ -11,7 +11,7 @@ namespace RepoZ.Win.Git
 {
 	public class WindowsRepositoryMonitor : IRepositoryMonitor
 	{
-		private ConcurrentDictionary<string, RepositoryInfo> _repositories = new ConcurrentDictionary<string, RepositoryInfo>();
+		private ConcurrentDictionary<string, Repository> _repositories = new ConcurrentDictionary<string, Repository>();
 		private List<IRepositoryObserver> _observers = null;
 		private IRepositoryObserverFactory _repositoryObserverFactory;
 		private IPathCrawlerFactory _pathCrawlerFactory;
@@ -73,14 +73,14 @@ namespace RepoZ.Win.Git
 			_observers.ForEach(w => w.Stop());
 		}
 
-		private void OnRepositoryChangeDetected(RepositoryInfo repo)
+		private void OnRepositoryChangeDetected(Repository repo)
 		{
 			_repositories.AddOrUpdate(repo.Path, repo, (k, v) => repo);
 			OnChangeDetected?.Invoke(repo);
 		}
 
-		public RepositoryInfo[] Repositories => _repositories.Values.ToArray();
+		public Repository[] Repositories => _repositories.Values.ToArray();
 
-		public Action<RepositoryInfo> OnChangeDetected { get; set; }
+		public Action<Repository> OnChangeDetected { get; set; }
 	}
 }
