@@ -70,7 +70,7 @@ namespace RepoZ.Win.Git
 		{
 			var repo = _repositoryReader.ReadRepository(path);
 
-			if (repo.WasFound)
+			if (repo?.WasFound ?? false)
 			{
 				//_repositories.AddOrUpdate(repo.Path, repo.CurrentBranch, (k, v) => repo.CurrentBranch);
 				OnChangeDetected?.Invoke(repo);

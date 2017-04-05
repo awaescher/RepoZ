@@ -15,6 +15,37 @@ namespace RepoZ.Win.Git
 			if (string.IsNullOrEmpty(repoPath))
 				return Api.Git.Repository.Empty;
 
+			return ReadRepositoryWithRetries(repoPath, 3);
+
+		}
+
+		private Api.Git.Repository ReadRepositoryWithRetries(string repoPath, int maxRetries)
+		{
+			Api.Git.Repository repository = null;
+			int currentTry = 1;
+
+			while (repository == null && currentTry <= maxRetries)
+			{
+				try
+				{
+					repository = ReadRepositoryInternal(repoPath);
+				}
+				catch (LockedFileException)
+				{
+					if (currentTry >= maxRetries)
+						throw;
+					else
+						System.Threading.Thread.Sleep(500);
+				}
+
+				currentTry++;
+			}
+
+			return repository;
+		}
+
+		private Api.Git.Repository ReadRepositoryInternal(string repoPath)
+		{
 			using (var repo = new LibGit2Sharp.Repository(repoPath))
 			{
 				return new Api.Git.Repository()
@@ -24,7 +55,7 @@ namespace RepoZ.Win.Git
 					CurrentBranch = repo.Head.FriendlyName,
 					AheadBy = repo.Head.TrackingDetails?.AheadBy,
 					BehindBy = repo.Head.TrackingDetails?.BehindBy
-			};
+				};
 			}
 		}
 	}
