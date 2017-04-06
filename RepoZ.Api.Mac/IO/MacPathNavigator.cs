@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using RepoZ.Api.IO;
 
 namespace RepoZ.Api.Mac.IO
@@ -11,6 +12,14 @@ namespace RepoZ.Api.Mac.IO
 
 		public void Navigate(string path)
 		{
+			try
+			{
+				Process.Start(path);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
 		}
 	}
 }
