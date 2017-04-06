@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.IO;
 
-namespace RepoZ.Api.Default.IO
+namespace RepoZ.Api.Win.IO
 {
 	public class DefaultPathCrawlerFactory : IPathCrawlerFactory
 	{

@@ -13,8 +13,8 @@ using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke;
-using RepoZ.Api.Default.Git;
-using RepoZ.Api.Default.IO;
+using RepoZ.Api.Win.Git;
+using RepoZ.Api.Win.IO;
 
 namespace RepoZ.Api.Win
 {

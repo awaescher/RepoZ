@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RepoZ.Api.Default.Git
+namespace RepoZ.Api.Win.Git
 {
 	public class DefaultRepositoryObserver : IRepositoryObserver
 	{

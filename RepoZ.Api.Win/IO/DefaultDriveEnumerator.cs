@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace RepoZ.Api.Default.IO
+namespace RepoZ.Api.Win.IO
 {
 	public class DefaultDriveEnumerator : IPathProvider
 	{
