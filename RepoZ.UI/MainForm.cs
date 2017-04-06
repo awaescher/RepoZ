@@ -93,15 +93,37 @@ namespace RepoZ.UI
 			//});
 
 			grid.CellDoubleClick += Grid_CellDoubleClick;
+			grid.MouseUp += Grid_MouseUp;
 
 			Content = grid;
 		}
 
+		private void Grid_MouseUp(object sender, MouseEventArgs e)
+		{
+			var view = sender as GridView;
+
+			if (view != null && e.Buttons == MouseButtons.Alternate)
+			{
+				var repo = view.SelectedItem as Repository;
+
+				if (repo == null || !repo.WasFound)
+					return;
+
+				var actions = _pathActionProvider.GetFor(repo.Path);
+				var items = actions.Select(a => new ButtonMenuItem((s0, e0) => a.Action()) { Text = a.Name });
+				var menu = new ContextMenu(items);
+				menu.Show(Content);
+			}
+		}
+
+
 		private void Grid_CellDoubleClick(object sender, GridViewCellEventArgs e)
 		{
 			var repo = e.Item as Repository;
-			if (repo != null && repo.WasFound)
-				_pathNavigator.Navigate(repo.Path);
+			if (repo == null || !repo.WasFound)
+				return;
+
+			_pathNavigator.Navigate(repo.Path);
 		}
 
 		private void notifyRepoChange(Repository repo)

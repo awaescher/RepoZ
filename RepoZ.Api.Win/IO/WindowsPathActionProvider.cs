@@ -13,9 +13,9 @@ namespace RepoZ.Api.Win.IO
 	{
 		public IEnumerable<PathAction> GetFor(string path)
 		{
-			yield return createPathAction("Open in File Explorer", path);
-			yield return createPathAction("Open in command prompt (cmd)", "cmd.exe", $"/K \"cd /d {path}\"");
-			yield return createPathAction("Open in powershell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
+			yield return createPathAction("Open in Windows File Explorer", path);
+			yield return createPathAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {path}\"");
+			yield return createPathAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
 
 			// TODO
 			string folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
