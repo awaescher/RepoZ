@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using RepoZ.Api.IO;
 
 namespace RepoZ.Api.Mac.IO
 {
-	public class MacPathNavigator : IPathNavigator
+	public class DefaultPathNavigator : IPathNavigator
 	{
-		public MacPathNavigator()
-		{
-		}
-
 		public void Navigate(string path)
 		{
 			try

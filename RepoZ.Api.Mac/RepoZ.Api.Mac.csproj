@@ -31,10 +31,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Git\MacRepositoryMonitor.cs" />
-    <Compile Include="IO\MacPathNavigator.cs" />
-    <Compile Include="IO\MacDriveEnumerator.cs" />
+    <Compile Include="Git\MacRepositoryReader.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
+    <Compile Include="Git\DefaultRepositoryMonitor.cs" />
+    <Compile Include="Git\DefaultRepositoryObserver.cs" />
+    <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />
+    <Compile Include="IO\DefaultDriveEnumerator.cs" />
+    <Compile Include="IO\DefaultPathCrawler.cs" />
+    <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
+    <Compile Include="IO\DefaultPathNavigator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Git\" />

@@ -16,14 +16,14 @@ namespace RepoZ.UI.Mac
 			var container = TinyIoCContainer.Current;
 
 			container.Register<MainForm>();
-			container.Register<IRepositoryMonitor, MacRepositoryMonitor>();
-			//container.Register<IRepositoryObserver, WindowsRepositoryObserver>();
-			//container.Register<IRepositoryObserverFactory, WindowsRepositoryObserverFactory>();
-			//container.Register<IRepositoryReader, WindowsRepositoryReader>();
-			container.Register<IPathProvider, MacDriveEnumerator>();
+			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>();
+			container.Register<IRepositoryObserver, DefaultRepositoryObserver>();
+			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>();
+			container.Register<IRepositoryReader, MacRepositoryReader>();
+			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
-			//container.Register<IPathCrawlerFactory, WindowsPathCrawlerFactory>();
-			container.Register<IPathNavigator, MacPathNavigator>();
+			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
+			container.Register<IPathNavigator, DefaultPathNavigator>();
 
 			var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();
