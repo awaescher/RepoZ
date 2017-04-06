@@ -31,6 +31,7 @@ namespace RepoZ.UI
 
 		private void createGrid()
 		{
+			_dataSource.Add(new Repository() { Name = "testrepo", CurrentBranch = "cbranch", Path = "/Users/andreaswascher/source/repos/repoz", AheadBy= 1, BehindBy = 2 });
 			var filtered = new FilterCollection<Repository>(_dataSource);
 			filtered.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
 

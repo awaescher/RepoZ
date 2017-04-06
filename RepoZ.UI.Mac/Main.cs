@@ -20,8 +20,8 @@ namespace RepoZ.UI.Mac
 			//container.Register<IRepositoryObserver, WindowsRepositoryObserver>();
 			//container.Register<IRepositoryObserverFactory, WindowsRepositoryObserverFactory>();
 			//container.Register<IRepositoryReader, WindowsRepositoryReader>();
-			//container.Register<IPathProvider, WindowsDriveEnumerator>();
-			//container.Register<IPathCrawler, GravellPathCrawler>();
+			container.Register<IPathProvider, MacDriveEnumerator>();
+			container.Register<IPathCrawler, GravellPathCrawler>();
 			//container.Register<IPathCrawlerFactory, WindowsPathCrawlerFactory>();
 			container.Register<IPathNavigator, MacPathNavigator>();
 
