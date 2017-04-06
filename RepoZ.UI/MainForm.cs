@@ -16,17 +16,18 @@ namespace RepoZ.UI
 
 		public MainForm(IRepositoryMonitor repositoryMonitor, IPathNavigator pathNavigator)
 		{
-			_repositoryMonitor = repositoryMonitor;
-			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
-			_repositoryMonitor.Observe();
+			this.Title = "EtoXamMac2";
+			//_repositoryMonitor = repositoryMonitor;
+			//_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
+			//_repositoryMonitor.Observe();
 
-			_pathNavigator = pathNavigator;
+			//_pathNavigator = pathNavigator;
 
-			Title = "RepoZ";
-			Maximizable = false;
-			ClientSize = new Size(955, 600);
+			//Title = "RepoZ";
+			//Maximizable = false;
+			//ClientSize = new Size(955, 600);
 
-			createGrid();
+			//createGrid();
 		}
 
 		private void createGrid()
