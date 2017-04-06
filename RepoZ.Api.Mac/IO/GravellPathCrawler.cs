@@ -1,16 +1,28 @@
-﻿using System;
+﻿using RepoZ.Api.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using RepoZ.Api.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RepoZ.Api.Mac.IO
 {
+	// http://stackoverflow.com/questions/2106877/is-there-a-faster-way-than-this-to-find-all-the-files-in-a-directory-and-all-sub
+
 	public class GravellPathCrawler : IPathCrawler
 	{
 		public List<string> Find(string root, string searchPattern, Action<string> onFoundAction, Action onQuit)
 		{
-			return FindInternal(root, searchPattern, onFoundAction, onQuit).ToList();
+			try
+			{
+				return FindInternal(root, searchPattern, onFoundAction, onQuit).ToList();
+
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
 		}
 		private IEnumerable<string> FindInternal(string root, string searchPattern, Action<string> onFound, Action onQuit)
 		{
@@ -19,9 +31,10 @@ namespace RepoZ.Api.Mac.IO
 			string[] tmp;
 			while (pending.Count > 0)
 			{
+				
 				root = pending.Dequeue();
 
-				if (root.IndexOf("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) > -1)
+				if (root.IndexOf(".Trash", StringComparison.OrdinalIgnoreCase) > -1)
 					continue;
 
 				try
@@ -42,6 +55,7 @@ namespace RepoZ.Api.Mac.IO
 				{
 					pending.Enqueue(tmp[i]);
 				}
+
 			}
 
 			onQuit?.Invoke();

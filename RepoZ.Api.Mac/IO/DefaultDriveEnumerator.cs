@@ -8,10 +8,7 @@ namespace RepoZ.Api.Mac.IO
 	{
 		public string[] GetPaths()
 		{
-			return System.IO.DriveInfo.GetDrives()
-				.Where(d => d.DriveType == System.IO.DriveType.Fixed)
-				.Select(d => d.RootDirectory.FullName)
-				.ToArray();
+			return new string[] { "/Users/andreaswascher/source/" };
 		}
 	}
 }
