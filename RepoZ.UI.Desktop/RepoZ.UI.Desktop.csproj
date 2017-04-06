@@ -71,7 +71,7 @@
       <Name>RepoZ.Api</Name>
     </ProjectReference>
     <ProjectReference Include="..\RepoZ.UI\RepoZ.UI.csproj">
-      <Project>{96888219-0d2c-4c62-b32c-a51d8181ffb8}</Project>
+      <Project>{5925C073-A5AA-4B9D-92E5-CAC8B5309635}</Project>
       <Name>RepoZ.UI</Name>
     </ProjectReference>
     <ProjectReference Include="..\RepoZ.Win\RepoZ.Win.csproj">
