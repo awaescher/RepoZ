@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
+using System.Linq;
 
 namespace RepoZ.UI
 {
@@ -13,14 +14,16 @@ namespace RepoZ.UI
 		private IRepositoryMonitor _repositoryMonitor;
 		private ObservableCollection<Repository> _dataSource = new ObservableCollection<Repository>();
 		private IPathNavigator _pathNavigator;
+		private IPathActionProvider _pathActionProvider;
 
-		public MainForm(IRepositoryMonitor repositoryMonitor, IPathNavigator pathNavigator)
+		public MainForm(IRepositoryMonitor repositoryMonitor, IPathNavigator pathNavigator, IPathActionProvider pathActionProvider)
 		{
 			_repositoryMonitor = repositoryMonitor;
 			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
 			_repositoryMonitor.Observe();
 
 			_pathNavigator = pathNavigator;
+			_pathActionProvider = pathActionProvider;
 
 			Title = "RepoZ";
 			Maximizable = false;

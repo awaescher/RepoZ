@@ -6,8 +6,6 @@ using RepoZ.Api.Win.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Win;
-using RepoZ.Api.Win.Git;
-using RepoZ.Api.Win.IO;
 using TinyIoC;
 
 namespace RepoZ.UI.Desktop
@@ -28,8 +26,9 @@ namespace RepoZ.UI.Desktop
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
 			container.Register<IPathNavigator, DefaultPathNavigator>();
+			container.Register<IPathActionProvider, WindowsPathActionProvider>();
 
-			var application = new Application(Platform.Detect);
+		   var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();
 			application.Run(mainForm);
 		}

@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{85C75358-4E23-4074-9376-8079C874BD1E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>RepoZ.Win</RootNamespace>
-    <AssemblyName>RepoZ.Win</AssemblyName>
+    <RootNamespace>RepoZ.Api.Win</RootNamespace>
+    <AssemblyName>RepoZ.Api.Win</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -71,6 +71,7 @@
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
     <Compile Include="IO\DefaultPathNavigator.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
+    <Compile Include="IO\WindowsPathActionProvider.cs" />
     <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
