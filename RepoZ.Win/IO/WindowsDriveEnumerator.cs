@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace RepoZ.Win.IO
+namespace RepoZ.Api.Win.IO
 {
 	public class WindowsDriveEnumerator : IPathProvider
 	{

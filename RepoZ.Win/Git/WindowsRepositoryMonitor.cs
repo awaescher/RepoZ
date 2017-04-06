@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 
-namespace RepoZ.Win.Git
+namespace RepoZ.Api.Win.Git
 {
 	public class WindowsRepositoryMonitor : IRepositoryMonitor
 	{

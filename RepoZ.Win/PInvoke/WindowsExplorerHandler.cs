@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Win.PInvoke
+namespace RepoZ.Api.Win.PInvoke
 {
 	public class WindowsExplorerHandler
 	{

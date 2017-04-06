@@ -8,13 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using RepoZ.Win.Git;
+using RepoZ.Api.Win.Git;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
-using RepoZ.Win.IO;
-using RepoZ.Win.PInvoke;
+using RepoZ.Api.Win.IO;
+using RepoZ.Api.Win.PInvoke;
 
-namespace RepoZ.Win
+namespace RepoZ.Api.Win
 {
 	public partial class Form1 : Form
 	{

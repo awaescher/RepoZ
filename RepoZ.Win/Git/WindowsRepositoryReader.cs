@@ -2,7 +2,7 @@
 using LibGit2Sharp;
 using RepoZ.Api.Git;
 
-namespace RepoZ.Win.Git
+namespace RepoZ.Api.Win.Git
 {
 	public class WindowsRepositoryReader : IRepositoryReader
 	{

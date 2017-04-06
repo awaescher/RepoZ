@@ -1,4 +1,4 @@
-﻿namespace RepoZ.Win
+﻿namespace RepoZ.Api.Win
 {
 	partial class Form1
 	{
