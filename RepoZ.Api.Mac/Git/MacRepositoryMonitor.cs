@@ -1,7 +1,7 @@
 ﻿using System;
 using RepoZ.Api.Git;
 
-namespace RepoZ.UI.Mac
+namespace RepoZ.Api.Mac.Git
 {
 	public class MacRepositoryMonitor : IRepositoryMonitor
 	{
