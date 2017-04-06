@@ -66,6 +66,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Repoz.Api.Default\Repoz.Api.Default.csproj">
+      <Project>{35c4f1c4-e3b3-4876-9871-9ad5eb495f65}</Project>
+      <Name>Repoz.Api.Default</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
       <Project>{8f74519b-b72d-4a5e-b20b-723543676e5e}</Project>
       <Name>RepoZ.Api</Name>

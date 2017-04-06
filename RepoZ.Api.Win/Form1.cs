@@ -13,6 +13,8 @@ using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke;
+using RepoZ.Api.Default.Git;
+using RepoZ.Api.Default.IO;
 
 namespace RepoZ.Api.Win
 {
@@ -21,7 +23,7 @@ namespace RepoZ.Api.Win
 		private Timer _timer;
 		private WindowFinder _finder;
 		private WindowsRepositoryReader _reader;
-		private WindowsRepositoryMonitor _monitor;
+		private DefaultRepositoryMonitor _monitor;
 		private BindingList<Repository> _dataSource = new BindingList<Repository>();
 		private WindowsExplorerHandler _explorerHandler;
 
@@ -42,7 +44,7 @@ namespace RepoZ.Api.Win
 			_timer.Tick += _timer_Tick;
 			_timer.Start();
 
-			_monitor = new WindowsRepositoryMonitor(new WindowsDriveEnumerator(), _reader, new WindowsRepositoryObserverFactory(_reader), new WindowsPathCrawlerFactory());
+			_monitor = new DefaultRepositoryMonitor(new DefaultDriveEnumerator(), _reader, new DefaultRepositoryObserverFactory(_reader), new DefaultPathCrawlerFactory());
 			_monitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
 			_monitor.Observe();
 

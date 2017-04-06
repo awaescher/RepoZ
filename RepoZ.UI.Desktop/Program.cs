@@ -1,6 +1,8 @@
 ﻿using System;
 using Eto;
 using Eto.Forms;
+using RepoZ.Api.Default.Git;
+using RepoZ.Api.Default.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Win;
@@ -18,14 +20,14 @@ namespace RepoZ.UI.Desktop
 			var container = TinyIoCContainer.Current;
 
 			container.Register<MainForm>();
-			container.Register<IRepositoryMonitor, WindowsRepositoryMonitor>();
-			container.Register<IRepositoryObserver, WindowsRepositoryObserver>();
-			container.Register<IRepositoryObserverFactory, WindowsRepositoryObserverFactory>();
+			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>();
+			container.Register<IRepositoryObserver, DefaultRepositoryObserver>();
+			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>();
 			container.Register<IRepositoryReader, WindowsRepositoryReader>();
-			container.Register<IPathProvider, WindowsDriveEnumerator>();
+			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
-			container.Register<IPathCrawlerFactory, WindowsPathCrawlerFactory>();
-			container.Register<IPathNavigator, WindowsPathNavigator>();
+			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
+			container.Register<IPathNavigator, DefaultPathNavigator>();
 
 			var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();
