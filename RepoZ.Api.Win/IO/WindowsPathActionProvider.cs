@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.IO;
+using GongSolutions.Shell;
 
 namespace RepoZ.Api.Win.IO
 {
@@ -30,9 +31,21 @@ namespace RepoZ.Api.Win.IO
 				if (File.Exists(exec))
 					yield return createPathAction("Open in Git Bash", "cmd.exe", $"/c (start /b /i *%cd%* *{exec}*) && exit".Replace("*", "\""));
 			}
-		}
 
-		private PathAction createPathAction(string name, string process, string arguments = "")
+            yield return new PathAction()
+            {
+                Name = "Shell",
+                Action = () =>
+                {
+                    var i = new ShellItem(path);
+                    var m = new ShellContextMenu(i);
+                    m.ShowContextMenu(new System.Windows.Forms.Button(), System.Windows.Forms.Control.MousePosition);
+                },
+                BeginGroup = true
+            };
+    }
+
+    private PathAction createPathAction(string name, string process, string arguments = "")
 		{
 			return new PathAction()
 			{
