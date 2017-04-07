@@ -11,5 +11,6 @@ namespace RepoZ.Api.IO
 		public string Name { get; set; }
 		public Action Action { get; set; }
 		public bool IsDefault { get; set; } = false;
+        public bool BeginGroup { get; set; } = false;
 	}
 }
