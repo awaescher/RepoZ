@@ -17,18 +17,21 @@ namespace RepoZ.Api.Win.IO
 			yield return createPathAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {path}\"");
 			yield return createPathAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
 
-			// TODO
-			string folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-			folder = @"C:\Program Files";
-			string exec = Path.Combine(folder, @"Git\bin\sh.exe");
-			if (File.Exists(exec))
-				yield return createPathAction("Open in Git Bash", "cmd.exe", $"/c (start /b /i *C:\\* *{exec}*) && exit".Replace("*", "\""));
-			else
+			string bashSubpath = @"Git\git-bash.exe";
+			string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+			string gitbash = Path.Combine(folder, bashSubpath);
+
+			if (!File.Exists(gitbash))
 			{
-				folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-				exec = Path.Combine(folder, @"Git\bin\sh.exe");
-				if (File.Exists(exec))
-					yield return createPathAction("Open in Git Bash", "cmd.exe", $"/c (start /b /i *%cd%* *{exec}*) && exit".Replace("*", "\""));
+				folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+				gitbash = Path.Combine(folder, bashSubpath);
+			}
+
+			if (File.Exists(gitbash))
+			{
+				if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
+					path = path.Substring(0, path.Length - 1);
+				yield return createPathAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
 			}
 		}
 
