@@ -67,9 +67,9 @@ namespace RepoZ.Api.Win.IO
 			return action;
 		}
 
-		private Action startProcess(string process, string arguments)
+		private void startProcess(string process, string arguments)
 		{
-			return () => Process.Start(process, arguments);
+			Process.Start(process, arguments);
 		}
 	}
 }
