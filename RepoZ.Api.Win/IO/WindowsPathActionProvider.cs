@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.IO;
+using GongSolutions.Shell;
 
 namespace RepoZ.Api.Win.IO
 {
@@ -33,9 +34,21 @@ namespace RepoZ.Api.Win.IO
 					path = path.Substring(0, path.Length - 1);
 				yield return createPathAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
 			}
-		}
 
-		private PathAction createPathAction(string name, string process, string arguments = "")
+            yield return new PathAction()
+            {
+                Name = "Shell",
+                Action = () =>
+                {
+                    var i = new ShellItem(path);
+                    var m = new ShellContextMenu(i);
+                    m.ShowContextMenu(new System.Windows.Forms.Button(), System.Windows.Forms.Control.MousePosition);
+                },
+                BeginGroup = true
+            };
+    }
+
+    private PathAction createPathAction(string name, string process, string arguments = "")
 		{
 			return new PathAction()
 			{

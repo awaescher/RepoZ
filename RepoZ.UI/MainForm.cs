@@ -107,9 +107,16 @@ namespace RepoZ.UI
 				if (repo == null || !repo.WasFound)
 					return;
 
-				var actions = _pathActionProvider.GetFor(repo.Path);
-				var items = actions.Select(a => new ButtonMenuItem((s0, e0) => a.Action()) { Text = a.Name });
+                var items = new List<MenuItem>();
 
+                foreach (var item in _pathActionProvider.GetFor(repo.Path))
+                {
+                    if (item.BeginGroup && items.Any())
+                        items.Add(new SeparatorMenuItem());
+
+                    items.Add(new ButtonMenuItem((s0, e0) => item.Action()) { Text = item.Name });
+                }
+                
 				var menu = new ContextMenu(items);
 				menu.Show(Content);
 			}
