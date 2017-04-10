@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Collections.Generic;
 using RepoZ.Api.IO;
 
@@ -8,7 +8,7 @@ namespace RepoZ.Api.Mac
 	{
 		public IEnumerable<PathAction> GetFor(string path)
 		{
-			yield return createPathAction("Open", "nil");
+			yield return createDefaultPathAction("Open in Finder", path);
 		}
 
 		private PathAction createPathAction(string name, string command)
@@ -16,7 +16,7 @@ namespace RepoZ.Api.Mac
 			return new PathAction()
 			{
 				Name = name,
-				Action = (sender, args) => sender = null
+				Action = (sender, args) => startProcess(command)
 			};
 		}
 
@@ -25,6 +25,11 @@ namespace RepoZ.Api.Mac
 			var action = createPathAction(name, command);
 			action.IsDefault = true;
 			return action;
+		}
+
+		private void startProcess(string command)
+		{
+			Process.Start(command);
 		}
 	}
 }
