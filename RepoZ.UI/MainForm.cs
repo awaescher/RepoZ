@@ -13,16 +13,14 @@ namespace RepoZ.UI
 	{
 		private IRepositoryMonitor _repositoryMonitor;
 		private ObservableCollection<Repository> _dataSource = new ObservableCollection<Repository>();
-		private IPathNavigator _pathNavigator;
 		private IPathActionProvider _pathActionProvider;
 
-		public MainForm(IRepositoryMonitor repositoryMonitor, IPathNavigator pathNavigator, IPathActionProvider pathActionProvider)
+		public MainForm(IRepositoryMonitor repositoryMonitor, IPathActionProvider pathActionProvider)
 		{
 			_repositoryMonitor = repositoryMonitor;
 			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
 			_repositoryMonitor.Observe();
 
-			_pathNavigator = pathNavigator;
 			_pathActionProvider = pathActionProvider;
 
 			Title = "RepoZ";
@@ -111,6 +109,7 @@ namespace RepoZ.UI
 
 				var actions = _pathActionProvider.GetFor(repo.Path);
 				var items = actions.Select(a => new ButtonMenuItem((s0, e0) => a.Action()) { Text = a.Name });
+
 				var menu = new ContextMenu(items);
 				menu.Show(Content);
 			}
@@ -123,7 +122,10 @@ namespace RepoZ.UI
 			if (repo == null || !repo.WasFound)
 				return;
 
-			_pathNavigator.Navigate(repo.Path);
+			var action = _pathActionProvider.GetFor(repo.Path)
+						 .FirstOrDefault(a => a.IsDefault);
+
+			action?.Action?.Invoke();
 		}
 
 		private void notifyRepoChange(Repository repo)
