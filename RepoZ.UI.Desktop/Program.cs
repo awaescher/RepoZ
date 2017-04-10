@@ -25,7 +25,6 @@ namespace RepoZ.UI.Desktop
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
-			container.Register<IPathNavigator, DefaultPathNavigator>();
 			container.Register<IPathActionProvider, WindowsPathActionProvider>();
 
 		   var application = new Application(Platform.Detect);

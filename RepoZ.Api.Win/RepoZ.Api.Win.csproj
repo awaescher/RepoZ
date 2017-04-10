@@ -69,7 +69,6 @@
     <Compile Include="IO\DefaultDriveEnumerator.cs" />
     <Compile Include="IO\DefaultPathCrawler.cs" />
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
-    <Compile Include="IO\DefaultPathNavigator.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
     <Compile Include="IO\WindowsPathActionProvider.cs" />
     <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />

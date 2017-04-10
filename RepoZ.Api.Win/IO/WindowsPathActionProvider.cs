@@ -13,7 +13,7 @@ namespace RepoZ.Api.Win.IO
 	{
 		public IEnumerable<PathAction> GetFor(string path)
 		{
-			yield return createPathAction("Open in Windows File Explorer", path);
+			yield return createDefaultPathAction("Open in Windows File Explorer", path);
 			yield return createPathAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {path}\"");
 			yield return createPathAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
 
@@ -40,8 +40,15 @@ namespace RepoZ.Api.Win.IO
 			return new PathAction()
 			{
 				Name = name,
-				Action = startProcess(process, arguments)
+				Action = startProcess(process, arguments),
 			};
+		}
+
+		private PathAction createDefaultPathAction(string name, string process, string arguments = "")
+		{
+			var action = createPathAction(name, process, arguments);
+			action.IsDefault = true;
+			return action;
 		}
 
 		private Action startProcess(string process, string arguments)
