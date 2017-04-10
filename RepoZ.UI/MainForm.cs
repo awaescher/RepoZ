@@ -114,14 +114,16 @@ namespace RepoZ.UI
                     if (item.BeginGroup && items.Any())
                         items.Add(new SeparatorMenuItem());
 
-                    items.Add(new ButtonMenuItem((s0, e0) => item.Action()) { Text = item.Name });
+					var location = this.PointToScreen(e.Location);
+					location.Offset(-9, -32); // seems to be the offset of the titlebar --> TODO detect
+					float[] coords = new float[] { location.X, location.Y };
+                    items.Add(new ButtonMenuItem((do_not_use_sender, do_not_use_args) => item.Action(sender, coords)) { Text = item.Name });
                 }
                 
 				var menu = new ContextMenu(items);
 				menu.Show(Content);
 			}
 		}
-
 
 		private void Grid_CellDoubleClick(object sender, GridViewCellEventArgs e)
 		{
@@ -132,7 +134,7 @@ namespace RepoZ.UI
 			var action = _pathActionProvider.GetFor(repo.Path)
 						 .FirstOrDefault(a => a.IsDefault);
 
-			action?.Action?.Invoke();
+			action?.Action?.Invoke(sender, e);
 		}
 
 		private void notifyRepoChange(Repository repo)
