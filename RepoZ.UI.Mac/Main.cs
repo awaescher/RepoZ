@@ -3,6 +3,7 @@ using Eto;
 using Eto.Forms;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
+using RepoZ.Api.Mac;
 using RepoZ.Api.Mac.Git;
 using RepoZ.Api.Mac.IO;
 using TinyIoC;
@@ -23,7 +24,7 @@ namespace RepoZ.UI.Mac
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
-			container.Register<IPathNavigator, DefaultPathNavigator>();
+			container.Register<IPathActionProvider, MacPathActionProvider>();
 
 			var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();
