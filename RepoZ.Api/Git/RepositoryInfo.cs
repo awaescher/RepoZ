@@ -35,5 +35,13 @@ namespace RepoZ.Api.Git
 
 			return string.Equals(other.Path, this.Path);
 		}
+
+		public override int GetHashCode()
+		{
+			if (string.IsNullOrEmpty(Path))
+				return base.GetHashCode();
+
+			return Path.GetHashCode();
+		}
 	}
 }

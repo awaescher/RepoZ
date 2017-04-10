@@ -116,7 +116,7 @@ namespace RepoZ.UI
 
 					var location = this.PointToScreen(e.Location);
 					location.Offset(-9, -32); // seems to be the offset of the titlebar --> TODO detect
-					float[] coords = new float[] { location.X, location.Y };
+					float[] coords = { location.X, location.Y };
                     items.Add(new ButtonMenuItem((do_not_use_sender, do_not_use_args) => item.Action(sender, coords)) { Text = item.Name });
                 }
                 
