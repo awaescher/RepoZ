@@ -10,23 +10,6 @@ namespace RepoZ.Api.Git
 	[DebuggerDisplay("{Name}")]
 	public class Repository
 	{
-		public string Name { get; set; }
-		public string Path { get; set; }
-		public string CurrentBranch { get; set; }
-
-		public static Repository Empty => new Repository()
-		{
-			Name = "",
-			CurrentBranch = "",
-			Path = ""
-		};
-
-		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
-
-		public int? AheadBy { get; set; }
-
-		public int? BehindBy { get; set; }
-
 		public override bool Equals(object obj)
 		{
 			var other = obj as Repository;
@@ -43,5 +26,29 @@ namespace RepoZ.Api.Git
 
 			return Path.GetHashCode();
 		}
+
+		public string Name { get; set; }
+
+		public string Path { get; set; }
+
+		public string CurrentBranch { get; set; }
+
+		public string[] Branches { get; set; }
+
+		public IEnumerable<string> LocalBranches => Branches.Where(b => !b.StartsWith("origin", StringComparison.OrdinalIgnoreCase));
+
+		public static Repository Empty => new Repository()
+		{
+			Name = "",
+			CurrentBranch = "",
+			Path = ""
+		};
+
+		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
+
+		public int? AheadBy { get; set; }
+
+		public int? BehindBy { get; set; }
+
 	}
 }
