@@ -7,6 +7,9 @@ namespace RepoZ.Api.Mac.Git
 	{
 		public Api.Git.Repository ReadRepository(string path)
 		{
+			var r = new LibGit2Sharp.Repository(path);
+
+
 			// TODO
 			return new Api.Git.Repository()
 			{
