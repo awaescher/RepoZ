@@ -24,10 +24,11 @@ namespace RepoZ.UI.Mac
 			container.Register<IRepositoryObserver, DefaultRepositoryObserver>();
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>();
 			container.Register<IRepositoryReader, MacRepositoryReader>();
+			container.Register<IRepositoryWriter, MacRepositoryWriter>();
+			container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
-			container.Register<IPathActionProvider, MacPathActionProvider>();
 
 			var application = new Application(Platform.Detect);
 			var mainForm = container.Resolve<MainForm>();

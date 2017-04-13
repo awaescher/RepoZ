@@ -43,7 +43,8 @@
     <Compile Include="IO\DefaultPathCrawler.cs" />
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
-    <Compile Include="IO\MacPathActionProvider.cs" />
+    <Compile Include="IO\MacRepositoryActionProvider.cs" />
+    <Compile Include="Git\MacRepositoryWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Git\" />
