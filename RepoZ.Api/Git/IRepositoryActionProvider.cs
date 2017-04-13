@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Api.IO
+namespace RepoZ.Api.Git
 {
-	public interface IPathActionProvider
+	public interface IRepositoryActionProvider
 	{
-		IEnumerable<PathAction> GetFor(string path);
+		IEnumerable<RepositoryAction> GetFor(string path);
 	}
 }

@@ -73,7 +73,7 @@
     <Compile Include="IO\DefaultPathCrawler.cs" />
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
-    <Compile Include="IO\WindowsPathActionProvider.cs" />
+    <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
     <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

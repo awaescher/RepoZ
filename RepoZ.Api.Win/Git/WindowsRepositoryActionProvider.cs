@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 using RepoZ.Api.IO;
 using GongSolutions.Shell;
 using System.Drawing;
+using RepoZ.Api.Git;
 
 namespace RepoZ.Api.Win.IO
 {
-	public class WindowsPathActionProvider : IPathActionProvider
+	public class WindowsRepositoryActionProvider : IRepositoryActionProvider
 	{
-		public IEnumerable<PathAction> GetFor(string path)
+		public IEnumerable<RepositoryAction> GetFor(string path)
 		{
-			yield return createDefaultPathAction("Open in Windows File Explorer", path);
-			yield return createPathAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {path}\"");
-			yield return createPathAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
+			yield return createDefaultAction("Open in Windows File Explorer", path);
+			yield return createAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {path}\"");
+			yield return createAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
 
 			string bashSubpath = @"Git\git-bash.exe";
 			string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
@@ -33,10 +34,10 @@ namespace RepoZ.Api.Win.IO
 			{
 				if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
 					path = path.Substring(0, path.Length - 1);
-				yield return createPathAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
+				yield return createAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
 			}
 
-			yield return new PathAction()
+			yield return new RepositoryAction()
 			{
 				Name = "Shell",
 				Action = (sender, args) =>
@@ -51,18 +52,18 @@ namespace RepoZ.Api.Win.IO
 			};
 		}
 
-		private PathAction createPathAction(string name, string process, string arguments = "")
+		private RepositoryAction createAction(string name, string process, string arguments = "")
 		{
-			return new PathAction()
+			return new RepositoryAction()
 			{
 				Name = name,
 				Action = (sender, args) => startProcess(process, arguments)
 			};
 		}
 
-		private PathAction createDefaultPathAction(string name, string process, string arguments = "")
+		private RepositoryAction createDefaultAction(string name, string process, string arguments = "")
 		{
-			var action = createPathAction(name, process, arguments);
+			var action = createAction(name, process, arguments);
 			action.IsDefault = true;
 			return action;
 		}

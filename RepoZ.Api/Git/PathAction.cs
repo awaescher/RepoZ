@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Api.IO
+namespace RepoZ.Api.Git
 {
-	public class PathAction
+	public class RepositoryAction
 	{
 		public string Name { get; set; }
 		public Action<object, object> Action { get; set; }
