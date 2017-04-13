@@ -109,20 +109,34 @@ namespace RepoZ.UI
 
                 var items = new List<MenuItem>();
 
-                foreach (var item in _repositoryActionProvider.GetFor(repo))
+                foreach (var action in _repositoryActionProvider.GetFor(repo))
                 {
-                    if (item.BeginGroup && items.Any())
+                    if (action.BeginGroup && items.Any())
                         items.Add(new SeparatorMenuItem());
 
 					var location = this.PointToScreen(e.Location);
 					location.Offset(-9, -32); // seems to be the offset of the titlebar --> TODO detect
 					float[] coords = { location.X, location.Y };
-                    items.Add(new ButtonMenuItem((do_not_use_sender, do_not_use_args) => item.Action(sender, coords)) { Text = item.Name });
+
+					items.Add(CreateMenuItem(sender, action, coords));
                 }
                 
 				var menu = new ContextMenu(items);
 				menu.Show(Content);
 			}
+		}
+
+		private MenuItem CreateMenuItem(object sender, RepositoryAction action, float[] coords)
+		{
+			var item = new ButtonMenuItem((do_not_use_sender, do_not_use_args) => action.Action(sender, coords)) { Text = action.Name, Enabled = action.CanExecute };
+
+			if (action.SubActions != null)
+			{
+				foreach (var subAction in action.SubActions)
+					item.Items.Add(CreateMenuItem(sender, subAction, coords));
+			}
+
+			return item;
 		}
 
 		private void Grid_CellDoubleClick(object sender, GridViewCellEventArgs e)
