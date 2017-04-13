@@ -109,7 +109,7 @@ namespace RepoZ.UI
 
                 var items = new List<MenuItem>();
 
-                foreach (var item in _repositoryActionProvider.GetFor(repo.Path))
+                foreach (var item in _repositoryActionProvider.GetFor(repo))
                 {
                     if (item.BeginGroup && items.Any())
                         items.Add(new SeparatorMenuItem());
@@ -131,7 +131,7 @@ namespace RepoZ.UI
 			if (repo == null || !repo.WasFound)
 				return;
 
-			var action = _repositoryActionProvider.GetFor(repo.Path)
+			var action = _repositoryActionProvider.GetFor(repo)
 						 .FirstOrDefault(a => a.IsDefault);
 
 			action?.Action?.Invoke(sender, e);

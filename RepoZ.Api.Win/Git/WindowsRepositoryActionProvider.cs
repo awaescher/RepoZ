@@ -14,11 +14,11 @@ namespace RepoZ.Api.Win.IO
 {
 	public class WindowsRepositoryActionProvider : IRepositoryActionProvider
 	{
-		public IEnumerable<RepositoryAction> GetFor(string path)
+		public IEnumerable<RepositoryAction> GetFor(Repository repository)
 		{
-			yield return createDefaultAction("Open in Windows File Explorer", path);
-			yield return createAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {path}\"");
-			yield return createAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{path}'\"");
+			yield return createDefaultAction("Open in Windows File Explorer", repository.Path);
+			yield return createAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {repository.Path}\"");
+			yield return createAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{repository.Path}'\"");
 
 			string bashSubpath = @"Git\git-bash.exe";
 			string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
@@ -32,6 +32,7 @@ namespace RepoZ.Api.Win.IO
 
 			if (File.Exists(gitbash))
 			{
+				string path = repository.Path;
 				if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
 					path = path.Substring(0, path.Length - 1);
 				yield return createAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
@@ -44,7 +45,7 @@ namespace RepoZ.Api.Win.IO
 				{
 					var coords = args as float[];
 
-					var i = new ShellItem(path);
+					var i = new ShellItem(repository.Path);
 					var m = new ShellContextMenu(i);
 					m.ShowContextMenu(new System.Windows.Forms.Button(), new Point((int)coords[0], (int)coords[1]));
 				},

@@ -8,6 +8,6 @@ namespace RepoZ.Api.Git
 {
 	public interface IRepositoryActionProvider
 	{
-		IEnumerable<RepositoryAction> GetFor(string path);
+		IEnumerable<RepositoryAction> GetFor(Repository repository);
 	}
 }
