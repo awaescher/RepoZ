@@ -11,7 +11,7 @@ namespace RepoZ.Api.Mac
 
 		public bool Checkout(Repository repository, string branchName)
 		{
-			throw new NotImplementedException();
+			// TODO
 		}
 	}
 }

@@ -7,6 +7,7 @@ namespace RepoZ.Api.Mac.Git
 	{
 		public Api.Git.Repository ReadRepository(string path)
 		{
+			// TODO
 			return new Api.Git.Repository()
 			{
 				Name = "Repo",
