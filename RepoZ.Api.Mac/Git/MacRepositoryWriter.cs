@@ -12,6 +12,7 @@ namespace RepoZ.Api.Mac
 		public bool Checkout(Repository repository, string branchName)
 		{
 			// TODO
+			return false;
 		}
 	}
 }

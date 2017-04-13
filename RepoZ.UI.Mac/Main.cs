@@ -14,9 +14,6 @@ namespace RepoZ.UI.Mac
 	{
 		static void Main(string[] args)
 		{
-			var read = new MacRepositoryReader();
-			var res = read.ReadRepository("mypath");
-
 			var container = TinyIoCContainer.Current;
 
 			container.Register<MainForm>();
