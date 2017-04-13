@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="Git\IRepositoryActionProvider.cs" />
+    <Compile Include="Git\IRepositoryWriter.cs" />
     <Compile Include="IO\IPathCrawler.cs" />
     <Compile Include="IO\IPathCrawlerFactory.cs" />
     <Compile Include="IO\IPathFinder.cs" />

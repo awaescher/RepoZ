@@ -14,6 +14,13 @@ namespace RepoZ.Api.Win.IO
 {
 	public class WindowsRepositoryActionProvider : IRepositoryActionProvider
 	{
+		private IRepositoryWriter _repositoryWriter;
+
+		public WindowsRepositoryActionProvider(IRepositoryWriter repositoryWriter)
+		{
+			_repositoryWriter = repositoryWriter;
+		}
+
 		public IEnumerable<RepositoryAction> GetFor(Repository repository)
 		{
 			yield return createDefaultAction("Open in Windows File Explorer", repository.Path);
@@ -43,7 +50,7 @@ namespace RepoZ.Api.Win.IO
 				Name = "Checkout",
 				SubActions = repository.LocalBranches.Select(branch => new RepositoryAction() {
 					Name = branch,
-					Action = null,
+					Action = (s, e) => _repositoryWriter.Checkout(repository, branch),
 					CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
 				}).ToArray(),
 				BeginGroup = true

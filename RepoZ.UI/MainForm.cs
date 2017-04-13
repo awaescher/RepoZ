@@ -128,7 +128,17 @@ namespace RepoZ.UI
 
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action, float[] coords)
 		{
-			var item = new ButtonMenuItem((do_not_use_sender, do_not_use_args) => action.Action(sender, coords)) { Text = action.Name, Enabled = action.CanExecute };
+			Action clickAction = () =>
+			{
+				if (action?.Action != null)
+					action.Action(sender, coords);
+			};
+
+			var item = new ButtonMenuItem((s, e) => clickAction())
+			{
+				Text = action.Name,
+				Enabled = action.CanExecute
+			} ;
 
 			if (action.SubActions != null)
 			{

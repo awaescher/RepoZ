@@ -22,6 +22,7 @@ namespace RepoZ.UI.Desktop
 			container.Register<IRepositoryObserver, DefaultRepositoryObserver>();
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>();
 			container.Register<IRepositoryReader, WindowsRepositoryReader>();
+			container.Register<IRepositoryWriter, WindowsRepositoryWriter>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
