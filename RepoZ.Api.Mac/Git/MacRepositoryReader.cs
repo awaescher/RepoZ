@@ -54,8 +54,8 @@ namespace RepoZ.Api.Mac.Git
 					Path = repo.Info.WorkingDirectory,
 					Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
 					CurrentBranch = repo.Head.FriendlyName,
-					AheadBy = repo.Head.TrackingDetails?.AheadBy ?? -1,
-					BehindBy = repo.Head.TrackingDetails?.BehindBy ?? -1
+					AheadBy = repo.Head.TrackingDetails?.AheadBy,
+					BehindBy = repo.Head.TrackingDetails?.BehindBy
 				};
 			}
 		}
