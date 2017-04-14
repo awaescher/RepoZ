@@ -36,6 +36,11 @@ namespace RepoZ.Api.Win.IO
 				{
 					continue;
 				}
+				catch (PathTooLongException)
+				{
+					continue;
+				}
+				
 				for (int i = 0; i < tmp.Length; i++)
 				{
 					onFound?.Invoke(tmp[i]);

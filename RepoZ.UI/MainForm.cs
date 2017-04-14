@@ -12,7 +12,7 @@ namespace RepoZ.UI
 	public class MainForm : Form
 	{
 		private IRepositoryMonitor _repositoryMonitor;
-		private ObservableCollection<Repository> _dataSource = new ObservableCollection<Repository>();
+		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
 		private IPathActionProvider _pathActionProvider;
 
 		public MainForm(IRepositoryMonitor repositoryMonitor, IPathActionProvider pathActionProvider)
@@ -32,14 +32,14 @@ namespace RepoZ.UI
 
 		private void createGrid()
 		{
-			var filtered = new FilterCollection<Repository>(_dataSource);
+			var filtered = new FilterCollection<RepositoryView>(_dataSource);
 			filtered.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
 
 			var grid = new GridView { DataStore = filtered };
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(Repository.Name)),
+				DataCell = new TextBoxCell(nameof(RepositoryView.Name)),
 				Sortable = true,
 				Width = 200,
 				HeaderText = "Repository",
@@ -47,7 +47,7 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(Repository.CurrentBranch)),
+				DataCell = new TextBoxCell(nameof(RepositoryView.CurrentBranch)),
 				Sortable = true,
 				Width = 200,
 				HeaderText = "Current Branch"
@@ -55,7 +55,7 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(Repository.Path)),
+				DataCell = new TextBoxCell(nameof(RepositoryView.Path)),
 				Sortable = true,
 				Width = 400,
 				HeaderText = "Location"
@@ -63,7 +63,7 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(Repository.AheadBy)),
+				DataCell = new TextBoxCell(nameof(RepositoryView.AheadBy)),
 				Sortable = true,
 				Width = 75,
 				HeaderText = "AheadBy"
@@ -102,7 +102,7 @@ namespace RepoZ.UI
 
 			if (view != null && e.Buttons == MouseButtons.Alternate)
 			{
-				var repo = view.SelectedItem as Repository;
+				var repo = view.SelectedItem as RepositoryView;
 
 				if (repo == null || !repo.WasFound)
 					return;
@@ -127,7 +127,7 @@ namespace RepoZ.UI
 
 		private void Grid_CellDoubleClick(object sender, GridViewCellEventArgs e)
 		{
-			var repo = e.Item as Repository;
+			var repo = e.Item as RepositoryView;
 			if (repo == null || !repo.WasFound)
 				return;
 
@@ -143,8 +143,9 @@ namespace RepoZ.UI
 			{
 				try
 				{
-					_dataSource.Remove(repo);
-					_dataSource.Add(repo);
+					var view = new RepositoryView(repo);
+					_dataSource.Remove(view);
+					_dataSource.Add(view);
 				}
 				catch (Exception)
 				{
