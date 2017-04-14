@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Linq;
 using LibGit2Sharp;
 using RepoZ.Api.Git;
 
@@ -52,6 +52,7 @@ namespace RepoZ.Api.Win.Git
 				{
 					Name = new System.IO.DirectoryInfo(repo.Info.WorkingDirectory).Name,
 					Path = repo.Info.WorkingDirectory,
+					Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
 					CurrentBranch = repo.Head.FriendlyName,
 					AheadBy = repo.Head.TrackingDetails?.AheadBy,
 					BehindBy = repo.Head.TrackingDetails?.BehindBy

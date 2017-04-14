@@ -13,15 +13,15 @@ namespace RepoZ.UI
 	{
 		private IRepositoryMonitor _repositoryMonitor;
 		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
-		private IPathActionProvider _pathActionProvider;
+		private IRepositoryActionProvider _repositoryActionProvider;
 
-		public MainForm(IRepositoryMonitor repositoryMonitor, IPathActionProvider pathActionProvider)
+		public MainForm(IRepositoryMonitor repositoryMonitor, IRepositoryActionProvider repositoryActionProvider)
 		{
 			_repositoryMonitor = repositoryMonitor;
 			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
 			_repositoryMonitor.Observe();
 
-			_pathActionProvider = pathActionProvider;
+			_repositoryActionProvider = repositoryActionProvider;
 
 			Title = "RepoZ";
 			Maximizable = false;
@@ -109,20 +109,44 @@ namespace RepoZ.UI
 
                 var items = new List<MenuItem>();
 
-                foreach (var item in _pathActionProvider.GetFor(repo.Path))
+                foreach (var action in _repositoryActionProvider.GetFor(repo))
                 {
-                    if (item.BeginGroup && items.Any())
+                    if (action.BeginGroup && items.Any())
                         items.Add(new SeparatorMenuItem());
 
 					var location = this.PointToScreen(e.Location);
 					location.Offset(-9, -32); // seems to be the offset of the titlebar --> TODO detect
 					float[] coords = { location.X, location.Y };
-                    items.Add(new ButtonMenuItem((do_not_use_sender, do_not_use_args) => item.Action(sender, coords)) { Text = item.Name });
+
+					items.Add(CreateMenuItem(sender, action, coords));
                 }
                 
 				var menu = new ContextMenu(items);
 				menu.Show(Content);
 			}
+		}
+
+		private MenuItem CreateMenuItem(object sender, RepositoryAction action, float[] coords)
+		{
+			Action clickAction = () =>
+			{
+				if (action?.Action != null)
+					action.Action(sender, coords);
+			};
+
+			var item = new ButtonMenuItem((s, e) => clickAction())
+			{
+				Text = action.Name,
+				Enabled = action.CanExecute
+			} ;
+
+			if (action.SubActions != null)
+			{
+				foreach (var subAction in action.SubActions)
+					item.Items.Add(CreateMenuItem(sender, subAction, coords));
+			}
+
+			return item;
 		}
 
 		private void Grid_CellDoubleClick(object sender, GridViewCellEventArgs e)
@@ -131,7 +155,7 @@ namespace RepoZ.UI
 			if (repo == null || !repo.WasFound)
 				return;
 
-			var action = _pathActionProvider.GetFor(repo.Path)
+			var action = _repositoryActionProvider.GetFor(repo)
 						 .FirstOrDefault(a => a.IsDefault);
 
 			action?.Action?.Invoke(sender, e);
