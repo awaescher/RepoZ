@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.Git;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace RepoZ.UI
 {
@@ -35,11 +36,21 @@ namespace RepoZ.UI
 
 		public string LocalMissing => Repository.LocalMissing?.ToString() ?? "";
 
+		public string LocalAdded => Repository.LocalAdded?.ToString() ?? "";
+
+		public string LocalStaged => Repository.LocalStaged?.ToString() ?? "";
+
+		public string LocalRemoved => Repository.LocalRemoved?.ToString() ?? "";
+
+		public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? "";
+
 		public bool WasFound => Repository.WasFound;
 
 		public override int GetHashCode() => Repository.GetHashCode();
 
 		public Repository Repository { get; private set; }
+
+		public string Status => StatusCompressor.Compress(Repository);
 
 		public override bool Equals(object obj)
 		{

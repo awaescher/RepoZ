@@ -55,5 +55,13 @@ namespace RepoZ.Api.Git
 		public int? LocalModified { get; set; }
 
 		public int? LocalMissing { get; set; }
+
+		public int? LocalAdded { get; set; }
+
+		public int? LocalStaged { get; set; }
+
+		public int? LocalRemoved { get; set; }
+
+		public int? LocalIgnored { get; set; }
 	}
 }

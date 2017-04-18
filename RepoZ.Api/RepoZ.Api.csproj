@@ -50,7 +50,7 @@
     <Compile Include="Git\IRepositoryMonitor.cs" />
     <Compile Include="Git\PathAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Git\RepositoryInfo.cs" />
+    <Compile Include="Git\Repository.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -61,7 +61,11 @@ namespace RepoZ.Api.Win.Git
 					BehindBy = repo.Head.TrackingDetails?.BehindBy,
 					LocalUntracked = status?.Untracked.Count(),
 					LocalModified = status?.Modified.Count(),
-					LocalMissing = status?.Missing.Count()
+					LocalMissing = status?.Missing.Count(),
+					LocalAdded = status?.Added.Count(),
+					LocalStaged = status?.Staged.Count(),
+					LocalRemoved = status?.Removed.Count(),
+					LocalIgnored = status?.Ignored.Count()
 				};
 			}
 		}

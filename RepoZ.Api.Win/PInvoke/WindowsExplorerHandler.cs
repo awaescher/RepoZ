@@ -43,15 +43,19 @@ namespace RepoZ.Api.Win.PInvoke
 					if (executable.ToLower() == "explorer.exe")
 					{
 						// thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties
-						string path = ie.LocationURL;
-						path = new Uri(path).LocalPath;
+						string url = ie.LocationURL;
 
-						string info = _repositoryInfoAggregator.Get(path);
-
-						if (!string.IsNullOrEmpty(info))
+						if (!string.IsNullOrEmpty(url))
 						{
-							string separator = "  [";
-							WindowHelper.AppendWindowText((IntPtr)ie.hwnd, separator, info + "]");
+							string path = new Uri(url).LocalPath;
+
+							string info = _repositoryInfoAggregator.Get(path);
+
+							if (!string.IsNullOrEmpty(info))
+							{
+								string separator = "  [";
+								WindowHelper.AppendWindowText((IntPtr)ie.hwnd, separator, info + "]");
+							}
 						}
 					}
 				}

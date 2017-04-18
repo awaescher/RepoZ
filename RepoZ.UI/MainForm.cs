@@ -78,22 +78,14 @@ namespace RepoZ.UI
 				HeaderText = "BehindBy"
 			});
 
-			CreateColumn(grid, nameof(Repository.LocalUntracked));
-			CreateColumn(grid, nameof(Repository.LocalModified));
-			CreateColumn(grid, nameof(Repository.LocalMissing));
-
-			//grid.Columns.Add(new GridColumn()
-			//{
-			//	DataCell = new ComboBoxCell("CurrentRepoZ")
-			//	{
-			//		Binding = Binding.Property<MyPoco, object>(r => r.CurrentBranch),
-			//		DataStore = new string[] { "master", "dbless", "global-text-management" }
-
-			//	},
-			//	Width = 200,
-			//	HeaderText = "Branch",
-			//	Editable = true,
-			//});
+			CreateColumn(grid, nameof(RepositoryView.LocalUntracked));
+			CreateColumn(grid, nameof(RepositoryView.LocalModified));
+			CreateColumn(grid, nameof(RepositoryView.LocalMissing));
+			CreateColumn(grid, nameof(RepositoryView.LocalAdded));
+			CreateColumn(grid, nameof(RepositoryView.LocalStaged));
+			CreateColumn(grid, nameof(RepositoryView.LocalRemoved));
+			CreateColumn(grid, nameof(RepositoryView.LocalIgnored));
+			CreateColumn(grid, nameof(RepositoryView.Status));
 
 			grid.CellDoubleClick += Grid_CellDoubleClick;
 			grid.MouseUp += Grid_MouseUp;
@@ -195,14 +187,7 @@ namespace RepoZ.UI
 
 		public string Get(string path)
 		{
-			string arrowUp = "\u2191";
-			string arrowDown = "\u2193";
-			return GetFormatted(path, arrowUp, arrowDown);
-		}
-
-		public string GetFormatted(string path, string upSign, string downSign)
-		{
-			if (!path.EndsWith("\\"))
+			if (!path.EndsWith("\\", StringComparison.Ordinal))
 				path += "\\";
 
 			var repos = _dataSource.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
@@ -212,15 +197,7 @@ namespace RepoZ.UI
 
 			var repo = repos.OrderByDescending(r => r.Path.Length).First();
 
-			var builder = new StringBuilder(repo.CurrentBranch);
-
-			if ((repo.Repository?.AheadBy ?? 0) > 0)
-				builder.Append(" "+ upSign + repo.Repository.AheadBy.ToString());
-
-			if ((repo.Repository?.BehindBy ?? 0) > 0)
-				builder.Append(" " + downSign + repo.Repository.BehindBy.ToString());
-
-			return builder.ToString();
+			return repo.CurrentBranch + " " + StatusCompressor.Compress(repo.Repository);
 		}
 	}
 }
