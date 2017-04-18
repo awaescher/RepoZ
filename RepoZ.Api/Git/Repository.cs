@@ -35,7 +35,7 @@ namespace RepoZ.Api.Git
 
 		public string[] Branches { get; set; }
 
-		public IEnumerable<string> LocalBranches => Branches.Where(b => !b.StartsWith("origin", StringComparison.OrdinalIgnoreCase));
+		public string[] LocalBranches { get; set; }
 
 		public static Repository Empty => new Repository()
 		{
@@ -50,5 +50,18 @@ namespace RepoZ.Api.Git
 
 		public int? BehindBy { get; set; }
 
+		public int? LocalUntracked { get; set; }
+
+		public int? LocalModified { get; set; }
+
+		public int? LocalMissing { get; set; }
+
+		public int? LocalAdded { get; set; }
+
+		public int? LocalStaged { get; set; }
+
+		public int? LocalRemoved { get; set; }
+
+		public int? LocalIgnored { get; set; }
 	}
 }

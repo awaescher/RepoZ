@@ -16,7 +16,7 @@ namespace RepoZ.Api.Win.PInvoke
 		[DllImport("user32.dll")]
 		private static extern IntPtr GetForegroundWindow();
 
-		[DllImport("user32.dll", EntryPoint = "SetWindowText", CharSet = CharSet.Ansi)]
+		[DllImport("user32.dll", EntryPoint = "SetWindowText", CharSet = CharSet.Auto)]
 		private static extern bool SetWindowTextApi(IntPtr hWnd, String strNewWindowName);
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]

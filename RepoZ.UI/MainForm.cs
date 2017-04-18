@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using System.Linq;
+using System.Text;
 
 namespace RepoZ.UI
 {
-	public class MainForm : Form
+	public class MainForm : Form, IRepositoryInformationAggregator
 	{
 		private IRepositoryMonitor _repositoryMonitor;
 		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
@@ -77,23 +78,28 @@ namespace RepoZ.UI
 				HeaderText = "BehindBy"
 			});
 
-			//grid.Columns.Add(new GridColumn()
-			//{
-			//	DataCell = new ComboBoxCell("CurrentRepoZ")
-			//	{
-			//		Binding = Binding.Property<MyPoco, object>(r => r.CurrentBranch),
-			//		DataStore = new string[] { "master", "dbless", "global-text-management" }
-
-			//	},
-			//	Width = 200,
-			//	HeaderText = "Branch",
-			//	Editable = true,
-			//});
+			CreateColumn(grid, nameof(RepositoryView.LocalUntracked));
+			CreateColumn(grid, nameof(RepositoryView.LocalModified));
+			CreateColumn(grid, nameof(RepositoryView.LocalMissing));
+			CreateColumn(grid, nameof(RepositoryView.LocalAdded));
+			CreateColumn(grid, nameof(RepositoryView.LocalStaged));
+			CreateColumn(grid, nameof(RepositoryView.LocalRemoved));
+			CreateColumn(grid, nameof(RepositoryView.LocalIgnored));
+			CreateColumn(grid, nameof(RepositoryView.Status));
 
 			grid.CellDoubleClick += Grid_CellDoubleClick;
 			grid.MouseUp += Grid_MouseUp;
 
 			Content = grid;
+		}
+
+		private void CreateColumn(GridView grid, string name)
+		{
+			grid.Columns.Add(new GridColumn()
+			{
+				DataCell = new TextBoxCell(name),
+				HeaderText = name
+			});
 		}
 
 		private void Grid_MouseUp(object sender, MouseEventArgs e)
@@ -177,6 +183,21 @@ namespace RepoZ.UI
 					throw;
 				}
 			});
+		}
+
+		public string Get(string path)
+		{
+			if (!path.EndsWith("\\", StringComparison.Ordinal))
+				path += "\\";
+
+			var repos = _dataSource.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
+
+			if (!repos.Any())
+				return string.Empty;
+
+			var repo = repos.OrderByDescending(r => r.Path.Length).First();
+
+			return repo.CurrentBranch + " " + StatusCompressor.Compress(repo.Repository);
 		}
 	}
 }
