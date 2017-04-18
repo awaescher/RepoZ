@@ -37,6 +37,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git\IRepositoryInformationAggregator.cs" />
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="Git\IRepositoryActionProvider.cs" />
     <Compile Include="Git\IRepositoryWriter.cs" />

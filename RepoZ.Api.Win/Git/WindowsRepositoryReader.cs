@@ -48,16 +48,23 @@ namespace RepoZ.Api.Win.Git
 		{
 			using (var repo = new LibGit2Sharp.Repository(repoPath))
 			{
+				var status = repo.RetrieveStatus();
+
 				return new Api.Git.Repository()
 				{
 					Name = new System.IO.DirectoryInfo(repo.Info.WorkingDirectory).Name,
 					Path = repo.Info.WorkingDirectory,
 					Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
+					LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
 					CurrentBranch = repo.Head.FriendlyName,
 					AheadBy = repo.Head.TrackingDetails?.AheadBy,
-					BehindBy = repo.Head.TrackingDetails?.BehindBy
+					BehindBy = repo.Head.TrackingDetails?.BehindBy,
+					LocalUntracked = status?.Untracked.Count(),
+					LocalModified = status?.Modified.Count(),
+					LocalMissing = status?.Missing.Count()
 				};
 			}
 		}
 	}
 }
+

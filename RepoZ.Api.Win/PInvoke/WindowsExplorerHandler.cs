@@ -11,12 +11,12 @@ namespace RepoZ.Api.Win.PInvoke
 {
 	public class WindowsExplorerHandler
 	{
-		private IRepositoryReader _repositoryReader;
+		private IRepositoryInformationAggregator _repositoryInfoAggregator;
 		private Type _shellApplicationType;
 
-		public WindowsExplorerHandler(IRepositoryReader repositoryReader)
+		public WindowsExplorerHandler(IRepositoryInformationAggregator repositoryInfoAggregator)
 		{
-			_repositoryReader = repositoryReader;
+			_repositoryInfoAggregator = repositoryInfoAggregator;
 		}
 
 		public bool CanHandle(string processName)
@@ -42,8 +42,17 @@ namespace RepoZ.Api.Win.PInvoke
 					var executable = System.IO.Path.GetFileName((string)ie.FullName);
 					if (executable.ToLower() == "explorer.exe")
 					{
-						string path = ie?.document?.focuseditem?.path ?? "n/a"; // ist das fokussierte, nicht das aktuelle
-						WindowHelper.AppendWindowText((IntPtr)ie.hwnd, " # ", path);
+						// thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties
+						string path = ie.LocationURL;
+						path = new Uri(path).LocalPath;
+
+						string info = _repositoryInfoAggregator.Get(path);
+
+						if (!string.IsNullOrEmpty(info))
+						{
+							string separator = "  [";
+							WindowHelper.AppendWindowText((IntPtr)ie.hwnd, separator, info + "]");
+						}
 					}
 				}
 			}

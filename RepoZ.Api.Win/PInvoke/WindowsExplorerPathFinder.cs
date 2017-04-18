@@ -34,7 +34,10 @@ namespace RepoZ.Api.Win.PInvoke
 
 					var path = System.IO.Path.GetFileName((string)ie.FullName);
 					if (path.ToLower() == "explorer.exe")
-						return ie?.document?.focuseditem?.path;
+					{
+						// thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties
+						return ie.LocationURL;
+					}
 				}
 			}
 			finally
