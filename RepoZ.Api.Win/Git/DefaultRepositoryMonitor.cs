@@ -57,6 +57,7 @@ namespace RepoZ.Api.Win.Git
 				_observers.Add(observer);
 
 				observer.OnAddOrChange = OnRepositoryChangeDetected;
+				observer.OnDelete = OnRepositoryDeletionDetected;
 				observer.Setup(path);
 			}
 		}
@@ -83,6 +84,11 @@ namespace RepoZ.Api.Win.Git
 			_refreshQueue.Enqueue(repo);
 		}
 
+		private void OnRepositoryDeletionDetected(string repoPath)
+		{
+			OnDeletionDetected?.Invoke(repoPath);
+		}
+
 		private void RefreshTimerCallback(Object state)
 		{
 			if (_refreshQueue.Any())
@@ -95,5 +101,6 @@ namespace RepoZ.Api.Win.Git
 		}
 
 		public Action<Repository> OnChangeDetected { get; set; }
+		public Action<string> OnDeletionDetected { get; set; }
 	}
 }
