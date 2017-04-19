@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
+using System.Threading;
 
 namespace RepoZ.Api.Win.Git
 {
 	public class DefaultRepositoryMonitor : IRepositoryMonitor
 	{
-		private ConcurrentDictionary<string, Repository> _repositories = new ConcurrentDictionary<string, Repository>();
+		private Queue<Repository> _refreshQueue = new Queue<Repository>();
+		private Timer _refreshTimer = null;
 		private List<IRepositoryObserver> _observers = null;
 		private IRepositoryObserverFactory _repositoryObserverFactory;
 		private IPathCrawlerFactory _pathCrawlerFactory;
@@ -24,6 +26,8 @@ namespace RepoZ.Api.Win.Git
 			_repositoryObserverFactory = repositoryObserverFactory;
 			_pathCrawlerFactory = pathCrawlerFactory;
 			_pathProvider = pathProvider;
+
+			_refreshTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
 		private void ScanForRepositoriesAsync()
@@ -75,11 +79,20 @@ namespace RepoZ.Api.Win.Git
 
 		private void OnRepositoryChangeDetected(Repository repo)
 		{
-			_repositories.AddOrUpdate(repo.Path, repo, (k, v) => repo);
 			OnChangeDetected?.Invoke(repo);
+			_refreshQueue.Enqueue(repo);
 		}
 
-		public Repository[] Repositories => _repositories.Values.ToArray();
+		private void RefreshTimerCallback(Object state)
+		{
+			if (_refreshQueue.Any())
+			{
+				var repo = _refreshQueue.Dequeue();
+				Console.WriteLine(repo.Name);
+				onFound(repo.Path);
+			}
+			_refreshTimer.Change(1000, Timeout.Infinite);
+		}
 
 		public Action<Repository> OnChangeDetected { get; set; }
 	}

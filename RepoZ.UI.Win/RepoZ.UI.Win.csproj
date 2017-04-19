@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A135F86A-3003-471B-B776-50DB788D3846}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>RepoZ.UI.Desktop</RootNamespace>
-    <AssemblyName>RepoZ.UI.Desktop</AssemblyName>
+    <RootNamespace>RepoZ.UI.Win</RootNamespace>
+    <AssemblyName>RepoZ</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DoNotCopyLocalIfInGac>true</DoNotCopyLocalIfInGac>
     <NuGetPackageImportStamp>

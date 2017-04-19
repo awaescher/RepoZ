@@ -9,7 +9,7 @@ using RepoZ.Api.Win;
 using TinyIoC;
 using RepoZ.Api.Win.PInvoke;
 
-namespace RepoZ.UI.Desktop
+namespace RepoZ.UI.Win
 {
 	public class Program
 	{
