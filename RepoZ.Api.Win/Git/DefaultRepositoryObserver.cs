@@ -7,6 +7,7 @@ namespace RepoZ.Api.Win.Git
 {
 	public class DefaultRepositoryObserver : IRepositoryObserver
 	{
+		private const string HEAD_FILE = @".git\HEAD";
 		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
@@ -16,7 +17,8 @@ namespace RepoZ.Api.Win.Git
 			_repositoryReader = repositoryReader;
 		}
 
-		public Action<Repository> OnChangeDetected { get; set; }
+		public Action<Repository> OnAddOrChange { get; set; }
+		public Action<string> OnDelete { get; set; }
 
 		public void Setup(string path)
 		{
@@ -25,8 +27,11 @@ namespace RepoZ.Api.Win.Git
 			_watcher.Created += _watcher_Created;
 			_watcher.Changed += _watcher_Changed;
 			_watcher.Deleted += _watcher_Deleted;
+			_watcher.Renamed += _watcher_Renamed;
 			_watcher.IncludeSubdirectories = true;
 		}
+
+
 
 		public void Observe()
 		{
@@ -40,41 +45,70 @@ namespace RepoZ.Api.Win.Git
 
 		private void _watcher_Deleted(object sender, FileSystemEventArgs e)
 		{
-			if (!isHead(e.FullPath))
+			if (!IsHead(e.FullPath))
 				return;
+
+			NotifyHeadDeletion(e.FullPath);
+		}
+
+		private void _watcher_Renamed(object sender, RenamedEventArgs e)
+		{
+			if (!IsHead(e.OldFullPath))
+				return;
+
+			NotifyHeadDeletion(e.OldFullPath);
 		}
 
 		private void _watcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			if (!isHead(e.FullPath))
+			if (!IsHead(e.FullPath))
 				return;
 
-			eatRepo(e.FullPath);
+			EatRepo(e.FullPath);
 		}
 
 		private void _watcher_Created(object sender, FileSystemEventArgs e)
 		{
-			if (!isHead(e.FullPath))
+			if (!IsHead(e.FullPath))
 				return;
 
 			Task.Run(() => Task.Delay(5000))
-				.ContinueWith(t => eatRepo(e.FullPath));
+				.ContinueWith(t => EatRepo(e.FullPath));
 		}
 
-		private bool isHead(string fullPath)
+		private bool IsHead(string path)
 		{
-			return fullPath.IndexOf(@".git\HEAD", StringComparison.OrdinalIgnoreCase) > -1;
+			int index = GetGitPathEndFromHeadFile(path);
+			return index == (path.Length - HEAD_FILE.Length);
 		}
 
-		private void eatRepo(string path)
+		private string GetRepositoryPathFromHead(string headFile)
+		{
+			int end = GetGitPathEndFromHeadFile(headFile);
+
+			if (end < 0)
+				return string.Empty;
+
+			return headFile.Substring(0, end);
+		}
+
+		private int GetGitPathEndFromHeadFile(string path) => path.IndexOf(HEAD_FILE, StringComparison.OrdinalIgnoreCase);
+		
+		private void EatRepo(string path)
 		{
 			var repo = _repositoryReader.ReadRepository(path);
 
 			if (repo?.WasFound ?? false)
 			{
-				//_repositories.AddOrUpdate(repo.Path, repo.CurrentBranch, (k, v) => repo.CurrentBranch);
-				OnChangeDetected?.Invoke(repo);
+				OnAddOrChange?.Invoke(repo);
 			}
+		}
+
+		private void NotifyHeadDeletion(string headFile)
+		{
+			string path = GetRepositoryPathFromHead(headFile);
+			if (!string.IsNullOrEmpty(path))
+				OnDelete?.Invoke(path);
 		}
 	}
 }

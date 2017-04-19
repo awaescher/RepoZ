@@ -14,6 +14,8 @@ namespace RepoZ.Api.Git
 
 		void Stop();
 
-		Action<Repository> OnChangeDetected { get; set; }
+		Action<Repository> OnAddOrChange { get; set; }
+
+		Action<string> OnDelete { get; set; }
 	}
 }

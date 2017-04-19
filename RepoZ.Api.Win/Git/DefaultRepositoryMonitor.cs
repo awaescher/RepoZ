@@ -56,7 +56,7 @@ namespace RepoZ.Api.Win.Git
 				var observer = _repositoryObserverFactory.Create();
 				_observers.Add(observer);
 
-				observer.OnChangeDetected = OnRepositoryChangeDetected;
+				observer.OnAddOrChange = OnRepositoryChangeDetected;
 				observer.Setup(path);
 			}
 		}
