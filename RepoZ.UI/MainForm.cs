@@ -26,7 +26,7 @@ namespace RepoZ.UI
 
 			Title = "RepoZ";
 			Maximizable = false;
-			ClientSize = new Size(955, 600);
+			ClientSize = new Size(1025, 600);
 
 			createGrid();
 		}
@@ -64,42 +64,16 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(RepositoryView.AheadBy)),
+				DataCell = new TextBoxCell(nameof(RepositoryView.Status)),
 				Sortable = true,
-				Width = 75,
-				HeaderText = "AheadBy"
+				Width = 200,
+				HeaderText = "Status"
 			});
-
-			grid.Columns.Add(new GridColumn()
-			{
-				DataCell = new TextBoxCell(nameof(Repository.BehindBy)),
-				Sortable = true,
-				Width = 75,
-				HeaderText = "BehindBy"
-			});
-
-			CreateColumn(grid, nameof(RepositoryView.LocalUntracked));
-			CreateColumn(grid, nameof(RepositoryView.LocalModified));
-			CreateColumn(grid, nameof(RepositoryView.LocalMissing));
-			CreateColumn(grid, nameof(RepositoryView.LocalAdded));
-			CreateColumn(grid, nameof(RepositoryView.LocalStaged));
-			CreateColumn(grid, nameof(RepositoryView.LocalRemoved));
-			CreateColumn(grid, nameof(RepositoryView.LocalIgnored));
-			CreateColumn(grid, nameof(RepositoryView.Status));
 
 			grid.CellDoubleClick += Grid_CellDoubleClick;
 			grid.MouseUp += Grid_MouseUp;
 
 			Content = grid;
-		}
-
-		private void CreateColumn(GridView grid, string name)
-		{
-			grid.Columns.Add(new GridColumn()
-			{
-				DataCell = new TextBoxCell(name),
-				HeaderText = name
-			});
 		}
 
 		private void Grid_MouseUp(object sender, MouseEventArgs e)
