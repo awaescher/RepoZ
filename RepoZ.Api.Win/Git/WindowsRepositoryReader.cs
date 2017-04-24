@@ -57,6 +57,7 @@ namespace RepoZ.Api.Win.Git
 					Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
 					LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
 					CurrentBranch = repo.Head.FriendlyName,
+					CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
 					AheadBy = repo.Head.TrackingDetails?.AheadBy,
 					BehindBy = repo.Head.TrackingDetails?.BehindBy,
 					LocalUntracked = status?.Untracked.Count(),

@@ -44,6 +44,8 @@ namespace RepoZ.Api.Git
 			Path = ""
 		};
 
+		public bool CurrentBranchHasUpstream { get; set; }
+
 		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
 
 		public int? AheadBy { get; set; }

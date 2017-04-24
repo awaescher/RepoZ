@@ -27,20 +27,23 @@ namespace RepoZ.UI
 			var isBehind = (repository.BehindBy ?? 0) > 0;
 			var isOnCommitLevel = !isAhead && !isBehind;
 
-			if (isOnCommitLevel)
+			if (repository.CurrentBranchHasUpstream)
 			{
-				builder.Append(SIGN_IDENTICAL);
-			}
-			else
-			{
-				if (isAhead)
-					builder.Append($"{SIGN_ARROW_UP}{repository.AheadBy.Value}");
-
-				if (isBehind)
+				if (isOnCommitLevel)
+				{
+					builder.Append(SIGN_IDENTICAL);
+				}
+				else
 				{
 					if (isAhead)
-						builder.Append(" ");
-					builder.Append($"{SIGN_ARROW_DOWN}{repository.BehindBy.Value}");
+						builder.Append($"{SIGN_ARROW_UP}{repository.AheadBy.Value}");
+
+					if (isBehind)
+					{
+						if (isAhead)
+							builder.Append(" ");
+						builder.Append($"{SIGN_ARROW_DOWN}{repository.BehindBy.Value}");
+					}
 				}
 			}
 
