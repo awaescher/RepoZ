@@ -9,9 +9,9 @@ namespace RepoZ.UI
 {
 	public static class StatusCompressor
 	{
-		const string SIGN_IDENTICAL = "\u2261";
-		const string SIGN_ARROW_UP = "\u2191";
-		const string SIGN_ARROW_DOWN = "\u2193";
+		public const string SIGN_IDENTICAL = "\u2261";
+		public const string SIGN_ARROW_UP = "\u2191";
+		public const string SIGN_ARROW_DOWN = "\u2193";
 
 		public static string Compress(Repository repository)
 		{
@@ -49,15 +49,21 @@ namespace RepoZ.UI
 
 			if (printASR)
 			{
-				builder.AppendFormat(" +{0} ~{1} -{2}", repository.LocalAdded ?? 0, repository.LocalStaged ?? 0, repository.LocalRemoved ?? 0);
+				if (builder.Length > 0)
+					builder.Append(" ");
+
+				builder.AppendFormat("+{0} ~{1} -{2}", repository.LocalAdded ?? 0, repository.LocalStaged ?? 0, repository.LocalRemoved ?? 0);
 			}
 
 			if (printUMM)
 			{
-				if (printASR)
-					builder.Append(" |");
+				if (builder.Length > 0)
+					builder.Append(" ");
 
-				builder.AppendFormat(" +{0} ~{1} -{2}", repository.LocalUntracked ?? 0, repository.LocalModified ?? 0, repository.LocalMissing ?? 0);
+				if (printASR)
+					builder.Append("| ");
+
+				builder.AppendFormat("+{0} ~{1} -{2}", repository.LocalUntracked ?? 0, repository.LocalModified ?? 0, repository.LocalMissing ?? 0);
 			}
 
 			return builder.ToString();

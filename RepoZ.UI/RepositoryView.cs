@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace RepoZ.UI
 {
-	[DebuggerDisplay("{Name}")]
+	[DebuggerDisplay("{Name} @{Path}")]
 	public class RepositoryView
 	{
 		public RepositoryView(Repository repository)
@@ -20,15 +20,17 @@ namespace RepoZ.UI
 			Repository = repository;
 		}
 
-		public string Name => Repository.Name;
+		public string Name => Repository.Name ?? "";
 
-		public string Path => Repository.Path;
+		public string Path => Repository.Path ?? "";
 
-		public string CurrentBranch => Repository.CurrentBranch;
+		public string CurrentBranch => Repository.CurrentBranch ?? "";
 
 		public string AheadBy => Repository.AheadBy?.ToString() ?? "";
 
 		public string BehindBy => Repository.BehindBy?.ToString() ?? "";
+
+		public string[] Branches => Repository.Branches ?? new string[0];
 
 		public string LocalUntracked => Repository.LocalUntracked?.ToString() ?? "";
 
