@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Git
 {
-	[DebuggerDisplay("{Name}")]
+	[DebuggerDisplay("{Name} @{Path}")]
 	public class Repository
 	{
 		public override bool Equals(object obj)
@@ -16,7 +16,19 @@ namespace RepoZ.Api.Git
 			if (other == null)
 				return false;
 
-			return string.Equals(other.Path, this.Path);
+			if (string.IsNullOrEmpty(other.Path))
+				return string.IsNullOrEmpty(Path);
+
+			return string.Equals(Normalize(other.Path), Normalize(Path), StringComparison.OrdinalIgnoreCase);
+		}
+
+		private string Normalize(string path)
+		{
+			const string BS = @"\";
+
+			path = path.Replace("/", BS);
+
+			return System.IO.Path.GetDirectoryName(path + BS);
 		}
 
 		public override int GetHashCode()
