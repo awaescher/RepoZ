@@ -10,11 +10,12 @@ It has a quite functional UI *(TBD, promise)* to provide a quick overview of you
 ![Screenshot](_doc/RepoZ-ReadMe-UI.png)
 
 
-
-As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to the their title if they are in context of a Git repository.
+As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a Git repository.
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
 
-Use at your own risk, have fun!
-
 > This tool is heavily inspired by the awesome PowerShell extension [posh-git](https://github.com/dahlbyk/posh-git). Give it a try if you are using Git with PowerShell.
+
+> Check their [Status Summary topic](https://github.com/dahlbyk/posh-git#git-status-summary-information) for more information about the compact status appendix.
+
+Use at your own risk, have fun!
