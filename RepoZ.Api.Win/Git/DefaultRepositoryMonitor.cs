@@ -7,18 +7,20 @@ using System.Threading.Tasks;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using System.Threading;
+using RepoZ.Api.Common;
 
 namespace RepoZ.Api.Win.Git
 {
 	public class DefaultRepositoryMonitor : IRepositoryMonitor
 	{
-		private Queue<Repository> _refreshQueue = new Queue<Repository>();
+		private SingularityQueue<Repository> _refreshQueue = new SingularityQueue<Repository>();
 		private Timer _refreshTimer = null;
 		private List<IRepositoryObserver> _observers = null;
 		private IRepositoryObserverFactory _repositoryObserverFactory;
 		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
+		private bool _scanCompleted = false;
 
 		public DefaultRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory)
 		{
@@ -32,13 +34,19 @@ namespace RepoZ.Api.Win.Git
 
 		private void ScanForRepositoriesAsync()
 		{
-			foreach (var path in _pathProvider.GetPaths().AsParallel())
+			_scanCompleted = false;
+			int scannedPaths = 0;
+
+			var paths = _pathProvider.GetPaths();
+
+			foreach (var path in paths.AsParallel())
 			{
 				var crawler = _pathCrawlerFactory.Create();
-				Task.Run(() => crawler.Find(path, "HEAD", file => OnFoundNewRepository(file), null));
+				Task.Run(() => crawler.Find(path, "HEAD", file => OnFoundNewRepository(file), null))
+					.ContinueWith((t) => scannedPaths++)
+					.ContinueWith((t) => _scanCompleted = (scannedPaths >= paths.Length));
 			}
 		}
-
 		private void OnFoundNewRepository(string file)
 		{
 			var repo = _repositoryReader.ReadRepository(file);
@@ -99,15 +107,16 @@ namespace RepoZ.Api.Win.Git
 
 		private void RefreshTimerCallback(Object state)
 		{
-			if (_refreshQueue.Any())
+			if (_scanCompleted && _refreshQueue.Any())
 			{
 				var repo = _refreshQueue.Dequeue();
 				OnCheckKnownRepository(repo.Path);
 			}
-			_refreshTimer.Change(1000, Timeout.Infinite);
+			_refreshTimer.Change(2000, Timeout.Infinite);
 		}
 
 		public Action<Repository> OnChangeDetected { get; set; }
+
 		public Action<string> OnDeletionDetected { get; set; }
 	}
 }
