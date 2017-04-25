@@ -62,7 +62,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\SingularityQueue.cs" />
     <Compile Include="Git\DefaultRepositoryMonitor.cs" />
     <Compile Include="Git\DefaultRepositoryObserver.cs" />
     <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />
