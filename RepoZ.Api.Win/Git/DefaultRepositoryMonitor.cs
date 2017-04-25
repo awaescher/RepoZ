@@ -35,17 +35,25 @@ namespace RepoZ.Api.Win.Git
 			foreach (var path in _pathProvider.GetPaths().AsParallel())
 			{
 				var crawler = _pathCrawlerFactory.Create();
-				Task.Run(() => crawler.Find(path, "HEAD", file => onFound(file), null));
+				Task.Run(() => crawler.Find(path, "HEAD", file => OnFoundNewRepository(file), null));
 			}
 		}
 
-		private void onFound(string file)
+		private void OnFoundNewRepository(string file)
 		{
 			var repo = _repositoryReader.ReadRepository(file);
 			if (repo.WasFound)
 				OnRepositoryChangeDetected(repo);
 		}
 
+		private void OnCheckKnownRepository(string file)
+		{
+			var repo = _repositoryReader.ReadRepository(file);
+			if (repo.WasFound)
+				OnRepositoryChangeDetected(repo);
+			else
+				OnRepositoryDeletionDetected(file);
+		}
 
 		private void ObserveRepositoryChanges()
 		{
@@ -94,8 +102,7 @@ namespace RepoZ.Api.Win.Git
 			if (_refreshQueue.Any())
 			{
 				var repo = _refreshQueue.Dequeue();
-				Console.WriteLine(repo.Name);
-				onFound(repo.Path);
+				OnCheckKnownRepository(repo.Path);
 			}
 			_refreshTimer.Change(1000, Timeout.Infinite);
 		}
