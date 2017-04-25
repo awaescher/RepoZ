@@ -20,10 +20,11 @@ namespace RepoZ.UI
 		{
 			_repositoryMonitor = repositoryMonitor;
 			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
+			_repositoryMonitor.OnDeletionDetected = (repoPath) => notifyRepoDeletion(repoPath);
 			_repositoryMonitor.Observe();
 
 			_repositoryActionProvider = repositoryActionProvider;
-
+		
 			Title = "RepoZ";
 			Maximizable = false;
 			ClientSize = new Size(1025, 600);
@@ -150,6 +151,26 @@ namespace RepoZ.UI
 					var view = new RepositoryView(repo);
 					_dataSource.Remove(view);
 					_dataSource.Add(view);
+				}
+				catch (Exception)
+				{
+					// happened to be swallowed by Eto
+					throw;
+				}
+			});
+		}
+
+		private void notifyRepoDeletion(string repoPath)
+		{
+			Application.Instance.Invoke(() =>
+			{
+				try
+				{
+					var repoViewsToRemove = _dataSource.Where(r => r.Path.Equals(repoPath, StringComparison.OrdinalIgnoreCase)).ToArray();
+
+					for (int i = repoViewsToRemove.Length - 1; i >= 0; i--)
+						_dataSource.Remove(repoViewsToRemove[i]);
+
 				}
 				catch (Exception)
 				{

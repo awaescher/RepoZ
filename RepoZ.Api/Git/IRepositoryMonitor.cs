@@ -6,6 +6,8 @@ namespace RepoZ.Api.Git
 	{
 		Action<Repository> OnChangeDetected { get; set; }
 
+		Action<string> OnDeletionDetected { get; set; }
+
 		void Stop();
 
 		void Observe();

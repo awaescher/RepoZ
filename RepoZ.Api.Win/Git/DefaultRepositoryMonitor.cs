@@ -35,17 +35,25 @@ namespace RepoZ.Api.Win.Git
 			foreach (var path in _pathProvider.GetPaths().AsParallel())
 			{
 				var crawler = _pathCrawlerFactory.Create();
-				Task.Run(() => crawler.Find(path, "HEAD", file => onFound(file), null));
+				Task.Run(() => crawler.Find(path, "HEAD", file => OnFoundNewRepository(file), null));
 			}
 		}
 
-		private void onFound(string file)
+		private void OnFoundNewRepository(string file)
 		{
 			var repo = _repositoryReader.ReadRepository(file);
 			if (repo.WasFound)
 				OnRepositoryChangeDetected(repo);
 		}
 
+		private void OnCheckKnownRepository(string file)
+		{
+			var repo = _repositoryReader.ReadRepository(file);
+			if (repo.WasFound)
+				OnRepositoryChangeDetected(repo);
+			else
+				OnRepositoryDeletionDetected(file);
+		}
 
 		private void ObserveRepositoryChanges()
 		{
@@ -56,7 +64,8 @@ namespace RepoZ.Api.Win.Git
 				var observer = _repositoryObserverFactory.Create();
 				_observers.Add(observer);
 
-				observer.OnChangeDetected = OnRepositoryChangeDetected;
+				observer.OnAddOrChange = OnRepositoryChangeDetected;
+				observer.OnDelete = OnRepositoryDeletionDetected;
 				observer.Setup(path);
 			}
 		}
@@ -83,17 +92,22 @@ namespace RepoZ.Api.Win.Git
 			_refreshQueue.Enqueue(repo);
 		}
 
+		private void OnRepositoryDeletionDetected(string repoPath)
+		{
+			OnDeletionDetected?.Invoke(repoPath);
+		}
+
 		private void RefreshTimerCallback(Object state)
 		{
 			if (_refreshQueue.Any())
 			{
 				var repo = _refreshQueue.Dequeue();
-				Console.WriteLine(repo.Name);
-				onFound(repo.Path);
+				OnCheckKnownRepository(repo.Path);
 			}
 			_refreshTimer.Change(1000, Timeout.Infinite);
 		}
 
 		public Action<Repository> OnChangeDetected { get; set; }
+		public Action<string> OnDeletionDetected { get; set; }
 	}
 }
