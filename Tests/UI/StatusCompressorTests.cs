@@ -21,7 +21,7 @@ namespace Tests.UI
 			_builder = new RepositoryBuilder();
 		}
 
-		protected string Compress(Repository repo) => StatusCompressor.Compress(repo);
+		protected string Compress(Repository repo) => new StatusCompressor().Compress(repo);
 
 		protected string Up => StatusCompressor.SIGN_ARROW_UP;
 		protected string Down => StatusCompressor.SIGN_ARROW_DOWN;

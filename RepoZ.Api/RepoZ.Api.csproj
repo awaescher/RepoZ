@@ -39,10 +39,12 @@
   <ItemGroup>
     <Compile Include="Common\IErrorHandler.cs" />
     <Compile Include="Common\SingularityQueue.cs" />
+    <Compile Include="Git\DefaultRepositoryInformationAggregator.cs" />
     <Compile Include="Git\IRepositoryInformationAggregator.cs" />
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="Git\IRepositoryActionProvider.cs" />
     <Compile Include="Git\IRepositoryWriter.cs" />
+    <Compile Include="Git\StatusCompressor.cs" />
     <Compile Include="IO\IPathCrawler.cs" />
     <Compile Include="IO\IPathCrawlerFactory.cs" />
     <Compile Include="IO\IPathFinder.cs" />

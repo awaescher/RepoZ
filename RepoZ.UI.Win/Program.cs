@@ -8,6 +8,7 @@ using RepoZ.Api.IO;
 using TinyIoC;
 using RepoZ.Api.Win.PInvoke;
 using RepoZ.Api.Common;
+using RepoZ.Api.Win.PInvoke.Explorer;
 
 namespace RepoZ.UI.Win
 {
@@ -19,11 +20,11 @@ namespace RepoZ.UI.Win
 			var container = TinyIoCContainer.Current;
 
 			container.Register<MainForm>().AsSingleton();
-			container.Register<IRepositoryInformationAggregator>((c, p) => c.Resolve<MainForm>());
 
 			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
 			container.Register<WindowsExplorerHandler>().AsSingleton();
 
+			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>();
 			container.Register<IErrorHandler, UIErrorHandler>();
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>();

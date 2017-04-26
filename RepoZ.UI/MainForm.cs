@@ -11,36 +11,36 @@ using RepoZ.Api.Common;
 
 namespace RepoZ.UI
 {
-	public class MainForm : Form, IRepositoryInformationAggregator
+	public class MainForm : Form
 	{
 		private IRepositoryMonitor _repositoryMonitor;
-		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
 		private IRepositoryActionProvider _repositoryActionProvider;
+		private IRepositoryInformationAggregator _repositoryInformationAggregator;
+		private FilterCollection<RepositoryView> _datasource;
+		private GridView _grid;
 
-		public MainForm(IRepositoryMonitor repositoryMonitor, IRepositoryActionProvider repositoryActionProvider)
+		public MainForm(IRepositoryMonitor repositoryMonitor, IRepositoryInformationAggregator repositoryInformationAggregator, IRepositoryActionProvider repositoryActionProvider)
 		{
-			_repositoryMonitor = repositoryMonitor;
-			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
-			_repositoryMonitor.OnDeletionDetected = (repoPath) => notifyRepoDeletion(repoPath);
-			_repositoryMonitor.Observe();
-
-			_repositoryActionProvider = repositoryActionProvider;
-		
 			Title = "RepoZ";
 			Maximizable = false;
 			ClientSize = new Size(1025, 600);
 
+			_repositoryInformationAggregator = repositoryInformationAggregator;
+			_repositoryActionProvider = repositoryActionProvider;
+
 			createGrid();
+
+			_repositoryMonitor = repositoryMonitor;
+			_repositoryMonitor.OnChangeDetected = (repo) => notifyRepoChange(repo);
+			_repositoryMonitor.OnDeletionDetected = (repoPath) => notifyRepoDeletion(repoPath);
+			_repositoryMonitor.Observe();
 		}
 
 		private void createGrid()
 		{
-			var filtered = new FilterCollection<RepositoryView>(_dataSource);
-			filtered.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+			_grid = new GridView();
 
-			var grid = new GridView { DataStore = filtered };
-
-			grid.Columns.Add(new GridColumn()
+			_grid.Columns.Add(new GridColumn()
 			{
 				DataCell = new TextBoxCell(nameof(RepositoryView.Name)),
 				Sortable = true,
@@ -48,7 +48,7 @@ namespace RepoZ.UI
 				HeaderText = "Repository",
 			});
 
-			grid.Columns.Add(new GridColumn()
+			_grid.Columns.Add(new GridColumn()
 			{
 				DataCell = new TextBoxCell(nameof(RepositoryView.CurrentBranch)),
 				Sortable = true,
@@ -56,7 +56,7 @@ namespace RepoZ.UI
 				HeaderText = "Current Branch"
 			});
 
-			grid.Columns.Add(new GridColumn()
+			_grid.Columns.Add(new GridColumn()
 			{
 				DataCell = new TextBoxCell(nameof(RepositoryView.Location)),
 				Sortable = true,
@@ -64,7 +64,7 @@ namespace RepoZ.UI
 				HeaderText = "Location"
 			});
 
-			grid.Columns.Add(new GridColumn()
+			_grid.Columns.Add(new GridColumn()
 			{
 				DataCell = new TextBoxCell(nameof(RepositoryView.Status)),
 				Sortable = true,
@@ -72,10 +72,10 @@ namespace RepoZ.UI
 				HeaderText = "Status"
 			});
 
-			grid.CellDoubleClick += Grid_CellDoubleClick;
-			grid.MouseUp += Grid_MouseUp;
+			_grid.CellDoubleClick += Grid_CellDoubleClick;
+			_grid.MouseUp += Grid_MouseUp;
 
-			Content = grid;
+			Content = _grid;
 		}
 
 		private void Grid_MouseUp(object sender, MouseEventArgs e)
@@ -149,9 +149,8 @@ namespace RepoZ.UI
 			{
 				try
 				{
-					var view = new RepositoryView(repo);
-					_dataSource.Remove(view);
-					_dataSource.Add(view);
+					_repositoryInformationAggregator.Add(repo);
+					RefreshGrid();
 				}
 				catch (Exception)
 				{
@@ -159,6 +158,17 @@ namespace RepoZ.UI
 					throw;
 				}
 			});
+		}
+
+		private void RefreshGrid()
+		{
+			// huh, not nice :(
+			// we're gonna remove this code by moving to native clients instead of Eto ...
+
+			_datasource = new FilterCollection<RepositoryView>(_repositoryInformationAggregator.Repositories.Select(r => new RepositoryView(r)));
+			_datasource.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+
+			_grid.DataStore = _datasource;
 		}
 
 		private void notifyRepoDeletion(string repoPath)
@@ -167,11 +177,8 @@ namespace RepoZ.UI
 			{
 				try
 				{
-					var repoViewsToRemove = _dataSource.Where(r => r.Path.Equals(repoPath, StringComparison.OrdinalIgnoreCase)).ToArray();
-
-					for (int i = repoViewsToRemove.Length - 1; i >= 0; i--)
-						_dataSource.Remove(repoViewsToRemove[i]);
-
+					_repositoryInformationAggregator.RemoveByPath(repoPath);
+					RefreshGrid();
 				}
 				catch (Exception)
 				{
@@ -181,19 +188,6 @@ namespace RepoZ.UI
 			});
 		}
 
-		public string Get(string path)
-		{
-			if (!path.EndsWith("\\", StringComparison.Ordinal))
-				path += "\\";
 
-			var repos = _dataSource.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
-
-			if (!repos.Any())
-				return string.Empty;
-
-			var repo = repos.OrderByDescending(r => r.Path.Length).First();
-
-			return repo.CurrentBranch + " " + StatusCompressor.Compress(repo.Repository);
-		}
 	}
 }

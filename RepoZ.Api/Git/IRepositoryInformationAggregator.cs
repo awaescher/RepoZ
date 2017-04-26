@@ -1,7 +1,15 @@
-﻿namespace RepoZ.Api.Git
+﻿using System.Collections.Generic;
+
+namespace RepoZ.Api.Git
 {
 	public interface IRepositoryInformationAggregator
 	{
-		string Get(string path);
+		void Add(Repository repository);
+
+		void RemoveByPath(string path);
+
+		string GetStatusByPath(string path);
+
+		IEnumerable<Repository> Repositories { get; }
 	}
 }
