@@ -9,16 +9,19 @@ using RepoZ.Api.IO;
 using GongSolutions.Shell;
 using System.Drawing;
 using RepoZ.Api.Git;
+using RepoZ.Api.Common;
 
 namespace RepoZ.Api.Win.IO
 {
 	public class WindowsRepositoryActionProvider : IRepositoryActionProvider
 	{
 		private IRepositoryWriter _repositoryWriter;
+		private IErrorHandler _errorHandler;
 
-		public WindowsRepositoryActionProvider(IRepositoryWriter repositoryWriter)
+		public WindowsRepositoryActionProvider(IRepositoryWriter repositoryWriter, IErrorHandler errorHandler)
 		{
 			_repositoryWriter = repositoryWriter;
+			_errorHandler = errorHandler;
 		}
 
 		public IEnumerable<RepositoryAction> GetFor(Repository repository)
@@ -89,7 +92,14 @@ namespace RepoZ.Api.Win.IO
 
 		private void startProcess(string process, string arguments)
 		{
-			Process.Start(process, arguments);
+			try
+			{
+				Process.Start(process, arguments);
+			}
+			catch (Exception ex)
+			{
+				_errorHandler.Handle(ex.Message);
+			}
 		}
 	}
 }
