@@ -47,8 +47,8 @@ namespace RepoZ.UI.Win.Wpf
 
 			var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
-			_repositoryMonitor.OnChangeDetected = (repo) => repositoryInformationAggregator.Add(repo);
-			_repositoryMonitor.OnDeletionDetected = (repoPath) => repositoryInformationAggregator.RemoveByPath(repoPath);
+			_repositoryMonitor.OnChangeDetected = (repo) => Dispatcher.Invoke(() => repositoryInformationAggregator.Add(repo));
+			_repositoryMonitor.OnDeletionDetected = (repoPath) => Dispatcher.Invoke(() => repositoryInformationAggregator.RemoveByPath(repoPath));
 			_repositoryMonitor.Observe();
 
 			_explorerHandler = container.Resolve<WindowsExplorerHandler>();

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace RepoZ.Api.Git
 {
@@ -10,6 +11,6 @@ namespace RepoZ.Api.Git
 
 		string GetStatusByPath(string path);
 
-		IEnumerable<Repository> Repositories { get; }
+		ObservableCollection<Repository> Repositories { get; }
 	}
 }

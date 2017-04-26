@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RepoZ.Api.Git;
+using TinyIoC;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -23,6 +25,9 @@ namespace RepoZ.UI.Win.Wpf
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+			lstRepositories.ItemsSource = aggregator.Repositories;
 		}
 	}
 }

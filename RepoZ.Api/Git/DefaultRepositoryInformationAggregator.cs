@@ -54,6 +54,6 @@ namespace RepoZ.Api.Git
 			return repo.CurrentBranch + " " + status;
 		}
 
-		public IEnumerable<Repository> Repositories => _dataSource;
+		public ObservableCollection<Repository> Repositories => _dataSource;
 	}
 }
