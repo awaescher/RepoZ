@@ -38,7 +38,10 @@ namespace RepoZ.UI
 
 		private void createGrid()
 		{
-			_grid = new GridView();
+			_datasource = new FilterCollection<RepositoryView>(_repositoryInformationAggregator.Repositories);
+			_datasource.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+
+			_grid = new GridView() { DataStore = _datasource };
 
 			_grid.Columns.Add(new GridColumn()
 			{
@@ -150,7 +153,6 @@ namespace RepoZ.UI
 				try
 				{
 					_repositoryInformationAggregator.Add(repo);
-					RefreshGrid();
 				}
 				catch (Exception)
 				{
@@ -160,17 +162,6 @@ namespace RepoZ.UI
 			});
 		}
 
-		private void RefreshGrid()
-		{
-			// huh, not nice :(
-			// we're gonna remove this code by moving to native clients instead of Eto ...
-
-			_datasource = new FilterCollection<RepositoryView>(_repositoryInformationAggregator.Repositories.Select(r => new RepositoryView(r)));
-			_datasource.Sort = (x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal);
-
-			_grid.DataStore = _datasource;
-		}
-
 		private void notifyRepoDeletion(string repoPath)
 		{
 			Application.Instance.Invoke(() =>
@@ -178,7 +169,6 @@ namespace RepoZ.UI
 				try
 				{
 					_repositoryInformationAggregator.RemoveByPath(repoPath);
-					RefreshGrid();
 				}
 				catch (Exception)
 				{

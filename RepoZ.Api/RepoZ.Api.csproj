@@ -44,6 +44,7 @@
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="Git\IRepositoryActionProvider.cs" />
     <Compile Include="Git\IRepositoryWriter.cs" />
+    <Compile Include="Git\RepositoryView.cs" />
     <Compile Include="Git\StatusCompressor.cs" />
     <Compile Include="IO\IPathCrawler.cs" />
     <Compile Include="IO\IPathCrawlerFactory.cs" />

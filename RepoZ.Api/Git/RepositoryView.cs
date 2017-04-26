@@ -7,7 +7,7 @@ using RepoZ.Api.Git;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace RepoZ.UI
+namespace RepoZ.Api.Git
 {
 	[DebuggerDisplay("{Name} @{Path}")]
 	public class RepositoryView

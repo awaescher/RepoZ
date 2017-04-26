@@ -11,6 +11,6 @@ namespace RepoZ.Api.Git
 
 		string GetStatusByPath(string path);
 
-		ObservableCollection<Repository> Repositories { get; }
+		ObservableCollection<RepositoryView> Repositories { get; }
 	}
 }

@@ -9,7 +9,7 @@ namespace RepoZ.Api.Git
 {
 	public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 	{
-		private ObservableCollection<Repository> _dataSource = new ObservableCollection<Repository>();
+		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
 		private StatusCompressor _compressor;
 
 		public DefaultRepositoryInformationAggregator(StatusCompressor compressor)
@@ -19,16 +19,17 @@ namespace RepoZ.Api.Git
 
 		public void Add(Repository repository)
 		{
-			_dataSource.Remove(repository);
-			_dataSource.Add(repository);
+			var view = new RepositoryView(repository);
+			_dataSource.Remove(view);
+			_dataSource.Add(view);
 		}
 
 		public void RemoveByPath(string path)
 		{
-			var reposToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+			var viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-			for (int i = reposToRemove.Length - 1; i >= 0; i--)
-				_dataSource.Remove(reposToRemove[i]);
+			for (int i = viewsToRemove.Length - 1; i >= 0; i--)
+				_dataSource.Remove(viewsToRemove[i]);
 		}
 
 		public string GetStatusByPath(string path)
@@ -39,21 +40,21 @@ namespace RepoZ.Api.Git
 			if (!path.EndsWith("\\", StringComparison.Ordinal))
 				path += "\\";
 
-			var repos = _dataSource.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
+			var views = _dataSource.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
 
-			if (!repos.Any())
+			if (!views.Any())
 				return string.Empty;
 
-			var repo = repos.OrderByDescending(r => r.Path.Length).First();
+			var view = views.OrderByDescending(r => r.Path.Length).First();
 
-			string status = _compressor.Compress(repo);
+			string status = _compressor.Compress(view.Repository);
 
 			if (string.IsNullOrEmpty(status))
-				return repo.CurrentBranch;
+				return view.CurrentBranch;
 
-			return repo.CurrentBranch + " " + status;
+			return view.CurrentBranch + " " + status;
 		}
 
-		public ObservableCollection<Repository> Repositories => _dataSource;
+		public ObservableCollection<RepositoryView> Repositories => _dataSource;
 	}
 }
