@@ -31,20 +31,19 @@ namespace RepoZ.UI.Win.Wpf
 
 			var container = TinyIoCContainer.Current;
 
-			//container.Register<MainForm>().AsSingleton();
-			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>();
+			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
 
 			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
 			container.Register<WindowsExplorerHandler>().AsSingleton();
+			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
+			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
-			container.Register<IErrorHandler, FakeErrorHandler>();
+			container.Register<IErrorHandler, UIErrorHandler>();
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
-			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>();
 			container.Register<IRepositoryReader, WindowsRepositoryReader>();
 			container.Register<IRepositoryWriter, WindowsRepositoryWriter>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
-			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>();
 
 			var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
@@ -57,12 +56,6 @@ namespace RepoZ.UI.Win.Wpf
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
-		private void RefreshTimerCallback(Object state)
-		{
-			_explorerHandler.UpdateTitles();
-			_explorerUpdateTimer.Change(500, Timeout.Infinite);
-		}
-
 		protected override void OnExit(ExitEventArgs e)
 		{
 			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -72,13 +65,11 @@ namespace RepoZ.UI.Win.Wpf
 
 			base.OnExit(e);
 		}
-	}
 
-	public class FakeErrorHandler : IErrorHandler
-	{
-		public void Handle(string error)
+		private void RefreshTimerCallback(Object state)
 		{
-			throw new NotImplementedException();
+			_explorerHandler.UpdateTitles();
+			_explorerUpdateTimer.Change(500, Timeout.Infinite);
 		}
 	}
 }
