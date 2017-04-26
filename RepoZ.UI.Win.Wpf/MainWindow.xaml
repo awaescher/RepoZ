@@ -13,9 +13,10 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="MainWindow" Height="600" Width="900">
+        Title="MainWindow" Height="600" Width="900"
+        >
     <Grid Margin="10">
-        <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch">
+        <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,2">
@@ -32,6 +33,10 @@
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ContextMenu>
+                <ContextMenu Name="mnuRepositoryContext">
+                </ContextMenu>
+            </ListBox.ContextMenu>
         </ListBox>
     </Grid>
 </Window>
