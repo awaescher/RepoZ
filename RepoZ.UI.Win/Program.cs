@@ -40,8 +40,10 @@ namespace RepoZ.UI.Win
 
 			var timer = new UITimer();
 			timer.Interval = 0.5;
-			timer.Elapsed += (s, e) => explorerHandler.Pulse();
+			timer.Elapsed += (s, e) => explorerHandler.UpdateTitles();
 			timer.Start();
+
+			mainForm.Closed += (s, e) => explorerHandler.CleanTitles();
 
 			application.Run(mainForm);
 		}

@@ -52,12 +52,20 @@ namespace RepoZ.Api.Win.PInvoke
 			if (at > -1)
 				current = current.Substring(0, at);
 
-			//if (!current.EndsWith(" "))
-			//	current += " ";
-
 			SetWindowTextApi(handle, current + uniqueSplitter + text);
 		}
 
+		public static void RemoveAppendedWindowText(IntPtr handle, string uniqueSplitter)
+		{
+			string current = GetWindowText(handle);
+
+			int at = current.IndexOf(uniqueSplitter, StringComparison.OrdinalIgnoreCase);
+			if (at > -1)
+			{
+				current = current.Substring(0, at);
+				SetWindowTextApi(handle, current);
+			}
+		}
 	}
 
 }

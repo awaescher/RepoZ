@@ -72,11 +72,14 @@
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
     <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
+    <Compile Include="PInvoke\Explorer\CleanWindowTitleActor.cs" />
+    <Compile Include="PInvoke\Explorer\AppendRepositoryStatusTitleActor.cs" />
+    <Compile Include="PInvoke\Explorer\ExplorerWindowActor.cs" />
     <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PInvoke\WindowFinder.cs" />
     <Compile Include="PInvoke\WindowHelper.cs" />
-    <Compile Include="PInvoke\WindowsExplorerHandler.cs" />
+    <Compile Include="PInvoke\Explorer\WindowsExplorerHandler.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
