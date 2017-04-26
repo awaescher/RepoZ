@@ -13,18 +13,20 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="500" Width="700">
     <Grid Margin="10">
         <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,2">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Name}" />
-                        <TextBlock Grid.Column="1" Text="{Binding Location}" />
+                        <TextBlock Grid.Column="1" Text="{Binding CurrentBranch}" />
+                        <TextBlock Grid.Column="2" Text="{Binding Location}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

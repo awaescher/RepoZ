@@ -28,6 +28,8 @@ namespace RepoZ.UI.Win.Wpf
 
 			var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
 			lstRepositories.ItemsSource = aggregator.Repositories;
+
+			lstRepositories.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), System.ComponentModel.ListSortDirection.Ascending));
 		}
 	}
 }
