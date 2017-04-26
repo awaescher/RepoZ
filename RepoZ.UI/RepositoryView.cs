@@ -24,6 +24,8 @@ namespace RepoZ.UI
 
 		public string Path => Repository.Path ?? "";
 
+		public string Location => Repository.Location ?? "";
+
 		public string CurrentBranch => Repository.CurrentBranch ?? "";
 
 		public string AheadBy => Repository.AheadBy?.ToString() ?? "";

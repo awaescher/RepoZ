@@ -43,6 +43,8 @@ namespace RepoZ.Api.Git
 
 		public string Path { get; set; }
 
+		public string Location { get; set; }
+
 		public string CurrentBranch { get; set; }
 
 		public string[] Branches { get; set; }

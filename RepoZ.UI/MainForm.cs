@@ -7,6 +7,7 @@ using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using System.Linq;
 using System.Text;
+using RepoZ.Api.Common;
 
 namespace RepoZ.UI
 {
@@ -57,7 +58,7 @@ namespace RepoZ.UI
 
 			grid.Columns.Add(new GridColumn()
 			{
-				DataCell = new TextBoxCell(nameof(RepositoryView.Path)),
+				DataCell = new TextBoxCell(nameof(RepositoryView.Location)),
 				Sortable = true,
 				Width = 400,
 				HeaderText = "Location"

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using LibGit2Sharp;
 using RepoZ.Api.Git;
+using System.IO;
 
 namespace RepoZ.Api.Win.Git
 {
@@ -50,10 +51,13 @@ namespace RepoZ.Api.Win.Git
 			{
 				var status = repo.RetrieveStatus();
 
+				var workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
+
 				return new Api.Git.Repository()
 				{
-					Name = new System.IO.DirectoryInfo(repo.Info.WorkingDirectory).Name,
-					Path = repo.Info.WorkingDirectory,
+					Name = workingDirectory.Name,
+					Path = workingDirectory.FullName,
+					Location = workingDirectory.Parent.FullName,
 					Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
 					LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
 					CurrentBranch = repo.Head.FriendlyName,
