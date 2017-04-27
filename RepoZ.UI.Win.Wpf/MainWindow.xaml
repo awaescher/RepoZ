@@ -1,8 +1,9 @@
-﻿<Window x:Class="RepoZ.UI.Win.Wpf.MainWindow"
+﻿<Controls:MetroWindow x:Class="RepoZ.UI.Win.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:RepoZ.UI.Win.Wpf"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -13,7 +14,9 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="MainWindow" Height="600" Width="450"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1"
+        Title="RepoZ" Height="600" Width="450"
         >
 	<Grid Margin="10">
 		<ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
@@ -41,4 +44,4 @@
 			</ListBox.ContextMenu>
 		</ListBox>
 	</Grid>
-</Window>
+</Controls:MetroWindow>
