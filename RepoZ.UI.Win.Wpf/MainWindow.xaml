@@ -8,35 +8,37 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
+        TextElement.FontSize="12"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="MainWindow" Height="600" Width="900"
+        Title="MainWindow" Height="600" Width="450"
         >
-    <Grid Margin="10">
-        <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Name}" />
-                        <TextBlock Grid.Column="1" Text="{Binding CurrentBranch}" />
-                        <TextBlock Grid.Column="2" Text="{Binding Status}" />
-                        <TextBlock Grid.Column="3" Text="{Binding Location}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ContextMenu>
-                <ContextMenu Name="mnuRepositoryContext">
-                </ContextMenu>
-            </ListBox.ContextMenu>
-        </ListBox>
-    </Grid>
+	<Grid Margin="10">
+		<ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Grid Margin="0,2">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="200" />
+						</Grid.ColumnDefinitions>
+						<StackPanel Grid.Column="0" Margin="0">
+							<TextBlock Text="{Binding Name}" TextElement.FontSize="15" Margin="5"/>
+							<TextBlock Text="{Binding Location}" TextElement.FontSize="10.5" Margin="5,3,0,0" />
+						</StackPanel>
+						<StackPanel Grid.Column="1" Margin="0">
+							<TextBlock Text="{Binding CurrentBranch}" Margin="5,7,0,0" />
+							<TextBlock Text="{Binding Status}" Margin="5,8,0,0"  />
+						</StackPanel>
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+			<ListBox.ContextMenu>
+				<ContextMenu Name="mnuRepositoryContext">
+				</ContextMenu>
+			</ListBox.ContextMenu>
+		</ListBox>
+	</Grid>
 </Window>
