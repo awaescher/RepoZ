@@ -27,6 +27,8 @@ namespace Tests.UI
 		protected string Down => StatusCompressor.SIGN_ARROW_DOWN;
 		protected string Eq => StatusCompressor.SIGN_IDENTICAL;
 
+		protected string NoUp => StatusCompressor.SIGN_NO_UPSTREAM;
+
 		public class CompressMethod : StatusCompressorTests
 		{
 			[Test]
@@ -46,17 +48,6 @@ namespace Tests.UI
 			public void Returns_Empty_String_For_Repositories_With_Just_A_Name()
 			{
 				var repo = _builder
-					.WithCurrentBranch("master")
-					.Build();
-
-				Compress(repo).Should().BeEmpty();
-			}
-
-			[Test]
-			public void Returns_Empty_String_For_Repositories_With_Just_A_Name_And_Path()
-			{
-				var repo = _builder
-					.WithCurrentBranch("master")
 					.WithName("Repo")
 					.Build();
 
@@ -64,9 +55,32 @@ namespace Tests.UI
 			}
 
 			[Test]
+			public void Returns_NoUpstream_For_Repositories_Without_Upstream_And_Just_A_Branch()
+			{
+				var repo = _builder
+					.WithoutUpstream()
+					.WithCurrentBranch("master")
+					.Build();
+
+				Compress(repo).Should().Be(NoUp);
+			}
+
+			[Test]
+			public void Returns_IdenticalToUpstream_For_Repositories_With_Upstream_But_Just_A_Branch()
+			{
+				var repo = _builder
+					.WithUpstream()
+					.WithCurrentBranch("master")
+					.Build();
+
+				Compress(repo).Should().Be(Eq);
+			}
+
+			[Test]
 			public void Returns_An_ArrowUp_And_The_Count_If_AheadBy()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithAheadBy(15)
 					.Build();
@@ -78,6 +92,7 @@ namespace Tests.UI
 			public void Returns_An_ArrowDown_And_The_Count_If_BehindBy()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithBehindBy(7)
 					.Build();
@@ -89,6 +104,7 @@ namespace Tests.UI
 			public void Returns_An_ArrowDown_And_An_ArrowDown_And_The_Count_If_AhreadBy_And_BehindBy()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithAheadBy(15)
 					.WithBehindBy(7)
@@ -98,21 +114,36 @@ namespace Tests.UI
 			}
 
 			[Test]
-			public void Returns_An_Empty_String_And_No_Identical_Sign_If_No_Upstream_Is_Set_Even_If_AhreadBy_And_BehindBy()
+			public void Returns_Just_An_NoUpstream_Sign_If_No_Upstream_Is_Set_And_AheadBy_And_BehindBy_Are_Zero()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
+					.WithoutUpstream()
+					.WithAheadBy(0)
+					.WithBehindBy(0)
+					.Build();
+
+				Compress(repo).Should().Be(NoUp);
+			}
+
+			[Test]
+			public void Returns_Just_An_NoUpstream_Sign_If_No_Upstream_Is_Set_Even_If_AheadBy_And_BehindBy_Are_Not_Zero()
+			{
+				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithoutUpstream()
 					.WithAheadBy(15)
 					.WithBehindBy(7)
 					.Build();
 
-				Compress(repo).Should().BeEmpty();
+				Compress(repo).Should().Be(NoUp);
 			}
 
 			[Test]
 			public void Returns_An_Identical_Sign_If_AheadBy_And_BehindBy_Is_Zero()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithAheadBy(0)
 					.WithBehindBy(0)
@@ -125,6 +156,7 @@ namespace Tests.UI
 			public void Returns_An_Identical_Sign_If_AheadBy_And_BehindBy_Is_Not_Set()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.Build();
 
@@ -132,33 +164,23 @@ namespace Tests.UI
 			}
 
 			[Test]
-			public void Returns_An_Empty_String_And_No_Identical_Sign_If_No_Upstream_Is_Set()
+			public void Returns_Added_Staged_Removed_And_NoUpstream_Sign_Without_Upstream()
 			{
 				var repo = _builder
-					.WithoutUpstream()
-					.WithAheadBy(0)
-					.WithBehindBy(0)
-					.Build();
-
-				Compress(repo).Should().BeEmpty();
-			}
-
-			[Test]
-			public void Returns_Added_Staged_Removed_Without_Upstream()
-			{
-				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithLocalAdded(1)
 					.WithLocalStaged(2)
 					.WithLocalRemoved(3)
 					.Build();
 
-				Compress(repo).Should().Be("+1 ~2 -3");
+				Compress(repo).Should().Be($"{NoUp} +1 ~2 -3");
 			}
 
 			[Test]
 			public void Returns_Added_Staged_Removed_And_Identical_Sign_With_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithLocalAdded(1)
 					.WithLocalStaged(2)
@@ -173,18 +195,21 @@ namespace Tests.UI
 			public void Returns_Untracked_Modified_Missing_Without_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
+					.WithoutUpstream()
 					.WithLocalUntracked(4)
 					.WithLocalModified(5)
 					.WithLocalMissing(6)
 					.Build();
 
-				Compress(repo).Should().Be("+4 ~5 -6");
+				Compress(repo).Should().Be($"{NoUp} +4 ~5 -6");
 			}
 
 			[Test]
 			public void Returns_Untracked_Modified_Missing_And_Identical_Sign_With_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithLocalUntracked(4)
 					.WithLocalModified(5)
@@ -198,6 +223,8 @@ namespace Tests.UI
 			public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_Without_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
+					.WithoutUpstream()
 					.WithLocalAdded(1)
 					.WithLocalStaged(2)
 					.WithLocalRemoved(3)
@@ -206,13 +233,14 @@ namespace Tests.UI
 					.WithLocalMissing(6)
 					.Build();
 
-				Compress(repo).Should().Be("+1 ~2 -3 | +4 ~5 -6");
+				Compress(repo).Should().Be($"{NoUp} +1 ~2 -3 | +4 ~5 -6");
 			}
 
 			[Test]
 			public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_And_Identical_Sign_With_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithLocalAdded(1)
 					.WithLocalStaged(2)
@@ -229,6 +257,7 @@ namespace Tests.UI
 			public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_Without_AheadBy_And_BehindBy_Without_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithoutUpstream()
 					.WithAheadBy(15)
 					.WithBehindBy(7)
@@ -240,13 +269,14 @@ namespace Tests.UI
 					.WithLocalMissing(6)
 					.Build();
 
-				Compress(repo).Should().Be("+1 ~2 -3 | +4 ~5 -6");
+				Compress(repo).Should().Be($"{NoUp} +1 ~2 -3 | +4 ~5 -6");
 			}
 
 			[Test]
 			public void Returns_Added_Staged_Removed_Untracked_Modified_Missing_And_AheadBy_And_BehindBy_With_Upstream()
 			{
 				var repo = _builder
+					.WithCurrentBranch("master")
 					.WithUpstream()
 					.WithAheadBy(15)
 					.WithBehindBy(7)
