@@ -21,11 +21,11 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
 
                 <!-- Material Design -->
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                <!--<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />-->
+				<!--<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />-->
+				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.BlueGrey.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Orange.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Orange.xaml" />
 
                 <!-- Material Design: MahApps Compatibility -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Fonts.xaml" />
@@ -33,13 +33,28 @@
 
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- MahApps Brushes -->
-            <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource Primary700}"/>
-            <SolidColorBrush x:Key="AccentColorBrush" Color="{DynamicResource Primary500}"/>
+		
+			<!-- MahApps Brushes -->
+
+			<!-- Light/Dark MaterialDesign themes to MahApps -->
+			<!--   WindowTitleColorBrush		= MaterialDesignPaper -->
+			<!--   IdealForegroundColorBrush	= MaterialDesignBody -->
+			
+			<!-- Light -->
+			<!--
+			<SolidColorBrush x:Key="WindowTitleColorBrush" Color="#FFfafafa"/>
+			<SolidColorBrush x:Key="IdealForegroundColorBrush" Color="#DD000000"/>
+			-->
+			
+			<!-- Dark -->
+			<SolidColorBrush x:Key="WindowTitleColorBrush" Color="#FF303030"/>
+			<SolidColorBrush x:Key="IdealForegroundColorBrush" Color="#DDFFFFFF"/>
+
+			<SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentColorBrush" Color="{DynamicResource Primary500}"/>  <!-- main accent -->
             <SolidColorBrush x:Key="AccentColorBrush2" Color="{DynamicResource Primary400}"/>
             <SolidColorBrush x:Key="AccentColorBrush3" Color="{DynamicResource Primary300}"/>
-            <SolidColorBrush x:Key="AccentColorBrush4" Color="{DynamicResource Primary200}"/>
-            <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{DynamicResource Primary700}"/>
+			<SolidColorBrush x:Key="AccentColorBrush4" Color="{DynamicResource Primary200}"/>
             <SolidColorBrush x:Key="AccentSelectedColorBrush" Color="{DynamicResource Primary500Foreground}"/>
             <LinearGradientBrush x:Key="ProgressBrush" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
                 <GradientStop Color="{DynamicResource Primary700}" Offset="0"/>
@@ -47,10 +62,9 @@
             </LinearGradientBrush>
             <SolidColorBrush x:Key="CheckmarkFill" Color="{DynamicResource Primary500}"/>
             <SolidColorBrush x:Key="RightArrowFill" Color="{DynamicResource Primary500}"/>
-            <SolidColorBrush x:Key="IdealForegroundColorBrush" Color="{DynamicResource Primary500Foreground}"/>
-            <SolidColorBrush x:Key="IdealForegroundDisabledBrush" Color="{DynamicResource Primary500}" Opacity="0.4"/>
+			<SolidColorBrush x:Key="IdealForegroundDisabledBrush" Color="{DynamicResource Primary500}" Opacity="0.4"/>
 
-        </ResourceDictionary>
+		</ResourceDictionary>
 
     </Application.Resources>
 </Application>
