@@ -40,7 +40,8 @@ namespace RepoZ.Api.Git
 			if (!path.EndsWith("\\", StringComparison.Ordinal))
 				path += "\\";
 
-			var views = _dataSource.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
+			var views = _dataSource.ToList() // threading issues :(
+				.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
 
 			if (!views.Any())
 				return string.Empty;

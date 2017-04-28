@@ -16,7 +16,8 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         GlowBrush="{DynamicResource AccentColorBrush}"
         BorderThickness="1"
-        Title="RepoZ" Height="600" Width="450"
+		TitleCharacterCasing="Normal"
+        Title="RepoZ" Height="600" Width="450" Icon="App.ico"
         >
 	<Grid Margin="10">
 		<ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
@@ -44,4 +45,5 @@
 			</ListBox.ContextMenu>
 		</ListBox>
 	</Grid>
+
 </Controls:MetroWindow>
