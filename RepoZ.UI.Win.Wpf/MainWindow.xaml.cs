@@ -58,26 +58,25 @@ namespace RepoZ.UI.Win.Wpf
 				return;
 			}
 
-			var items = new List<MenuItem>();
+			var items = ((FrameworkElement)e.Source).ContextMenu.Items;
+			items.Clear();
 
 			foreach (var action in _repositoryActionProvider.GetFor(repo.Repository))
 			{
-				//if (action.BeginGroup && items.Any())
-				//	items.Add(new SeparatorMenuItem());
+				if (action.BeginGroup && items.Count > 0)
+					items.Add(new Separator());
 
 				items.Add(CreateMenuItem(sender, action));
 			}
-
-			FrameworkElement fe = e.Source as FrameworkElement;
-			fe.ContextMenu.ItemsSource = items;
 		}
 
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action)
 		{
-			Action clickAction = () =>
+			Action<object, object> clickAction = (object clickSender, object clickArgs) =>
 			{
+				var coords = new float[] { 0, 0 };
 				if (action?.Action != null)
-					action.Action(null, null);
+					action.Action(null, coords);
 			};
 
 			var item = new MenuItem()
@@ -85,6 +84,7 @@ namespace RepoZ.UI.Win.Wpf
 				Header = action.Name,
 				IsEnabled = action.CanExecute
 			};
+			item.Click += new RoutedEventHandler(clickAction);
 
 			if (action.SubActions != null)
 			{
