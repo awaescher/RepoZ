@@ -17,7 +17,7 @@
         GlowBrush="{DynamicResource AccentColorBrush}"
         BorderThickness="1"
 		TitleCharacterCasing="Normal"
-        Title="RepoZ" Height="600" Width="450" Icon="App.ico"
+        Title="RepoZ" Height="600" Width="450"
         >
 	<Grid Margin="10">
 		<ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
