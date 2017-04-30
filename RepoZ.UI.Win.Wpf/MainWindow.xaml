@@ -40,7 +40,7 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 			<ListBox.ContextMenu>
-				<ContextMenu Name="mnuRepositoryContext">
+				<ContextMenu Name="mnuRepositoryContext" FontSize="12">
 				</ContextMenu>
 			</ListBox.ContextMenu>
 		</ListBox>
