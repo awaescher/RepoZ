@@ -22,12 +22,12 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 			{
 				string path = new Uri(explorerLocationUrl).LocalPath;
 
-				string info = _repositoryInfoAggregator.Get(path);
+				string status = _repositoryInfoAggregator.GetStatusByPath(path);
 
-				if (!string.IsNullOrEmpty(info))
+				if (!string.IsNullOrEmpty(status))
 				{
 					string separator = "  [";
-					WindowHelper.AppendWindowText(hwnd, separator, info + "]");
+					WindowHelper.AppendWindowText(hwnd, separator, status + "]");
 				}
 			}
 		}

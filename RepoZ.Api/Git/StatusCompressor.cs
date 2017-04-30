@@ -5,17 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.Git;
 
-namespace RepoZ.UI
+namespace RepoZ.Api.Git
 {
-	public static class StatusCompressor
+	public class StatusCompressor
 	{
 		public const string SIGN_IDENTICAL = "\u2261";
+		public const string SIGN_NO_UPSTREAM = "\u2302";
 		public const string SIGN_ARROW_UP = "\u2191";
 		public const string SIGN_ARROW_DOWN = "\u2193";
 
-		public static string Compress(Repository repository)
+		public string Compress(Repository repository)
 		{
 			if (repository == null)
+				return string.Empty;
+
+			if (string.IsNullOrEmpty(repository.CurrentBranch))
 				return string.Empty;
 
 			var printASR = (repository.LocalAdded ?? 0) + (repository.LocalStaged ?? 0) + (repository.LocalRemoved ?? 0) > 0;
@@ -45,6 +49,10 @@ namespace RepoZ.UI
 						builder.Append($"{SIGN_ARROW_DOWN}{repository.BehindBy.Value}");
 					}
 				}
+			}
+			else
+			{
+				builder.Append(SIGN_NO_UPSTREAM);
 			}
 
 			if (printASR)
