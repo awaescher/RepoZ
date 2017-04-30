@@ -2,7 +2,7 @@
 
 RepoZ is a small tool to help you keeping track of local Git repositories on your development machine.
 
-It has a quite "functional" UI *(improvement branch in progress)* to provide a quick overview of your repositories including some shortcuts like opening a command line tool and checking out Git branches, etc.
+It simply provides a quick overview of your repositories including some shortcuts like opening a command line tool and checking out Git branches, etc.
 
 ![Screenshot](_doc/RepoZ-ReadMe-UI.png)
 
