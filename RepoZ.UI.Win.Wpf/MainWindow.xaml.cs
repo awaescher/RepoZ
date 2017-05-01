@@ -109,17 +109,23 @@ namespace RepoZ.UI.Win.Wpf
 			return $@"
 RepoZ is showing all Git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
-[CurrentBranch S +A ~B -C | +D ~E -F ]
+    S   +A   ~B   -C   |   +D   ~E   -F 
 
-S represents the branch status in relation to remote (tracked origin) branch. Note: This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
+S
+Represents the branch status in relation to remote (tracked origin) branch.
+Note: This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
 
-{statusCharacterMap.IdenticalSign} = The local branch in at the same commit level as the remote branch (BranchIdenticalStatus)
+{statusCharacterMap.IdenticalSign}
+The local branch in at the same commit level as the remote branch.
 
-{statusCharacterMap.ArrowUpSign}<num> = The local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch (BranchAheadStatus)
+{statusCharacterMap.ArrowUpSign}<num>
+The local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
 
-{statusCharacterMap.ArrowDownSign}<num> = The local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch (BranchBehindStatus)
+{statusCharacterMap.ArrowDownSign}<num>
+The local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
 
-{statusCharacterMap.NoUpstreamSign} = The branch is a local branch with no upstream branch information.
+{statusCharacterMap.NoUpstreamSign}
+The branch is a local branch with no upstream branch information.
 
 ABC represent the index; DEF represent the working directory
   + = Added files
