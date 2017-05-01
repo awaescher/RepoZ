@@ -29,12 +29,16 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			InitializeComponent();
 
+			var statusCharacterMap = TinyIoCContainer.Current.Resolve<StatusCharacterMap>();
 			var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+
 			lstRepositories.ItemsSource = aggregator.Repositories;
 
 			_repositoryActionProvider = TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
 
 			lstRepositories.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), System.ComponentModel.ListSortDirection.Ascending));
+
+			txtHelp.Text = GetHelp(statusCharacterMap);
 		}
 
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -93,6 +97,38 @@ namespace RepoZ.UI.Win.Wpf
 			}
 
 			return item;
+		}
+
+		private void HelpButton_Click(object sender, RoutedEventArgs e)
+		{
+			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
+		}
+
+		private string GetHelp(StatusCharacterMap statusCharacterMap)
+		{
+			return $@"
+RepoZ is showing all Git repositories found on local drives. Each repository is listed with a status string which could look like this:
+
+[CurrentBranch S +A ~B -C | +D ~E -F ]
+
+S represents the branch status in relation to remote (tracked origin) branch. Note: This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
+
+{statusCharacterMap.IdenticalSign} = The local branch in at the same commit level as the remote branch (BranchIdenticalStatus)
+
+{statusCharacterMap.ArrowUpSign}<num> = The local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch (BranchAheadStatus)
+
+{statusCharacterMap.ArrowDownSign}<num> = The local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch (BranchBehindStatus)
+
+{statusCharacterMap.NoUpstreamSign} = The branch is a local branch with no upstream branch information.
+
+ABC represent the index; DEF represent the working directory
+  + = Added files
+  ~ = Modified files
+  - = Removed files
+
+Note that the status might be shorter if possible to improve readablility.
+
+";
 		}
 	}
 }

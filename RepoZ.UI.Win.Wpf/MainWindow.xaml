@@ -18,32 +18,48 @@
         BorderThickness="1"
 		TitleCharacterCasing="Normal"
         Title="RepoZ" Height="600" Width="450"
+
         >
 	<Grid Margin="10">
-		<ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
-			<ListBox.ItemTemplate>
-				<DataTemplate>
-					<Grid Margin="0,2">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="200" />
-						</Grid.ColumnDefinitions>
-						<StackPanel Grid.Column="0" Margin="0">
-							<TextBlock Text="{Binding Name}" TextElement.FontSize="15" Margin="5"/>
-							<TextBlock Text="{Binding Location}" TextElement.FontSize="10.5" Margin="5,3,0,0" />
-						</StackPanel>
-						<StackPanel Grid.Column="1" Margin="0">
-							<TextBlock Text="{Binding CurrentBranch}" Margin="5,7,0,0" />
-							<TextBlock Text="{Binding Status}" Margin="5,8,0,0"  />
-						</StackPanel>
-					</Grid>
-				</DataTemplate>
-			</ListBox.ItemTemplate>
-			<ListBox.ContextMenu>
-				<ContextMenu Name="mnuRepositoryContext" FontSize="12">
-				</ContextMenu>
-			</ListBox.ContextMenu>
-		</ListBox>
+
+        <materialDesign:Transitioner Name="transitionerMain" SelectedIndex="0">
+                <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="200" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="0">
+                                    <TextBlock Text="{Binding Name}" TextElement.FontSize="15" Margin="5"/>
+                                    <TextBlock Text="{Binding Location}" TextElement.FontSize="10.5" Margin="5,3,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="0">
+                                    <TextBlock Text="{Binding CurrentBranch}" Margin="5,7,0,0" />
+                                    <TextBlock Text="{Binding Status}" Margin="5,8,0,0"  />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ContextMenu>
+                        <ContextMenu Name="mnuRepositoryContext" FontSize="12">
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                <StackPanel>
+                <TextBlock Name="txtHelp" TextWrapping="Wrap" TextElement.FontSize="13"/>
+                    <Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}" Content="Got it."></Button>
+                 </StackPanel>
+        </materialDesign:Transitioner>
+
+
 	</Grid>
+
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="?" Click="HelpButton_Click" />
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
 
 </Controls:MetroWindow>

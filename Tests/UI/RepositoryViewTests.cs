@@ -15,12 +15,14 @@ namespace Tests.UI
 	{
 		protected Repository _repo;
 		protected RepositoryView _view;
+		private StatusCharacterMap _statusCharacterMap;
 
 		[SetUp]
 		public void Setup()
 		{
 			_repo = new RepositoryBuilder().BuildFullFeatured();
 			_view = new RepositoryView(_repo);
+			_statusCharacterMap = new StatusCharacterMap();
 		}
 
 		public class CtorMethod : RepositoryViewTests
@@ -246,7 +248,7 @@ namespace Tests.UI
 			[Test]
 			public void Returns_The_Compressed_String_From_The_StatusCompressor_Helper_Class()
 			{
-				string expected = new StatusCompressor().Compress(_repo);
+				string expected = new StatusCompressor(_statusCharacterMap).Compress(_repo);
 				_view.Status.Should().Be(expected);
 			}
 		}

@@ -14,20 +14,21 @@ namespace Tests.UI
 	public class StatusCompressorTests
 	{
 		protected RepositoryBuilder _builder;
+		private StatusCharacterMap _statusCharacterMap;
 
 		[SetUp]
 		public void Setup()
 		{
 			_builder = new RepositoryBuilder();
+			_statusCharacterMap = new StatusCharacterMap();
 		}
 
-		protected string Compress(Repository repo) => new StatusCompressor().Compress(repo);
+		protected string Compress(Repository repo) => new StatusCompressor(_statusCharacterMap).Compress(repo);
 
-		protected string Up => StatusCompressor.SIGN_ARROW_UP;
-		protected string Down => StatusCompressor.SIGN_ARROW_DOWN;
-		protected string Eq => StatusCompressor.SIGN_IDENTICAL;
-
-		protected string NoUp => StatusCompressor.SIGN_NO_UPSTREAM;
+		protected string Up => _statusCharacterMap.ArrowUpSign;
+		protected string Down => _statusCharacterMap.ArrowDownSign;
+		protected string Eq => _statusCharacterMap.IdenticalSign;
+		protected string NoUp => _statusCharacterMap.NoUpstreamSign;
 
 		public class CompressMethod : StatusCompressorTests
 		{

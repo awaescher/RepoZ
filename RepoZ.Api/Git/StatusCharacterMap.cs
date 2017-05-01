@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RepoZ.Api.Git
+{
+	public class StatusCharacterMap
+	{
+		public virtual string IdenticalSign => "\u2261";
+		public virtual string NoUpstreamSign => "\u2302";
+		public virtual string ArrowUpSign => "\u2191";
+		public virtual string ArrowDownSign => "\u2193";
+	}
+}

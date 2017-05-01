@@ -9,10 +9,12 @@ namespace RepoZ.Api.Git
 {
 	public class StatusCompressor
 	{
-		public const string SIGN_IDENTICAL = "\u2261";
-		public const string SIGN_NO_UPSTREAM = "\u2302";
-		public const string SIGN_ARROW_UP = "\u2191";
-		public const string SIGN_ARROW_DOWN = "\u2193";
+		private StatusCharacterMap _statusCharakterMap;
+
+		public StatusCompressor(StatusCharacterMap statusCharacterMap)
+		{
+			_statusCharakterMap = statusCharacterMap;
+		}
 
 		public string Compress(Repository repository)
 		{
@@ -35,24 +37,24 @@ namespace RepoZ.Api.Git
 			{
 				if (isOnCommitLevel)
 				{
-					builder.Append(SIGN_IDENTICAL);
+					builder.Append(_statusCharakterMap.IdenticalSign);
 				}
 				else
 				{
 					if (isAhead)
-						builder.Append($"{SIGN_ARROW_UP}{repository.AheadBy.Value}");
+						builder.Append($"{_statusCharakterMap.ArrowUpSign}{repository.AheadBy.Value}");
 
 					if (isBehind)
 					{
 						if (isAhead)
 							builder.Append(" ");
-						builder.Append($"{SIGN_ARROW_DOWN}{repository.BehindBy.Value}");
+						builder.Append($"{_statusCharakterMap.ArrowDownSign}{repository.BehindBy.Value}");
 					}
 				}
 			}
 			else
 			{
-				builder.Append(SIGN_NO_UPSTREAM);
+				builder.Append(_statusCharakterMap.NoUpstreamSign);
 			}
 
 			if (printASR)

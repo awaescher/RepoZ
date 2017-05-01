@@ -54,7 +54,7 @@ namespace RepoZ.Api.Git
 
 		public Repository Repository { get; private set; }
 
-		public string Status => new StatusCompressor().Compress(Repository);
+		public string Status => new StatusCompressor(new StatusCharacterMap()).Compress(Repository);
 
 		public override bool Equals(object obj)
 		{
