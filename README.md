@@ -11,8 +11,6 @@ As an extra goodie for Windows users, RepoZ automatically detects open File Expl
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
 
-> This tool is heavily inspired by the awesome PowerShell extension [posh-git](https://github.com/dahlbyk/posh-git). Give it a try if you are using Git with PowerShell.
-
-> Check their [Status Summary topic](https://github.com/dahlbyk/posh-git#git-status-summary-information) for more information about the compact status appendix.
+This tool is inspired by the awesome PowerShell extension [posh-git](https://github.com/dahlbyk/posh-git). Give it a try if you are using Git with PowerShell.
 
 Use at your own risk, have fun!
