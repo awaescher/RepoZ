@@ -136,5 +136,28 @@ Note that the status might be shorter if possible to improve readablility.
 
 ";
 		}
+
+		protected override void OnStateChanged(EventArgs e)
+		{
+			if (WindowState == WindowState.Minimized)
+			{
+				Hide();
+				trayIcon.Visibility = Visibility.Visible;
+			}
+
+			base.OnStateChanged(e);
+		}
+
+		private void trayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+		{
+			Show();
+
+			if (WindowState == WindowState.Minimized)
+				WindowState = WindowState.Normal;
+
+			Activate();
+
+			trayIcon.Visibility = Visibility.Hidden;
+		}
 	}
 }

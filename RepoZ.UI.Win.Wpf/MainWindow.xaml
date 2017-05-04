@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:RepoZ.UI.Win.Wpf"
+		xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -18,10 +19,12 @@
         BorderThickness="1"
 		TitleCharacterCasing="Normal"
         Title="RepoZ" Height="600" Width="450"
-
         >
+
 	<Grid Margin="10">
 
+		
+		
         <materialDesign:Transitioner Name="transitionerMain" SelectedIndex="0">
                 <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
                     <ListBox.ItemTemplate>
@@ -53,6 +56,12 @@
                  </StackPanel>
         </materialDesign:Transitioner>
 
+		<tb:TaskbarIcon x:Name="trayIcon"
+                    Visibility="Hidden"
+                    ToolTipText="RepoZ"
+                    IconSource="App.ico"
+					TrayMouseDoubleClick="trayIcon_TrayMouseDoubleClick"
+      />
 
 	</Grid>
 
@@ -61,5 +70,5 @@
             <Button Content="?" Click="HelpButton_Click" />
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
-
+	
 </Controls:MetroWindow>
