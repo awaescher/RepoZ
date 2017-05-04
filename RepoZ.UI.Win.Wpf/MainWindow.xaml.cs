@@ -39,6 +39,16 @@ namespace RepoZ.UI.Win.Wpf
 			lstRepositories.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), System.ComponentModel.ListSortDirection.Ascending));
 
 			txtHelp.Text = GetHelp(statusCharacterMap);
+
+			PlaceFormToLowerRight();
+		}
+
+		protected override void OnStateChanged(EventArgs e)
+		{
+			if (WindowState == WindowState.Minimized)
+				HideToTray();
+
+			base.OnStateChanged(e);
 		}
 
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -74,6 +84,40 @@ namespace RepoZ.UI.Win.Wpf
 			}
 		}
 
+		private void HelpButton_Click(object sender, RoutedEventArgs e)
+		{
+			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
+		}
+
+		private void trayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+		{
+			ShowFromTray();
+		}
+
+		private void ShowFromTray()
+		{
+			Show();
+
+			if (WindowState == WindowState.Minimized)
+				WindowState = WindowState.Normal;
+
+			Activate();
+
+			trayIcon.Visibility = Visibility.Hidden;
+		}
+
+		private void HideToTray()
+		{
+			Hide();
+			trayIcon.Visibility = Visibility.Visible;
+		}
+
+		private void PlaceFormToLowerRight()
+		{
+			Top = SystemParameters.WorkArea.Height - Height - 1;
+			Left = SystemParameters.WorkArea.Width - Width - 1;
+		}
+
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action)
 		{
 			Action<object, object> clickAction = (object clickSender, object clickArgs) =>
@@ -99,10 +143,6 @@ namespace RepoZ.UI.Win.Wpf
 			return item;
 		}
 
-		private void HelpButton_Click(object sender, RoutedEventArgs e)
-		{
-			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
-		}
 
 		private string GetHelp(StatusCharacterMap statusCharacterMap)
 		{
@@ -137,27 +177,5 @@ Note that the status might be shorter if possible to improve readablility.
 ";
 		}
 
-		protected override void OnStateChanged(EventArgs e)
-		{
-			if (WindowState == WindowState.Minimized)
-			{
-				Hide();
-				trayIcon.Visibility = Visibility.Visible;
-			}
-
-			base.OnStateChanged(e);
-		}
-
-		private void trayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
-		{
-			Show();
-
-			if (WindowState == WindowState.Minimized)
-				WindowState = WindowState.Normal;
-
-			Activate();
-
-			trayIcon.Visibility = Visibility.Hidden;
-		}
 	}
 }

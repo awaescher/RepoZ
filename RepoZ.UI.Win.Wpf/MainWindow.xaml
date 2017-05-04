@@ -18,7 +18,7 @@
         GlowBrush="{DynamicResource AccentColorBrush}"
         BorderThickness="1"
 		TitleCharacterCasing="Normal"
-        Title="RepoZ" Height="600" Width="450"
+        Title="RepoZ" Height="600" Width="450" ShowMaxRestoreButton="False"
         >
 
 	<Grid Margin="10">
