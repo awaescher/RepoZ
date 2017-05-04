@@ -34,19 +34,19 @@ namespace RepoZ.Api.Git
 
 		public string GetStatusByPath(string path)
 		{
-			if (!_dataSource.Any())
+			var views = _dataSource.ToList(); // threading issues :(
+			if (!views.Any())
 				return string.Empty;
 
 			if (!path.EndsWith("\\", StringComparison.Ordinal))
 				path += "\\";
 
-			var views = _dataSource.ToList() // threading issues :(
-				.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
+			var viewsByPath = views.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
 
-			if (!views.Any())
+			if (!viewsByPath.Any())
 				return string.Empty;
 
-			var view = views.OrderByDescending(r => r.Path.Length).First();
+			var view = viewsByPath.OrderByDescending(r => r.Path.Length).First();
 
 			string status = _compressor.Compress(view.Repository);
 

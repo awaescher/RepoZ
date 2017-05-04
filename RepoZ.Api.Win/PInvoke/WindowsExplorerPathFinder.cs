@@ -40,6 +40,10 @@ namespace RepoZ.Api.Win.PInvoke
 					}
 				}
 			}
+			catch (COMException)
+			{
+				// nothing we can do in here ...
+			}
 			finally
 			{
 				Marshal.FinalReleaseComObject(o);
