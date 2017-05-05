@@ -21,7 +21,6 @@ namespace RepoZ.Api.Win.Git
 		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
-		private bool _scanCompleted = false;
 		private IRepositoryCache _repositoryCache;
 		private IRepositoryInformationAggregator _repositoryInformationAggregator;
 
@@ -40,7 +39,9 @@ namespace RepoZ.Api.Win.Git
 
 		private void ScanForRepositoriesAsync()
 		{
-			_scanCompleted = false;
+			Scanning = true;
+			OnScanStateChanged?.Invoke(Scanning);
+
 			int scannedPaths = 0;
 
 			var paths = _pathProvider.GetPaths();
@@ -50,7 +51,15 @@ namespace RepoZ.Api.Win.Git
 				var crawler = _pathCrawlerFactory.Create();
 				Task.Run(() => crawler.Find(path, "HEAD", file => OnFoundNewRepository(file), null))
 					.ContinueWith((t) => scannedPaths++)
-					.ContinueWith((t) => _scanCompleted = (scannedPaths >= paths.Length));
+					.ContinueWith((t) =>
+					{
+						bool newScanningState = (scannedPaths < paths.Length);
+						bool didChange = newScanningState != Scanning;
+						Scanning = newScanningState;
+
+						if (didChange)
+							OnScanStateChanged?.Invoke(Scanning);
+					});
 			}
 		}
 
@@ -139,7 +148,7 @@ namespace RepoZ.Api.Win.Git
 
 		private void RefreshTimerCallback(object state)
 		{
-			if (_scanCompleted && _refreshQueue.Any())
+			if (!Scanning && _refreshQueue.Any())
 			{
 				var repo = _refreshQueue.Dequeue();
 				OnCheckKnownRepository(repo.Path, KnownRepositoryNotification.WhenFound | KnownRepositoryNotification.WhenNotFound);
@@ -150,6 +159,10 @@ namespace RepoZ.Api.Win.Git
 		public Action<Repository> OnChangeDetected { get; set; }
 
 		public Action<string> OnDeletionDetected { get; set; }
+
+		public Action<bool> OnScanStateChanged { get; set; }
+
+		public bool Scanning = false;
 
 		private enum KnownRepositoryNotification
 		{

@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using RepoZ.Api.Git;
+using RepoZ.Api.Win.Git;
 using TinyIoC;
 
 namespace RepoZ.UI.Win.Wpf
@@ -29,12 +30,21 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			InitializeComponent();
 
-			var statusCharacterMap = TinyIoCContainer.Current.Resolve<StatusCharacterMap>();
-			var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+			var container = TinyIoCContainer.Current;
+			var statusCharacterMap = container.Resolve<StatusCharacterMap>();
+			var aggregator = container.Resolve<IRepositoryInformationAggregator>();
+
+			var monitor = container.Resolve<IRepositoryMonitor>() as DefaultRepositoryMonitor;
+			if (monitor != null)
+			{
+				monitor.OnScanStateChanged = (scanning) => Dispatcher.Invoke(() => ShowScanningState(scanning));
+				ShowScanningState(monitor.Scanning);
+			}
+
+			_repositoryActionProvider = container.Resolve<IRepositoryActionProvider>();
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
 
-			_repositoryActionProvider = TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
 
 			lstRepositories.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), System.ComponentModel.ListSortDirection.Ascending));
 
@@ -143,6 +153,10 @@ namespace RepoZ.UI.Win.Wpf
 			return item;
 		}
 
+		private void ShowScanningState(bool isScanning)
+		{
+			this.Title = "RepoZ" + (isScanning ? " (scanning ...)" : "");
+		}
 
 		private string GetHelp(StatusCharacterMap statusCharacterMap)
 		{
