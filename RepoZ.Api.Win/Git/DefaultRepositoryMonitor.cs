@@ -15,21 +15,27 @@ namespace RepoZ.Api.Win.Git
 	{
 		private SingularityQueue<Repository> _refreshQueue = new SingularityQueue<Repository>();
 		private Timer _refreshTimer = null;
+		private Timer _cacheFlushTimer = null;
 		private List<IRepositoryObserver> _observers = null;
 		private IRepositoryObserverFactory _repositoryObserverFactory;
 		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
 		private bool _scanCompleted = false;
+		private IRepositoryCache _repositoryCache;
+		private IRepositoryInformationAggregator _repositoryInformationAggregator;
 
-		public DefaultRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory)
+		public DefaultRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory, IRepositoryCache repositoryCache, IRepositoryInformationAggregator repositoryInformationAggregator)
 		{
 			_repositoryReader = repositoryReader;
 			_repositoryObserverFactory = repositoryObserverFactory;
 			_pathCrawlerFactory = pathCrawlerFactory;
 			_pathProvider = pathProvider;
+			_repositoryCache = repositoryCache;
+			_repositoryInformationAggregator = repositoryInformationAggregator;
 
 			_refreshTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
+			_cacheFlushTimer = new Timer(RepositoryCacheFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 		}
 
 		private void ScanForRepositoriesAsync()
@@ -47,20 +53,45 @@ namespace RepoZ.Api.Win.Git
 					.ContinueWith((t) => _scanCompleted = (scannedPaths >= paths.Length));
 			}
 		}
+
+		private void ScanCachedRepositories()
+		{
+			foreach (var head in _repositoryCache.Get())
+				OnCheckKnownRepository(head, KnownRepositoryNotification.WhenFound);
+		}
+
+		private void RepositoryCacheFlushTimerCallback(object state)
+		{
+			var heads = _repositoryInformationAggregator.Repositories.Select(v => v.Path).ToArray();
+			_repositoryCache.Set(heads);
+		}
+
 		private void OnFoundNewRepository(string file)
 		{
 			var repo = _repositoryReader.ReadRepository(file);
 			if (repo.WasFound)
+			{
 				OnRepositoryChangeDetected(repo);
+
+				// use that delay to prevent a lot of sequential writes 
+				// when a lot repositories get found in a row
+				_cacheFlushTimer.Change(5000, Timeout.Infinite);
+			}
 		}
 
-		private void OnCheckKnownRepository(string file)
+		private void OnCheckKnownRepository(string file, KnownRepositoryNotification notification)
 		{
 			var repo = _repositoryReader.ReadRepository(file);
 			if (repo.WasFound)
-				OnRepositoryChangeDetected(repo);
+			{
+				if (notification.HasFlag(KnownRepositoryNotification.WhenFound))
+					OnRepositoryChangeDetected(repo);
+			}
 			else
-				OnRepositoryDeletionDetected(file);
+			{
+				if (notification.HasFlag(KnownRepositoryNotification.WhenNotFound))
+					OnRepositoryDeletionDetected(file);
+			}
 		}
 
 		private void ObserveRepositoryChanges()
@@ -86,6 +117,7 @@ namespace RepoZ.Api.Win.Git
 				ObserveRepositoryChanges();
 			}
 
+			ScanCachedRepositories();
 			_observers.ForEach(w => w.Observe());
 		}
 
@@ -105,12 +137,12 @@ namespace RepoZ.Api.Win.Git
 			OnDeletionDetected?.Invoke(repoPath);
 		}
 
-		private void RefreshTimerCallback(Object state)
+		private void RefreshTimerCallback(object state)
 		{
 			if (_scanCompleted && _refreshQueue.Any())
 			{
 				var repo = _refreshQueue.Dequeue();
-				OnCheckKnownRepository(repo.Path);
+				OnCheckKnownRepository(repo.Path, KnownRepositoryNotification.WhenFound | KnownRepositoryNotification.WhenNotFound);
 			}
 			_refreshTimer.Change(2000, Timeout.Infinite);
 		}
@@ -118,5 +150,11 @@ namespace RepoZ.Api.Win.Git
 		public Action<Repository> OnChangeDetected { get; set; }
 
 		public Action<string> OnDeletionDetected { get; set; }
+
+		private enum KnownRepositoryNotification
+		{
+			WhenFound = 1,
+			WhenNotFound = 2
+		}
 	}
 }

@@ -40,6 +40,7 @@
     <Compile Include="Common\IErrorHandler.cs" />
     <Compile Include="Common\SingularityQueue.cs" />
     <Compile Include="Git\DefaultRepositoryInformationAggregator.cs" />
+    <Compile Include="Git\IRepositoryCache.cs" />
     <Compile Include="Git\IRepositoryInformationAggregator.cs" />
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="Git\IRepositoryActionProvider.cs" />

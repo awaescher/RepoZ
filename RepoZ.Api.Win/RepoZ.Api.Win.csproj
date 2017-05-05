@@ -62,6 +62,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git\WindowsRepositoryCache.cs" />
+    <Compile Include="Git\FileRepositoryCache.cs" />
     <Compile Include="Git\DefaultRepositoryMonitor.cs" />
     <Compile Include="Git\DefaultRepositoryObserver.cs" />
     <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />

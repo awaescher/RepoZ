@@ -42,6 +42,7 @@ namespace RepoZ.UI.Win.Wpf
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
 			container.Register<IRepositoryReader, WindowsRepositoryReader>();
 			container.Register<IRepositoryWriter, WindowsRepositoryWriter>();
+			container.Register<IRepositoryCache, WindowsRepositoryCache>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 
