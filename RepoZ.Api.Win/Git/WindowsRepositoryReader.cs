@@ -2,6 +2,7 @@
 using LibGit2Sharp;
 using RepoZ.Api.Git;
 using System.IO;
+using System;
 
 namespace RepoZ.Api.Win.Git
 {
@@ -47,31 +48,38 @@ namespace RepoZ.Api.Win.Git
 
 		private Api.Git.Repository ReadRepositoryInternal(string repoPath)
 		{
-			using (var repo = new LibGit2Sharp.Repository(repoPath))
+			try
 			{
-				var status = repo.RetrieveStatus();
-
-				var workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
-
-				return new Api.Git.Repository()
+				using (var repo = new LibGit2Sharp.Repository(repoPath))
 				{
-					Name = workingDirectory.Name,
-					Path = workingDirectory.FullName,
-					Location = workingDirectory.Parent.FullName,
-					Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
-					LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
-					CurrentBranch = repo.Head.FriendlyName,
-					CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
-					AheadBy = repo.Head.TrackingDetails?.AheadBy,
-					BehindBy = repo.Head.TrackingDetails?.BehindBy,
-					LocalUntracked = status?.Untracked.Count(),
-					LocalModified = status?.Modified.Count(),
-					LocalMissing = status?.Missing.Count(),
-					LocalAdded = status?.Added.Count(),
-					LocalStaged = status?.Staged.Count(),
-					LocalRemoved = status?.Removed.Count(),
-					LocalIgnored = status?.Ignored.Count()
-				};
+					var status = repo.RetrieveStatus();
+
+					var workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
+
+					return new Api.Git.Repository()
+					{
+						Name = workingDirectory.Name,
+						Path = workingDirectory.FullName,
+						Location = workingDirectory.Parent.FullName,
+						Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
+						LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
+						CurrentBranch = repo.Head.FriendlyName,
+						CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
+						AheadBy = repo.Head.TrackingDetails?.AheadBy,
+						BehindBy = repo.Head.TrackingDetails?.BehindBy,
+						LocalUntracked = status?.Untracked.Count(),
+						LocalModified = status?.Modified.Count(),
+						LocalMissing = status?.Missing.Count(),
+						LocalAdded = status?.Added.Count(),
+						LocalStaged = status?.Staged.Count(),
+						LocalRemoved = status?.Removed.Count(),
+						LocalIgnored = status?.Ignored.Count()
+					};
+				}
+			}
+			catch (Exception)
+			{
+				return Api.Git.Repository.Empty;
 			}
 		}
 	}

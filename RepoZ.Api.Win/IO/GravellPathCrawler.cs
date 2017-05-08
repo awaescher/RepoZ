@@ -28,19 +28,23 @@ namespace RepoZ.Api.Win.IO
 				if (root.IndexOf("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) > -1)
 					continue;
 
+				if (root.IndexOf("C:\\Windows", StringComparison.OrdinalIgnoreCase) > -1)
+					continue;
+
+				if (root.IndexOf("Package Cache", StringComparison.OrdinalIgnoreCase) > -1)
+					continue;
+
+				if (root.IndexOf(".nuget", StringComparison.OrdinalIgnoreCase) > -1)
+					continue;
+
+				if (root.IndexOf("Local\\Temp", StringComparison.OrdinalIgnoreCase) > -1)
+					continue;
+				
 				try
 				{
 					tmp = Directory.GetFiles(root, searchPattern);
 				}
-				catch (UnauthorizedAccessException)
-				{
-					continue;
-				}
-				catch (PathTooLongException)
-				{
-					continue;
-				}
-				catch (DirectoryNotFoundException)
+				catch (Exception)
 				{
 					continue;
 				}

@@ -63,10 +63,13 @@ namespace RepoZ.Api.Win.Git
 			}
 		}
 
-		private void ScanCachedRepositories()
+		private void ScanCachedRepositoriesAsync()
 		{
-			foreach (var head in _repositoryCache.Get())
-				OnCheckKnownRepository(head, KnownRepositoryNotification.WhenFound);
+			Task.Run(() =>
+			{
+				foreach (var head in _repositoryCache.Get())
+					OnCheckKnownRepository(head, KnownRepositoryNotification.WhenFound);
+			});
 		}
 
 		private void RepositoryCacheFlushTimerCallback(object state)
@@ -126,7 +129,7 @@ namespace RepoZ.Api.Win.Git
 				ObserveRepositoryChanges();
 			}
 
-			ScanCachedRepositories();
+			ScanCachedRepositoriesAsync();
 			_observers.ForEach(w => w.Observe());
 		}
 
