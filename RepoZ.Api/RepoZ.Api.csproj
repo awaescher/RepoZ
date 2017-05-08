@@ -48,6 +48,7 @@
     <Compile Include="Git\RepositoryView.cs" />
     <Compile Include="Git\StatusCharacterMap.cs" />
     <Compile Include="Git\StatusCompressor.cs" />
+    <Compile Include="IO\IPathSkipper.cs" />
     <Compile Include="IO\IPathCrawler.cs" />
     <Compile Include="IO\IPathCrawlerFactory.cs" />
     <Compile Include="IO\IPathFinder.cs" />

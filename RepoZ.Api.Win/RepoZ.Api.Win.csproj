@@ -74,6 +74,7 @@
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
     <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
+    <Compile Include="IO\WindowsPathSkipper.cs" />
     <Compile Include="PInvoke\Explorer\CleanWindowTitleActor.cs" />
     <Compile Include="PInvoke\Explorer\AppendRepositoryStatusTitleActor.cs" />
     <Compile Include="PInvoke\Explorer\ExplorerWindowActor.cs" />

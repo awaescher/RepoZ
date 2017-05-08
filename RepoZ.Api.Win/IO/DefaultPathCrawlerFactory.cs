@@ -9,6 +9,13 @@ namespace RepoZ.Api.Win.IO
 {
 	public class DefaultPathCrawlerFactory : IPathCrawlerFactory
 	{
-		public IPathCrawler Create() => new GravellPathCrawler();
+		private IPathSkipper _pathSkipper;
+
+		public DefaultPathCrawlerFactory(IPathSkipper pathSkipper)
+		{
+			_pathSkipper = pathSkipper;
+		}
+
+		public IPathCrawler Create() => new GravellPathCrawler(_pathSkipper);
 	}
 }

@@ -12,6 +12,13 @@ namespace RepoZ.Api.Win.IO
 
 	public class GravellPathCrawler : IPathCrawler
 	{
+		private IPathSkipper _pathSkipper;
+
+		public GravellPathCrawler(IPathSkipper pathSkipper)
+		{
+			_pathSkipper = pathSkipper;
+		}
+
 		public List<string> Find(string root, string searchPattern, Action<string> onFoundAction, Action onQuit)
 		{
 			return FindInternal(root, searchPattern, onFoundAction, onQuit).ToList();
@@ -25,19 +32,7 @@ namespace RepoZ.Api.Win.IO
 			{
 				root = pending.Dequeue();
 
-				if (root.IndexOf("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) > -1)
-					continue;
-
-				if (root.IndexOf("C:\\Windows", StringComparison.OrdinalIgnoreCase) > -1)
-					continue;
-
-				if (root.IndexOf("Package Cache", StringComparison.OrdinalIgnoreCase) > -1)
-					continue;
-
-				if (root.IndexOf(".nuget", StringComparison.OrdinalIgnoreCase) > -1)
-					continue;
-
-				if (root.IndexOf("Local\\Temp", StringComparison.OrdinalIgnoreCase) > -1)
+				if (_pathSkipper.ShouldSkip(root))
 					continue;
 				
 				try
