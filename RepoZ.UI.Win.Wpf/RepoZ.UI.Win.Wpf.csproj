@@ -133,10 +133,6 @@
       <Project>{8f74519b-b72d-4a5e-b20b-723543676e5e}</Project>
       <Name>RepoZ.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RepoZ.UI\RepoZ.UI.csproj">
-      <Project>{5925c073-a5aa-4b9d-92e5-cac8b5309635}</Project>
-      <Name>RepoZ.UI</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />

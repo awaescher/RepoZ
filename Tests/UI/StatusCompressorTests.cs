@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using RepoZ.Api.Git;
-using RepoZ.UI;
 using Tests.Helper;
 
 namespace Tests.UI
