@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using RepoZ.Api.Common;
 using RepoZ.Api.Git;
 
-namespace RepoZ.Api.Win.Git
+namespace RepoZ.Api.Common.Git
 {
 	public abstract class FileRepositoryCache : IRepositoryCache
 	{

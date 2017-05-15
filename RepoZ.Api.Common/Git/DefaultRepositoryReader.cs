@@ -4,9 +4,9 @@ using RepoZ.Api.Git;
 using System.IO;
 using System;
 
-namespace RepoZ.Api.Win.Git
+namespace RepoZ.Api.Common.Git
 {
-	public class WindowsRepositoryReader : IRepositoryReader
+	public class DefaultRepositoryReader : IRepositoryReader
 	{
 		public Api.Git.Repository ReadRepository(string path)
 		{

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 using RepoZ.Api.Win.Git;
 using TinyIoC;

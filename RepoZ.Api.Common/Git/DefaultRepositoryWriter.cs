@@ -3,9 +3,9 @@ using System.Linq;
 using LibGit2Sharp;
 using RepoZ.Api.Git;
 
-namespace RepoZ.Api.Win.Git
+namespace RepoZ.Api.Common.Git
 {
-	public class WindowsRepositoryWriter : IRepositoryWriter
+	public class DefaultRepositoryWriter : IRepositoryWriter
 	{
 		public bool Checkout(Api.Git.Repository repository, string branchName)
 		{

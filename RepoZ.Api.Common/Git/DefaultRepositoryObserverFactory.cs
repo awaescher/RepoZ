@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.Git;
 
-namespace RepoZ.Api.Win.Git
+namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryObserverFactory : IRepositoryObserverFactory
 	{

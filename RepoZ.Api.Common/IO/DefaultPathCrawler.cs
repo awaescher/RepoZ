@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Api.Win.IO
+namespace RepoZ.Api.Common.IO
 {
 	public class DefaultPathCrawler
 	{

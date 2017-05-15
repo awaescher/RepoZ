@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.Common;
+using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 
 namespace RepoZ.Api.Win.Git

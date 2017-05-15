@@ -9,7 +9,7 @@ using RepoZ.Api.IO;
 using System.Threading;
 using RepoZ.Api.Common;
 
-namespace RepoZ.Api.Win.Git
+namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryMonitor : IRepositoryMonitor
 	{

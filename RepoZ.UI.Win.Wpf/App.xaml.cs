@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using RepoZ.Api.Common;
+using RepoZ.Api.Common.Git;
+using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Win.Git;
@@ -72,8 +74,8 @@ namespace RepoZ.UI.Win.Wpf
 
 			container.Register<IErrorHandler, UIErrorHandler>();
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
-			container.Register<IRepositoryReader, WindowsRepositoryReader>();
-			container.Register<IRepositoryWriter, WindowsRepositoryWriter>();
+			container.Register<IRepositoryReader, DefaultRepositoryReader>();
+			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
 			container.Register<IRepositoryCache, WindowsRepositoryCache>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
