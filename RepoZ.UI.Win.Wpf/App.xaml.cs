@@ -29,7 +29,7 @@ namespace RepoZ.UI.Win.Wpf
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			bool useUI = !(args?.Any(arg => arg.EndsWith("-noui"))) ?? true;
+			bool noUI = args?.Any(arg => arg.EndsWith("-noui")) ?? false;
 			var container = TinyIoCContainer.Current;
 
 			var application = new App();
@@ -40,14 +40,14 @@ namespace RepoZ.UI.Win.Wpf
 			UseRepositoryMonitor(container, application.Dispatcher);
 			UseExplorerHandler(container);
 
-			if (useUI)
+			if (noUI)
 			{
-				var form = container.Resolve<MainWindow>();
-				application.Run(form);
+				application.Run();
 			}
 			else
 			{
-				application.Run();
+				var form = container.Resolve<MainWindow>();
+				application.Run(form);
 			}
 		}
 
@@ -98,9 +98,7 @@ namespace RepoZ.UI.Win.Wpf
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
-
-
-		private static void RefreshTimerCallback(Object state)
+		protected static void RefreshTimerCallback(Object state)
 		{
 			_explorerHandler.UpdateTitles();
 			_explorerUpdateTimer.Change(500, Timeout.Infinite);
