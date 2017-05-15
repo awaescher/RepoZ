@@ -18,6 +18,6 @@ namespace RepoZ.Api.Win.Git
 
 		}
 
-		public override string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "RepoZ\\Repositories.cache");
+		public override string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ\\Repositories.cache");
 	}
 }
