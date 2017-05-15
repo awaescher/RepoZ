@@ -26,22 +26,21 @@ namespace RepoZ.UI.Win.Wpf
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
 
-		public MainWindow()
+		public MainWindow(StatusCharacterMap statusCharacterMap,
+			IRepositoryInformationAggregator aggregator,
+			IRepositoryMonitor repositoryMonitor,
+			IRepositoryActionProvider repositoryActionProvider)
 		{
 			InitializeComponent();
 
-			var container = TinyIoCContainer.Current;
-			var statusCharacterMap = container.Resolve<StatusCharacterMap>();
-			var aggregator = container.Resolve<IRepositoryInformationAggregator>();
-
-			var monitor = container.Resolve<IRepositoryMonitor>() as DefaultRepositoryMonitor;
+			var monitor = repositoryMonitor as DefaultRepositoryMonitor;
 			if (monitor != null)
 			{
 				monitor.OnScanStateChanged = (scanning) => Dispatcher.Invoke(() => ShowScanningState(scanning));
 				ShowScanningState(monitor.Scanning);
 			}
 
-			_repositoryActionProvider = container.Resolve<IRepositoryActionProvider>();
+			_repositoryActionProvider = repositoryActionProvider;
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
 
