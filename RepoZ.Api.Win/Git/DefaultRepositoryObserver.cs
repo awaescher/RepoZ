@@ -7,7 +7,7 @@ namespace RepoZ.Api.Win.Git
 {
 	public class DefaultRepositoryObserver : IRepositoryObserver
 	{
-		private const string HEAD_FILE = @".git\HEAD";
+		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
 		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
@@ -79,7 +79,7 @@ namespace RepoZ.Api.Win.Git
 		private bool IsHead(string path)
 		{
 			int index = GetGitPathEndFromHeadFile(path);
-			return index == (path.Length - HEAD_FILE.Length);
+			return index == (path.Length - HEAD_LOG_FILE.Length);
 		}
 
 		private string GetRepositoryPathFromHead(string headFile)
@@ -92,7 +92,7 @@ namespace RepoZ.Api.Win.Git
 			return headFile.Substring(0, end);
 		}
 
-		private int GetGitPathEndFromHeadFile(string path) => path.IndexOf(HEAD_FILE, StringComparison.OrdinalIgnoreCase);
+		private int GetGitPathEndFromHeadFile(string path) => path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
 		
 		private void EatRepo(string path)
 		{
