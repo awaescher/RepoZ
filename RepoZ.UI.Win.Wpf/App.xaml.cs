@@ -29,7 +29,7 @@ namespace RepoZ.UI.Win.Wpf
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			bool noUI = args?.Any(arg => arg.EndsWith("-noui")) ?? false;
+			bool noUI = args?.Any(arg => arg.EndsWith("-noui", StringComparison.OrdinalIgnoreCase)) ?? false;
 			var container = TinyIoCContainer.Current;
 
 			var application = new App();
