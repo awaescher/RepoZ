@@ -55,6 +55,10 @@
       <Project>{8F74519B-B72D-4A5E-B20B-723543676E5E}</Project>
       <Name>RepoZ.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj">
+      <Project>{8104948C-EB24-496B-B15B-D769535B7DAB}</Project>
+      <Name>RepoZ.Api.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
