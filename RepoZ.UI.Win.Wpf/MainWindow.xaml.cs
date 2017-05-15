@@ -26,7 +26,10 @@ namespace RepoZ.UI.Win.Wpf
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
 
-		public MainWindow(StatusCharacterMap statusCharacterMap, IRepositoryInformationAggregator aggregator, IRepositoryMonitor repositoryMonitor, IRepositoryActionProvider repositoryActionProvider)
+		public MainWindow(StatusCharacterMap statusCharacterMap,
+			IRepositoryInformationAggregator aggregator,
+			IRepositoryMonitor repositoryMonitor,
+			IRepositoryActionProvider repositoryActionProvider)
 		{
 			InitializeComponent();
 

@@ -51,6 +51,16 @@ namespace RepoZ.UI.Win.Wpf
 			}
 		}
 
+		protected override void OnExit(ExitEventArgs e)
+		{
+			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+			var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
+			explorerHandler.CleanTitles();
+
+			base.OnExit(e);
+		}
+
 		protected static void RegisterServices(TinyIoCContainer container)
 		{
 			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
@@ -70,7 +80,7 @@ namespace RepoZ.UI.Win.Wpf
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 		}
 
-		private static void UseRepositoryMonitor(TinyIoCContainer container, Dispatcher uiDispatcher)
+		protected static void UseRepositoryMonitor(TinyIoCContainer container, Dispatcher uiDispatcher)
 		{
 			if (uiDispatcher == null)
 				throw new ArgumentNullException(nameof(uiDispatcher));
@@ -82,21 +92,13 @@ namespace RepoZ.UI.Win.Wpf
 			_repositoryMonitor.Observe();
 		}
 
-		private static void UseExplorerHandler(TinyIoCContainer container)
+		protected static void UseExplorerHandler(TinyIoCContainer container)
 		{
 			_explorerHandler = container.Resolve<WindowsExplorerHandler>();
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
-		protected override void OnExit(ExitEventArgs e)
-		{
-			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-			var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
-			explorerHandler.CleanTitles();
-
-			base.OnExit(e);
-		}
 
 		private static void RefreshTimerCallback(Object state)
 		{
