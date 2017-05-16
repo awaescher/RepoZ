@@ -48,10 +48,12 @@ namespace RepoZ.UI.Mac
 
 		static void UseRepositoryMonitor(TinyIoCContainer container)
 		{
-			var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
+            var uiContext = System.Threading.SynchronizationContext.Current;
+
+            var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
-			_repositoryMonitor.OnChangeDetected = (repo) => repositoryInformationAggregator.Add(repo);
-			_repositoryMonitor.OnDeletionDetected = (repoPath) => repositoryInformationAggregator.RemoveByPath(repoPath);
+            _repositoryMonitor.OnChangeDetected = (repo) => uiContext.Send(delegate { repositoryInformationAggregator.Add(repo); }, null);
+            _repositoryMonitor.OnDeletionDetected = (repoPath) => uiContext.Send(delegate { repositoryInformationAggregator.RemoveByPath(repoPath); }, null);
 			_repositoryMonitor.Observe();
 		}
 	}

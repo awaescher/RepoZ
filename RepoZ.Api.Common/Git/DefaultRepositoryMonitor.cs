@@ -130,7 +130,7 @@ namespace RepoZ.Api.Common.Git
 			}
 
 			ScanCachedRepositoriesAsync();
-			_observers.ForEach(w => w.Observe());
+			//_observers.ForEach(w => w.Observe()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
 		}
 
 		public void Stop()
