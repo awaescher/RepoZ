@@ -27,7 +27,7 @@ namespace RepoZ.UI.Mac.Story
             // Do any additional setup after loading the view.
             var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
             RepositoryTable.DataSource = datasource;
-            RepositoryTable.Delegate = new RepositoryTableDelegate(datasource);
+            RepositoryTable.Delegate = new RepositoryTableDelegate(RepositoryTable, datasource);
         }
 
         public override NSObject RepresentedObject
