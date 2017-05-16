@@ -4,12 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6C5B50CF-F106-462B-86BC-EB4CA4AE170B}</ProjectGuid>
+    <ProjectGuid>{2E92803F-C92B-4C56-B913-87F64476EAE2}</ProjectGuid>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RepoZ.UI.Mac</RootNamespace>
+    <RootNamespace>RepoZ.UI.Mac.Story</RootNamespace>
     <AssemblyName>RepoZ</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <UseXamMacFullFramework>true</UseXamMacFullFramework>
   </PropertyGroup>
@@ -28,11 +27,10 @@
     <IncludeMonoRuntime>false</IncludeMonoRuntime>
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
+    <Profiling>true</Profiling>
     <HttpClientHandler>HttpClientHandler</HttpClientHandler>
-    <TlsProvider>Default</TlsProvider>
     <LinkMode>None</LinkMode>
-    <XamMacArch>x86_64</XamMacArch>
-    <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
+    <XamMacArch></XamMacArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,7 +47,6 @@
     <UseRefCounting>true</UseRefCounting>
     <LinkMode>None</LinkMode>
     <HttpClientHandler>HttpClientHandler</HttpClientHandler>
-    <TlsProvider>Default</TlsProvider>
     <XamMacArch></XamMacArch>
   </PropertyGroup>
   <ItemGroup>
@@ -86,23 +83,30 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <Compile Include="ViewController.cs" />
+    <Compile Include="ViewController.designer.cs">
+      <DependentUpon>ViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="TinyIoC.cs" />
+    <Compile Include="UIErrorHandler.cs" />
     <Compile Include="Model\RepositoryTableDataSource.cs" />
     <Compile Include="Model\RepositoryTableDelegate.cs" />
-    <Compile Include="UIErrorHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
       <Project>{8F74519B-B72D-4A5E-B20B-723543676E5E}</Project>
       <Name>RepoZ.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RepoZ.Api.Mac\RepoZ.Api.Mac.csproj">
-      <Project>{A314F9CB-5108-4065-AFB6-42799099B188}</Project>
-      <Name>RepoZ.Api.Mac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj">
       <Project>{8104948C-EB24-496B-B15B-D769535B7DAB}</Project>
       <Name>RepoZ.Api.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Api.Mac\RepoZ.Api.Mac.csproj">
+      <Project>{A314F9CB-5108-4065-AFB6-42799099B188}</Project>
+      <Name>RepoZ.Api.Mac</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -110,9 +114,6 @@
       <Kind>Dynamic</Kind>
       <SmartLink>False</SmartLink>
     </NativeReference>
-  </ItemGroup>
-  <ItemGroup>
-    <InterfaceDefinition Include="Main.storyboard" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

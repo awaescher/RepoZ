@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Mac", "RepoZ.Api.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Common", "RepoZ.Api.Common\RepoZ.Api.Common.csproj", "{8104948C-EB24-496B-B15B-D769535B7DAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.UI.Mac.Story", "RepoZ.UI.Mac.Story\RepoZ.UI.Mac.Story.csproj", "{2E92803F-C92B-4C56-B913-87F64476EAE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8104948C-EB24-496B-B15B-D769535B7DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8104948C-EB24-496B-B15B-D769535B7DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8104948C-EB24-496B-B15B-D769535B7DAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E92803F-C92B-4C56-B913-87F64476EAE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E92803F-C92B-4C56-B913-87F64476EAE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E92803F-C92B-4C56-B913-87F64476EAE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E92803F-C92B-4C56-B913-87F64476EAE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
