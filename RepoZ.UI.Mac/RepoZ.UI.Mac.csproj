@@ -86,6 +86,15 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="TinyIoC.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="MainWindow.designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindowController.cs" />
+    <Compile Include="MainWindowController.designer.cs">
+      <DependentUpon>MainWindowController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UIErrorHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
@@ -106,6 +115,9 @@
       <Kind>Dynamic</Kind>
       <SmartLink>False</SmartLink>
     </NativeReference>
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="MainWindow.xib" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>

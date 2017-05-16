@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace RepoZ.Api.Mac.IO
 {
-	public class DefaultDriveEnumerator : IPathProvider
+	public class MacDriveEnumerator : IPathProvider
 	{
 		public string[] GetPaths()
 		{
