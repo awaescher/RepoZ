@@ -9,6 +9,8 @@ namespace RepoZ.UI.Mac.Story
 {
     public partial class ViewController : NSViewController
     {
+        private IRepositoryInformationAggregator _aggregator;
+
         public ViewController(IntPtr handle) : base(handle)
         {
         }
@@ -19,13 +21,11 @@ namespace RepoZ.UI.Mac.Story
 
             var container = TinyIoCContainer.Current;
 
-            var aggregator = container.Resolve<IRepositoryInformationAggregator>();
+            _aggregator = container.Resolve<IRepositoryInformationAggregator>();
             var monitor = container.Resolve<IRepositoryMonitor>();
 
-            aggregator.Repositories.Add(new RepositoryView(new Repository() { Name = "Test1", AheadBy=1, BehindBy = 2, CurrentBranch = "mtx" }));
-
             // Do any additional setup after loading the view.
-            var datasource = new RepositoryTableDataSource(aggregator.Repositories);
+            var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
             RepositoryTable.DataSource = datasource;
             RepositoryTable.Delegate = new RepositoryTableDelegate(datasource);
         }
