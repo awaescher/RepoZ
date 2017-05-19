@@ -24,11 +24,13 @@ namespace RepoZ.Api.Git
 
 		private string Normalize(string path)
 		{
-			const string BS = @"\";
+            // yeah not that beautiful but we have to add a blackslash
+            // or slash (depending on the OS) and on Mono, I dont have Path.PathSeparator.
+            // so we add a random char with Path.Combine() and remove it again
+            path = System.IO.Path.Combine(path, "_");
+            path = path.Substring(0, path.Length - 1);
 
-			path = path.Replace("/", BS);
-
-			return System.IO.Path.GetDirectoryName(path + BS);
+			return System.IO.Path.GetDirectoryName(path);
 		}
 
 		public override int GetHashCode()

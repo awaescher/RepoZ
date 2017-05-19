@@ -12,16 +12,6 @@ namespace RepoZ.UI.Mac.Story.Model
 		public RepositoryTableDelegate(NSTableView tableView, RepositoryTableDataSource datasource)
 		{
 			this.DataSource = datasource;
-
-            this.DataSource.Repositories.CollectionChanged += (sender, e) =>
-            {
-                InvokeOnMainThread(() =>
-                {
-                    // TODO repaint?!
-                    tableView.NeedsDisplay = true;
-                    tableView.SetNeedsDisplay();
-                });
-            };
 		}
 
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)
