@@ -34,6 +34,9 @@ namespace RepoZ.Api.Git
 
 		public string GetStatusByPath(string path)
 		{
+			if (string.IsNullOrEmpty(path))
+				return string.Empty;
+
 			var views = _dataSource.ToList(); // threading issues :(
 			if (!views.Any())
 				return string.Empty;
@@ -41,7 +44,7 @@ namespace RepoZ.Api.Git
 			if (!path.EndsWith("\\", StringComparison.Ordinal))
 				path += "\\";
 
-			var viewsByPath = views.Where(r => path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
+			var viewsByPath = views.Where(r => r?.Path != null && path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
 
 			if (!viewsByPath.Any())
 				return string.Empty;

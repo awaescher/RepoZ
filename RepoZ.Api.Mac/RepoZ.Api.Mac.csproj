@@ -35,16 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Git\MacRepositoryReader.cs" />
-    <Compile Include="Git\DefaultRepositoryMonitor.cs" />
-    <Compile Include="Git\DefaultRepositoryObserver.cs" />
-    <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />
-    <Compile Include="IO\DefaultDriveEnumerator.cs" />
-    <Compile Include="IO\DefaultPathCrawler.cs" />
-    <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
-    <Compile Include="IO\GravellPathCrawler.cs" />
+    <Compile Include="IO\MacDriveEnumerator.cs" />
     <Compile Include="IO\MacRepositoryActionProvider.cs" />
-    <Compile Include="Git\MacRepositoryWriter.cs" />
+    <Compile Include="Git\MacRepositoryCache.cs" />
+    <Compile Include="IO\MacPathSkipper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Git\" />
@@ -54,6 +48,10 @@
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
       <Project>{8F74519B-B72D-4A5E-B20B-723543676E5E}</Project>
       <Name>RepoZ.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj">
+      <Project>{8104948C-EB24-496B-B15B-D769535B7DAB}</Project>
+      <Name>RepoZ.Api.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

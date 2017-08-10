@@ -125,6 +125,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj">
+      <Project>{8104948C-EB24-496B-B15B-D769535B7DAB}</Project>
+      <Name>RepoZ.Api.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RepoZ.Api.Win\RepoZ.Api.Win.csproj">
       <Project>{85c75358-4e23-4074-9376-8079c874bd1e}</Project>
       <Name>RepoZ.Api.Win</Name>
