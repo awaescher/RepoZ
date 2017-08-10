@@ -31,8 +31,6 @@ namespace RepoZ.Api.Common.Git
 			_watcher.IncludeSubdirectories = true;
 		}
 
-
-
 		public void Observe()
 		{
 			_watcher.EnableRaisingEvents = true;
