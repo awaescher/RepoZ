@@ -11,6 +11,7 @@ namespace RepoZ.Api.Common.Git
 		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
+		private int _detectionToAlertDelayMilliseconds;
 
 		public DefaultRepositoryObserver(IRepositoryReader repositoryReader)
 		{
@@ -20,8 +21,9 @@ namespace RepoZ.Api.Common.Git
 		public Action<Repository> OnAddOrChange { get; set; }
 		public Action<string> OnDelete { get; set; }
 
-		public void Setup(string path)
+		public void Setup(string path, int detectionToAlertDelayMilliseconds = 5000)
 		{
+			_detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 			_path = path;
 			_watcher = new FileSystemWatcher(_path, "HEAD");
 			_watcher.Created += _watcher_Created;
@@ -70,7 +72,7 @@ namespace RepoZ.Api.Common.Git
 			if (!IsHead(e.FullPath))
 				return;
 
-			Task.Run(() => Task.Delay(5000))
+			Task.Run(() => Task.Delay(_detectionToAlertDelayMilliseconds))
 				.ContinueWith(t => EatRepo(e.FullPath));
 		}
 
@@ -97,9 +99,7 @@ namespace RepoZ.Api.Common.Git
 			var repo = _repositoryReader.ReadRepository(path);
 
 			if (repo?.WasFound ?? false)
-			{
 				OnAddOrChange?.Invoke(repo);
-			}
 		}
 
 		private void NotifyHeadDeletion(string headFile)
