@@ -61,10 +61,10 @@
     <Compile Include="Git\WindowsRepositoryCache.cs" />
     <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
     <Compile Include="IO\WindowsPathSkipper.cs" />
+    <Compile Include="PInvoke\Combridge.cs" />
     <Compile Include="PInvoke\Explorer\CleanWindowTitleActor.cs" />
     <Compile Include="PInvoke\Explorer\AppendRepositoryStatusTitleActor.cs" />
     <Compile Include="PInvoke\Explorer\ExplorerWindowActor.cs" />
-    <Compile Include="PInvoke\WindowsExplorerPathFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PInvoke\WindowFinder.cs" />
     <Compile Include="PInvoke\WindowHelper.cs" />

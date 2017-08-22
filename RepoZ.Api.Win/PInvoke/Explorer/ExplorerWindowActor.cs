@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,31 +18,37 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 			if (_shellApplicationType == null)
 				_shellApplicationType = Type.GetTypeFromProgID("Shell.Application");
 
-			dynamic o = Activator.CreateInstance(_shellApplicationType);
-			try
+			var comShellApplication = Activator.CreateInstance(_shellApplicationType);
+			using (var shell = new Combridge(comShellApplication))
 			{
-				var ws = o.Windows();
-				for (int i = 0; i < ws.Count; i++)
+				try
 				{
-					var ie = ws.Item(i);
-					if (ie == null)
-						continue;
+					var comWindows = shell.InvokeMethod<IEnumerable>("Windows");
 
-					var executable = System.IO.Path.GetFileName((string)ie.FullName);
-					if (executable.ToLower() == "explorer.exe")
+					foreach (var comWindow in comWindows)
 					{
-						// thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties
-						Act((IntPtr)ie.hwnd, ie.LocationURL);
+						if (comWindow == null)
+							continue;
+
+						using (var window = new Combridge(comWindow))
+						{
+							var fullName = window.GetPropertyValue<string>("FullName");
+							var executable = Path.GetFileName(fullName);
+							if (executable.ToLower() == "explorer.exe")
+							{
+								// thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties
+								var hwnd = window.GetPropertyValue<long>("hwnd");
+								var locationUrl = window.GetPropertyValue<string>("LocationURL");
+
+								Act((IntPtr)hwnd, locationUrl);
+							}
+						}
 					}
 				}
-			}
-			catch (COMException)
-			{
-				// nothing we can do in here ...
-			}
-			finally
-			{
-				Marshal.FinalReleaseComObject(o);
+				catch (COMException)
+				{
+					// nothing we can do in here ...
+				}
 			}
 		}
 
