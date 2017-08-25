@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Common.Git
 {
-	public class DefaultRepositoryObserver : IRepositoryObserver
+	public class DefaultRepositoryObserver : IRepositoryObserver, IDisposable
 	{
 		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
 		private string _path;
@@ -107,6 +107,11 @@ namespace RepoZ.Api.Common.Git
 			string path = GetRepositoryPathFromHead(headFile);
 			if (!string.IsNullOrEmpty(path))
 				OnDelete?.Invoke(path);
+		}
+
+		public void Dispose()
+		{
+			_watcher?.Dispose();
 		}
 	}
 }

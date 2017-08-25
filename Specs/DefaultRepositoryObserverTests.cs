@@ -3,11 +3,9 @@ using NUnit.Framework;
 using RepoZ.Api.Common.Git;
 using Specs.IO;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Specs
 {
@@ -19,24 +17,29 @@ namespace Specs
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			string path = @"C:\Temp\Test";
+			string rootPath = @"C:\Temp\TestRepositories\";
 
-			if (Directory.Exists(path))
-				Directory.Delete(path, true);
-			Directory.CreateDirectory(path);
+			TryClearRootPath(rootPath);
+			WaitFileOperationDelay();
+
+			string repoPath = Path.Combine(rootPath, Guid.NewGuid().ToString());
 
 			var reader = new DefaultRepositoryReader();
 			_observer = new DefaultRepositoryObserver(reader);
-			_observer.Setup(path, 100);
+			_observer.Setup(rootPath, 100);
 			_observer.Observe();
 
-			_repositoryWriter = new RepositoryWriter(Path.Combine(path, "TestRepo"));
+			_repositoryWriter = new RepositoryWriter(Path.Combine(repoPath, "TestRepo"));
 		}
 
 		[OneTimeTearDown]
 		public void TearDown()
 		{
 			_observer.Stop();
+			_observer.Dispose();
+
+			WaitFileOperationDelay();
+
 			_repositoryWriter.Cleanup();
 		}
 
@@ -108,13 +111,41 @@ namespace Specs
 
 			WaitObserverDelay();
 
-			change.Should().Be(1);
+			change.Should().BeGreaterOrEqualTo(1);
 			delete.Should().Be(0);
+		}
+
+		private void WaitFileOperationDelay()
+		{
+			Thread.Sleep(100);
 		}
 
 		private void WaitObserverDelay()
 		{
-			System.Threading.Thread.Sleep(500);
+			Thread.Sleep(500);
+		}
+
+		private static void TryClearRootPath(string rootPath)
+		{
+			if (Directory.Exists(rootPath))
+			{
+				foreach (var dir in new DirectoryInfo(rootPath).GetDirectories())
+				{
+					try
+					{
+						dir.Delete(true);
+					}
+					catch (UnauthorizedAccessException)
+					{
+						// we cannot do nothing about it here
+						Debug.WriteLine(nameof(UnauthorizedAccessException) + ": Could not clear test root path: " + dir.FullName);
+					}
+				}
+			}
+			else
+			{
+				Directory.CreateDirectory(rootPath);
+			}
 		}
 	}
 }
