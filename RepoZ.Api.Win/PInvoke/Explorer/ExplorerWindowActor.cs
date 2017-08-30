@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,13 +17,12 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 			if (_shellApplicationType == null)
 				_shellApplicationType = Type.GetTypeFromProgID("Shell.Application");
 
-			var comShellApplication = Activator.CreateInstance(_shellApplicationType);
-			using (var shell = new Combridge(comShellApplication))
+			try
 			{
-				try
+				var comShellApplication = Activator.CreateInstance(_shellApplicationType);
+				using (var shell = new Combridge(comShellApplication))
 				{
 					var comWindows = shell.InvokeMethod<IEnumerable>("Windows");
-
 					foreach (var comWindow in comWindows)
 					{
 						if (comWindow == null)
@@ -34,7 +32,7 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 						{
 							var fullName = window.GetPropertyValue<string>("FullName");
 							var executable = Path.GetFileName(fullName);
-							if (executable.ToLower() == "explorer.exe")
+							if (string.Equals(executable, "explorer.exe", StringComparison.OrdinalIgnoreCase))
 							{
 								// thanks http://docwiki.embarcadero.com/Libraries/Seattle/en/SHDocVw.IWebBrowser2_Properties
 								var hwnd = window.GetPropertyValue<long>("hwnd");
@@ -45,11 +43,11 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 						}
 					}
 				}
-				catch (COMException)
-				{
-					// nothing we can do in here ...
-				}
 			}
+			catch (System.Runtime.InteropServices.COMException)
+			{ /* this is fire & forget - nothing we can do in here for unreproducible exceptions */ }
+			catch (System.Reflection.TargetInvocationException)
+			{ /* this is fire & forget - nothing we can do in here for unreproducible exceptions */ }
 		}
 
 		protected abstract void Act(IntPtr hwnd, string explorerLocationUrl);
