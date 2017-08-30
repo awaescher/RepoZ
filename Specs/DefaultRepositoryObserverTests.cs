@@ -11,7 +11,9 @@ namespace Specs
 {
 	public class DefaultRepositoryObserverTests
 	{
-		private RepositoryWriter _repositoryWriter;
+		private RepositoryWriter _origin;
+		private RepositoryWriter _cloneA;
+		private RepositoryWriter _cloneB;
 		private DefaultRepositoryObserver _observer;
 
 		[OneTimeSetUp]
@@ -29,7 +31,10 @@ namespace Specs
 			_observer.Setup(rootPath, 100);
 			_observer.Observe();
 
-			_repositoryWriter = new RepositoryWriter(Path.Combine(repoPath, "TestRepo"));
+			_origin = new RepositoryWriter(Path.Combine(repoPath, "TestRepo"));
+			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "TestRepoClone1"));
+			_cloneB = new RepositoryWriter(Path.Combine(repoPath, "TestRepoClone2"));
+
 		}
 
 		[OneTimeTearDown]
@@ -40,79 +45,194 @@ namespace Specs
 
 			WaitFileOperationDelay();
 
-			_repositoryWriter.Cleanup();
+			_origin.Cleanup();
+			_cloneA.Cleanup();
+			_cloneB.Cleanup();
 		}
+
+		/*
+
+			        [[1]]                          [[1]]
+
+  cloneA   <-----------------+   origin  +----------------->  cloneB
+     +                                 +                        +
+     |                           ^  ^  |                        |
+     v       [[2]]               |  |  |         [[3]]          v
+ add file                        |  |  +----------------------> +--+    [[4]]
+     +                           |  |  |        pull            |  |
+     |                           |  |  |                        |  |
+     v                           |  |  |                        |  +---->  branch "develop"   
+ stage file                      |  |  |fetch                   |              |
+     +                           |  |  |                  master|              v
+     |                           |  |  +--> +                   |          create file
+     v                  push to  |  |       |                   |              |
+commit file             master   |  |       |                   |              v
+      +--------------------------^  |       |                   |          stage file
+                                    |       |                   |              |
+                                    |       |                   |              v
+                                    |       |     [[5]]         |          commit file
+                                    |       |            merge  v              |
+                                    |       +-----------------> @              |
+                                    |                                          |
+                                    |                           |   rebase     |
+                                    |                           +^-------------+
+                                    |                           |   [[6]]
+                                    |                           ^
+                                    |    push                  +++
+                                    +--------------------------+ |
+                                             [[7]]             +-+
+
+
+
+		 */
 
 		[Test]
 		[Order(0)]
-		public void Detects_Repository_Creation()
+		public void T0A_Detects_Repository_Creation()
 		{
-			int change = 0;
-			int delete = 0;
+			_origin.InitBare();
 
-			_observer.OnAddOrChange = (r) => change++;
-			_observer.OnDelete = (path) => delete++;
-
-			_repositoryWriter.Init();
+			//_originWriter.Checkout("master");
 
 			WaitObserverDelay();
-
-			change.Should().Be(0); // TODO should detect
-			delete.Should().Be(0);
 		}
 
 		[Test]
 		[Order(1)]
-		public void Detects_File_Creation()
+		public void T1A_Detects_Repository_Clone()
 		{
-			int change = 0;
-			int delete = 0;
-
-			_observer.OnAddOrChange = (r) => change++;
-			_observer.OnDelete = (path) => delete++;
-
-			_repositoryWriter.CreateFile("Repo.Z", "Repository Monitor");
+			_cloneA.Clone(_origin.Path);
+			_cloneB.Clone(_origin.Path);
 
 			WaitObserverDelay();
-
-			change.Should().Be(0); // TODO should detect
-			delete.Should().Be(0);
 		}
 
 		[Test]
 		[Order(2)]
-		public void Detects_File_Staging()
+		public void T2B_Detects_File_Creation()
 		{
-			int change = 0;
-			int delete = 0;
-
-			_observer.OnAddOrChange = (r) => change++;
-			_observer.OnDelete = (path) => delete++;
-
-			_repositoryWriter.Stage("Repo.Z");
+			_cloneA.CreateFile("Repo.Z", "Repository Monitor");
 
 			WaitObserverDelay();
-
-			change.Should().Be(0); // TODO should detect
-			delete.Should().Be(0);
 		}
 
 		[Test]
 		[Order(3)]
-		public void Detects_Commits()
+		public void T2C_Detects_File_Staging()
 		{
-			int change = 0;
-			int delete = 0;
-
-			_observer.OnAddOrChange = (r) => change++;
-			_observer.OnDelete = (path) => delete++;
-
-			_repositoryWriter.Commit();
+			_cloneA.Stage("Repo.Z");
 
 			WaitObserverDelay();
+		}
 
-			change.Should().BeGreaterOrEqualTo(1);
-			delete.Should().Be(0);
+		[Test]
+		[Order(4)]
+		public void T2D_Detects_Repository_Commits()
+		{
+			_cloneA.Commit();
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(5)]
+		public void T2E_Detects_Repository_Pushes()
+		{
+			_cloneA.Push();
+			_origin.HeadTip.Should().Be(_cloneA.HeadTip);
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(6)]
+		public void T3A_Detects_Repository_Pull()
+		{
+			_cloneB.Pull();
+			_cloneB.HeadTip.Should().Be(_cloneA.HeadTip);
+
+			WaitObserverDelay();
+		}
+		
+		[Test]
+		[Order(7)]
+		public void T4A_Detects_Repository_Branch_And_Checkout()
+		{
+			_cloneB.CurrentBranch.Should().Be("master");
+			_cloneB.Branch("develop");
+			_cloneB.Checkout("develop");
+			_cloneB.CurrentBranch.Should().Be("develop");
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(8)]
+		public void T4B_Detects_Repository_Branch_And_Checkout()
+		{
+			_cloneB.CreateFile("CloneB.dmp", "Clone B was here");
+			_cloneB.Stage("CloneB.dmp");
+			_cloneB.Commit();
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(9)]
+		public void T5A_Checkout_Master()
+		{
+			_cloneB.CurrentBranch.Should().Be("develop");
+			_cloneB.Checkout("master");
+			_cloneB.CurrentBranch.Should().Be("master");
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(10)]
+		public void T5B_Detects_Repository_Fetch()
+		{
+			_cloneB.Fetch();
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(11)]
+		public void T5C_Detects_Repository_Merge()
+		{
+			_cloneB.Merge();
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(12)]
+		public void T6A_Checkout_Develop()
+		{
+			_cloneB.CurrentBranch.Should().Be("master");
+			_cloneB.Checkout("develop");
+			_cloneB.CurrentBranch.Should().Be("develop");
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(13)]
+		public void T6B_Detects_Repository_Rebase()
+		{
+			_cloneB.Rebase("master");
+
+			WaitObserverDelay();
+		}
+
+		[Test]
+		[Order(14)]
+		public void T7A_Detects_Repository_Push_With_Upstream()
+		{
+			_cloneB.Push();
+
+			WaitObserverDelay();
 		}
 
 		private void WaitFileOperationDelay()
