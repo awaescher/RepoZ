@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertionHelper.cs" />
     <Compile Include="DefaultRepositoryObserverTests.cs" />
     <Compile Include="IO\RepositoryWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

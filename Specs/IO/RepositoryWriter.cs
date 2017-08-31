@@ -47,11 +47,11 @@ namespace Specs.IO
 			}
 		}
 
-		public void Commit()
+		public void Commit(string message)
 		{
 			using (var repo = new Repository(Path))
 			{
-				repo.Commit("A message", Signature, Signature);
+				repo.Commit(message, Signature, Signature);
 			}
 		}
 
@@ -78,22 +78,36 @@ namespace Specs.IO
 			}
 		}
 
-		public void Merge()
+		public void Merge(string branchName)
 		{
 			using (var repo = new Repository(Path))
 			{
-				repo.Merge(repo.Head, Signature);
+				repo.Merge(repo.Branches[branchName], Signature);
 			}
 		}
 
-		public void Rebase(string ontoBranchName)
+		public void MergeWithTracked()
+		{
+			using (var repo = new Repository(Path))
+			{
+				repo.Merge(repo.Head.TrackedBranch, Signature);
+			}
+		}
+
+		public int Rebase(string ontoBranchName)
 		{
 			using (var repo = new Repository(Path))
 			{
 				var branch = repo.Head;
-				var upstream = branch.Commits.First();
-				var onto = repo.Branches[ontoBranchName];
-				repo.Rebase.Start(branch, branch, onto, Identity, new RebaseOptions());
+				var target = repo.Branches[ontoBranchName];
+
+				// ATTENTION:
+				// param "onto" should be null when just rebasing to the given upstream:
+				// https://libgit2.github.com/libgit2/#HEAD/group/rebase/git_rebase_init
+				Branch onto = null;
+
+				var result = repo.Rebase.Start(branch, target, onto, Identity, new RebaseOptions());
+				return (int)result.TotalStepCount;
 			}
 		}
 

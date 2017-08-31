@@ -8,10 +8,10 @@ namespace RepoZ.Api.Common.Git
 	public class DefaultRepositoryObserver : IRepositoryObserver, IDisposable
 	{
 		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
+		
 		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
-		private int _detectionToAlertDelayMilliseconds;
 
 		public DefaultRepositoryObserver(IRepositoryReader repositoryReader)
 		{
@@ -23,7 +23,7 @@ namespace RepoZ.Api.Common.Git
 
 		public void Setup(string path, int detectionToAlertDelayMilliseconds = 5000)
 		{
-			_detectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 			_path = path;
 			_watcher = new FileSystemWatcher(_path, "HEAD");
 			_watcher.Created += _watcher_Created;
@@ -72,7 +72,7 @@ namespace RepoZ.Api.Common.Git
 			if (!IsHead(e.FullPath))
 				return;
 
-			Task.Run(() => Task.Delay(_detectionToAlertDelayMilliseconds))
+			Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
 				.ContinueWith(t => EatRepo(e.FullPath));
 		}
 
@@ -113,5 +113,7 @@ namespace RepoZ.Api.Common.Git
 		{
 			_watcher?.Dispose();
 		}
+
+		public int DetectionToAlertDelayMilliseconds { get; private set; }
 	}
 }
