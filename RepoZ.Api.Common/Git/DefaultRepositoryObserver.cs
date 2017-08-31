@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Common.Git
 {
-	public class DefaultRepositoryObserver : IRepositoryObserver
+	public class DefaultRepositoryObserver : IRepositoryObserver, IDisposable
 	{
 		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
+		
 		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
@@ -20,8 +21,9 @@ namespace RepoZ.Api.Common.Git
 		public Action<Repository> OnAddOrChange { get; set; }
 		public Action<string> OnDelete { get; set; }
 
-		public void Setup(string path)
+		public void Setup(string path, int detectionToAlertDelayMilliseconds = 5000)
 		{
+			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 			_path = path;
 			_watcher = new FileSystemWatcher(_path, "HEAD");
 			_watcher.Created += _watcher_Created;
@@ -70,7 +72,7 @@ namespace RepoZ.Api.Common.Git
 			if (!IsHead(e.FullPath))
 				return;
 
-			Task.Run(() => Task.Delay(5000))
+			Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
 				.ContinueWith(t => EatRepo(e.FullPath));
 		}
 
@@ -97,9 +99,7 @@ namespace RepoZ.Api.Common.Git
 			var repo = _repositoryReader.ReadRepository(path);
 
 			if (repo?.WasFound ?? false)
-			{
 				OnAddOrChange?.Invoke(repo);
-			}
 		}
 
 		private void NotifyHeadDeletion(string headFile)
@@ -108,5 +108,12 @@ namespace RepoZ.Api.Common.Git
 			if (!string.IsNullOrEmpty(path))
 				OnDelete?.Invoke(path);
 		}
+
+		public void Dispose()
+		{
+			_watcher?.Dispose();
+		}
+
+		public int DetectionToAlertDelayMilliseconds { get; private set; }
 	}
 }

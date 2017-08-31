@@ -1,0 +1,330 @@
+﻿using FluentAssertions;
+using NUnit.Framework;
+using RepoZ.Api.Common.Git;
+using Specs.IO;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+
+namespace Specs
+{
+	public class DefaultRepositoryObserverTests
+	{
+		private RepositoryWriter _origin;
+		private RepositoryWriter _cloneA;
+		private RepositoryWriter _cloneB;
+		private DefaultRepositoryObserver _observer;
+
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+		{
+			string rootPath = @"C:\Temp\TestRepositories\";
+
+			TryClearRootPath(rootPath);
+			
+			string repoPath = Path.Combine(rootPath, Guid.NewGuid().ToString());
+
+			var reader = new DefaultRepositoryReader();
+			_observer = new DefaultRepositoryObserver(reader);
+			_observer.Setup(rootPath, 10);
+
+			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
+			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
+			_cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"));
+		}
+
+		[OneTimeTearDown]
+		public void TearDown()
+		{
+			_observer.Stop();
+			_observer.Dispose();
+
+			WaitFileOperationDelay();
+
+			_origin.Cleanup();
+			_cloneA.Cleanup();
+			_cloneB.Cleanup();
+		}
+
+		/*
+
+                 [[1]]                          [[1]]
+  cloneA   <-----------------+   origin  +----------------->  cloneB
+     +                                 +                        +
+     |                           ^  ^  |                        |
+     v       [[2]]               |  |  |         [[3]]          v
+ add file                        |  |  +----------------------> +--+    [[4]]
+     +                           |  |  |        pull            |  |
+     |                           |  |  |                        |  |
+     v                           |  |  |                        |  +---->  branch "develop"
+ stage file                      |  |  |fetch                   |              |
+     +                           |  |  |                  master|              v
+     |                           |  |  +--> +                   |          create file
+     v                  push to  |  |       |                   |              |
+commit file             master   |  |       |                   |              v
+     +---------------------------^  |       |                   |          stage file
+                                    |       |                   |              |
+                                    |       |                   |              v
+                                    |       |     [[5]]         |          commit file
+                                    |       |            merge  v   [[6]]      |
+                                    |       +-----------------> @------------->+
+                                    |                           |    rebase    |
+                                    |                           |              |
+                                    |                           +<-------------+
+                                    |                           |   merge
+                                    |                           |   [[7]]
+                                    |    push                   |
+                                    +---------------------------+
+                                             [[8]]
+
+		 */
+
+		[Test]
+		[Order(0)]
+		public void T0A_Detects_Repository_Creation()
+		{
+			Observer.Expect(() =>
+			{
+				_origin.InitBare();
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(1)]
+		public void T1A_Detects_Repository_Clone()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneA.Clone(_origin.Path);
+				_cloneB.Clone(_origin.Path);
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(2)]
+		public void T2B_Detects_File_Creation()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneA.CreateFile("First.A", "First file on clone A");
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(3)]
+		public void T2C_Detects_File_Staging()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneA.Stage("First.A");
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(4)]
+		public void T2D_Detects_Repository_Commits()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneA.Commit("Commit #1 on A");
+			},
+			changes => changes >= 1,
+			deletes => deletes == 0);
+		}
+
+		[Test]
+		[Order(5)]
+		public void T2E_Detects_Repository_Pushes()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneA.Push();
+				_origin.HeadTip.Should().Be(_cloneA.HeadTip);
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(6)]
+		public void T3A_Detects_Repository_Pull()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneB.Pull();
+				_cloneB.HeadTip.Should().Be(_cloneA.HeadTip);
+			},
+			changes => changes >= 1,
+			deletes => deletes == 0);
+		}
+
+		[Test]
+		[Order(7)]
+		public void T4A_Detects_Repository_Branch_And_Checkout()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneB.CurrentBranch.Should().Be("master");
+				_cloneB.Branch("develop");
+				_cloneB.Checkout("develop");
+				_cloneB.CurrentBranch.Should().Be("develop");
+			},
+			changes: 1,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(8)]
+		public void T4B_Preparation_Add_Changes_To_A_And_Push()
+		{
+			_cloneA.CreateFile("Second.A", "Second file on clone A");
+			_cloneA.Stage("Second.A");
+			_cloneA.Commit("Commit #2 on A");
+			_cloneA.Push();
+		}
+
+		[Test]
+		[Order(9)]
+		public void T4C_Preparation_Add_Changes_To_B()
+		{
+			_cloneB.CreateFile("First.B", "First file on clone B");
+			_cloneB.Stage("First.B");
+			_cloneB.Commit("Commit #1 on B");
+		}
+
+		[Test]
+		[Order(10)]
+		public void T5A_Preparation_Checkout_Master()
+		{
+			_cloneB.CurrentBranch.Should().Be("develop");
+			_cloneB.Checkout("master");
+			_cloneB.CurrentBranch.Should().Be("master");
+		}
+
+		[Test]
+		[Order(11)]
+		public void T5B_Detects_Repository_Fetch()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneB.Fetch();
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(12)]
+		public void T5C_Detects_Repository_Merge_Tracked_Branch()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneB.MergeWithTracked();
+			},
+			changes: 1,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(13)]
+		public void T6A_Preparation_Checkout_Develop()
+		{
+			_cloneB.CurrentBranch.Should().Be("master");
+			_cloneB.Checkout("develop");
+			_cloneB.CurrentBranch.Should().Be("develop");
+		}
+
+		[Test]
+		[Order(14)]
+		public void T6B_Detects_Repository_Rebase()
+		{
+			Observer.Expect(() =>
+			{
+				int steps = _cloneB.Rebase("master");
+				steps.Should().Be(1);
+			},
+			changes => changes >= 1,
+			deletes => deletes == 0);
+		}
+
+		[Test]
+		[Order(15)]
+		public void T7A_Preparation_Checkout_Master()
+		{
+			_cloneB.CurrentBranch.Should().Be("develop");
+			_cloneB.Checkout("master");
+			_cloneB.CurrentBranch.Should().Be("master");
+		}
+
+		[Test]
+		[Order(16)]
+		public void T7B_Detects_Repository_Merge_With_Other_Branch()
+		{
+			Observer.Expect(() =>
+			{
+				_cloneB.Merge("develop");
+			},
+			changes: 1,
+			deletes: 0);
+		}
+
+		[Test]
+		[Order(17)]
+		public void T8A_Detects_Repository_Push_With_Upstream()
+		{
+			Observer.Expect(() =>
+			{
+				_origin.HeadTip.Should().NotBe(_cloneB.HeadTip);
+
+				_cloneB.Push();
+
+				_origin.HeadTip.Should().Be(_cloneB.HeadTip);
+			},
+			changes: 0,
+			deletes: 0);
+		}
+
+		private static void TryClearRootPath(string rootPath)
+		{
+			WaitFileOperationDelay();
+
+			if (Directory.Exists(rootPath))
+			{
+				foreach (var dir in new DirectoryInfo(rootPath).GetDirectories())
+				{
+					try
+					{
+						dir.Delete(true);
+					}
+					catch (UnauthorizedAccessException)
+					{
+						// we cannot do nothing about it here
+						Debug.WriteLine(nameof(UnauthorizedAccessException) + ": Could not clear test root path: " + dir.FullName);
+					}
+				}
+			}
+			else
+			{
+				Directory.CreateDirectory(rootPath);
+			}
+
+			WaitFileOperationDelay();
+		}
+
+		private static void WaitFileOperationDelay()
+		{
+			Thread.Sleep(1000);
+		}
+
+		protected DefaultRepositoryObserver Observer => _observer;
+	}
+}

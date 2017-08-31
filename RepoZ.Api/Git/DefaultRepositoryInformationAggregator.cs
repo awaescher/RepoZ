@@ -37,8 +37,16 @@ namespace RepoZ.Api.Git
 			if (string.IsNullOrEmpty(path))
 				return string.Empty;
 
-			var views = _dataSource.ToList(); // threading issues :(
-			if (!views.Any())
+			List<RepositoryView> views = null;
+			try
+			{
+				views = _dataSource?.ToList();
+			}
+			catch (ArgumentException)
+			{ /* there are extremely rare threading issues with System.Array.Copy() here */ }
+
+			var hasAny = views?.Any() ?? false;
+			if (!hasAny)
 				return string.Empty;
 
 			if (!path.EndsWith("\\", StringComparison.Ordinal))
