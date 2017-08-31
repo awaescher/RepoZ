@@ -27,12 +27,11 @@ namespace Specs
 
 			var reader = new DefaultRepositoryReader();
 			_observer = new DefaultRepositoryObserver(reader);
-			_observer.Setup(rootPath, 100);
+			_observer.Setup(rootPath, 10);
 
 			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
 			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
 			_cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"));
-
 		}
 
 		[OneTimeTearDown]
@@ -74,7 +73,7 @@ commit file             master   |  |       |                   |              v
                                     |                           |              |
                                     |                           +<-------------+
                                     |                           |   merge
-                                    |                           |    [[7]]
+                                    |                           |   [[7]]
                                     |    push                   |
                                     +---------------------------+
                                              [[8]]
@@ -138,7 +137,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.Commit("Commit #1 on A");
 			},
-			changes => changes > 1,
+			changes => changes >= 1,
 			deletes => deletes == 0);
 		}
 
@@ -164,7 +163,7 @@ commit file             master   |  |       |                   |              v
 				_cloneB.Pull();
 				_cloneB.HeadTip.Should().Be(_cloneA.HeadTip);
 			},
-			changes => changes > 1,
+			changes => changes >= 1,
 			deletes => deletes == 0);
 		}
 
@@ -191,7 +190,6 @@ commit file             master   |  |       |                   |              v
 			_cloneA.Stage("Second.A");
 			_cloneA.Commit("Commit #2 on A");
 			_cloneA.Push();
-
 		}
 
 		[Test]
@@ -254,7 +252,7 @@ commit file             master   |  |       |                   |              v
 				int steps = _cloneB.Rebase("master");
 				steps.Should().Be(1);
 			},
-			changes => changes > 1,
+			changes => changes >= 1,
 			deletes => deletes == 0);
 		}
 
