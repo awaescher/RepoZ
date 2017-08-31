@@ -168,7 +168,7 @@ commit file             master   |  |       |                   |              v
 
 		[Test]
 		[Order(8)]
-		public void T4B_Detects_Repository_Branch_And_Checkout()
+		public void T4B_Preparation_Add_File_Changes_On_Develop_Branch()
 		{
 			_cloneB.CreateFile("CloneB.dmp", "Clone B was here");
 			_cloneB.Stage("CloneB.dmp");
@@ -179,7 +179,7 @@ commit file             master   |  |       |                   |              v
 
 		[Test]
 		[Order(9)]
-		public void T5A_Checkout_Master()
+		public void T5A_Preparation_Checkout_Master()
 		{
 			_cloneB.CurrentBranch.Should().Be("develop");
 			_cloneB.Checkout("master");
@@ -208,7 +208,7 @@ commit file             master   |  |       |                   |              v
 
 		[Test]
 		[Order(12)]
-		public void T6A_Checkout_Develop()
+		public void T6A_Preparation_Checkout_Develop()
 		{
 			_cloneB.CurrentBranch.Should().Be("master");
 			_cloneB.Checkout("develop");
@@ -237,12 +237,12 @@ commit file             master   |  |       |                   |              v
 
 		private void WaitFileOperationDelay()
 		{
-			Thread.Sleep(100);
+			//Thread.Sleep(100);
 		}
 
 		private void WaitObserverDelay()
 		{
-			Thread.Sleep(500);
+			//Thread.Sleep(500);
 		}
 
 		private static void TryClearRootPath(string rootPath)
