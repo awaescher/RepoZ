@@ -50,8 +50,7 @@ namespace Specs
 
 		/*
 
-			        [[1]]                          [[1]]
-
+                 [[1]]                          [[1]]
   cloneA   <-----------------+   origin  +----------------->  cloneB
      +                                 +                        +
      |                           ^  ^  |                        |
@@ -59,13 +58,13 @@ namespace Specs
  add file                        |  |  +----------------------> +--+    [[4]]
      +                           |  |  |        pull            |  |
      |                           |  |  |                        |  |
-     v                           |  |  |                        |  +---->  branch "develop"   
+     v                           |  |  |                        |  +---->  branch "develop"
  stage file                      |  |  |fetch                   |              |
      +                           |  |  |                  master|              v
      |                           |  |  +--> +                   |          create file
      v                  push to  |  |       |                   |              |
 commit file             master   |  |       |                   |              v
-      +--------------------------^  |       |                   |          stage file
+     +---------------------------^  |       |                   |          stage file
                                     |       |                   |              |
                                     |       |                   |              v
                                     |       |     [[5]]         |          commit file
@@ -75,13 +74,10 @@ commit file             master   |  |       |                   |              v
                                     |                           |              |
                                     |                           +<-------------+
                                     |                           |   merge
-									|                           |    [[7]]
-                                    |                           ^
-                                    |    push                  +++
-                                    +--------------------------+ |
-                                             [[8]]             +-+
-
-
+                                    |                           |    [[7]]
+                                    |    push                   |
+                                    +---------------------------+
+                                             [[8]]
 
 		 */
 
@@ -93,7 +89,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_origin.InitBare();
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
@@ -106,7 +102,7 @@ commit file             master   |  |       |                   |              v
 				_cloneA.Clone(_origin.Path);
 				_cloneB.Clone(_origin.Path);
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
@@ -118,7 +114,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.CreateFile("First.A", "First file on clone A");
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
@@ -130,7 +126,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.Stage("First.A");
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
@@ -155,7 +151,7 @@ commit file             master   |  |       |                   |              v
 				_cloneA.Push();
 				_origin.HeadTip.Should().Be(_cloneA.HeadTip);
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
@@ -168,8 +164,8 @@ commit file             master   |  |       |                   |              v
 				_cloneB.Pull();
 				_cloneB.HeadTip.Should().Be(_cloneA.HeadTip);
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes > 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -183,8 +179,8 @@ commit file             master   |  |       |                   |              v
 				_cloneB.Checkout("develop");
 				_cloneB.CurrentBranch.Should().Be("develop");
 			},
-					changes: 1,
-					deletes: 0);
+			changes: 1,
+			deletes: 0);
 		}
 
 		[Test]
@@ -224,7 +220,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneB.Fetch();
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
@@ -258,8 +254,8 @@ commit file             master   |  |       |                   |              v
 				int steps = _cloneB.Rebase("master");
 				steps.Should().Be(1);
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes > 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -295,7 +291,7 @@ commit file             master   |  |       |                   |              v
 
 				_origin.HeadTip.Should().Be(_cloneB.HeadTip);
 			},
-			changes: 1,
+			changes: 0,
 			deletes: 0);
 		}
 
