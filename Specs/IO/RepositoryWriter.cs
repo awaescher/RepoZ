@@ -120,12 +120,7 @@ namespace Specs.IO
 				repo.Network.Push(remote, @"refs/heads/master", new PushOptions());
 			}
 		}
-
-		public void Cleanup()
-		{
-			Directory.Delete(Path, true);
-		}
-
+		
 		internal void Checkout(string branch)
 		{
 			using (var repo = new Repository(Path))

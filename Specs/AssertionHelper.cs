@@ -13,7 +13,7 @@ namespace Specs
 	{
 		public static void Expect(this DefaultRepositoryObserver observer, Action act, int changes, int deletes)
 		{
-			ExpectCore(observer, act, out int actualChanges, out int actualDeletes);
+			ExpectInternal(observer, act, out int actualChanges, out int actualDeletes);
 
 			actualChanges.Should().Be(changes);
 			actualDeletes.Should().Be(deletes);
@@ -25,13 +25,13 @@ namespace Specs
 			Func<int, bool> changesAssertion,
 			Func<int, bool> deletesAssertion)
 		{
-			ExpectCore(observer, act, out int actualChanges, out int actualDeletes);
+			ExpectInternal(observer, act, out int actualChanges, out int actualDeletes);
 
 			changesAssertion(actualChanges).Should().BeTrue();
 			deletesAssertion(actualDeletes).Should().BeTrue();
 		}
 
-		public static void ExpectCore(
+		private static void ExpectInternal(
 			this DefaultRepositoryObserver observer,
 			Action act,
 			out int actualChanges,

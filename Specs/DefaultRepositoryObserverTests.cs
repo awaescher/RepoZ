@@ -5,6 +5,7 @@ using Specs.IO;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace Specs
@@ -15,19 +16,20 @@ namespace Specs
 		private RepositoryWriter _cloneA;
 		private RepositoryWriter _cloneB;
 		private DefaultRepositoryObserver _observer;
+		private string _rootPath;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			string rootPath = @"C:\Temp\TestRepositories\";
+			_rootPath = Path.Combine(Path.GetTempPath(), "RepoZ_Test_Repositories");
 
-			TryClearRootPath(rootPath);
-			
-			string repoPath = Path.Combine(rootPath, Guid.NewGuid().ToString());
+			TryCreateRootPath(_rootPath);
+
+			string repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
 
 			var reader = new DefaultRepositoryReader();
 			_observer = new DefaultRepositoryObserver(reader);
-			_observer.Setup(rootPath, 10);
+			_observer.Setup(_rootPath, 100);
 
 			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
 			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
@@ -42,9 +44,7 @@ namespace Specs
 
 			WaitFileOperationDelay();
 
-			_origin.Cleanup();
-			_cloneA.Cleanup();
-			_cloneB.Cleanup();
+			TryDeleteRootPath(_rootPath);
 		}
 
 		/*
@@ -68,8 +68,8 @@ commit file             master   |  |       |                   |              v
                                     |       |                   |              v
                                     |       |     [[5]]         |          commit file
                                     |       |            merge  v   [[6]]      |
-                                    |       +-----------------> @------------->+
-                                    |                           |    rebase    |
+          [[9]]                     |       +-----------------> @------------->+
+      delete cloneA                 |                           |    rebase    |
                                     |                           |              |
                                     |                           +<-------------+
                                     |                           |   merge
@@ -293,36 +293,66 @@ commit file             master   |  |       |                   |              v
 			deletes: 0);
 		}
 
-		private static void TryClearRootPath(string rootPath)
+		[Test]
+		[Order(18)]
+		public void T9A_Detects_Repository_Deletion()
 		{
+			NormalizeReadOnlyFiles(_cloneA.Path);
+
+			Observer.Expect(() =>
+			{
+				Directory.Delete(_cloneA.Path, true);
+			},
+			changes: 0,
+			deletes: 1);
+		}
+
+		private static void TryDeleteRootPath(string rootPath)
+		{
+			if (!Directory.Exists(rootPath))
+				return;
+
 			WaitFileOperationDelay();
 
-			if (Directory.Exists(rootPath))
+			try
 			{
-				foreach (var dir in new DirectoryInfo(rootPath).GetDirectories())
-				{
-					try
-					{
-						dir.Delete(true);
-					}
-					catch (UnauthorizedAccessException)
-					{
-						// we cannot do nothing about it here
-						Debug.WriteLine(nameof(UnauthorizedAccessException) + ": Could not clear test root path: " + dir.FullName);
-					}
-				}
+				NormalizeReadOnlyFiles(rootPath);
+
+				Directory.Delete(rootPath, true);
 			}
-			else
+			catch (UnauthorizedAccessException)
 			{
-				Directory.CreateDirectory(rootPath);
+				// we cannot do nothing about it here
+				Debug.WriteLine(nameof(UnauthorizedAccessException) + ": Could not clear test root path: " + rootPath);
 			}
 
 			WaitFileOperationDelay();
 		}
 
+		private static void NormalizeReadOnlyFiles(string rootPath)
+		{
+			// set readonly git files to "normal" 
+			// otherwise we get UnauthorizedAccessExceptions
+			var readOnlyFiles = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories)
+				.Where(f => File.GetAttributes(f).HasFlag(FileAttributes.ReadOnly));
+
+			foreach (var file in readOnlyFiles)
+				File.SetAttributes(file, FileAttributes.Normal);
+		}
+
+		private static void TryCreateRootPath(string rootPath)
+		{
+			TryDeleteRootPath(rootPath);
+
+			if (Directory.Exists(rootPath))
+				return;
+
+			Directory.CreateDirectory(rootPath);
+		}
+
 		private static void WaitFileOperationDelay()
 		{
-			Thread.Sleep(1000);
+			Thread.Sleep(500);
 		}
 
 		protected DefaultRepositoryObserver Observer => _observer;
