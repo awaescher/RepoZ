@@ -21,10 +21,10 @@ namespace RepoZ.Api.Common.Git
 		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
-		private IRepositoryCache _repositoryCache;
+		private IPersistentRepositoryCache _repositoryCache;
 		private IRepositoryInformationAggregator _repositoryInformationAggregator;
 
-		public DefaultRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory, IRepositoryCache repositoryCache, IRepositoryInformationAggregator repositoryInformationAggregator)
+		public DefaultRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory, IPersistentRepositoryCache repositoryCache, IRepositoryInformationAggregator repositoryInformationAggregator)
 		{
 			_repositoryReader = repositoryReader;
 			_repositoryObserverFactory = repositoryObserverFactory;

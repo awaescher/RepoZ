@@ -88,8 +88,8 @@ commit file             master   |  |       |                   |              v
 			{
 				_origin.InitBare();
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -101,8 +101,8 @@ commit file             master   |  |       |                   |              v
 				_cloneA.Clone(_origin.Path);
 				_cloneB.Clone(_origin.Path);
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -113,8 +113,8 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.CreateFile("First.A", "First file on clone A");
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -125,8 +125,8 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.Stage("First.A");
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -150,8 +150,8 @@ commit file             master   |  |       |                   |              v
 				_cloneA.Push();
 				_origin.HeadTip.Should().Be(_cloneA.HeadTip);
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -218,8 +218,8 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneB.Fetch();
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -230,8 +230,8 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneB.MergeWithTracked();
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -289,8 +289,8 @@ commit file             master   |  |       |                   |              v
 
 				_origin.HeadTip.Should().Be(_cloneB.HeadTip);
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]

@@ -9,11 +9,11 @@ using RepoZ.Api.Git;
 
 namespace RepoZ.Api.Common.Git
 {
-	public abstract class FileRepositoryCache : IRepositoryCache
+	public abstract class PersistentFileRepositoryCache : IPersistentRepositoryCache
 	{
 		private IErrorHandler _errorHandler;
 
-		public FileRepositoryCache(IErrorHandler errorHandler)
+		public PersistentFileRepositoryCache(IErrorHandler errorHandler)
 		{
 			_errorHandler = errorHandler;
 		}

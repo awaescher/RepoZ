@@ -24,8 +24,9 @@ namespace RepoZ.Api.Common.Git
 		public void Setup(string path, int detectionToAlertDelayMilliseconds = 5000)
 		{
 			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+
 			_path = path;
-			_watcher = new FileSystemWatcher(_path, "HEAD");
+			_watcher = new FileSystemWatcher(_path);
 			_watcher.Created += _watcher_Created;
 			_watcher.Changed += _watcher_Changed;
 			_watcher.Deleted += _watcher_Deleted;
