@@ -116,8 +116,7 @@ namespace Specs.IO
 			using (var repo = new Repository(Path))
 			{
 				var remote = repo.Network.Remotes.Single();
-				var refSpec = remote.RefSpecs.Single();
-				repo.Network.Push(remote, @"refs/heads/master", new PushOptions());
+				repo.Network.Push(remote, repo.Head.CanonicalName, new PushOptions());
 			}
 		}
 		
