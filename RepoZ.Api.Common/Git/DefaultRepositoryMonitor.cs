@@ -21,16 +21,22 @@ namespace RepoZ.Api.Common.Git
 		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
-		private IPersistentRepositoryCache _repositoryCache;
+		private IRepositoryStore _repositoryStore;
 		private IRepositoryInformationAggregator _repositoryInformationAggregator;
 
-		public DefaultRepositoryMonitor(IPathProvider pathProvider, IRepositoryReader repositoryReader, IRepositoryObserverFactory repositoryObserverFactory, IPathCrawlerFactory pathCrawlerFactory, IPersistentRepositoryCache repositoryCache, IRepositoryInformationAggregator repositoryInformationAggregator)
+		public DefaultRepositoryMonitor(
+			IPathProvider pathProvider,
+			IRepositoryReader repositoryReader,
+			IRepositoryObserverFactory repositoryObserverFactory,
+			IPathCrawlerFactory pathCrawlerFactory,
+			IRepositoryStore repositoryStore,
+			IRepositoryInformationAggregator repositoryInformationAggregator)
 		{
 			_repositoryReader = repositoryReader;
 			_repositoryObserverFactory = repositoryObserverFactory;
 			_pathCrawlerFactory = pathCrawlerFactory;
 			_pathProvider = pathProvider;
-			_repositoryCache = repositoryCache;
+			_repositoryStore = repositoryStore;
 			_repositoryInformationAggregator = repositoryInformationAggregator;
 
 			_refreshTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
@@ -67,7 +73,7 @@ namespace RepoZ.Api.Common.Git
 		{
 			Task.Run(() =>
 			{
-				foreach (var head in _repositoryCache.Get())
+				foreach (var head in _repositoryStore.Get())
 					OnCheckKnownRepository(head, KnownRepositoryNotification.WhenFound);
 			});
 		}
@@ -75,7 +81,7 @@ namespace RepoZ.Api.Common.Git
 		private void RepositoryCacheFlushTimerCallback(object state)
 		{
 			var heads = _repositoryInformationAggregator.Repositories.Select(v => v.Path).ToArray();
-			_repositoryCache.Set(heads);
+			_repositoryStore.Set(heads);
 		}
 
 		private void OnFoundNewRepository(string file)

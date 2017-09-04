@@ -10,9 +10,9 @@ using RepoZ.Api.Git;
 
 namespace RepoZ.Api.Win.Git
 {
-	public class WindowsPersistentRepositoryCache : PersistentFileRepositoryCache
+	public class WindowsRepositoryStore : FileRepositoryStore
 	{
-		public WindowsPersistentRepositoryCache(IErrorHandler errorHandler)
+		public WindowsRepositoryStore(IErrorHandler errorHandler)
 			: base(errorHandler)
 		{
 

@@ -57,7 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Git\WindowsPersistentRepositoryCache.cs" />
+    <Compile Include="Git\WindowsRepositoryStore.cs" />
     <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
     <Compile Include="IO\WindowsPathSkipper.cs" />
     <Compile Include="PInvoke\Combridge.cs" />

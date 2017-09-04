@@ -49,7 +49,7 @@
     <Compile Include="Git\DefaultRepositoryMonitor.cs" />
     <Compile Include="Git\DefaultRepositoryObserver.cs" />
     <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />
-    <Compile Include="Git\PersistentFileRepositoryCache.cs" />
+    <Compile Include="Git\FileRepositoryStore.cs" />
     <Compile Include="Git\DefaultRepositoryReader.cs" />
     <Compile Include="Git\DefaultRepositoryWriter.cs" />
     <Compile Include="IO\DefaultDriveEnumerator.cs" />
