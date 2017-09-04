@@ -15,7 +15,7 @@ namespace RepoZ.Api.Common.Git
 	{
 		private SingularityQueue<Repository> _refreshQueue = new SingularityQueue<Repository>();
 		private Timer _refreshTimer = null;
-		private Timer _cacheFlushTimer = null;
+		private Timer _storeFlushTimer = null;
 		private List<IRepositoryObserver> _observers = null;
 		private IRepositoryObserverFactory _repositoryObserverFactory;
 		private IPathCrawlerFactory _pathCrawlerFactory;
@@ -40,7 +40,7 @@ namespace RepoZ.Api.Common.Git
 			_repositoryInformationAggregator = repositoryInformationAggregator;
 
 			_refreshTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
-			_cacheFlushTimer = new Timer(RepositoryCacheFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+			_storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 		}
 
 		private void ScanForRepositoriesAsync()
@@ -69,7 +69,7 @@ namespace RepoZ.Api.Common.Git
 			}
 		}
 
-		private void ScanCachedRepositoriesAsync()
+		private void ScanRepositoriesFromStoreAsync()
 		{
 			Task.Run(() =>
 			{
@@ -78,7 +78,7 @@ namespace RepoZ.Api.Common.Git
 			});
 		}
 
-		private void RepositoryCacheFlushTimerCallback(object state)
+		private void RepositoryStoreFlushTimerCallback(object state)
 		{
 			var heads = _repositoryInformationAggregator.Repositories.Select(v => v.Path).ToArray();
 			_repositoryStore.Set(heads);
@@ -93,7 +93,7 @@ namespace RepoZ.Api.Common.Git
 
 				// use that delay to prevent a lot of sequential writes 
 				// when a lot repositories get found in a row
-				_cacheFlushTimer.Change(5000, Timeout.Infinite);
+				_storeFlushTimer.Change(5000, Timeout.Infinite);
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace RepoZ.Api.Common.Git
 				ObserveRepositoryChanges();
 			}
 
-			ScanCachedRepositoriesAsync();
+			ScanRepositoriesFromStoreAsync();
 			_observers.ForEach(w => w.Observe()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
 		}
 
