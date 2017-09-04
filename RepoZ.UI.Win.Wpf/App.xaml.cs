@@ -69,6 +69,7 @@ namespace RepoZ.UI.Win.Wpf
 
 			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
 			container.Register<WindowsExplorerHandler>().AsSingleton();
+			container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
@@ -81,6 +82,7 @@ namespace RepoZ.UI.Win.Wpf
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
+
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

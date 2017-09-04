@@ -46,9 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Git\DefaultRepositoryMonitor.cs" />
     <Compile Include="Git\DefaultRepositoryObserver.cs" />
+    <Compile Include="Git\DefaultRepositoryMonitor.cs" />
+    <Compile Include="Git\DefaultRepositoryDetector.cs" />
     <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />
+    <Compile Include="Git\DefaultRepositoryDetectorFactory.cs" />
     <Compile Include="Git\FileRepositoryStore.cs" />
     <Compile Include="Git\DefaultRepositoryReader.cs" />
     <Compile Include="Git\DefaultRepositoryWriter.cs" />

@@ -13,33 +13,36 @@ namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryMonitor : IRepositoryMonitor
 	{
-		private SingularityQueue<Repository> _refreshQueue = new SingularityQueue<Repository>();
-		private Timer _refreshTimer = null;
 		private Timer _storeFlushTimer = null;
-		private List<IRepositoryObserver> _observers = null;
+		private List<IRepositoryDetector> _detectors = null;
+		private IRepositoryDetectorFactory _repositoryDetectorFactory;
 		private IRepositoryObserverFactory _repositoryObserverFactory;
 		private IPathCrawlerFactory _pathCrawlerFactory;
 		private IRepositoryReader _repositoryReader;
 		private IPathProvider _pathProvider;
 		private IRepositoryStore _repositoryStore;
 		private IRepositoryInformationAggregator _repositoryInformationAggregator;
+		private Dictionary<string, IRepositoryObserver> _repositoryObservers;
 
 		public DefaultRepositoryMonitor(
 			IPathProvider pathProvider,
 			IRepositoryReader repositoryReader,
+			IRepositoryDetectorFactory repositoryDetectorFactory,
 			IRepositoryObserverFactory repositoryObserverFactory,
 			IPathCrawlerFactory pathCrawlerFactory,
 			IRepositoryStore repositoryStore,
 			IRepositoryInformationAggregator repositoryInformationAggregator)
 		{
 			_repositoryReader = repositoryReader;
+			_repositoryDetectorFactory = repositoryDetectorFactory;
 			_repositoryObserverFactory = repositoryObserverFactory;
 			_pathCrawlerFactory = pathCrawlerFactory;
 			_pathProvider = pathProvider;
 			_repositoryStore = repositoryStore;
 			_repositoryInformationAggregator = repositoryInformationAggregator;
 
-			_refreshTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
+			_repositoryObservers = new Dictionary<string, IRepositoryObserver>();
+
 			_storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 		}
 
@@ -114,60 +117,88 @@ namespace RepoZ.Api.Common.Git
 
 		private void ObserveRepositoryChanges()
 		{
-			_observers = new List<IRepositoryObserver>();
+			_detectors = new List<IRepositoryDetector>();
 
 			foreach (var path in _pathProvider.GetPaths())
 			{
-				var observer = _repositoryObserverFactory.Create();
-				_observers.Add(observer);
+				var detector = _repositoryDetectorFactory.Create();
+				_detectors.Add(detector);
 
-				observer.OnAddOrChange = OnRepositoryChangeDetected;
-				observer.OnDelete = OnRepositoryDeletionDetected;
-				observer.Setup(path);
+				detector.OnAddOrChange = OnRepositoryChangeDetected;
+				detector.OnDelete = OnRepositoryDeletionDetected;
+				detector.Setup(path);
 			}
 		}
 
 		public void Observe()
 		{
-			if (_observers == null)
+			if (_detectors == null)
 			{
 				ScanForRepositoriesAsync();
 				ObserveRepositoryChanges();
 			}
 
 			ScanRepositoriesFromStoreAsync();
-			_observers.ForEach(w => w.Observe()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
+			_detectors.ForEach(w => w.Start()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
 		}
 
 		public void Stop()
 		{
-			_observers.ForEach(w => w.Stop());
+			_detectors.ForEach(w => w.Stop());
 		}
 
 		private void OnRepositoryChangeDetected(Repository repo)
 		{
+			string path = repo?.Path;
+
+			if (string.IsNullOrEmpty(path))
+				return;
+
 			OnChangeDetected?.Invoke(repo);
+
+			if (!_repositoryInformationAggregator.HasRepository(path))
+			{
+				CreateRepositoryObserver(repo, path);
+			}
 
 			_repositoryInformationAggregator.Add(repo);
 
-			_refreshQueue.Enqueue(repo);
+		}
+
+		private void CreateRepositoryObserver(Repository repo, string path)
+		{
+			var observer = _repositoryObserverFactory.Create();
+			observer.Setup(repo);
+			_repositoryObservers.Add(path, observer);
+
+			observer.OnChange += OnRepositoryObserverChange;
+			observer.Start();
+		}
+
+		private void OnRepositoryObserverChange(Repository repository)
+		{
+			OnCheckKnownRepository(repository.Path, KnownRepositoryNotification.WhenFound | KnownRepositoryNotification.WhenNotFound);
+		}
+
+		private void DestroyRepositoryObserver(string path)
+		{
+			if (_repositoryObservers.TryGetValue(path, out IRepositoryObserver observer))
+			{
+				observer.Stop();
+				_repositoryObservers.Remove(path);
+			}
 		}
 
 		private void OnRepositoryDeletionDetected(string repoPath)
 		{
+			if (string.IsNullOrEmpty(repoPath))
+				return;
+
+			DestroyRepositoryObserver(repoPath);
+
 			OnDeletionDetected?.Invoke(repoPath);
 
 			_repositoryInformationAggregator.RemoveByPath(repoPath);
-		}
-
-		private void RefreshTimerCallback(object state)
-		{
-			if (!Scanning && _refreshQueue.Any())
-			{
-				var repo = _refreshQueue.Dequeue();
-				OnCheckKnownRepository(repo.Path, KnownRepositoryNotification.WhenFound | KnownRepositoryNotification.WhenNotFound);
-			}
-			_refreshTimer.Change(2000, Timeout.Infinite);
 		}
 
 		public Action<Repository> OnChangeDetected { get; set; }
@@ -176,7 +207,7 @@ namespace RepoZ.Api.Common.Git
 
 		public Action<bool> OnScanStateChanged { get; set; }
 
-		public bool Scanning = false;
+		public bool Scanning { get; set; } = false;
 
 		private enum KnownRepositoryNotification
 		{
