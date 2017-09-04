@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RepoZ.Api.Git
+namespace RepoZ.Api.Common
 {
-	public interface IRepositoryCache
+	public interface IThreadDispatcher
 	{
-		IEnumerable<string> Get();
-
-		void Set(IEnumerable<string> paths);
+		void Invoke(Action act);
 	}
 }

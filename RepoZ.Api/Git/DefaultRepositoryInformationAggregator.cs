@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RepoZ.Api.Common;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,25 +12,34 @@ namespace RepoZ.Api.Git
 	{
 		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
 		private StatusCompressor _compressor;
+		private IThreadDispatcher _dispatcher;
 
-		public DefaultRepositoryInformationAggregator(StatusCompressor compressor)
+		public DefaultRepositoryInformationAggregator(StatusCompressor compressor, IThreadDispatcher dispatcher)
 		{
 			_compressor = compressor;
+			_dispatcher = dispatcher;
 		}
 
 		public void Add(Repository repository)
 		{
-			var view = new RepositoryView(repository);
-			_dataSource.Remove(view);
-			_dataSource.Add(view);
+			_dispatcher.Invoke(() =>
+			{
+				var view = new RepositoryView(repository);
+
+				_dataSource.Remove(view);
+				_dataSource.Add(view);
+			});
 		}
 
 		public void RemoveByPath(string path)
 		{
-			var viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+			_dispatcher.Invoke(() =>
+			{
+				var viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-			for (int i = viewsToRemove.Length - 1; i >= 0; i--)
-				_dataSource.Remove(viewsToRemove[i]);
+				for (int i = viewsToRemove.Length - 1; i >= 0; i--)
+					_dataSource.Remove(viewsToRemove[i]);
+			});
 		}
 
 		public string GetStatusByPath(string path)

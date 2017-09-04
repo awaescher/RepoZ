@@ -147,12 +147,17 @@ namespace RepoZ.Api.Common.Git
 		private void OnRepositoryChangeDetected(Repository repo)
 		{
 			OnChangeDetected?.Invoke(repo);
+
+			_repositoryInformationAggregator.Add(repo);
+
 			_refreshQueue.Enqueue(repo);
 		}
 
 		private void OnRepositoryDeletionDetected(string repoPath)
 		{
 			OnDeletionDetected?.Invoke(repoPath);
+
+			_repositoryInformationAggregator.RemoveByPath(repoPath);
 		}
 
 		private void RefreshTimerCallback(object state)
