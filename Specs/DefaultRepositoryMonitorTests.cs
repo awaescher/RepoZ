@@ -20,7 +20,6 @@ namespace Specs
 		private RepositoryWriter _cloneB;
 		private DefaultRepositoryMonitor _monitor;
 		private string _rootPath;
-		private GivenPathProvider _pathProvider;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -32,13 +31,8 @@ namespace Specs
 			string repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
 			Directory.CreateDirectory(repoPath);
 
-			_pathProvider = new GivenPathProvider()
-			{
-				Paths = new string[] { repoPath }
-			};
-
 			_monitor = new DefaultRepositoryMonitor(
-				_pathProvider,
+				new GivenPathProvider(new string[] { repoPath }),
 				new DefaultRepositoryReader(),
 				new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader()),
 				new DefaultRepositoryObserverFactory(),
@@ -52,7 +46,7 @@ namespace Specs
 			_monitor.ScanInitially = false;
 			_monitor.DelayGitRepositoryStatusAfterCreationMilliseconds = 100;
 			_monitor.DelayGitStatusAfterFileOperationMilliseconds = 100;
-			
+
 			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
 			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
 			_cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"));
@@ -125,23 +119,6 @@ commit file             master   |  |       |                   |              v
 			},
 			changes => changes >= 1,
 			deletes => deletes == 0);
-		}
-
-		[Test]
-		[Order(2)]
-		public void T2A_Preparation_Add_Paths_For_Each_Repository()
-		{
-			Monitor.Reset();
-
-			// in real life, this is detected by the repository-detectors.
-			// we have to fake it here
-			_pathProvider.Paths = new string[] {
-				_origin.Path,
-				_cloneA.Path,
-				_cloneB.Path
-			};
-
-			Monitor.Observe();
 		}
 
 		[Test]
