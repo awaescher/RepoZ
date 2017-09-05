@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
+using RepoZ.Api.Git;
 using Specs.IO;
 using Specs.Mocks;
 using System;
@@ -19,6 +20,7 @@ namespace Specs
 		private RepositoryWriter _cloneB;
 		private DefaultRepositoryMonitor _monitor;
 		private string _rootPath;
+		private GivenPathProvider _pathProvider;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -28,19 +30,28 @@ namespace Specs
 			TryCreateRootPath(_rootPath);
 
 			string repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
+			Directory.CreateDirectory(repoPath);
 
-			var reader = new DefaultRepositoryReader();
+			_pathProvider = new GivenPathProvider()
+			{
+				Paths = new string[] { repoPath }
+			};
 
 			_monitor = new DefaultRepositoryMonitor(
-				new GivenPathProvider(repoPath),
-				reader,
-				new DefaultRepositoryDetectorFactory(reader),
+				_pathProvider,
+				new DefaultRepositoryReader(),
+				new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader()),
 				new DefaultRepositoryObserverFactory(),
 				new DefaultPathCrawlerFactory(new NeverSkippingPathSkipper()),
 				new UselessRepositoryStore(),
-				new UselessRepositoryInformationAggregator()
+				new DefaultRepositoryInformationAggregator(
+					new StatusCompressor(new StatusCharacterMap()),
+					new DirectThreadDispatcher())
 				);
+
 			_monitor.ScanInitially = false;
+			_monitor.DelayGitRepositoryStatusAfterCreationMilliseconds = 100;
+			_monitor.DelayGitStatusAfterFileOperationMilliseconds = 100;
 			
 			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
 			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
@@ -99,7 +110,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_origin.InitBare();
 			},
-			changes => changes >= 1,
+			changes => changes == 0,
 			deletes => deletes == 0);
 		}
 
@@ -114,6 +125,23 @@ commit file             master   |  |       |                   |              v
 			},
 			changes => changes >= 1,
 			deletes => deletes == 0);
+		}
+
+		[Test]
+		[Order(2)]
+		public void T2A_Preparation_Add_Paths_For_Each_Repository()
+		{
+			Monitor.Reset();
+
+			// in real life, this is detected by the repository-detectors.
+			// we have to fake it here
+			_pathProvider.Paths = new string[] {
+				_origin.Path,
+				_cloneA.Path,
+				_cloneB.Path
+			};
+
+			Monitor.Observe();
 		}
 
 		[Test]

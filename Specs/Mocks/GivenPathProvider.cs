@@ -9,13 +9,8 @@ namespace Specs.Mocks
 {
 	internal class GivenPathProvider : IPathProvider
 	{
-		private readonly string _path;
+		public string[] Paths { get; set; }
 
-		public GivenPathProvider(string path)
-		{
-			_path = path;
-		}
-
-		public string[] GetPaths() => new string[] { _path };
+		public string[] GetPaths() => Paths;
 	}
 }

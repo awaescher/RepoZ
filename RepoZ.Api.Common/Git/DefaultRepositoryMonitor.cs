@@ -58,7 +58,7 @@ namespace RepoZ.Api.Common.Git
 			foreach (var path in paths.AsParallel())
 			{
 				var crawler = _pathCrawlerFactory.Create();
-				Task.Run(() => crawler.Find(path, "HEAD", file => OnFoundNewRepository(file), null))
+				Task.Run(() => crawler.Find(path, "HEAD", OnFoundNewRepository, null))
 					.ContinueWith((t) => scannedPaths++)
 					.ContinueWith((t) =>
 					{
@@ -135,20 +135,26 @@ namespace RepoZ.Api.Common.Git
 			if (_detectors == null)
 			{
 				if (ScanInitially)
+				{
+					ScanRepositoriesFromStoreAsync();
 					ScanForRepositoriesAsync();
+				}
 
 				ObserveRepositoryChanges();
 			}
-
-			if (ScanInitially)
-				ScanRepositoriesFromStoreAsync();
 
 			_detectors.ForEach(w => w.Start()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
 		}
 
 		public void Stop()
 		{
-			_detectors.ForEach(w => w.Stop());
+			_detectors?.ForEach(w => w.Stop());
+		}
+
+		public void Reset()
+		{
+			Stop();
+			_detectors = null;
 		}
 
 		private void OnRepositoryChangeDetected(Repository repo)

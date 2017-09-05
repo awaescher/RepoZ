@@ -58,12 +58,12 @@
   <ItemGroup>
     <Compile Include="AssertionHelper.cs" />
     <Compile Include="DefaultRepositoryMonitorTests.cs" />
+    <Compile Include="Mocks\DirectThreadDispatcher.cs" />
     <Compile Include="Mocks\NeverSkippingPathSkipper.cs" />
     <Compile Include="Mocks\GivenPathProvider.cs" />
     <Compile Include="IO\RepositoryWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mocks\UselessRepositoryStore.cs" />
-    <Compile Include="Mocks\UselessRepositoryInformationAggregator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
