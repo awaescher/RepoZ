@@ -126,7 +126,7 @@ namespace RepoZ.Api.Common.Git
 
 				detector.OnAddOrChange = OnRepositoryChangeDetected;
 				detector.OnDelete = OnRepositoryDeletionDetected;
-				detector.Setup(path);
+				detector.Setup(path, DelayGitRepositoryStatusAfterCreationMilliseconds);
 			}
 		}
 
@@ -134,11 +134,15 @@ namespace RepoZ.Api.Common.Git
 		{
 			if (_detectors == null)
 			{
-				ScanForRepositoriesAsync();
+				if (ScanInitially)
+					ScanForRepositoriesAsync();
+
 				ObserveRepositoryChanges();
 			}
 
-			ScanRepositoriesFromStoreAsync();
+			if (ScanInitially)
+				ScanRepositoriesFromStoreAsync();
+
 			_detectors.ForEach(w => w.Start()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
 		}
 
@@ -168,7 +172,7 @@ namespace RepoZ.Api.Common.Git
 		private void CreateRepositoryObserver(Repository repo, string path)
 		{
 			var observer = _repositoryObserverFactory.Create();
-			observer.Setup(repo);
+			observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
 			_repositoryObservers.Add(path, observer);
 
 			observer.OnChange += OnRepositoryObserverChange;
@@ -208,6 +212,12 @@ namespace RepoZ.Api.Common.Git
 		public Action<bool> OnScanStateChanged { get; set; }
 
 		public bool Scanning { get; set; } = false;
+
+		public bool ScanInitially { get; set; } = true;
+
+		public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; set; } = 5000;
+
+		public int DelayGitStatusAfterFileOperationMilliseconds { get; set; } = 500;
 
 		private enum KnownRepositoryNotification
 		{

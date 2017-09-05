@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using RepoZ.Api.Common.Git;
+using RepoZ.Api.Common.IO;
 using Specs.IO;
+using Specs.Mocks;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -10,12 +12,12 @@ using System.Threading;
 
 namespace Specs
 {
-	public class DefaultRepositoryDetectorTests
+	public class DefaultRepositoryMonitorTests
 	{
 		private RepositoryWriter _origin;
 		private RepositoryWriter _cloneA;
 		private RepositoryWriter _cloneB;
-		private DefaultRepositoryDetector _detector;
+		private DefaultRepositoryMonitor _monitor;
 		private string _rootPath;
 
 		[OneTimeSetUp]
@@ -28,9 +30,18 @@ namespace Specs
 			string repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
 
 			var reader = new DefaultRepositoryReader();
-			_detector = new DefaultRepositoryDetector(reader);
-			_detector.Setup(_rootPath, 100);
 
+			_monitor = new DefaultRepositoryMonitor(
+				new GivenPathProvider(repoPath),
+				reader,
+				new DefaultRepositoryDetectorFactory(reader),
+				new DefaultRepositoryObserverFactory(),
+				new DefaultPathCrawlerFactory(new NeverSkippingPathSkipper()),
+				new UselessRepositoryStore(),
+				new UselessRepositoryInformationAggregator()
+				);
+			_monitor.ScanInitially = false;
+			
 			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
 			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
 			_cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"));
@@ -39,8 +50,8 @@ namespace Specs
 		[OneTimeTearDown]
 		public void TearDown()
 		{
-			_detector.Stop();
-			_detector.Dispose();
+			_monitor.Stop();
+			//_monitor.Dispose();
 
 			WaitFileOperationDelay();
 
@@ -84,7 +95,7 @@ commit file             master   |  |       |                   |              v
 		[Order(0)]
 		public void T0A_Detects_Repository_Creation()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_origin.InitBare();
 			},
@@ -96,7 +107,7 @@ commit file             master   |  |       |                   |              v
 		[Order(1)]
 		public void T1A_Detects_Repository_Clone()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Clone(_origin.Path);
 				_cloneB.Clone(_origin.Path);
@@ -109,7 +120,7 @@ commit file             master   |  |       |                   |              v
 		[Order(2)]
 		public void T2B_Detects_File_Creation()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.CreateFile("First.A", "First file on clone A");
 			},
@@ -121,7 +132,7 @@ commit file             master   |  |       |                   |              v
 		[Order(3)]
 		public void T2C_Detects_File_Staging()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Stage("First.A");
 			},
@@ -133,7 +144,7 @@ commit file             master   |  |       |                   |              v
 		[Order(4)]
 		public void T2D_Detects_Repository_Commits()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Commit("Commit #1 on A");
 			},
@@ -145,7 +156,7 @@ commit file             master   |  |       |                   |              v
 		[Order(5)]
 		public void T2E_Detects_Repository_Pushes()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Push();
 				_origin.HeadTip.Should().Be(_cloneA.HeadTip);
@@ -158,7 +169,7 @@ commit file             master   |  |       |                   |              v
 		[Order(6)]
 		public void T3A_Detects_Repository_Pull()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.Pull();
 				_cloneB.HeadTip.Should().Be(_cloneA.HeadTip);
@@ -171,7 +182,7 @@ commit file             master   |  |       |                   |              v
 		[Order(7)]
 		public void T4A_Detects_Repository_Branch_And_Checkout()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.CurrentBranch.Should().Be("master");
 				_cloneB.Branch("develop");
@@ -214,7 +225,7 @@ commit file             master   |  |       |                   |              v
 		[Order(11)]
 		public void T5B_Detects_Repository_Fetch()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.Fetch();
 			},
@@ -226,7 +237,7 @@ commit file             master   |  |       |                   |              v
 		[Order(12)]
 		public void T5C_Detects_Repository_Merge_Tracked_Branch()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.MergeWithTracked();
 			},
@@ -247,7 +258,7 @@ commit file             master   |  |       |                   |              v
 		[Order(14)]
 		public void T6B_Detects_Repository_Rebase()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				int steps = _cloneB.Rebase("master");
 				steps.Should().Be(1);
@@ -269,7 +280,7 @@ commit file             master   |  |       |                   |              v
 		[Order(16)]
 		public void T7B_Detects_Repository_Merge_With_Other_Branch()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.Merge("develop");
 			},
@@ -281,7 +292,7 @@ commit file             master   |  |       |                   |              v
 		[Order(17)]
 		public void T8A_Detects_Repository_Push_With_Upstream()
 		{
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_origin.HeadTip.Should().NotBe(_cloneB.HeadTip);
 
@@ -299,7 +310,7 @@ commit file             master   |  |       |                   |              v
 		{
 			NormalizeReadOnlyFiles(_cloneA.Path);
 
-			Detector.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				Directory.Delete(_cloneA.Path, true);
 			},
@@ -355,6 +366,6 @@ commit file             master   |  |       |                   |              v
 			Thread.Sleep(500);
 		}
 
-		protected DefaultRepositoryDetector Detector => _detector;
+		protected DefaultRepositoryMonitor Monitor => _monitor;
 	}
 }

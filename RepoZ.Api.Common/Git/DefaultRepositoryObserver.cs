@@ -10,11 +10,11 @@ namespace RepoZ.Api.Common.Git
 	{
 		private Repository _repository;
 		private FileSystemWatcher _watcher;
-		private static Timer _eventRaisingTimer;
+		private Timer _eventRaisingTimer;
 
 		public Action<Repository> OnChange { get; set; }
 		
-		public void Setup(Repository repository, int detectionToAlertDelayMilliseconds = 500)
+		public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
 		{
 			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 

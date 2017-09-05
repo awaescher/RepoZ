@@ -21,7 +21,7 @@ namespace RepoZ.Api.Common.Git
 		public Action<Repository> OnAddOrChange { get; set; }
 		public Action<string> OnDelete { get; set; }
 
-		public void Setup(string path, int detectionToAlertDelayMilliseconds = 5000)
+		public void Setup(string path, int detectionToAlertDelayMilliseconds)
 		{
 			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 

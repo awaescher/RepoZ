@@ -8,7 +8,7 @@ namespace RepoZ.Api.Git
 {
 	public interface IRepositoryDetector
 	{
-		void Setup(string path, int detectionToAlertDelayMilliseconds = 5000);
+		void Setup(string path, int detectionToAlertDelayMilliseconds);
 
 		void Start();
 
