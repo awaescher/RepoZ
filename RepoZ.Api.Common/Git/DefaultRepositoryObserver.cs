@@ -10,16 +10,15 @@ namespace RepoZ.Api.Common.Git
 	{
 		private Repository _repository;
 		private FileSystemWatcher _watcher;
-		private Timer _eventRaisingTimer;
+		private bool _ioDetected;
 
 		public Action<Repository> OnChange { get; set; }
-		
+
 		public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
 		{
 			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
 			_repository = repository;
-			_eventRaisingTimer = new Timer(RaiseEventCallback, null, Timeout.Infinite, Timeout.Infinite);
 
 			_watcher = new FileSystemWatcher(_repository.Path);
 			_watcher.Created += _watcher_Created;
@@ -27,11 +26,6 @@ namespace RepoZ.Api.Common.Git
 			_watcher.Deleted += _watcher_Deleted;
 			_watcher.Renamed += _watcher_Renamed;
 			_watcher.IncludeSubdirectories = true;
-		}
-
-		private void RaiseEventCallback(object state)
-		{
-			OnChange?.Invoke(_repository);
 		}
 
 		public void Start()
@@ -46,29 +40,61 @@ namespace RepoZ.Api.Common.Git
 
 		private void _watcher_Deleted(object sender, FileSystemEventArgs e)
 		{
-			RaiseChangeEvent();
+			PauseWatcherAndScheduleCallback();
 		}
 
 		private void _watcher_Renamed(object sender, RenamedEventArgs e)
 		{
-			RaiseChangeEvent();
+			PauseWatcherAndScheduleCallback();
 		}
 
 		private void _watcher_Changed(object sender, FileSystemEventArgs e)
 		{
-			RaiseChangeEvent();
+			PauseWatcherAndScheduleCallback();
 		}
 
 		private void _watcher_Created(object sender, FileSystemEventArgs e)
 		{
-			RaiseChangeEvent();
+			PauseWatcherAndScheduleCallback();
 		}
 
-		private void RaiseChangeEvent()
+		private void PauseWatcherAndScheduleCallback()
 		{
-			// use that delay to prevent a lot of sequential writes 
-			// when a lot file changes are detected
-			_eventRaisingTimer.Change(DetectionToAlertDelayMilliseconds, Timeout.Infinite);
+			if (!_ioDetected)
+			{
+				_ioDetected = true;
+
+				// stop the watcher once we found IO ...
+				Stop();
+
+				// ... and schedule a method to reactivate the watchers again
+				// if nothing happened in between (regarding IO) it should also fire the OnChange-event
+				Task.Run(() =>
+					Thread.Sleep(DetectionToAlertDelayMilliseconds))
+					.ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected);
+			}
+		}
+
+		private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected(object state)
+		{
+			if (_ioDetected)
+			{
+				// reset the flag, wait for further IO ...
+				_ioDetected = false;
+				Start();
+
+				// ... and if nothing happened during the delay, invoke the OnChange-event
+				Task.Run(() =>
+					Thread.Sleep(DetectionToAlertDelayMilliseconds))
+					.ContinueWith(t =>
+					{
+						if (_ioDetected)
+							return;
+
+						Console.WriteLine($"ONCHANGE on {_repository.Name}");
+						OnChange?.Invoke(_repository);
+					});
+			}
 		}
 
 		public void Dispose()
