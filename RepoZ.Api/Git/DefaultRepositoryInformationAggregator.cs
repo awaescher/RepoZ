@@ -11,12 +11,10 @@ namespace RepoZ.Api.Git
 	public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 	{
 		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
-		private StatusCompressor _compressor;
 		private IThreadDispatcher _dispatcher;
 
 		public DefaultRepositoryInformationAggregator(StatusCompressor compressor, IThreadDispatcher dispatcher)
 		{
-			_compressor = compressor;
 			_dispatcher = dispatcher;
 		}
 
@@ -49,7 +47,7 @@ namespace RepoZ.Api.Git
 			if (view == null)
 				return null;
 
-			string status = _compressor.Compress(view.Repository);
+			string status = view.Status;
 
 			if (string.IsNullOrEmpty(status))
 				return view.CurrentBranch;

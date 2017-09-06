@@ -9,11 +9,11 @@ namespace RepoZ.Api.Git
 {
 	public class StatusCompressor
 	{
-		private StatusCharacterMap _statusCharakterMap;
+		private StatusCharacterMap _statusCharacterMap;
 
 		public StatusCompressor(StatusCharacterMap statusCharacterMap)
 		{
-			_statusCharakterMap = statusCharacterMap;
+			_statusCharacterMap = statusCharacterMap;
 		}
 
 		public string Compress(Repository repository)
@@ -37,24 +37,24 @@ namespace RepoZ.Api.Git
 			{
 				if (isOnCommitLevel)
 				{
-					builder.Append(_statusCharakterMap.IdenticalSign);
+					builder.Append(_statusCharacterMap.IdenticalSign);
 				}
 				else
 				{
 					if (isAhead)
-						builder.Append($"{_statusCharakterMap.ArrowUpSign}{repository.AheadBy.Value}");
+						builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy.Value}");
 
 					if (isBehind)
 					{
 						if (isAhead)
 							builder.Append(" ");
-						builder.Append($"{_statusCharakterMap.ArrowDownSign}{repository.BehindBy.Value}");
+						builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy.Value}");
 					}
 				}
 			}
 			else
 			{
-				builder.Append(_statusCharakterMap.NoUpstreamSign);
+				builder.Append(_statusCharacterMap.NoUpstreamSign);
 			}
 
 			if (printASR)
