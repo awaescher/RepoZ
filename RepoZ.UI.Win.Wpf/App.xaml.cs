@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,6 +17,7 @@ using RepoZ.Api.Win.Git;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
+using TinyIpc.Messaging;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -42,6 +44,8 @@ namespace RepoZ.UI.Win.Wpf
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
+			Task.Run(() => StartIpcServer());
+
 			if (noUI)
 			{
 				application.Run();
@@ -50,6 +54,21 @@ namespace RepoZ.UI.Win.Wpf
 			{
 				var form = container.Resolve<MainWindow>();
 				application.Run(form);
+			}
+
+		}
+
+		private static void StartIpcServer()
+		{
+			using (var bus = new TinyMessageBus("RepoZGrrChannel"))
+			{
+				bus.MessageReceived += (sender, e) => Console.WriteLine(Encoding.UTF8.GetString(e.Message));
+
+				while (true)
+				{
+				//	var message = Console.ReadLine();
+				//	messagebus1.PublishAsync(Encoding.UTF8.GetBytes(message));
+				}
 			}
 		}
 
