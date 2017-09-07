@@ -62,13 +62,37 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			using (var bus = new TinyMessageBus("RepoZGrrChannel"))
 			{
-				bus.MessageReceived += (sender, e) => Console.WriteLine(Encoding.UTF8.GetString(e.Message));
+				bus.MessageReceived += Bus_MessageReceived;
 
 				while (true)
 				{
-				//	var message = Console.ReadLine();
-				//	messagebus1.PublishAsync(Encoding.UTF8.GetBytes(message));
+					// keep the bus open
 				}
+			}
+		}
+
+		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
+		{
+			string message = Encoding.UTF8.GetString(e.Message);
+
+			if (string.IsNullOrEmpty(message))
+				return;
+
+			if (message.StartsWith("list:"))
+			{
+				string repositoryNameFilter = message.Substring("list:".Length).Replace("*", "");
+				var bus = (TinyMessageBus)sender;
+
+				var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+				var repos = aggregator.Repositories
+					.Where(r => r.Name.IndexOf(repositoryNameFilter, StringComparison.OrdinalIgnoreCase) > -1)
+					.Select(r => $"{r.Name}*{r.BranchWithStatus}*{r.Path}");
+
+				string answer = "No repositories found";
+				if (repos.Any())
+					answer = string.Join(Environment.NewLine, repos.ToArray());
+
+				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
 			}
 		}
 
