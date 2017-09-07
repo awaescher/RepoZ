@@ -43,16 +43,7 @@ namespace RepoZ.Api.Git
 		public string GetStatusByPath(string path)
 		{
 			var view = GetRepositoryByPath(path);
-
-			if (view == null)
-				return null;
-
-			string status = view.Status;
-
-			if (string.IsNullOrEmpty(status))
-				return view.CurrentBranch;
-
-			return view.CurrentBranch + " " + status;
+			return view?.BranchWithStatus;
 		}
 
 		private RepositoryView GetRepositoryByPath(string path)

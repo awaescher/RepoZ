@@ -9,6 +9,8 @@ namespace RepoZ.Api.Git
 {
 	public class StatusCompressor
 	{
+		private const int COMMIT_SHA_DISPLAY_CHARS = 7;
+
 		private StatusCharacterMap _statusCharacterMap;
 
 		public StatusCompressor(StatusCharacterMap statusCharacterMap)
@@ -77,6 +79,25 @@ namespace RepoZ.Api.Git
 			}
 
 			return builder.ToString();
+		}
+
+		public string CompressWithBranch(Repository repository)
+		{
+			string branch = repository.CurrentBranch;
+
+			if (repository.CurrentBranchIsOnTag)
+			{
+				// put tabs in parenthesis ()
+				branch = $"({branch})";
+			}
+			else
+			{
+				// put commit shas in parenthesis (), shorten them and show ellipses afterwards
+				if (repository.CurrentBranchIsDetached && branch.Length > COMMIT_SHA_DISPLAY_CHARS)
+					branch = $"({branch.Substring(0, COMMIT_SHA_DISPLAY_CHARS)}{_statusCharacterMap.EllipsesSign})";
+			}
+
+			return branch + " " + Compress(repository);
 		}
 	}
 }

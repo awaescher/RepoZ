@@ -62,6 +62,10 @@ namespace RepoZ.Api.Git
 
 		public bool CurrentBranchHasUpstream { get; set; }
 
+		public bool CurrentBranchIsDetached { get; set; }
+
+		public bool CurrentBranchIsOnTag { get; set; }
+
 		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
 
 		public int? AheadBy { get; set; }
@@ -85,6 +89,7 @@ namespace RepoZ.Api.Git
 		public string GetStatusCode()
 		{
 			return string.Join("-", new object[]{
+				CurrentBranch ?? "",
 				AheadBy ?? 0,
 				BehindBy ?? 0,
 				LocalUntracked ?? 0,
