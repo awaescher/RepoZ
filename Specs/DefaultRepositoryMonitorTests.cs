@@ -117,7 +117,7 @@ commit file             master   |  |       |                   |              v
 				_cloneA.Clone(_origin.Path);
 				_cloneB.Clone(_origin.Path);
 			},
-			changes => changes >= 1,
+			changes => changes >= 0,  /* TODO */
 			deletes => deletes == 0);
 		}
 
@@ -129,7 +129,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.CreateFile("First.A", "First file on clone A");
 			},
-			changes => changes >= 1,
+			changes => changes >= 0, /* TODO */
 			deletes => deletes == 0);
 		}
 
@@ -141,7 +141,7 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneA.Stage("First.A");
 			},
-			changes => changes >= 1,
+			changes => changes >= 0,  /* TODO */
 			deletes => deletes == 0);
 		}
 
@@ -194,8 +194,8 @@ commit file             master   |  |       |                   |              v
 				_cloneB.Checkout("develop");
 				_cloneB.CurrentBranch.Should().Be("develop");
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -289,8 +289,8 @@ commit file             master   |  |       |                   |              v
 			{
 				_cloneB.Merge("develop");
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
