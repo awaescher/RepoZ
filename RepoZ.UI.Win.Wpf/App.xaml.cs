@@ -39,7 +39,7 @@ namespace RepoZ.UI.Win.Wpf
 
 			RegisterServices(container);
 
-			UseRepositoryMonitor(container, application.Dispatcher);
+			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
 			if (noUI)
@@ -69,6 +69,7 @@ namespace RepoZ.UI.Win.Wpf
 
 			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
 			container.Register<WindowsExplorerHandler>().AsSingleton();
+			container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
@@ -76,21 +77,18 @@ namespace RepoZ.UI.Win.Wpf
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-			container.Register<IRepositoryCache, WindowsRepositoryCache>();
+			container.Register<IRepositoryStore, WindowsRepositoryStore>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
+			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
+
 		}
 
-		protected static void UseRepositoryMonitor(TinyIoCContainer container, Dispatcher uiDispatcher)
+		protected static void UseRepositoryMonitor(TinyIoCContainer container)
 		{
-			if (uiDispatcher == null)
-				throw new ArgumentNullException(nameof(uiDispatcher));
-
 			var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
-			_repositoryMonitor.OnChangeDetected = (repo) => uiDispatcher.Invoke(() => repositoryInformationAggregator.Add(repo));
-			_repositoryMonitor.OnDeletionDetected = (repoPath) => uiDispatcher.Invoke(() => repositoryInformationAggregator.RemoveByPath(repoPath));
 			_repositoryMonitor.Observe();
 		}
 

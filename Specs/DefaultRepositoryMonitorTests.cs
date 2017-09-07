@@ -1,7 +1,10 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using RepoZ.Api.Common.Git;
+using RepoZ.Api.Common.IO;
+using RepoZ.Api.Git;
 using Specs.IO;
+using Specs.Mocks;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -10,12 +13,12 @@ using System.Threading;
 
 namespace Specs
 {
-	public class DefaultRepositoryObserverTests
+	public class DefaultRepositoryMonitorTests
 	{
 		private RepositoryWriter _origin;
 		private RepositoryWriter _cloneA;
 		private RepositoryWriter _cloneB;
-		private DefaultRepositoryObserver _observer;
+		private DefaultRepositoryMonitor _monitor;
 		private string _rootPath;
 
 		[OneTimeSetUp]
@@ -26,10 +29,23 @@ namespace Specs
 			TryCreateRootPath(_rootPath);
 
 			string repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
+			Directory.CreateDirectory(repoPath);
 
-			var reader = new DefaultRepositoryReader();
-			_observer = new DefaultRepositoryObserver(reader);
-			_observer.Setup(_rootPath, 100);
+			_monitor = new DefaultRepositoryMonitor(
+				new GivenPathProvider(new string[] { repoPath }),
+				new DefaultRepositoryReader(),
+				new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader()),
+				new DefaultRepositoryObserverFactory(),
+				new DefaultPathCrawlerFactory(new NeverSkippingPathSkipper()),
+				new UselessRepositoryStore(),
+				new DefaultRepositoryInformationAggregator(
+					new StatusCompressor(new StatusCharacterMap()),
+					new DirectThreadDispatcher())
+				);
+
+			_monitor.ScanInitially = false;
+			_monitor.DelayGitRepositoryStatusAfterCreationMilliseconds = 100;
+			_monitor.DelayGitStatusAfterFileOperationMilliseconds = 100;
 
 			_origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
 			_cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
@@ -39,8 +55,8 @@ namespace Specs
 		[OneTimeTearDown]
 		public void TearDown()
 		{
-			_observer.Stop();
-			_observer.Dispose();
+			_monitor.Stop();
+			//_monitor.Dispose();
 
 			WaitFileOperationDelay();
 
@@ -84,56 +100,56 @@ commit file             master   |  |       |                   |              v
 		[Order(0)]
 		public void T0A_Detects_Repository_Creation()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_origin.InitBare();
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes == 0,
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(1)]
 		public void T1A_Detects_Repository_Clone()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Clone(_origin.Path);
 				_cloneB.Clone(_origin.Path);
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 0,  /* TODO */
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(2)]
 		public void T2B_Detects_File_Creation()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.CreateFile("First.A", "First file on clone A");
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 0, /* TODO */
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(3)]
 		public void T2C_Detects_File_Staging()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Stage("First.A");
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 0,  /* TODO */
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(4)]
 		public void T2D_Detects_Repository_Commits()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Commit("Commit #1 on A");
 			},
@@ -145,20 +161,20 @@ commit file             master   |  |       |                   |              v
 		[Order(5)]
 		public void T2E_Detects_Repository_Pushes()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneA.Push();
 				_origin.HeadTip.Should().Be(_cloneA.HeadTip);
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(6)]
 		public void T3A_Detects_Repository_Pull()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.Pull();
 				_cloneB.HeadTip.Should().Be(_cloneA.HeadTip);
@@ -171,15 +187,15 @@ commit file             master   |  |       |                   |              v
 		[Order(7)]
 		public void T4A_Detects_Repository_Branch_And_Checkout()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.CurrentBranch.Should().Be("master");
 				_cloneB.Branch("develop");
 				_cloneB.Checkout("develop");
 				_cloneB.CurrentBranch.Should().Be("develop");
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -214,24 +230,24 @@ commit file             master   |  |       |                   |              v
 		[Order(11)]
 		public void T5B_Detects_Repository_Fetch()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.Fetch();
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(12)]
 		public void T5C_Detects_Repository_Merge_Tracked_Branch()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.MergeWithTracked();
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -247,7 +263,7 @@ commit file             master   |  |       |                   |              v
 		[Order(14)]
 		public void T6B_Detects_Repository_Rebase()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				int steps = _cloneB.Rebase("master");
 				steps.Should().Be(1);
@@ -269,19 +285,19 @@ commit file             master   |  |       |                   |              v
 		[Order(16)]
 		public void T7B_Detects_Repository_Merge_With_Other_Branch()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_cloneB.Merge("develop");
 			},
-			changes: 1,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
 		[Order(17)]
 		public void T8A_Detects_Repository_Push_With_Upstream()
 		{
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				_origin.HeadTip.Should().NotBe(_cloneB.HeadTip);
 
@@ -289,8 +305,8 @@ commit file             master   |  |       |                   |              v
 
 				_origin.HeadTip.Should().Be(_cloneB.HeadTip);
 			},
-			changes: 0,
-			deletes: 0);
+			changes => changes >= 1,
+			deletes => deletes == 0);
 		}
 
 		[Test]
@@ -299,7 +315,7 @@ commit file             master   |  |       |                   |              v
 		{
 			NormalizeReadOnlyFiles(_cloneA.Path);
 
-			Observer.Expect(() =>
+			Monitor.Expect(() =>
 			{
 				Directory.Delete(_cloneA.Path, true);
 			},
@@ -355,6 +371,6 @@ commit file             master   |  |       |                   |              v
 			Thread.Sleep(500);
 		}
 
-		protected DefaultRepositoryObserver Observer => _observer;
+		protected DefaultRepositoryMonitor Monitor => _monitor;
 	}
 }

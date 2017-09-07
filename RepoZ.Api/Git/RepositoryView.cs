@@ -12,6 +12,9 @@ namespace RepoZ.Api.Git
 	[DebuggerDisplay("{Name} @{Path}")]
 	public class RepositoryView
 	{
+		private string _cachedRepositoryStatusCode;
+		private string _cachedRepositoryStatus;
+
 		public RepositoryView(Repository repository)
 		{
 			if (repository == null)
@@ -52,9 +55,25 @@ namespace RepoZ.Api.Git
 
 		public override int GetHashCode() => Repository.GetHashCode();
 
-		public Repository Repository { get; private set; }
+		public Repository Repository { get; }
 
-		public string Status => new StatusCompressor(new StatusCharacterMap()).Compress(Repository);
+		public string Status
+		{
+			get
+			{
+				var repositoryStatusCode = Repository.GetStatusCode();
+
+				// compare the status code and not the full status string because the latter one is heavier to calculate
+				bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
+
+				if (!canTakeFromCache)
+				{
+					_cachedRepositoryStatus = new StatusCompressor(new StatusCharacterMap()).Compress(Repository);
+					_cachedRepositoryStatusCode = repositoryStatusCode;
+				}
+				return _cachedRepositoryStatus;
+			}
+		}
 
 		public override bool Equals(object obj)
 		{

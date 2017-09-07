@@ -9,13 +9,6 @@ namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryObserverFactory : IRepositoryObserverFactory
 	{
-		private IRepositoryReader _repositoryReader;
-
-		public DefaultRepositoryObserverFactory(IRepositoryReader repositoryReader)
-		{
-			_repositoryReader = repositoryReader;
-		}
-
-		public IRepositoryObserver Create() => new DefaultRepositoryObserver(_repositoryReader);
+		public IRepositoryObserver Create() => new DefaultRepositoryObserver();
 	}
 }

@@ -8,14 +8,12 @@ namespace RepoZ.Api.Git
 {
 	public interface IRepositoryObserver
 	{
-		void Setup(string path, int detectionToAlertDelayMilliseconds = 5000);
+		void Setup(Repository repository, int detectionToAlertDelayMilliseconds);
 
-		void Observe();
+		void Start();
 
 		void Stop();
 
-		Action<Repository> OnAddOrChange { get; set; }
-
-		Action<string> OnDelete { get; set; }
+		Action<Repository> OnChange { get; set; }
 	}
 }

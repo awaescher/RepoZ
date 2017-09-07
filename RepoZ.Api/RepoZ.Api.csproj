@@ -38,11 +38,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\IErrorHandler.cs" />
+    <Compile Include="Common\IThreadDispatcher.cs" />
     <Compile Include="Common\SingularityQueue.cs" />
     <Compile Include="Git\DefaultRepositoryInformationAggregator.cs" />
-    <Compile Include="Git\IRepositoryCache.cs" />
-    <Compile Include="Git\IRepositoryInformationAggregator.cs" />
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
+    <Compile Include="Git\IRepositoryObserver.cs" />
+    <Compile Include="Git\IRepositoryStore.cs" />
+    <Compile Include="Git\IRepositoryInformationAggregator.cs" />
+    <Compile Include="Git\IRepositoryDetectorFactory.cs" />
     <Compile Include="Git\IRepositoryActionProvider.cs" />
     <Compile Include="Git\IRepositoryWriter.cs" />
     <Compile Include="Git\RepositoryView.cs" />
@@ -54,7 +57,7 @@
     <Compile Include="IO\IPathFinder.cs" />
     <Compile Include="IO\IPathProvider.cs" />
     <Compile Include="Git\IRepositoryReader.cs" />
-    <Compile Include="Git\IRepositoryObserver.cs" />
+    <Compile Include="Git\IRepositoryDetector.cs" />
     <Compile Include="Git\IRepositoryMonitor.cs" />
     <Compile Include="Git\PathAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

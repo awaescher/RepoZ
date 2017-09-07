@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RepoZ.Api.Common;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,32 +11,54 @@ namespace RepoZ.Api.Git
 	public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 	{
 		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
-		private StatusCompressor _compressor;
+		private IThreadDispatcher _dispatcher;
 
-		public DefaultRepositoryInformationAggregator(StatusCompressor compressor)
+		public DefaultRepositoryInformationAggregator(StatusCompressor compressor, IThreadDispatcher dispatcher)
 		{
-			_compressor = compressor;
+			_dispatcher = dispatcher;
 		}
 
 		public void Add(Repository repository)
 		{
-			var view = new RepositoryView(repository);
-			_dataSource.Remove(view);
-			_dataSource.Add(view);
+			_dispatcher.Invoke(() =>
+			{
+				var view = new RepositoryView(repository);
+
+				_dataSource.Remove(view);
+				_dataSource.Add(view);
+			});
 		}
 
 		public void RemoveByPath(string path)
 		{
-			var viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+			_dispatcher.Invoke(() =>
+			{
+				var viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-			for (int i = viewsToRemove.Length - 1; i >= 0; i--)
-				_dataSource.Remove(viewsToRemove[i]);
+				for (int i = viewsToRemove.Length - 1; i >= 0; i--)
+					_dataSource.Remove(viewsToRemove[i]);
+			});
 		}
 
 		public string GetStatusByPath(string path)
 		{
+			var view = GetRepositoryByPath(path);
+
+			if (view == null)
+				return null;
+
+			string status = view.Status;
+
+			if (string.IsNullOrEmpty(status))
+				return view.CurrentBranch;
+
+			return view.CurrentBranch + " " + status;
+		}
+
+		private RepositoryView GetRepositoryByPath(string path)
+		{
 			if (string.IsNullOrEmpty(path))
-				return string.Empty;
+				return null;
 
 			List<RepositoryView> views = null;
 			try
@@ -47,7 +70,7 @@ namespace RepoZ.Api.Git
 
 			var hasAny = views?.Any() ?? false;
 			if (!hasAny)
-				return string.Empty;
+				return null;
 
 			if (!path.EndsWith("\\", StringComparison.Ordinal))
 				path += "\\";
@@ -55,16 +78,14 @@ namespace RepoZ.Api.Git
 			var viewsByPath = views.Where(r => r?.Path != null && path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
 
 			if (!viewsByPath.Any())
-				return string.Empty;
+				return null;
 
-			var view = viewsByPath.OrderByDescending(r => r.Path.Length).First();
+			return viewsByPath.OrderByDescending(r => r.Path.Length).First();
+		}
 
-			string status = _compressor.Compress(view.Repository);
-
-			if (string.IsNullOrEmpty(status))
-				return view.CurrentBranch;
-
-			return view.CurrentBranch + " " + status;
+		public bool HasRepository(string path)
+		{
+			return GetRepositoryByPath(path) != null;
 		}
 
 		public ObservableCollection<RepositoryView> Repositories => _dataSource;

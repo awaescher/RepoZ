@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Git
 {
-	public interface IRepositoryCache
+	public interface IRepositoryStore
 	{
 		IEnumerable<string> Get();
 

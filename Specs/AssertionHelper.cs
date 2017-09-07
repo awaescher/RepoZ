@@ -11,28 +11,28 @@ namespace Specs
 {
 	public static class AssertionHelper
 	{
-		public static void Expect(this DefaultRepositoryObserver observer, Action act, int changes, int deletes)
+		public static void Expect(this DefaultRepositoryMonitor monitor, Action act, int changes, int deletes)
 		{
-			ExpectInternal(observer, act, out int actualChanges, out int actualDeletes);
+			ExpectInternal(monitor, act, out int actualChanges, out int actualDeletes);
 
 			actualChanges.Should().Be(changes);
 			actualDeletes.Should().Be(deletes);
 		}
 
 		public static void Expect(
-			this DefaultRepositoryObserver observer,
+			this DefaultRepositoryMonitor monitor,
 			Action act,
 			Func<int, bool> changesAssertion,
 			Func<int, bool> deletesAssertion)
 		{
-			ExpectInternal(observer, act, out int actualChanges, out int actualDeletes);
+			ExpectInternal(monitor, act, out int actualChanges, out int actualDeletes);
 
 			changesAssertion(actualChanges).Should().BeTrue();
 			deletesAssertion(actualDeletes).Should().BeTrue();
 		}
 
 		private static void ExpectInternal(
-			this DefaultRepositoryObserver observer,
+			this DefaultRepositoryMonitor monitor,
 			Action act,
 			out int actualChanges,
 			out int actualDeletes)
@@ -42,23 +42,23 @@ namespace Specs
 
 			try
 			{
-				observer.OnAddOrChange = (s) => trackedChanges++;
-				observer.OnDelete = (s) => trackedDeletes++;
+				monitor.OnChangeDetected = (r) => trackedChanges++;
+				monitor.OnDeletionDetected = (s) => trackedDeletes++;
 
-				observer.Observe();
+				monitor.Observe();
 
 				act();
 
 				// let's be generous
-				var delay = 3 * observer.DetectionToAlertDelayMilliseconds;
+				var delay = 3 * monitor.DelayGitStatusAfterFileOperationMilliseconds;
 				Thread.Sleep(delay);
 			}
 			finally
 			{
-				observer.Stop();
+				monitor.Stop();
 
-				observer.OnAddOrChange = null;
-				observer.OnDelete = null;
+				monitor.OnChangeDetected = null;
+				monitor.OnDeletionDetected = null;
 			}
 
 			actualChanges = trackedChanges;
