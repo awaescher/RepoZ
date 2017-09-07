@@ -14,6 +14,7 @@ namespace RepoZ.Api.Git
 	{
 		private string _cachedRepositoryStatusCode;
 		private string _cachedRepositoryStatus;
+		private string _cachedRepositoryStatusWithBranch;
 
 		public RepositoryView(Repository repository)
 		{
@@ -61,17 +62,17 @@ namespace RepoZ.Api.Git
 		{
 			get
 			{
-				var repositoryStatusCode = Repository.GetStatusCode();
-
-				// compare the status code and not the full status string because the latter one is heavier to calculate
-				bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
-
-				if (!canTakeFromCache)
-				{
-					_cachedRepositoryStatus = new StatusCompressor(new StatusCharacterMap()).Compress(Repository);
-					_cachedRepositoryStatusCode = repositoryStatusCode;
-				}
+				EnsureStatusCache();
 				return _cachedRepositoryStatus;
+			}
+		}
+
+		public string BranchWithStatus
+		{
+			get
+			{
+				EnsureStatusCache();
+				return _cachedRepositoryStatusWithBranch;
 			}
 		}
 
@@ -83,6 +84,23 @@ namespace RepoZ.Api.Git
 				return other.Repository.Equals(this.Repository);
 
 			return object.ReferenceEquals(this, obj);
+		}
+
+		private void EnsureStatusCache()
+		{
+			var repositoryStatusCode = Repository.GetStatusCode();
+
+			// compare the status code and not the full status string because the latter one is heavier to calculate
+			bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
+
+			if (!canTakeFromCache)
+			{
+				var compressor = new StatusCompressor(new StatusCharacterMap());
+				_cachedRepositoryStatus = compressor.Compress(Repository);
+				_cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
+
+				_cachedRepositoryStatusCode = repositoryStatusCode;
+			}
 		}
 	}
 }

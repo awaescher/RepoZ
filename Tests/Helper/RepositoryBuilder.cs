@@ -52,6 +52,21 @@ namespace Tests.Helper
 			return this;
 		}
 
+		public RepositoryBuilder WithDetachedHeadOnCommit(string sha)
+		{
+			_repository.CurrentBranchIsDetached = true;
+			_repository.CurrentBranch = sha;
+			return this;
+		}
+
+		public RepositoryBuilder WithDetachedHeadOnTag(string tag)
+		{
+			_repository.CurrentBranchIsDetached = true;
+			_repository.CurrentBranchIsOnTag = true;
+			_repository.CurrentBranch = tag;
+			return this;
+		}
+
 		public RepositoryBuilder WithUpstream()
 		{
 			_repository.CurrentBranchHasUpstream = true;

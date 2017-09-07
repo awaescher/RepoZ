@@ -13,21 +13,25 @@ namespace Tests.UI
 	public class StatusCompressorTests
 	{
 		protected RepositoryBuilder _builder;
-		private StatusCharacterMap _statusCharacterMap;
+		private StatusCharacterMap _characterMap;
+		private StatusCompressor _compressor;
 
 		[SetUp]
 		public void Setup()
 		{
 			_builder = new RepositoryBuilder();
-			_statusCharacterMap = new StatusCharacterMap();
+			_characterMap = new StatusCharacterMap();
+			_compressor = new StatusCompressor(_characterMap);
 		}
 
-		protected string Compress(Repository repo) => new StatusCompressor(_statusCharacterMap).Compress(repo);
+		protected string Compress(Repository repo) => _compressor.Compress(repo);
+		protected string CompressWithBranch(Repository repo) => _compressor.CompressWithBranch(repo);
 
-		protected string Up => _statusCharacterMap.ArrowUpSign;
-		protected string Down => _statusCharacterMap.ArrowDownSign;
-		protected string Eq => _statusCharacterMap.IdenticalSign;
-		protected string NoUp => _statusCharacterMap.NoUpstreamSign;
+		protected string Up => _characterMap.ArrowUpSign;
+		protected string Down => _characterMap.ArrowDownSign;
+		protected string Eq => _characterMap.IdenticalSign;
+		protected string NoUp => _characterMap.NoUpstreamSign;
+		protected string Ellipses => _characterMap.EllipsesSign;
 
 		public class CompressMethod : StatusCompressorTests
 		{
@@ -289,6 +293,42 @@ namespace Tests.UI
 					.Build();
 
 				Compress(repo).Should().Be($"{Up}15 {Down}7 +1 ~2 -3 | +4 ~5 -6");
+			}
+		}
+
+		public class CompressWithBranchMethod : StatusCompressorTests
+		{
+			[Test]
+			public void Returns_The_Name_Of_The_Current_Branch_With_Its_Status()
+			{
+				var repo = _builder
+					.WithUpstream()
+					.WithCurrentBranch("develop")
+					.Build();
+
+				CompressWithBranch(repo).Should().Be($"develop {Eq}");
+			}
+
+			[Test]
+			public void Returns_A_Part_Of_The_Commit_Sha_If_Head_Is_Detached()
+			{
+				var repo = _builder
+					.WithUpstream()
+					.WithDetachedHeadOnCommit("96728c66c9245a0ba10cddefb1f1cf621743fa5f")
+					.Build();
+
+				CompressWithBranch(repo).Should().Be($"(96728c6{Ellipses}) {Eq}");
+			}
+
+			[Test]
+			public void Returns_The_Tag_Name_If_Head_Is_Detached_On_A_Tag()
+			{
+				var repo = _builder
+					.WithUpstream()
+					.WithDetachedHeadOnTag("v1.01")
+					.Build();
+
+				CompressWithBranch(repo).Should().Be($"(v1.01) {Eq}");
 			}
 		}
 	}

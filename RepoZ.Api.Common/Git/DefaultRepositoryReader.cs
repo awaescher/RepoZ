@@ -56,6 +56,8 @@ namespace RepoZ.Api.Common.Git
 
 					var workingDirectory = new DirectoryInfo(repo.Info.WorkingDirectory);
 
+					var headDetails = GetHeadDetails(repo);
+
 					return new Api.Git.Repository()
 					{
 						Name = workingDirectory.Name,
@@ -63,8 +65,10 @@ namespace RepoZ.Api.Common.Git
 						Location = workingDirectory.Parent.FullName,
 						Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
 						LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
-						CurrentBranch = repo.Head.FriendlyName,
+						CurrentBranch = headDetails.Name,
 						CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
+						CurrentBranchIsDetached = headDetails.IsDetached,
+						CurrentBranchIsOnTag = headDetails.IsOnTag,
 						AheadBy = repo.Head.TrackingDetails?.AheadBy,
 						BehindBy = repo.Head.TrackingDetails?.BehindBy,
 						LocalUntracked = status?.Untracked.Count(),
@@ -81,6 +85,34 @@ namespace RepoZ.Api.Common.Git
 			{
 				return Api.Git.Repository.Empty;
 			}
+		}
+
+		private HeadDetails GetHeadDetails(LibGit2Sharp.Repository repo)
+		{
+			// unfortunately, type DetachedHead is internal ...
+			var isDetached = repo.Head.GetType().Name.EndsWith("DetachedHead", StringComparison.OrdinalIgnoreCase);
+
+			Tag tag = null;
+
+			var headTipSha = repo.Head.Tip?.Sha;
+			if (isDetached && headTipSha != null)
+				tag = repo.Tags.FirstOrDefault(t => t.Target?.Sha?.Equals(repo.Head.Tip.Sha) ?? false);
+
+			return new HeadDetails()
+			{
+				Name = isDetached
+					? tag?.FriendlyName ?? headTipSha ?? repo.Head.FriendlyName
+					: repo.Head.FriendlyName,
+				IsDetached = isDetached,
+				IsOnTag = tag != null
+			};
+		}
+
+		internal class HeadDetails
+		{
+			internal string Name { get; set; }
+			internal bool IsDetached { get; set; }
+			internal bool IsOnTag { get; set; }
 		}
 	}
 }
