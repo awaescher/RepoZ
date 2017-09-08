@@ -29,24 +29,16 @@ namespace Grr
 			var options = new CommandLineOptions();
 			if (CommandLine.Parser.Default.ParseArguments(args, options, (v, o) => ParseCommandLineOptions(v, o, out message)))
 			{
-				if (message == null)
-					message = new ListMessage("*");
+				_bus = new TinyMessageBus("RepoZGrrChannel");
+				_bus.MessageReceived += _bus_MessageReceived;
 
-				if (message != null)
-				{
-					_bus = new TinyMessageBus("RepoZGrrChannel");
-					_bus.MessageReceived += _bus_MessageReceived;
-
-					byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
-					_bus.PublishAsync(load);
-				}
+				byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
+				_bus.PublishAsync(load);
 
 				var watch = Stopwatch.StartNew();
 
 				while (_answer == null && watch.ElapsedMilliseconds <= 3000)
-				{
-					// ... wait ...
-				}
+				{ /* ... wait ... */ }
 
 				if (_answer == null)
 					Console.WriteLine("RepoZ seems not to be running :(");
@@ -96,11 +88,13 @@ namespace Grr
 			// default should be listing all repositories
 			message = new ListMessage("");
 
+			string filter = (options as CommandLineOptions.FilterOptions)?.Filter;
+
 			if (verb == CommandLineOptions.List)
-				message = new ListMessage((options as FilterOptions)?.Filter);
+				message = new ListMessage(filter);
 
 			if (verb == CommandLineOptions.Goto)
-				message = new GotoMessage((options as FilterOptions)?.Filter);
+				message = new GotoMessage(filter);
 		}
 	}
 }
