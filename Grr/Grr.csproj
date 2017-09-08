@@ -51,9 +51,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messages\NavigateMessage.cs" />
+    <Compile Include="Messages\IMessage.cs" />
+    <Compile Include="Messages\GotoMessage.cs" />
     <Compile Include="Messages\ListMessage.cs" />
-    <Compile Include="Options.cs" />
+    <Compile Include="CommandLineOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />

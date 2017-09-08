@@ -21,17 +21,14 @@ namespace Grr
 		static void Main(string[] args)
 		{
 			Console.OutputEncoding = Encoding.UTF8;
+			IMessage message = null;
 
-			var options = new Options();
-			if (CommandLine.Parser.Default.ParseArguments(args, options))
+			if (args?.Length == 0)
+				args = new string[] { CommandLineOptions.List };
+
+			var options = new CommandLineOptions();
+			if (CommandLine.Parser.Default.ParseArguments(args, options, (v, o) => ParseCommandLineOptions(v, o, out message)))
 			{
-				object message = options.IsListMode
-					? new ListMessage(options.ListFilter)
-					: null;
-
-				if (message == null && options.IsNavigationMode)
-					message = new NavigateMessage(options.NavigateFilter);
-
 				if (message == null)
 					message = new ListMessage("*");
 
@@ -40,35 +37,46 @@ namespace Grr
 					_bus = new TinyMessageBus("RepoZGrrChannel");
 					_bus.MessageReceived += _bus_MessageReceived;
 
-					byte[] load = Encoding.UTF8.GetBytes(message.ToString());
+					byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
 					_bus.PublishAsync(load);
 				}
+
+				var watch = Stopwatch.StartNew();
+
+				while (_answer == null && watch.ElapsedMilliseconds <= 3000)
+				{
+					// ... wait ...
+				}
+
+				if (_answer == null)
+					Console.WriteLine("RepoZ seems not to be running :(");
+
+				_bus?.Dispose();
+
+				if (_repos?.Any() ?? false)
+				{
+					var maxRepoNameLenth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
+					var maxIndexStringLength = _repos.Length.ToString().Length;
+
+					for (int i = 0; i < _repos.Length; i++)
+					{
+						string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
+							? _repos[i].Name.Substring(MAX_REPO_NAME_LENGTH)
+							: _repos[i].Name;
+
+						Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
+						Console.Write(repoName.PadRight(maxRepoNameLenth + 3));
+						Console.Write(_repos[i].BranchWithStatus);
+						Console.WriteLine();
+					}
+				}
+
+				message?.Execute(_repos);
+
+				if (Debugger.IsAttached)
+					Console.ReadKey();
 			}
 
-			while (_answer == null)
-			{
-
-			}
-
-			_bus?.Dispose();
-
-			var maxRepoNameLenth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
-			var maxIndexStringLength = _repos.Length.ToString().Length;
-
-			for (int i = 0; i < _repos.Length; i++)
-			{
-				string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH) 
-					? _repos[i].Name.Substring(MAX_REPO_NAME_LENGTH)
-					: _repos[i].Name;
-
-				Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
-				Console.Write(repoName.PadRight(maxRepoNameLenth + 3));
-				Console.Write(_repos[i].BranchWithStatus);
-				Console.WriteLine();
-			}
-
-			if (Debugger.IsAttached)
-				Console.ReadKey();
 		}
 
 		private static void _bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
@@ -77,9 +85,22 @@ namespace Grr
 
 			_repos = answer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
 				.Select(s => Repository.FromString(s))
+				.Where(r => r != null)
 				.ToArray();
 
 			_answer = answer;
+		}
+
+		private static void ParseCommandLineOptions(string verb, object options, out IMessage message)
+		{
+			// default should be listing all repositories
+			message = new ListMessage("");
+
+			if (verb == CommandLineOptions.List)
+				message = new ListMessage((options as FilterOptions)?.Filter);
+
+			if (verb == CommandLineOptions.Goto)
+				message = new GotoMessage((options as FilterOptions)?.Filter);
 		}
 	}
 }
