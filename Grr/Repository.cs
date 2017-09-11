@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Grr
 {
+	[System.Diagnostics.DebuggerDisplay("{Name}")]
 	public class Repository
 	{
 		public static Repository FromString(string value)

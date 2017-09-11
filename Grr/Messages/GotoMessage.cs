@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Grr.Messages
 {
+	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public class GotoMessage : IMessage
 	{
 		private readonly string _repositoryFilter;
@@ -31,10 +32,6 @@ namespace Grr.Messages
 		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter)
 			? null /* makes no sense */
 			: $"list:{_repositoryFilter}";
-
-		public override string ToString() => string.IsNullOrEmpty(_repositoryFilter) 
-			? null /* makes no sense */
-			: $"navigate:{_repositoryFilter}";
 
 	}
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Grr.Messages
 {
+	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public class ListMessage : IMessage
 	{
 		private readonly string _repositoryFilter;
@@ -20,9 +21,7 @@ namespace Grr.Messages
 			// nothing to do
 		}
 
-		public string GetRemoteCommand() => ToString();
-
-		public override string ToString() => string.IsNullOrEmpty(_repositoryFilter) 
+		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter) 
 			? "list:.*" /* show all with RegEx pattern ".*" */
 			: $"list:{_repositoryFilter}";
 	}
