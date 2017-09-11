@@ -23,7 +23,7 @@ namespace Grr.Messages
 		public string GetRemoteCommand() => ToString();
 
 		public override string ToString() => string.IsNullOrEmpty(_repositoryFilter) 
-			? $"list:*"
+			? "list:.*" /* show all with RegEx pattern ".*" */
 			: $"list:{_repositoryFilter}";
 	}
 }

@@ -32,6 +32,7 @@ namespace Grr
 		{
 			[ValueOption(0)]
 			public string Filter { get; set; }
+
 		}
 	}
 }

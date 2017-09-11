@@ -18,6 +18,7 @@ using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
 using TinyIpc.Messaging;
+using System.Text.RegularExpressions;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -29,6 +30,7 @@ namespace RepoZ.UI.Win.Wpf
 		private static Timer _explorerUpdateTimer;
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
+		private static TinyMessageBus _bus;
 
 		[STAThread]
 		public static void Main(string[] args)
@@ -44,7 +46,8 @@ namespace RepoZ.UI.Win.Wpf
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
-			Task.Run(() => StartIpcServer());
+			_bus = new TinyMessageBus("RepoZGrrChannel");
+			_bus.MessageReceived += Bus_MessageReceived;
 
 			if (noUI)
 			{
@@ -58,19 +61,6 @@ namespace RepoZ.UI.Win.Wpf
 
 		}
 
-		private static void StartIpcServer()
-		{
-			using (var bus = new TinyMessageBus("RepoZGrrChannel"))
-			{
-				bus.MessageReceived += Bus_MessageReceived;
-
-				while (true)
-				{
-					// keep the bus open
-				}
-			}
-		}
-
 		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
 		{
 			string message = Encoding.UTF8.GetString(e.Message);
@@ -80,17 +70,25 @@ namespace RepoZ.UI.Win.Wpf
 
 			if (message.StartsWith("list:"))
 			{
-				string repositoryNameFilter = message.Substring("list:".Length).Replace("*", "");
+				string repositoryNamePattern = message.Substring("list:".Length);
 				var bus = (TinyMessageBus)sender;
 
-				var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-				var repos = aggregator.Repositories
-					.Where(r => r.Name.IndexOf(repositoryNameFilter, StringComparison.OrdinalIgnoreCase) > -1)
-					.Select(r => $"{r.Name}*{r.BranchWithStatus}*{r.Path}");
+				string answer = "(no repositories found)";
+				try
+				{
+					var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+					var repos = aggregator.Repositories
+						.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+						.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+						.ToArray();
 
-				string answer = "No repositories found";
-				if (repos.Any())
-					answer = string.Join(Environment.NewLine, repos.ToArray());
+					if (repos.Any())
+						answer = string.Join(Environment.NewLine, repos);
+				}
+				catch (Exception ex)
+				{
+					answer = ex.Message;
+				}
 
 				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
 			}

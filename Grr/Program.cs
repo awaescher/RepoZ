@@ -62,6 +62,10 @@ namespace Grr
 						Console.WriteLine();
 					}
 				}
+				else
+				{
+					Console.WriteLine(_answer);
+				}
 
 				message?.Execute(_repos);
 
@@ -78,6 +82,7 @@ namespace Grr
 			_repos = answer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
 				.Select(s => Repository.FromString(s))
 				.Where(r => r != null)
+				.OrderBy(r => r.Name)
 				.ToArray();
 
 			_answer = answer;

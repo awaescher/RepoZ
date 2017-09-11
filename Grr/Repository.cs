@@ -10,7 +10,7 @@ namespace Grr
 	{
 		public static Repository FromString(string value)
 		{
-			var parts = value?.Split('*');
+			var parts = value?.Split('|');
 			if (parts?.Length != 3)
 				return null;
 
