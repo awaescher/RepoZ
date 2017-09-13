@@ -26,6 +26,14 @@ namespace Grr
 			if (args?.Length == 0)
 				args = new string[] { CommandLineOptions.List };
 
+			var knownCommands = new string[] { CommandLineOptions.List, CommandLineOptions.ChangeDirectory };
+			if (!knownCommands.Contains(args[0]))
+			{
+				var l = new List<string>(args);
+				l.Insert(0, CommandLineOptions.List);
+				args = l.ToArray();
+			}
+
 			var options = new CommandLineOptions();
 			if (CommandLine.Parser.Default.ParseArguments(args, options, (v, o) => ParseCommandLineOptions(v, o, out message)))
 			{
@@ -72,7 +80,10 @@ namespace Grr
 				if (Debugger.IsAttached)
 					Console.ReadKey();
 			}
-
+			else
+			{
+				Console.WriteLine("Could not parse command line arguments.");
+			}
 		}
 
 		private static void _bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
@@ -98,8 +109,8 @@ namespace Grr
 			if (verb == CommandLineOptions.List)
 				message = new ListMessage(filter);
 
-			if (verb == CommandLineOptions.Goto)
-				message = new GotoMessage(filter);
+			if (verb == CommandLineOptions.ChangeDirectory)
+				message = new ChangeDirectoryMessage(filter);
 		}
 	}
 }

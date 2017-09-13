@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Grr.Messages
 {
+
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public class GotoMessage : IMessage
+	public class ChangeDirectoryMessage : IMessage
 	{
 		private readonly string _repositoryFilter;
 
-		public GotoMessage(string repositoryFilter)
+		public ChangeDirectoryMessage(string repositoryFilter)
 		{
 			_repositoryFilter = repositoryFilter;
 		}
@@ -23,9 +20,9 @@ namespace Grr.Messages
 			string path = repositories?.FirstOrDefault()?.Path ?? "";
 			if (Directory.Exists(path))
 			{
-				string arguments = $"/k \"cd {path}\"";
-				Console.WriteLine(arguments);
-				Process.Start("cmd.exe", arguments);
+				var command = $"cd \"{path}\"";
+				var parentProcess = Process.GetCurrentProcess().Parent();
+				ConsoleExtensions.WriteConsoleInput(parentProcess, command);
 			}
 		}
 
