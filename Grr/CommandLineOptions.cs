@@ -13,6 +13,7 @@ namespace Grr
 		public const string List = "list";
 		public const string ChangeDirectory = "cd";
 
+
 		[VerbOption(List, HelpText = "Lists the repositories found by RepoZ including their current branch and its state.")]
 		public FilterOptions ListVerb { get; set; }
 
@@ -21,6 +22,8 @@ namespace Grr
 
 		[ParserState]
 		public IParserState LastParserState { get; set; }
+
+		public static string[] KnownCommands => new string[] { List, ChangeDirectory };
 
 		[HelpOption]
 		public string GetUsage()

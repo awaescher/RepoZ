@@ -23,16 +23,7 @@ namespace Grr
 			Console.OutputEncoding = Encoding.UTF8;
 			IMessage message = null;
 
-			if (args?.Length == 0)
-				args = new string[] { CommandLineOptions.List };
-
-			var knownCommands = new string[] { CommandLineOptions.List, CommandLineOptions.ChangeDirectory };
-			if (!knownCommands.Contains(args[0]))
-			{
-				var l = new List<string>(args);
-				l.Insert(0, CommandLineOptions.List);
-				args = l.ToArray();
-			}
+			args = PrepareArguments(args);
 
 			var options = new CommandLineOptions();
 			if (CommandLine.Parser.Default.ParseArguments(args, options, (v, o) => ParseCommandLineOptions(v, o, out message)))
@@ -54,26 +45,9 @@ namespace Grr
 				_bus?.Dispose();
 
 				if (_repos?.Any() ?? false)
-				{
-					var maxRepoNameLenth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
-					var maxIndexStringLength = _repos.Length.ToString().Length;
-
-					for (int i = 0; i < _repos.Length; i++)
-					{
-						string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
-							? _repos[i].Name.Substring(MAX_REPO_NAME_LENGTH)
-							: _repos[i].Name;
-
-						Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
-						Console.Write(repoName.PadRight(maxRepoNameLenth + 3));
-						Console.Write(_repos[i].BranchWithStatus);
-						Console.WriteLine();
-					}
-				}
+					WriteRepositories();
 				else
-				{
 					Console.WriteLine(_answer);
-				}
 
 				message?.Execute(_repos);
 
@@ -84,6 +58,40 @@ namespace Grr
 			{
 				Console.WriteLine("Could not parse command line arguments.");
 			}
+		}
+
+		private static void WriteRepositories()
+		{
+			var maxRepoNameLenth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
+			var maxIndexStringLength = _repos.Length.ToString().Length;
+
+			for (int i = 0; i < _repos.Length; i++)
+			{
+				string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
+					? _repos[i].Name.Substring(MAX_REPO_NAME_LENGTH)
+					: _repos[i].Name;
+
+				Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
+				Console.Write(repoName.PadRight(maxRepoNameLenth + 3));
+				Console.Write(_repos[i].BranchWithStatus);
+				Console.WriteLine();
+			}
+		}
+
+		private static string[] PrepareArguments(string[] args)
+		{
+			if (args?.Length == 0)
+				args = new string[] { CommandLineOptions.List };
+
+			var isKnownCommand = CommandLineOptions.KnownCommands.Contains(args.First());
+			if (!isKnownCommand)
+			{
+				var newArgs = new List<string>(args);
+				newArgs.Insert(0, CommandLineOptions.List);
+				args = newArgs.ToArray();
+			}
+
+			return args;
 		}
 
 		private static void _bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
