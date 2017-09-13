@@ -16,7 +16,7 @@ namespace Grr
 
 		public static void WriteConsoleInput(Process target, string value)
 		{
-			SetForegroundWindow((IntPtr)target.Id);
+			SetForegroundWindow(target.MainWindowHandle);
 			SendKeys.SendWait(value);
 			SendKeys.SendWait("{Enter}");
 		}
