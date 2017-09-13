@@ -28,7 +28,7 @@ namespace Grr.Messages
 
 		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter)
 			? null /* makes no sense */
-			: $"list:{_repositoryFilter}";
+			: $"list:^{_repositoryFilter}$";
 
 	}
 }
