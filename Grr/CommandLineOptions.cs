@@ -11,13 +11,13 @@ namespace Grr
 	class CommandLineOptions
 	{
 		public const string List = "list";
-		public const string Goto = "goto";
+		public const string ChangeDirectory = "cd";
 
 		[VerbOption(List, HelpText = "Lists the repositories found by RepoZ including their current branch and its state.")]
 		public FilterOptions ListVerb { get; set; }
 
-		[VerbOption(Goto, HelpText = "Navigates to the path of the given repository.")]
-		public FilterOptions GotoVerb { get; set; }
+		[VerbOption(ChangeDirectory, HelpText = "Changes to the directory of a given repository.")]
+		public FilterOptions ChangeDirectoryVerb { get; set; }
 
 		[ParserState]
 		public IParserState LastParserState { get; set; }
