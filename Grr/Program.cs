@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Grr.Messages;
+using grr.Messages;
 using TinyIpc.Messaging;
 
-namespace Grr
+namespace grr
 {
 	class Program
 	{
@@ -28,7 +28,7 @@ namespace Grr
 			var options = new CommandLineOptions();
 			if (CommandLine.Parser.Default.ParseArguments(args, options, (v, o) => ParseCommandLineOptions(v, o, out message)))
 			{
-				_bus = new TinyMessageBus("RepoZGrrChannel");
+				_bus = new TinyMessageBus("RepoZ-ipc");
 				_bus.MessageReceived += _bus_MessageReceived;
 
 				byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());

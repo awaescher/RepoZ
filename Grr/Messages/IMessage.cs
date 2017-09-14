@@ -1,4 +1,4 @@
-﻿namespace Grr.Messages
+﻿namespace grr.Messages
 {
 	public interface IMessage
 	{

@@ -46,7 +46,7 @@ namespace RepoZ.UI.Win.Wpf
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
-			_bus = new TinyMessageBus("RepoZGrrChannel");
+			_bus = new TinyMessageBus("RepoZ-ipc");
 			_bus.MessageReceived += Bus_MessageReceived;
 
 			if (noUI)

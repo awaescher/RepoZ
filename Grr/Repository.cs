@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Grr
+namespace grr
 {
 	[System.Diagnostics.DebuggerDisplay("{Name}")]
 	public class Repository

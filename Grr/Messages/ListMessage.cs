@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Grr.Messages
+namespace grr.Messages
 {
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public class ListMessage : IMessage

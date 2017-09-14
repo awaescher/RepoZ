@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api", "RepoZ.Api\RepoZ.Api.csproj", "{8F74519B-B72D-4A5E-B20B-723543676E5E}"
 EndProject
@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Common", "RepoZ.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specs", "Specs\Specs.csproj", "{C91C3255-637F-45D4-93C0-6A26B4E99FC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grr", "Grr\Grr.csproj", "{B6C5874E-BE3D-4981-87B8-DD5BB7B0A24E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grr", "Grr\grr.csproj", "{B6C5874E-BE3D-4981-87B8-DD5BB7B0A24E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

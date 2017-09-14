@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 
-namespace Grr
+namespace grr
 {
 	class CommandLineOptions
 	{
