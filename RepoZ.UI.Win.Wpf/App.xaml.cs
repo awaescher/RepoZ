@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,6 +17,8 @@ using RepoZ.Api.Win.Git;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
+using TinyIpc.Messaging;
+using System.Text.RegularExpressions;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -27,6 +30,7 @@ namespace RepoZ.UI.Win.Wpf
 		private static Timer _explorerUpdateTimer;
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
+		private static TinyMessageBus _bus;
 
 		[STAThread]
 		public static void Main(string[] args)
@@ -42,6 +46,9 @@ namespace RepoZ.UI.Win.Wpf
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
+			_bus = new TinyMessageBus("RepoZ-ipc");
+			_bus.MessageReceived += Bus_MessageReceived;
+
 			if (noUI)
 			{
 				application.Run();
@@ -50,6 +57,40 @@ namespace RepoZ.UI.Win.Wpf
 			{
 				var form = container.Resolve<MainWindow>();
 				application.Run(form);
+			}
+
+		}
+
+		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
+		{
+			string message = Encoding.UTF8.GetString(e.Message);
+
+			if (string.IsNullOrEmpty(message))
+				return;
+
+			if (message.StartsWith("list:"))
+			{
+				string repositoryNamePattern = message.Substring("list:".Length);
+				var bus = (TinyMessageBus)sender;
+
+				string answer = "(no repositories found)";
+				try
+				{
+					var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+					var repos = aggregator.Repositories
+						.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+						.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+						.ToArray();
+
+					if (repos.Any())
+						answer = string.Join(Environment.NewLine, repos);
+				}
+				catch (Exception ex)
+				{
+					answer = ex.Message;
+				}
+
+				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
 			}
 		}
 
