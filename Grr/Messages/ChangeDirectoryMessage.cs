@@ -30,6 +30,9 @@ namespace grr.Messages
 
 			if (Directory.Exists(path))
 			{
+				// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
+				path = path.Replace(@"\", "/");
+
 				var command = $"cd \"{path}\"";
 				var parentProcess = Process.GetCurrentProcess();
 				ConsoleExtensions.WriteConsoleInput(parentProcess, command);
