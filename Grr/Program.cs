@@ -12,7 +12,7 @@ namespace grr
 {
 	class Program
 	{
-		private const int MAX_REPO_NAME_LENGTH = 32;
+		private const int MAX_REPO_NAME_LENGTH = 35;
 
 		private static TinyMessageBus _bus;
 		private static string _answer = null;
@@ -62,17 +62,18 @@ namespace grr
 
 		private static void WriteRepositories()
 		{
-			var maxRepoNameLenth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
+			var maxRepoNameLenhth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
 			var maxIndexStringLength = _repos.Length.ToString().Length;
+			var ellipsesSign = "\u2026";
 
 			for (int i = 0; i < _repos.Length; i++)
 			{
 				string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
-					? _repos[i].Name.Substring(MAX_REPO_NAME_LENGTH)
+					? _repos[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
 					: _repos[i].Name;
 
 				Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
-				Console.Write(repoName.PadRight(maxRepoNameLenth + 3));
+				Console.Write(repoName.PadRight(maxRepoNameLenhth + 3));
 				Console.Write(_repos[i].BranchWithStatus);
 				Console.WriteLine();
 			}
