@@ -161,31 +161,30 @@ namespace RepoZ.UI.Win.Wpf
 		private string GetHelp(StatusCharacterMap statusCharacterMap)
 		{
 			return $@"
-RepoZ is showing all Git repositories found on local drives. Each repository is listed with a status string which could look like this:
+RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
-    S   +A   ~B   -C   |   +D   ~E   -F 
+    current_branch  [i]   +1   ~2   -3   |   +4   ~5   -6 
 
-S
+current_branch
 Represents the branch status in relation to remote (tracked origin) branch.
-Note: This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
 
-{statusCharacterMap.IdenticalSign}
+[i] =  {statusCharacterMap.IdenticalSign}
 The local branch in at the same commit level as the remote branch.
 
-{statusCharacterMap.ArrowUpSign}<num>
+[i] =  {statusCharacterMap.ArrowUpSign}<num>
 The local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
 
-{statusCharacterMap.ArrowDownSign}<num>
+[i] =  {statusCharacterMap.ArrowDownSign}<num>
 The local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
 
-{statusCharacterMap.NoUpstreamSign}
-The branch is a local branch with no upstream branch information.
+[i] =  {statusCharacterMap.NoUpstreamSign}
+The local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
 
-ABC represent the index; DEF represent the working directory
-  + = Added files
-  ~ = Modified files
-  - = Removed files
+The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
+The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-3) on the working directory.
 
+Please note:
+This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
 Note that the status might be shorter if possible to improve readablility.
 
 ";
