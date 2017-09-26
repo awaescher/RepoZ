@@ -2,6 +2,8 @@
 
 RepoZ is a handy tool to help you keeping track of local Git repositories on your development machine.
 
+🌈 RepoZ reached "final" :squirrel: ![Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries! 🌈
+
 ## The Tool
 It simply provides a quick overview of your repositories including their current branch and a short status info. Additionally, it offers some shortcuts like opening a command line tool and checking out Git branches.
 
