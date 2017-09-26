@@ -10,7 +10,7 @@ using TinyIpc.Messaging;
 
 namespace grr
 {
-	class Program
+	static class Program
 	{
 		private const int MAX_REPO_NAME_LENGTH = 32;
 
@@ -25,39 +25,46 @@ namespace grr
 
 			args = PrepareArguments(args);
 
-			var options = new CommandLineOptions();
-			if (CommandLine.Parser.Default.ParseArguments(args, options, (v, o) => ParseCommandLineOptions(v, o, out message)))
+			if (IsHelpRequested(args))
 			{
-				_bus = new TinyMessageBus("RepoZ-ipc");
-				_bus.MessageReceived += _bus_MessageReceived;
-
-				byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
-				_bus.PublishAsync(load);
-
-				var watch = Stopwatch.StartNew();
-
-				while (_answer == null && watch.ElapsedMilliseconds <= 3000)
-				{ /* ... wait ... */ }
-
-				if (_answer == null)
-					Console.WriteLine("RepoZ seems not to be running :(");
-
-				_bus?.Dispose();
-
-				if (_repos?.Any() ?? false)
-					WriteRepositories();
-				else
-					Console.WriteLine(_answer);
-
-				message?.Execute(_repos);
-
-				if (Debugger.IsAttached)
-					Console.ReadKey();
+				ShowHelp();
 			}
 			else
 			{
-				Console.WriteLine("Could not parse command line arguments.");
+				if (CommandLine.Parser.Default.ParseArguments(args, new CommandLineOptions(), 
+					(v, o) => ParseCommandLineOptions(v, o, out message)))
+				{
+					_bus = new TinyMessageBus("RepoZ-ipc");
+					_bus.MessageReceived += _bus_MessageReceived;
+
+					byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
+					_bus.PublishAsync(load);
+
+					var watch = Stopwatch.StartNew();
+
+					while (_answer == null && watch.ElapsedMilliseconds <= 3000)
+					{ /* ... wait ... */ }
+
+					if (_answer == null)
+						Console.WriteLine("RepoZ seems not to be running :(");
+
+					_bus?.Dispose();
+
+					if (_repos?.Any() ?? false)
+						WriteRepositories();
+					else
+						Console.WriteLine(_answer);
+
+					message?.Execute(_repos);
+				}
+				else
+				{
+					Console.WriteLine("Could not parse command line arguments.");
+				}
 			}
+
+			if (Debugger.IsAttached)
+				Console.ReadKey();
 		}
 
 		private static void WriteRepositories()
@@ -81,13 +88,12 @@ namespace grr
 		private static string[] PrepareArguments(string[] args)
 		{
 			if (args?.Length == 0)
-				args = new string[] { CommandLineOptions.List };
+				args = new string[] { CommandLineOptions.ListCommand };
 
-			var isKnownCommand = CommandLineOptions.KnownCommands.Contains(args.First());
-			if (!isKnownCommand)
+			if (!CommandLineOptions.IsKnownArgument(args.First()))
 			{
 				var newArgs = new List<string>(args);
-				newArgs.Insert(0, CommandLineOptions.List);
+				newArgs.Insert(0, CommandLineOptions.ListCommand);
 				args = newArgs.ToArray();
 			}
 
@@ -114,11 +120,21 @@ namespace grr
 
 			string filter = (options as CommandLineOptions.FilterOptions)?.Filter;
 
-			if (verb == CommandLineOptions.List)
+			if (verb == CommandLineOptions.ListCommand)
 				message = new ListMessage(filter);
 
-			if (verb == CommandLineOptions.ChangeDirectory)
+			if (verb == CommandLineOptions.ChangeDirectoryCommand)
 				message = new ChangeDirectoryMessage(filter);
+		}
+
+		private static bool IsHelpRequested(string[] args)
+		{
+			return args.Length == 1 && CommandLineOptions.HelpCommand.Equals(args[0], StringComparison.OrdinalIgnoreCase);
+		}
+
+		private static void ShowHelp()
+		{
+			Console.WriteLine(CommandLineOptions.GetUsage());
 		}
 	}
 }

@@ -10,32 +10,63 @@ namespace grr
 {
 	class CommandLineOptions
 	{
-		public const string List = "list";
-		public const string ChangeDirectory = "cd";
+		public const string ListCommand = "list";
+		public const string ChangeDirectoryCommand = "cd";
+		public const string HelpCommand = "help";
 
 
-		[VerbOption(List, HelpText = "Lists the repositories found by RepoZ including their current branch and its state.")]
-		public FilterOptions ListVerb { get; set; }
+		[VerbOption(ListCommand, HelpText = "Lists the repositories found by RepoZ including their current branch and the corresponding status.\n")]
+		public FilterOptions ListOptions { get; set; }
 
-		[VerbOption(ChangeDirectory, HelpText = "Changes to the directory of a given repository.")]
-		public FilterOptions ChangeDirectoryVerb { get; set; }
+		[VerbOption(ChangeDirectoryCommand, HelpText = "Navigates to the directory of a given repository.")]
+		public FilterOptions ChangeDirectoryOptions { get; set; }
 
-		[ParserState]
-		public IParserState LastParserState { get; set; }
+		[Option(HelpCommand, HelpText = "Shows this help page")]
+		public bool Help { get; set; }
 
-		public static string[] KnownCommands => new string[] { List, ChangeDirectory };
+		public static bool IsKnownArgument(string arg)
+		{
+			var args = new string[] { ListCommand, ChangeDirectoryCommand, HelpCommand };
+			arg = arg.TrimStart('-');
+
+			return args.Contains(arg, StringComparer.OrdinalIgnoreCase);
+		}
 
 		[HelpOption]
-		public string GetUsage()
+		public static string GetUsage()
 		{
-			return HelpText.AutoBuild(this, (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+			var help = new HelpText
+			{
+				Heading = HeadingInfo.Default,
+				Copyright = CopyrightInfo.Default,
+				AdditionalNewLineAfterOption = true,
+				AddDashesToOption = false
+			};
+
+			help.AddOptions(new CommandLineOptions());
+
+			help.AddPostOptionsLine("Usage:");
+			help.AddPostOptionsLine("  grr \t\t\tLists all repositories found in RepoZ");
+			help.AddPostOptionsLine("  grr list SomeRepo \tShows the branch and status of a given repository");
+			help.AddPostOptionsLine("  grr cd SomeRepo \tNavigates to the main directory of a given repository");
+			help.AddPostOptionsLine("");
+			help.AddPostOptionsLine("Use RegEx patterns for advanced filtering:");
+			help.AddPostOptionsLine("  grr list .*_.* \tLists all repositories containing a \"_\"");
+			help.AddPostOptionsLine("  grr list \".*[X|Z]\" \tLists all repositories ending with \"X\" or \"Y\"");
+			help.AddPostOptionsLine("  grr cd Re.* \t\tNavigates to the first repository starting with \"Re\"");
+			help.AddPostOptionsLine("");
+			help.AddPostOptionsLine("Noteworthy:");
+			help.AddPostOptionsLine("- The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect");
+			help.AddPostOptionsLine("- RepoZ has to be running on this system to use grr.");
+			help.AddPostOptionsLine("");
+
+			return help.ToString();
 		}
 
 		internal class FilterOptions
 		{
 			[ValueOption(0)]
 			public string Filter { get; set; }
-
 		}
 	}
 }
