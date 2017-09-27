@@ -53,6 +53,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleExtensions.cs" />
+    <Compile Include="History\State.cs" />
+    <Compile Include="History\RegistryHistoryRepository.cs" />
     <Compile Include="Messages\IMessage.cs" />
     <Compile Include="Messages\ChangeDirectoryMessage.cs" />
     <Compile Include="Messages\ListMessage.cs" />

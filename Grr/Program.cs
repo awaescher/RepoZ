@@ -56,6 +56,8 @@ namespace grr
 						Console.WriteLine(_answer);
 
 					message?.Execute(_repos);
+
+					WriteHistory();
 				}
 				else
 				{
@@ -65,6 +67,18 @@ namespace grr
 
 			if (Debugger.IsAttached)
 				Console.ReadKey();
+		}
+
+		private static void WriteHistory()
+		{
+			var history = new History.State()
+			{
+				LastLocation = AppDomain.CurrentDomain.BaseDirectory,
+				LastRepositories = _repos
+			};
+
+			var repository = new History.RegistryHistoryRepository();
+			repository.Save(history);
 		}
 
 		private static void WriteRepositories()
