@@ -13,6 +13,7 @@ namespace grr
 		public const string ListCommand = "list";
 		public const string ChangeDirectoryCommand = "cd";
 		public const string HelpCommand = "help";
+		public const char HelpCommandChar = '?';
 
 
 		[VerbOption(ListCommand, HelpText = "Lists the repositories found by RepoZ including their current branch and the corresponding status.\n")]
@@ -21,13 +22,13 @@ namespace grr
 		[VerbOption(ChangeDirectoryCommand, HelpText = "Navigates to the directory of a given repository.")]
 		public FilterOptions ChangeDirectoryOptions { get; set; }
 
-		[Option(HelpCommand, HelpText = "Shows this help page")]
+		[Option(HelpCommandChar, HelpCommand, HelpText = "Shows this help page")]
 		public bool Help { get; set; }
 
 		public static bool IsKnownArgument(string arg)
 		{
-			var args = new string[] { ListCommand, ChangeDirectoryCommand, HelpCommand };
-			arg = arg.TrimStart('-');
+			var args = new string[] { ListCommand, ChangeDirectoryCommand, HelpCommand, HelpCommandChar.ToString() };
+			arg = arg.TrimStart('-').TrimStart('/');
 
 			return args.Contains(arg, StringComparer.OrdinalIgnoreCase);
 		}

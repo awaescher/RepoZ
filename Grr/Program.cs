@@ -182,7 +182,13 @@ namespace grr
 
 		private static bool IsHelpRequested(string[] args)
 		{
-			return args.Length == 1 && CommandLineOptions.HelpCommand.Equals(args[0], StringComparison.OrdinalIgnoreCase);
+			if (args.Length != 1)
+				return false;
+
+			var arg = args[0].TrimStart('-').TrimStart('/');
+
+			return CommandLineOptions.HelpCommand.Equals(arg, StringComparison.OrdinalIgnoreCase)
+				|| CommandLineOptions.HelpCommandChar.ToString().Equals(arg, StringComparison.OrdinalIgnoreCase);
 		}
 
 		private static void ShowHelp()
