@@ -26,7 +26,6 @@ namespace grr.Messages
 			: $"list:^{_repositoryFilter}$";
 
 		public bool HasRemoteCommand => true;
-
-		public bool ShouldBeWrittenToHistory => true;
+		
 	}
 }

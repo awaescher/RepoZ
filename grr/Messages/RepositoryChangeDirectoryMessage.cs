@@ -48,7 +48,6 @@ namespace grr.Messages
 			: $"list:^{_repositoryFilter}$";
 
 		public bool HasRemoteCommand => !string.IsNullOrEmpty(_repositoryFilter);
-
-		public bool ShouldBeWrittenToHistory => true;
+		
 	}
 }

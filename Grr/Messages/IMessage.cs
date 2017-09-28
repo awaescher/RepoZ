@@ -7,7 +7,5 @@
 		void Execute(Repository[] repositories);
 
 		bool HasRemoteCommand { get; }
-
-		bool ShouldBeWrittenToHistory { get; }
 	}
 }

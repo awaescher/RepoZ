@@ -62,8 +62,7 @@ namespace grr
 
 					message?.Execute(_repos);
 
-					if (message?.ShouldBeWrittenToHistory ?? false)
-						WriteHistory();
+					WriteHistory();
 				}
 				else
 				{
@@ -80,7 +79,8 @@ namespace grr
 			var history = new History.State()
 			{
 				LastLocation = FindCallerWorkingDirectory(),
-				LastRepositories = _repos
+				LastRepositories = _repos,
+				OverwriteRepositories = (_repos?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
 			};
 
 			var repository = new History.RegistryHistoryRepository();
@@ -99,6 +99,7 @@ namespace grr
 			var maxRepoNameLenhth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
 			var maxIndexStringLength = _repos.Length.ToString().Length;
 			var ellipsesSign = "\u2026";
+			var writeIndex = _repos.Length > 1;
 
 			for (int i = 0; i < _repos.Length; i++)
 			{
@@ -106,7 +107,9 @@ namespace grr
 					? _repos[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
 					: _repos[i].Name;
 
-				Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
+				Console.Write(" ");
+				if (writeIndex)
+					Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
 				Console.Write(repoName.PadRight(maxRepoNameLenhth + 3));
 				Console.Write(_repos[i].BranchWithStatus);
 				Console.WriteLine();

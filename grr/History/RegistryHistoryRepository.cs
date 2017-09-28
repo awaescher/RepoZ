@@ -18,7 +18,9 @@ namespace grr.History
 				key = Registry.CurrentUser.CreateSubKey(RegistryPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
 
 			key.SetValue("LastLocation", state.LastLocation, RegistryValueKind.String);
-			key.SetValue("LastRepositories", Serialize(state.LastRepositories), RegistryValueKind.String);
+			if (state.OverwriteRepositories)
+				key.SetValue("LastRepositories", Serialize(state.LastRepositories), RegistryValueKind.String);
+
 			key.Close();
 		}
 

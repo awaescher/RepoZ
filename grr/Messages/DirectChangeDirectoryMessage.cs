@@ -34,6 +34,5 @@ namespace grr.Messages
 
 		public bool HasRemoteCommand => false;
 
-		public bool ShouldBeWrittenToHistory => false;
 	}
 }
