@@ -18,11 +18,12 @@ namespace grr.Messages.Filters
 
 		public string Filter(string value)
 		{
-			if (value?.StartsWith("@") ?? false)
+			if (value?.StartsWith(":") ?? false)
 			{
 				string rest = value.Substring(1);
 				if (int.TryParse(rest, out int index))
 				{
+					index--; // the index visible to the user are 1-based, not 0-based
 					var state = _historyRepository.Load();
 					if (state.LastRepositories.Length > index)
 						value = state.LastRepositories[index]?.Name ?? value;

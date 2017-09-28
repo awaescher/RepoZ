@@ -58,8 +58,8 @@ namespace grr
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("Advanced: grr defines indexes for found repositories.");
 			help.AddPostOptionsLine("          They can be used as shortcut for the next execution:");
-			help.AddPostOptionsLine("  grr list @3 \tShows the branch and status of the repository on index 3");
-			help.AddPostOptionsLine("  grr cd @21 \tNavigates to the repository on index 21");
+			help.AddPostOptionsLine("  grr list :3 \tShows the branch and status of the repository on index 3");
+			help.AddPostOptionsLine("  grr cd :21 \tNavigates to the repository on index 21");
 			help.AddPostOptionsLine("  grr cd - \tNavigates back to the last path grr was called from");
 			help.AddPostOptionsLine("  ");
 			help.AddPostOptionsLine("Noteworthy:");

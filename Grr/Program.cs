@@ -103,13 +103,15 @@ namespace grr
 
 			for (int i = 0; i < _repos.Length; i++)
 			{
+				var userIndex = i + 1; // the index visible to the user are 1-based, not 0-based;
+
 				string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
 					? _repos[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
 					: _repos[i].Name;
 
 				Console.Write(" ");
 				if (writeIndex)
-					Console.Write($" [{i.ToString().PadLeft(maxIndexStringLength)}]  ");
+					Console.Write($" [{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ");
 				Console.Write(repoName.PadRight(maxRepoNameLenhth + 3));
 				Console.Write(_repos[i].BranchWithStatus);
 				Console.WriteLine();
