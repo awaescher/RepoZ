@@ -55,9 +55,15 @@ namespace grr
 			help.AddPostOptionsLine("  grr list \".*[X|Z]\" \tLists all repositories ending with \"X\" or \"Y\"");
 			help.AddPostOptionsLine("  grr cd Re.* \t\tNavigates to the first repository starting with \"Re\"");
 			help.AddPostOptionsLine("");
+			help.AddPostOptionsLine("Advanced: grr defines indexes for found repositories.");
+			help.AddPostOptionsLine("          They can be used as shortcut for the next execution:");
+			help.AddPostOptionsLine("  grr list @3 \tShows the branch and status of the repository on index 3");
+			help.AddPostOptionsLine("  grr cd @21 \tNavigates to the repository on index 21");
+			help.AddPostOptionsLine("  grr cd - \tNavigates back to the last path grr was called from");
+			help.AddPostOptionsLine("  ");
 			help.AddPostOptionsLine("Noteworthy:");
-			help.AddPostOptionsLine("- The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect");
-			help.AddPostOptionsLine("- RepoZ has to be running on this system to use grr.");
+			help.AddPostOptionsLine("  The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect");
+			help.AddPostOptionsLine("  RepoZ has to be running on this system to use grr.");
 			help.AddPostOptionsLine("");
 
 			return help.ToString();

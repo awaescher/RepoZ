@@ -24,5 +24,9 @@ namespace grr.Messages
 		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter) 
 			? "list:.*" /* show all with RegEx pattern ".*" */
 			: $"list:^{_repositoryFilter}$";
+
+		public bool HasRemoteCommand => true;
+
+		public bool ShouldBeWrittenToHistory => true;
 	}
 }

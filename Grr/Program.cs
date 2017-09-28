@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using grr.Messages;
 using TinyIpc.Messaging;
+using grr.Messages.Filters;
+using System.IO;
 
 namespace grr
 {
@@ -34,30 +36,34 @@ namespace grr
 				if (CommandLine.Parser.Default.ParseArguments(args, new CommandLineOptions(), 
 					(v, o) => ParseCommandLineOptions(v, o, out message)))
 				{
-					_bus = new TinyMessageBus("RepoZ-ipc");
-					_bus.MessageReceived += _bus_MessageReceived;
+					if (message.HasRemoteCommand)
+					{
+						_bus = new TinyMessageBus("RepoZ-ipc");
+						_bus.MessageReceived += _bus_MessageReceived;
 
-					byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
-					_bus.PublishAsync(load);
+						byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
+						_bus.PublishAsync(load);
 
-					var watch = Stopwatch.StartNew();
+						var watch = Stopwatch.StartNew();
 
-					while (_answer == null && watch.ElapsedMilliseconds <= 3000)
-					{ /* ... wait ... */ }
+						while (_answer == null && watch.ElapsedMilliseconds <= 3000)
+						{ /* ... wait ... */ }
 
-					if (_answer == null)
-						Console.WriteLine("RepoZ seems not to be running :(");
+						if (_answer == null)
+							Console.WriteLine("RepoZ seems not to be running :(");
 
-					_bus?.Dispose();
+						_bus?.Dispose();
 
-					if (_repos?.Any() ?? false)
-						WriteRepositories();
-					else
-						Console.WriteLine(_answer);
+						if (_repos != null && _repos.Any())
+							WriteRepositories();
+						else
+							Console.WriteLine(_answer);
+					}
 
 					message?.Execute(_repos);
 
-					WriteHistory();
+					if (message?.ShouldBeWrittenToHistory ?? false)
+						WriteHistory();
 				}
 				else
 				{
@@ -73,12 +79,19 @@ namespace grr
 		{
 			var history = new History.State()
 			{
-				LastLocation = AppDomain.CurrentDomain.BaseDirectory,
+				LastLocation = FindCallerWorkingDirectory(),
 				LastRepositories = _repos
 			};
 
 			var repository = new History.RegistryHistoryRepository();
 			repository.Save(history);
+		}
+
+		private static string FindCallerWorkingDirectory()
+		{
+			// do NOT use the directory of the grr-assembly
+			// we need to preserve the context of the calling console
+			return System.IO.Directory.GetCurrentDirectory();
 		}
 
 		private static void WriteRepositories()
@@ -135,11 +148,33 @@ namespace grr
 
 			string filter = (options as CommandLineOptions.FilterOptions)?.Filter;
 
+			filter = ApplyMessageFilters(filter);
+
 			if (verb == CommandLineOptions.ListCommand)
 				message = new ListMessage(filter);
 
 			if (verb == CommandLineOptions.ChangeDirectoryCommand)
-				message = new ChangeDirectoryMessage(filter);
+			{
+				if (Directory.Exists(filter))
+					message = new DirectChangeDirectoryMessage(filter);
+				else
+					message = new RepositoryChangeDirectoryMessage(filter);
+			}
+		}
+
+		private static string ApplyMessageFilters(string message)
+		{
+			var historyRepository = new History.RegistryHistoryRepository();
+			var filters = new IMessageFilter[]
+			{
+				new IndexMessageFilter(historyRepository),
+				new GoBackMessageFilter(historyRepository)
+			};
+
+			foreach (var messageFilter in filters)
+				message = messageFilter.Filter(message);
+
+			return message;
 		}
 
 		private static bool IsHelpRequested(string[] args)

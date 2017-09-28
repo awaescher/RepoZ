@@ -6,11 +6,11 @@ namespace grr.Messages
 {
 
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public class ChangeDirectoryMessage : IMessage
+	public class RepositoryChangeDirectoryMessage : IMessage
 	{
 		private readonly string _repositoryFilter;
 
-		public ChangeDirectoryMessage(string repositoryFilter)
+		public RepositoryChangeDirectoryMessage(string repositoryFilter)
 		{
 			_repositoryFilter = repositoryFilter;
 		}
@@ -47,5 +47,8 @@ namespace grr.Messages
 			? null /* makes no sense */
 			: $"list:^{_repositoryFilter}$";
 
+		public bool HasRemoteCommand => !string.IsNullOrEmpty(_repositoryFilter);
+
+		public bool ShouldBeWrittenToHistory => true;
 	}
 }

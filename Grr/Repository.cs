@@ -23,8 +23,8 @@ namespace grr
 			};
 		}
 
-		public string Name { get; private set; }
-		public string BranchWithStatus { get; private set; }
-		public string Path { get; private set; }
+		public string Name { get; set; }
+		public string BranchWithStatus { get; set; }
+		public string Path { get; set; }
 	}
 }

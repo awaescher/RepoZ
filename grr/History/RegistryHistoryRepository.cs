@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace grr.History
 {
-	public class RegistryHistoryRepository
+	public class RegistryHistoryRepository : IHistoryRepository
 	{
 		public static string RegistryPath { get; } = @"Software\RepoZ\grr\";
 
@@ -40,7 +40,7 @@ namespace grr.History
 
 		private string Serialize(IEnumerable<Repository> repositories)
 		{
-			if (repositories?.Any() ?? false)
+			if (repositories == null || !repositories.Any())
 				return "";
 
 			var names = repositories
@@ -56,7 +56,7 @@ namespace grr.History
 				return new Repository[0];
 
 			return repositoryString.Split(new string[] { "|" }, StringSplitOptions.None)
-				.Select(s => new Repository())
+				.Select(s => new Repository() { Name = s })
 				.ToArray();
 		}
 	}
