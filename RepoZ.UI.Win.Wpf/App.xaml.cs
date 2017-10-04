@@ -123,7 +123,7 @@ namespace RepoZ.UI.Win.Wpf
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
-
+			container.Register<IGitHelpers, GitHelpers>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)
