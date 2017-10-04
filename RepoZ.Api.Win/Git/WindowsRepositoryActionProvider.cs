@@ -50,13 +50,31 @@ namespace RepoZ.Api.Win.IO
 
 			yield return new RepositoryAction()
 			{
+				Name = "Fetch",
+				Action = (s, e) => _repositoryWriter.Fetch(repository),
+				BeginGroup = true
+			};
+
+			yield return new RepositoryAction()
+			{
+				Name = "Pull",
+				Action = (s, e) => _repositoryWriter.Pull(repository)
+			};
+
+			yield return new RepositoryAction()
+			{
+				Name = "Push",
+				Action = (s, e) => _repositoryWriter.Push(repository)
+			};
+
+			yield return new RepositoryAction()
+			{
 				Name = "Checkout",
 				SubActions = repository.LocalBranches.Select(branch => new RepositoryAction() {
 					Name = branch,
 					Action = (s, e) => _repositoryWriter.Checkout(repository, branch),
 					CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-				}).ToArray(),
-				BeginGroup = true
+				}).ToArray()
 			};
 
 			yield return new RepositoryAction()
