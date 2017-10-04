@@ -24,91 +24,93 @@ namespace RepoZ.Api.Win.IO
 			_errorHandler = errorHandler;
 		}
 
-		public IEnumerable<RepositoryAction> GetFor(Repository repository)
+		public IEnumerable<RepositoryAction> GetFor(IEnumerable<Repository> repositories)
 		{
-			yield return createDefaultAction("Open in Windows File Explorer", repository.Path);
-			yield return createAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {repository.Path}\"");
-			yield return createAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{repository.Path}'\"");
+			var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-			string bashSubpath = @"Git\git-bash.exe";
-			string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-			string gitbash = Path.Combine(folder, bashSubpath);
-
-			if (!File.Exists(gitbash))
+			if (singleRepository != null)
 			{
-				folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
-				gitbash = Path.Combine(folder, bashSubpath);
-			}
+				var defaultAction = CreateProcessRunnerAction("Open in Windows File Explorer", singleRepository.Path);
+				defaultAction.IsDefault = true;
+				yield return defaultAction;
+				yield return CreateProcessRunnerAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
+				yield return CreateProcessRunnerAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{singleRepository.Path}'\"");
 
-			if (File.Exists(gitbash))
-			{
-				string path = repository.Path;
-				if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
-					path = path.Substring(0, path.Length - 1);
-				yield return createAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
-			}
+				string bashSubpath = @"Git\git-bash.exe";
+				string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+				string gitbash = Path.Combine(folder, bashSubpath);
 
-			yield return new RepositoryAction()
-			{
-				Name = "Fetch",
-				Action = (s, e) => _repositoryWriter.Fetch(repository),
-				BeginGroup = true
-			};
-
-			yield return new RepositoryAction()
-			{
-				Name = "Pull",
-				Action = (s, e) => _repositoryWriter.Pull(repository)
-			};
-
-			yield return new RepositoryAction()
-			{
-				Name = "Push",
-				Action = (s, e) => _repositoryWriter.Push(repository)
-			};
-
-			yield return new RepositoryAction()
-			{
-				Name = "Checkout",
-				SubActions = repository.LocalBranches.Select(branch => new RepositoryAction() {
-					Name = branch,
-					Action = (s, e) => _repositoryWriter.Checkout(repository, branch),
-					CanExecute = !repository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-				}).ToArray()
-			};
-
-			yield return new RepositoryAction()
-			{
-				Name = "Shell",
-				Action = (sender, args) =>
+				if (!File.Exists(gitbash))
 				{
-					var coords = args as float[];
+					folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+					gitbash = Path.Combine(folder, bashSubpath);
+				}
 
-					var i = new ShellItem(repository.Path);
-					var m = new ShellContextMenu(i);
-					m.ShowContextMenu(new System.Windows.Forms.Button(), new Point((int)coords[0], (int)coords[1]));
-				},
-				BeginGroup = true
-			};
+				if (File.Exists(gitbash))
+				{
+					string path = singleRepository.Path;
+					if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
+						path = path.Substring(0, path.Length - 1);
+					yield return CreateProcessRunnerAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
+				}
+			}
+			yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup:true);
+			yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull);
+			yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push);
+
+			if (singleRepository != null)
+			{
+				yield return new RepositoryAction()
+				{
+					Name = "Checkout",
+					SubActions = singleRepository.LocalBranches.Select(branch => new RepositoryAction()
+					{
+						Name = branch,
+						Action = (s, e) => _repositoryWriter.Checkout(singleRepository, branch),
+						CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+					}).ToArray()
+				};
+
+				yield return new RepositoryAction()
+				{
+					Name = "Shell",
+					Action = (sender, args) =>
+					{
+						var coords = args as float[];
+
+						var i = new ShellItem(singleRepository.Path);
+						var m = new ShellContextMenu(i);
+						m.ShowContextMenu(new System.Windows.Forms.Button(), new Point((int)coords[0], (int)coords[1]));
+					},
+					BeginGroup = true
+				};
+			}
 		}
 
-		private RepositoryAction createAction(string name, string process, string arguments = "")
+		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
 		{
 			return new RepositoryAction()
 			{
 				Name = name,
-				Action = (sender, args) => startProcess(process, arguments)
+				Action = (sender, args) => StartProcess(process, arguments)
 			};
 		}
 
-		private RepositoryAction createDefaultAction(string name, string process, string arguments = "")
+		private RepositoryAction CreateActionForMultipleRepositories(string name, IEnumerable<Repository> repositories, Action<Repository> action, bool beginGroup = false)
 		{
-			var action = createAction(name, process, arguments);
-			action.IsDefault = true;
-			return action;
+			return new RepositoryAction()
+			{
+				Name = name,
+				Action = (sender, args) =>
+				{
+					foreach (var repository in repositories)
+						action(repository);
+				},
+				BeginGroup = beginGroup
+			};
 		}
 
-		private void startProcess(string process, string arguments)
+		private void StartProcess(string process, string arguments)
 		{
 			try
 			{

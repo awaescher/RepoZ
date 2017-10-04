@@ -63,11 +63,12 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
-			var repo = lstRepositories.SelectedItem as RepositoryView;
-			if (repo == null || !repo.WasFound)
+			var selectedView = lstRepositories.SelectedItem as RepositoryView;
+			if (selectedView == null || !selectedView.WasFound)
 				return;
 
-			var action = _repositoryActionProvider.GetFor(repo.Repository)
+			var innerRepositories = new Repository[] { selectedView.Repository };
+			var action = _repositoryActionProvider.GetFor(innerRepositories)
 						 .FirstOrDefault(a => a.IsDefault);
 
 			action?.Action?.Invoke(sender, e);
@@ -75,8 +76,9 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void lstRepositories_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
-			var repo = lstRepositories.SelectedItem as RepositoryView;
-			if (repo == null || !repo.WasFound)
+			var selectedViews = lstRepositories.SelectedItems?.OfType<RepositoryView>();
+
+			if (selectedViews == null || !selectedViews.Any())
 			{
 				e.Handled = true;
 				return;
@@ -85,7 +87,8 @@ namespace RepoZ.UI.Win.Wpf
 			var items = ((FrameworkElement)e.Source).ContextMenu.Items;
 			items.Clear();
 
-			foreach (var action in _repositoryActionProvider.GetFor(repo.Repository))
+			var innerRepositories = selectedViews.Select(view => view.Repository);
+			foreach (var action in _repositoryActionProvider.GetFor(innerRepositories))
 			{
 				if (action.BeginGroup && items.Count > 0)
 					items.Add(new Separator());
@@ -133,8 +136,12 @@ namespace RepoZ.UI.Win.Wpf
 			Action<object, object> clickAction = (object clickSender, object clickArgs) =>
 			{
 				var coords = new float[] { 0, 0 };
+
 				if (action?.Action != null)
-					action.Action(null, coords);
+				{
+					// run actions in the UI async to not block it
+					Task.Run(() => action.Action(null, coords));
+				}
 			};
 
 			var item = new MenuItem()

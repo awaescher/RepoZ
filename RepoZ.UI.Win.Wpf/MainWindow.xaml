@@ -26,7 +26,7 @@
 		
 		
         <materialDesign:Transitioner Name="transitionerMain" SelectedIndex="0">
-                <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening">
+                <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening" SelectionMode="Extended">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,2">

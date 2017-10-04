@@ -57,6 +57,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Git\GitCommandException.cs" />
+    <Compile Include="Git\GitHelpers.cs" />
     <Compile Include="Git\WindowsRepositoryStore.cs" />
     <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
     <Compile Include="IO\WindowsPathSkipper.cs" />
