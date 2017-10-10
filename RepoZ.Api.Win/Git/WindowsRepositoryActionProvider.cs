@@ -54,9 +54,9 @@ namespace RepoZ.Api.Win.IO
 					yield return CreateProcessRunnerAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
 				}
 			}
-			yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup:true);
-			yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull);
-			yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push);
+			yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup:true, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing:true);
+			yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
 			if (singleRepository != null)
 			{
@@ -96,18 +96,40 @@ namespace RepoZ.Api.Win.IO
 			};
 		}
 
-		private RepositoryAction CreateActionForMultipleRepositories(string name, IEnumerable<Repository> repositories, Action<Repository> action, bool beginGroup = false)
+		private RepositoryAction CreateActionForMultipleRepositories(string name,
+			IEnumerable<Repository> repositories, 
+			Action<Repository> action, 
+			bool beginGroup = false,
+			bool executionCausesSynchronizing = false)
 		{
 			return new RepositoryAction()
 			{
 				Name = name,
 				Action = (sender, args) =>
 				{
-					foreach (var repository in repositories)
-						action(repository);
+					// copy over to an array to not get an exception
+					// once the enumerator changes (which can happen when a change
+					// is detected and a repository is renewed) while the loop is running
+					var repositoryArray = repositories.ToArray();
+
+					foreach (var repository in repositoryArray)
+						SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
 				},
-				BeginGroup = beginGroup
+				BeginGroup = beginGroup,
+				ExecutionCausesSynchronizing = executionCausesSynchronizing
 			};
+		}
+
+		private void SafelyExecute(Action<Repository> action, Repository repository)
+		{
+			try
+			{
+				action(repository);
+			}
+			catch
+			{
+				// TODO to the UI?;
+			}
 		}
 
 		private void StartProcess(string process, string arguments)

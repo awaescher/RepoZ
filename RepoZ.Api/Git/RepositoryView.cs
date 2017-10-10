@@ -6,26 +6,27 @@ using System.Threading.Tasks;
 using RepoZ.Api.Git;
 using System.Diagnostics;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace RepoZ.Api.Git
 {
 	[DebuggerDisplay("{Name} @{Path}")]
-	public class RepositoryView
+	public class RepositoryView : INotifyPropertyChanged
 	{
 		private string _cachedRepositoryStatusCode;
 		private string _cachedRepositoryStatus;
 		private string _cachedRepositoryStatusWithBranch;
+		private bool _isSynchronizing;
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public RepositoryView(Repository repository)
 		{
-			if (repository == null)
-				throw new ArgumentNullException(nameof(repository));
-
-			Repository = repository;
+			Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 		}
 
-		public string Name => Repository.Name ?? "";
-
+		public string Name => (Repository.Name ?? "") + (IsSynchronizing ? SyncAppendix : "");
+		
 		public string Path => Repository.Path ?? "";
 
 		public string Location => Repository.Location ?? "";
@@ -75,6 +76,18 @@ namespace RepoZ.Api.Git
 				return _cachedRepositoryStatusWithBranch;
 			}
 		}
+
+		public bool IsSynchronizing
+		{
+			get { return _isSynchronizing; }
+			set
+			{
+				_isSynchronizing = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+			}
+		}
+
+		private string SyncAppendix => "  \u2191\u2193"; // up and down arrows
 
 		public override bool Equals(object obj)
 		{

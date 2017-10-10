@@ -12,9 +12,11 @@ namespace RepoZ.Api.Git
 
 		public Action<object, object> Action { get; set; }
 
-		public bool IsDefault { get; set; } = false;
+		public bool IsDefault { get; set; }
 
-        public bool BeginGroup { get; set; } = false;
+		public bool BeginGroup { get; set; }
+
+		public bool ExecutionCausesSynchronizing { get; set; }
 
 		public bool CanExecute { get; set; } = true;
 
