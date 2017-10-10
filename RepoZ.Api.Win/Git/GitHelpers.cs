@@ -257,7 +257,7 @@ namespace RepoZ.Api.Win.IO
 			startInfo.EnvironmentVariables["GIT_PAGER"] = "cat";
 			RedirectStderr(startInfo);
 			initialize(startInfo);
-			Trace.WriteLine("Starting process: " + startInfo.FileName + " " + startInfo.Arguments, "git command");
+			Trace.WriteLine("Starting process: " + startInfo.FileName + " " + startInfo.Arguments + " on " + repository.Name, "git command");
 			var process = new GitProcess(Process.Start(startInfo));
 			process.ConsumeStandardError();
 			return process;

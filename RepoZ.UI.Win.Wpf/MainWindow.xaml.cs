@@ -93,7 +93,7 @@ namespace RepoZ.UI.Win.Wpf
 				if (action.BeginGroup && items.Count > 0)
 					items.Add(new Separator());
 
-				items.Add(CreateMenuItem(sender, action));
+				items.Add(CreateMenuItem(sender, action, selectedViews));
 			}
 		}
 
@@ -131,16 +131,25 @@ namespace RepoZ.UI.Win.Wpf
 			Left = SystemParameters.WorkArea.Width - Width - 1;
 		}
 
-		private MenuItem CreateMenuItem(object sender, RepositoryAction action)
+		private MenuItem CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
 		{
 			Action<object, object> clickAction = (object clickSender, object clickArgs) =>
 			{
-				var coords = new float[] { 0, 0 };
-
 				if (action?.Action != null)
 				{
+					var coords = new float[] { 0, 0 };
+
 					// run actions in the UI async to not block it
-					Task.Run(() => action.Action(null, coords));
+					if (action.ExecutionCausesSynchronizing)
+					{
+						Task.Run(() => SetViewsSynchronizing(affectedViews, true))
+							.ContinueWith(t => action.Action(null, coords))
+							.ContinueWith(t => SetViewsSynchronizing(affectedViews, false));
+					}
+					else
+					{
+						Task.Run(() => action.Action(null, coords));
+					}
 				}
 			};
 
@@ -160,6 +169,15 @@ namespace RepoZ.UI.Win.Wpf
 			return item;
 		}
 
+		private void SetViewsSynchronizing(IEnumerable<RepositoryView> affectedViews, bool synchronizing)
+		{
+			if (affectedViews == null)
+				return;
+
+			foreach (var view in affectedViews)
+				view.IsSynchronizing = synchronizing;
+		}
+
 		private void ShowScanningState(bool isScanning)
 		{
 			this.Title = "RepoZ" + (isScanning ? " (scanning ...)" : "");
@@ -172,8 +190,11 @@ RepoZ is showing all git repositories found on local drives. Each repository is 
 
     current_branch  [i]   +1   ~2   -3   |   +4   ~5   -6 
 
+
 current_branch
-Represents the branch status in relation to remote (tracked origin) branch.
+The current branch or the SHA of a detached HEAD.
+
+[i] Represents the branch status in relation to its remote (tracked origin) branch.
 
 [i] =  {statusCharacterMap.IdenticalSign}
 The local branch in at the same commit level as the remote branch.
@@ -188,7 +209,7 @@ The local branch is behind the remote branch by the specified number of commits;
 The local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
 
 The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
-The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-3) on the working directory.
+The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
 
 Please note:
 This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
