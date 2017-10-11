@@ -19,6 +19,7 @@ using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
 using TinyIpc.Messaging;
 using System.Text.RegularExpressions;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -31,15 +32,24 @@ namespace RepoZ.UI.Win.Wpf
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private static TinyMessageBus _bus;
+		private TaskbarIcon notifyIcon;
 
 		[STAThread]
-		public static void Main(string[] args)
+		public static void Main()
 		{
-			bool noUI = args?.Any(arg => arg.EndsWith("-noui", StringComparison.OrdinalIgnoreCase)) ?? false;
-			var container = TinyIoCContainer.Current;
+			var app = new App();
+			app.InitializeComponent();
+			app.Run();
+		}
 
-			var application = new App();
-			application.InitializeComponent();
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			base.OnStartup(e);
+
+			//create the notifyicon (it's a resource declared in NotifyIconResources.xaml
+			notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+
+			var container = TinyIoCContainer.Current;
 
 			RegisterServices(container);
 
@@ -48,17 +58,18 @@ namespace RepoZ.UI.Win.Wpf
 
 			_bus = new TinyMessageBus("RepoZ-ipc");
 			_bus.MessageReceived += Bus_MessageReceived;
+		}
 
-			if (noUI)
-			{
-				application.Run();
-			}
-			else
-			{
-				var form = container.Resolve<MainWindow>();
-				application.Run(form);
-			}
+		protected override void OnExit(ExitEventArgs e)
+		{
+			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
+			var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
+			explorerHandler.CleanTitles();
+
+			notifyIcon.Dispose(); //the icon would clean up automatically, but this is cleaner
+
+			base.OnExit(e);
 		}
 
 		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
@@ -92,16 +103,6 @@ namespace RepoZ.UI.Win.Wpf
 
 				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
 			}
-		}
-
-		protected override void OnExit(ExitEventArgs e)
-		{
-			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-			var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
-			explorerHandler.CleanTitles();
-
-			base.OnExit(e);
 		}
 
 		protected static void RegisterServices(TinyIoCContainer container)
@@ -143,6 +144,11 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			_explorerHandler.UpdateTitles();
 			_explorerUpdateTimer.Change(500, Timeout.Infinite);
+		}
+
+		private void trayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+		{
+			
 		}
 	}
 }

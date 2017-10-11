@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:RepoZ.UI.Win.Wpf"
-		xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -55,13 +54,6 @@
                     <Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}" Content="Got it."></Button>
                  </StackPanel>
         </materialDesign:Transitioner>
-
-		<tb:TaskbarIcon x:Name="trayIcon"
-                    Visibility="Hidden"
-                    ToolTipText="RepoZ"
-                    IconSource="App.ico"
-					TrayMouseDoubleClick="trayIcon_TrayMouseDoubleClick"
-      />
 
 	</Grid>
 

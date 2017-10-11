@@ -53,14 +53,6 @@ namespace RepoZ.UI.Win.Wpf
 			PlaceFormToLowerRight();
 		}
 
-		protected override void OnStateChanged(EventArgs e)
-		{
-			if (WindowState == WindowState.Minimized)
-				HideToTray();
-
-			base.OnStateChanged(e);
-		}
-
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			var selectedView = lstRepositories.SelectedItem as RepositoryView;
@@ -100,29 +92,6 @@ namespace RepoZ.UI.Win.Wpf
 		private void HelpButton_Click(object sender, RoutedEventArgs e)
 		{
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
-		}
-
-		private void trayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
-		{
-			ShowFromTray();
-		}
-
-		private void ShowFromTray()
-		{
-			Show();
-
-			if (WindowState == WindowState.Minimized)
-				WindowState = WindowState.Normal;
-
-			Activate();
-
-			trayIcon.Visibility = Visibility.Hidden;
-		}
-
-		private void HideToTray()
-		{
-			Hide();
-			trayIcon.Visibility = Visibility.Visible;
 		}
 
 		private void PlaceFormToLowerRight()
