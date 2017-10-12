@@ -8,7 +8,7 @@
         The "shared" directive is needed if we reopen the sample window a few times - WPF will otherwise
         reuse the same context menu (which is a resource) again (which will have its DataContext set to the old TaskbarIcon)
   -->
-	<ContextMenu x:Shared="false" x:Key="SysTrayMenu">
+	<ContextMenu x:Shared="false" x:Key="SysTrayMenu" >
 		<MenuItem Header="Open" Command="{Binding OpenCommand}" />
 		<Separator />
 		<MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />
@@ -18,8 +18,8 @@
 	<!-- the application's NotifyIcon - started from App.xaml.cs. Declares its own view model. -->
 	<tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="/App.ico"
-                    ToolTipText="Double-click for window, right-click for menu"
-                    DoubleClickCommand="{Binding ShowWindowCommand}"
+                    ToolTipText="RepoZ"
+                    DoubleClickCommand="{Binding OpenCommand}"
                     ContextMenu="{StaticResource SysTrayMenu}">
 
 		<!-- self-assign a data context (could also be done programmatically) -->
