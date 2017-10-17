@@ -10,6 +10,14 @@
   -->
 	<ContextMenu x:Shared="false" x:Key="SysTrayMenu" >
 		<MenuItem Header="Open" Command="{Binding OpenCommand}" />
+        <MenuItem Header="Start with Windows" 
+                  Command="{Binding StartWithWindows}"
+                  Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  />
+        <MenuItem Header="Do not start with Windows" 
+                  Command="{Binding DoNotStartWithWindows}" 
+                  Visibility="{Binding RelativeSource={RelativeSource Self}, Path=IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  />
 		<Separator />
 		<MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}" />
 	</ContextMenu>

@@ -83,6 +83,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoStart.cs" />
     <Compile Include="NotifyIconViewModel.cs" />
     <Compile Include="WpfThreadDispatcher.cs" />
     <Page Include="App.xaml">

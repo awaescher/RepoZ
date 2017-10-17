@@ -31,6 +31,36 @@ namespace RepoZ.UI.Win.Wpf
 			}
 		}
 
+		public ICommand StartWithWindows
+		{
+			get
+			{
+				return new DelegateCommand
+				{
+					CanExecuteFunc = () => !AutoStart.IsStartup("RepoZ"),
+					CommandAction = () =>
+					{
+						AutoStart.SetStartup("RepoZ", true);
+					}
+				};
+			}
+		}
+
+		public ICommand DoNotStartWithWindows
+		{
+			get
+			{
+				return new DelegateCommand
+				{
+					CanExecuteFunc = () => AutoStart.IsStartup("RepoZ"),
+					CommandAction = () =>
+					{
+						AutoStart.SetStartup("RepoZ", false);
+					}
+				};
+			}
+		}
+
 		/// <summary>
 		/// Shuts down the application.
 		/// </summary>
