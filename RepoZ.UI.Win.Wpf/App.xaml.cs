@@ -32,7 +32,7 @@ namespace RepoZ.UI.Win.Wpf
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private static TinyMessageBus _bus;
-		private TaskbarIcon notifyIcon;
+		private TaskbarIcon _notifyIcon;
 
 		[STAThread]
 		public static void Main()
@@ -47,7 +47,7 @@ namespace RepoZ.UI.Win.Wpf
 			base.OnStartup(e);
 
 			//create the notifyicon (it's a resource declared in NotifyIconResources.xaml
-			notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
 			var container = TinyIoCContainer.Current;
 
@@ -67,7 +67,7 @@ namespace RepoZ.UI.Win.Wpf
 			var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
 			explorerHandler.CleanTitles();
 
-			notifyIcon.Dispose(); //the icon would clean up automatically, but this is cleaner
+			_notifyIcon.Dispose(); //the icon would clean up automatically, but this is cleaner
 
 			base.OnExit(e);
 		}
@@ -124,7 +124,7 @@ namespace RepoZ.UI.Win.Wpf
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
-			container.Register<IGitHelpers, GitHelpers>();
+			container.Register<IGitCommander, WindowsGitCommander>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

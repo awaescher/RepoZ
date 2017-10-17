@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Common.Git
 {
-	public interface IGitHelpers
+	public interface IGitCommander
 	{
 		string Command(Api.Git.Repository repository, params string[] command);
 		string CommandOneline(Api.Git.Repository repository, params string[] command);
