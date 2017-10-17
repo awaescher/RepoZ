@@ -13,6 +13,10 @@ namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryMonitor : IRepositoryMonitor
 	{
+		public event EventHandler<Repository> OnChangeDetected;
+		public event EventHandler<string> OnDeletionDetected;
+		public event EventHandler<bool> OnScanStateChanged;
+
 		private Timer _storeFlushTimer = null;
 		private List<IRepositoryDetector> _detectors = null;
 		private IRepositoryDetectorFactory _repositoryDetectorFactory;
@@ -49,7 +53,7 @@ namespace RepoZ.Api.Common.Git
 		private void ScanForRepositoriesAsync()
 		{
 			Scanning = true;
-			OnScanStateChanged?.Invoke(Scanning);
+			OnScanStateChanged?.Invoke(this, Scanning);
 
 			int scannedPaths = 0;
 
@@ -67,7 +71,7 @@ namespace RepoZ.Api.Common.Git
 						Scanning = newScanningState;
 
 						if (didChange)
-							OnScanStateChanged?.Invoke(Scanning);
+							OnScanStateChanged?.Invoke(this, Scanning);
 					});
 			}
 		}
@@ -164,12 +168,10 @@ namespace RepoZ.Api.Common.Git
 			if (string.IsNullOrEmpty(path))
 				return;
 
-			OnChangeDetected?.Invoke(repo);
+			OnChangeDetected?.Invoke(this, repo);
 
 			if (!_repositoryInformationAggregator.HasRepository(path))
-			{
 				CreateRepositoryObserver(repo, path);
-			}
 
 			_repositoryInformationAggregator.Add(repo);
 
@@ -206,16 +208,10 @@ namespace RepoZ.Api.Common.Git
 
 			DestroyRepositoryObserver(repoPath);
 
-			OnDeletionDetected?.Invoke(repoPath);
+			OnDeletionDetected?.Invoke(this, repoPath);
 
 			_repositoryInformationAggregator.RemoveByPath(repoPath);
 		}
-
-		public Action<Repository> OnChangeDetected { get; set; }
-
-		public Action<string> OnDeletionDetected { get; set; }
-
-		public Action<bool> OnScanStateChanged { get; set; }
 
 		public bool Scanning { get; set; } = false;
 

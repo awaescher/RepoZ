@@ -26,6 +26,7 @@ namespace RepoZ.UI.Win.Wpf
 	public partial class MainWindow : MetroWindow
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
+		private DefaultRepositoryMonitor _monitor;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
@@ -34,11 +35,11 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			InitializeComponent();
 
-			var monitor = repositoryMonitor as DefaultRepositoryMonitor;
-			if (monitor != null)
+			_monitor = repositoryMonitor as DefaultRepositoryMonitor;
+			if (_monitor != null)
 			{
-				monitor.OnScanStateChanged = (scanning) => Dispatcher.Invoke(() => ShowScanningState(scanning));
-				ShowScanningState(monitor.Scanning);
+				_monitor.OnScanStateChanged += OnScanStateChanged;
+				ShowScanningState(_monitor.Scanning);
 			}
 
 			_repositoryActionProvider = repositoryActionProvider;
@@ -46,11 +47,26 @@ namespace RepoZ.UI.Win.Wpf
 			lstRepositories.ItemsSource = aggregator.Repositories;
 
 
-			lstRepositories.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), System.ComponentModel.ListSortDirection.Ascending));
+			lstRepositories.Items.SortDescriptions.Add(
+				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), 
+				System.ComponentModel.ListSortDirection.Ascending));
 
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
 			PlaceFormToLowerRight();
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			if (_monitor != null)
+				_monitor.OnScanStateChanged -= OnScanStateChanged;
+
+			base.OnClosed(e);
+		}
+
+		private void OnScanStateChanged(object sender, bool isScanning)
+		{
+			Dispatcher.Invoke(() => ShowScanningState(isScanning));
 		}
 
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)

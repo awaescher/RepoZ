@@ -145,10 +145,5 @@ namespace RepoZ.UI.Win.Wpf
 			_explorerHandler.UpdateTitles();
 			_explorerUpdateTimer.Change(500, Timeout.Infinite);
 		}
-
-		private void trayIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
-		{
-			
-		}
 	}
 }
