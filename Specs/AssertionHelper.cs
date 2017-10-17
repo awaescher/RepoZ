@@ -39,11 +39,13 @@ namespace Specs
 		{
 			int trackedChanges = 0;
 			int trackedDeletes = 0;
+			EventHandler<RepoZ.Api.Git.Repository> trackedChangesInc = (s, e) => trackedChanges++;
+			EventHandler<string> trackedDeletesInc = (s, e) => trackedDeletes++;
 
 			try
 			{
-				monitor.OnChangeDetected = (r) => trackedChanges++;
-				monitor.OnDeletionDetected = (s) => trackedDeletes++;
+				monitor.OnChangeDetected += trackedChangesInc;
+				monitor.OnDeletionDetected += trackedDeletesInc;
 
 				monitor.Observe();
 
@@ -57,8 +59,8 @@ namespace Specs
 			{
 				monitor.Stop();
 
-				monitor.OnChangeDetected = null;
-				monitor.OnDeletionDetected = null;
+				monitor.OnChangeDetected -= trackedChangesInc;
+				monitor.OnDeletionDetected -= trackedDeletesInc;
 			}
 
 			actualChanges = trackedChanges;

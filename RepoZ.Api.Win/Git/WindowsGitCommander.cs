@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace RepoZ.Api.Win.IO
 {
-	public class GitHelpers : IGitHelpers
+	public class WindowsGitCommander : IGitCommander
 	{
 		/// <summary>
 		/// Starting with version 1.7.10, Git uses UTF-8.
@@ -71,17 +71,17 @@ namespace RepoZ.Api.Win.IO
 		private class ProcessStdoutReader : TextReader
 		{
 			private readonly GitProcess _process;
-			private readonly GitHelpers _helper;
+			private readonly WindowsGitCommander _gitCommander;
 
-			public ProcessStdoutReader(GitHelpers helper, GitProcess process)
+			public ProcessStdoutReader(WindowsGitCommander gitCommander, GitProcess process)
 			{
-				_helper = helper;
+				_gitCommander = gitCommander;
 				_process = process;
 			}
 
 			public override void Close()
 			{
-				_helper.Close(_process);
+				_gitCommander.Close(_process);
 			}
 
 			public override System.Runtime.Remoting.ObjRef CreateObjRef(Type requestedType)

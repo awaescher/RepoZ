@@ -8,11 +8,11 @@ namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryWriter : IRepositoryWriter
 	{
-		private IGitHelpers _helpers;
+		private IGitCommander _gitCommander;
 
-		public DefaultRepositoryWriter(IGitHelpers helpers)
+		public DefaultRepositoryWriter(IGitCommander gitCommander)
 		{
-			_helpers = helpers ?? throw new ArgumentNullException(nameof(helpers));
+			_gitCommander = gitCommander ?? throw new ArgumentNullException(nameof(gitCommander));
 		}
 
 		public bool Checkout(Api.Git.Repository repository, string branchName)
@@ -26,17 +26,17 @@ namespace RepoZ.Api.Common.Git
 
 		public void Fetch(Api.Git.Repository repository)
 		{
-			_helpers.Command(repository, "fetch");
+			_gitCommander.Command(repository, "fetch");
 		}
 
 		public void Pull(Api.Git.Repository repository)
 		{
-			_helpers.Command(repository, "pull");
+			_gitCommander.Command(repository, "pull");
 		}
 
 		public void Push(Api.Git.Repository repository)
 		{
-			_helpers.Command(repository, "push");
+			_gitCommander.Command(repository, "push");
 		}
 	}
 }

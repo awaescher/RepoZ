@@ -4,9 +4,9 @@ namespace RepoZ.Api.Git
 {
 	public interface IRepositoryMonitor
 	{
-		Action<Repository> OnChangeDetected { get; set; }
+		event EventHandler<Repository> OnChangeDetected;
 
-		Action<string> OnDeletionDetected { get; set; }
+		event EventHandler<string> OnDeletionDetected;
 
 		void Stop();
 
