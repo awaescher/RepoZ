@@ -149,7 +149,7 @@ namespace grr
 		private static void ParseCommandLineOptions(string verb, object options, out IMessage message)
 		{
 			// default should be listing all repositories
-			message = new ListMessage("");
+			message = new ListRepositoriesMessage("");
 
 			string repositoryFilter = (options as CommandLineOptions.FilterOptions)?.RepositoryFilter;
 			string fileFilter = (options as CommandLineOptions.FilterOptions)?.FileFilter;
@@ -157,7 +157,12 @@ namespace grr
 			repositoryFilter = ApplyMessageFilters(repositoryFilter);
 
 			if (verb == CommandLineOptions.ListCommand)
-				message = new ListMessage(repositoryFilter);
+			{
+				if (string.IsNullOrEmpty(fileFilter))
+					message = new ListRepositoriesMessage(repositoryFilter);
+				else
+					message = new ListRepositoryFilesMessage(repositoryFilter, fileFilter);
+			}
 
 			if (verb == CommandLineOptions.ChangeDirectoryCommand)
 					message = new ChangeToDirectoryMessage(repositoryFilter);

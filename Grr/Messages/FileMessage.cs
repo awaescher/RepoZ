@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,27 +9,43 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public abstract class FileMessage : DirectoryMessage
 	{
-		private string _fileArgument;
+		private string _fileFilter;
 
-		public FileMessage(string repositoryArgument, string fileArgument)
-			: base(repositoryArgument)
+		public FileMessage(string repositoryFilter, string fileFilter)
+			: base(repositoryFilter)
 		{
-			_fileArgument = fileArgument;
+			_fileFilter = fileFilter;
 		}
 
 		protected override void ExecuteExistingDirectory(string directory)
 		{
-			var files = Directory.GetFiles(directory, _fileArgument);
+			string[] items = null;
 
-			if (!files.Any())
+			try
 			{
-				System.Console.WriteLine($"No files found.\n  Directory:\t{directory}\n  Filter:\t{_fileArgument}");
+				items = FindItems(directory, _fileFilter).ToArray();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("An error occured:\n" + ex.ToString());
 				return;
 			}
 
-			ExecuteFoundFiles(files);
+			if (items == null || items.Length == 0)
+			{
+				System.Console.WriteLine($"No files found.\n  Directory:\t{directory}\n  Filter:\t{_fileFilter}");
+				return;
+			}
+
+			ExecuteFound(items);
 		}
 
-		protected abstract void ExecuteFoundFiles(string[] files);
+		protected virtual IEnumerable<string> FindItems(string directory, string filter)
+		{
+			return Directory.GetFiles(directory, filter)
+				.OrderBy(i => i);
+		}
+
+		protected abstract void ExecuteFound(string[] files);
 	}
 }

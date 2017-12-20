@@ -12,7 +12,7 @@ namespace grr.Messages
 		{
 		}
 
-		protected override void ExecuteFoundFiles(string[] files)
+		protected override void ExecuteFound(string[] files)
 		{
 			System.Console.WriteLine($"Opening {files[0]} ...");
 			var psi = new ProcessStartInfo(files[0]);

@@ -6,19 +6,19 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public abstract class DirectoryMessage : IMessage
 	{
-		private readonly string _argument;
+		private readonly string _repositoryFilter;
 		private readonly bool _argumentIsExistingDirectory;
 
-		public DirectoryMessage(string argument)
+		public DirectoryMessage(string repositoryFilter)
 		{
-			_argument = argument;
-			_argumentIsExistingDirectory = Directory.Exists(_argument);
+			_repositoryFilter = repositoryFilter;
+			_argumentIsExistingDirectory = Directory.Exists(_repositoryFilter);
 		}
 
 		public void Execute(Repository[] repositories)
 		{
 			if (_argumentIsExistingDirectory)
-				ExecuteExistingDirectory(_argument);
+				ExecuteExistingDirectory(_repositoryFilter);
 			else
 				ExecuteRepositoryQuery(repositories);
 		}
@@ -49,9 +49,9 @@ namespace grr.Messages
 			if (!HasRemoteCommand)
 				return null;
 
-			return string.IsNullOrEmpty(_argument)
+			return string.IsNullOrEmpty(_repositoryFilter)
 				? null /* makes no sense */
-				: $"list:^{_argument}$";
+				: $"list:^{_repositoryFilter}$";
 		}
 
 		public virtual bool HasRemoteCommand
@@ -61,7 +61,7 @@ namespace grr.Messages
 				if (_argumentIsExistingDirectory)
 					return false;
 
-				return !string.IsNullOrEmpty(_argument);
+				return !string.IsNullOrEmpty(_repositoryFilter);
 			}
 		}
 

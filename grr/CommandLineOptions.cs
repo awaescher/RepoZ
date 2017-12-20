@@ -45,16 +45,25 @@ namespace grr
 				Heading = HeadingInfo.Default,
 				Copyright = CopyrightInfo.Default,
 				AdditionalNewLineAfterOption = true,
-				AddDashesToOption = false
+				AddDashesToOption = false,
+				MaximumDisplayWidth = 100
 			};
 
 			help.AddOptions(new CommandLineOptions());
 
+			help.AddPostOptionsLine("Note: To keep the examples short, \"Repo\" is used as placeholder for a repository name");
+			help.AddPostOptionsLine("      like \"RepoZ\" or \"NSidekick\", for example.");
+			help.AddPostOptionsLine("");
+
 			help.AddPostOptionsLine("Usage:");
-			help.AddPostOptionsLine("  grr \t\t\tLists all repositories found in RepoZ");
-			help.AddPostOptionsLine("  grr list SomeRepo \tShows the branch and status of a given repository");
-			help.AddPostOptionsLine("  grr cd SomeRepo \tNavigates to the main directory of a given repository");
-			help.AddPostOptionsLine("  grr open SomeRepo \tOpens the main directory of a given repository with the default shell");
+			help.AddPostOptionsLine("  grr \t\t\tLists all repositories found in RepoZ including their status");
+			help.AddPostOptionsLine("  grr list Repo \tShows the status of a given repository (option \"list\" is optional)");
+			help.AddPostOptionsLine("  grr cd Repo \t\tNavigates to the main directory of a given repository");
+			help.AddPostOptionsLine("  grr open Repo \tOpens the main directory of a given repository (in Windows Explorer)");
+			help.AddPostOptionsLine("");
+			help.AddPostOptionsLine("File operations in given repositories:");
+			help.AddPostOptionsLine("  grr list Repo *.txt \tLists all text files in the given repository matching the filter *.txt");
+			help.AddPostOptionsLine("  grr open Repo *.sln \tOpens the first Visual Studio solution in the given repository");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("Use RegEx patterns for advanced filtering:");
 			help.AddPostOptionsLine("  grr list .*_.* \tLists all repositories containing a \"_\"");
@@ -71,6 +80,7 @@ namespace grr
 			help.AddPostOptionsLine("  The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect");
 			help.AddPostOptionsLine("  RepoZ has to be running on this system to use grr.");
 			help.AddPostOptionsLine("");
+
 
 			return help.ToString();
 		}

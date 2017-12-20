@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace grr.Messages
 {
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public class ListMessage : IMessage
+	public class ListRepositoriesMessage : IMessage
 	{
 		private readonly string _repositoryFilter;
 
-		public ListMessage(string repositoryFilter)
+		public ListRepositoriesMessage(string repositoryFilter)
 		{
 			_repositoryFilter = repositoryFilter;
 		}
