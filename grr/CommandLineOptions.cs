@@ -78,7 +78,11 @@ namespace grr
 		internal class FilterOptions
 		{
 			[ValueOption(0)]
-			public string Filter { get; set; }
+			public string RepositoryFilter { get; set; }
+
+			[ValueOption(1)]
+			public string FileFilter { get; set; }
+
 		}
 	}
 }

@@ -151,18 +151,24 @@ namespace grr
 			// default should be listing all repositories
 			message = new ListMessage("");
 
-			string filter = (options as CommandLineOptions.FilterOptions)?.Filter;
+			string repositoryFilter = (options as CommandLineOptions.FilterOptions)?.RepositoryFilter;
+			string fileFilter = (options as CommandLineOptions.FilterOptions)?.FileFilter;
 
-			filter = ApplyMessageFilters(filter);
+			repositoryFilter = ApplyMessageFilters(repositoryFilter);
 
 			if (verb == CommandLineOptions.ListCommand)
-				message = new ListMessage(filter);
+				message = new ListMessage(repositoryFilter);
 
 			if (verb == CommandLineOptions.ChangeDirectoryCommand)
-					message = new ChangeToDirectoryMessage(filter);
+					message = new ChangeToDirectoryMessage(repositoryFilter);
 
 			if (verb == CommandLineOptions.OpenDirectoryCommand)
-					message = new OpenDirectoryMessage(filter);
+			{
+				if (string.IsNullOrEmpty(fileFilter))
+					message = new OpenDirectoryMessage(repositoryFilter);
+				else
+					message = new OpenFileMessage(repositoryFilter, fileFilter);
+			}
 		}
 
 		private static string ApplyMessageFilters(string message)
