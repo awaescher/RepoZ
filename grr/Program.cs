@@ -163,7 +163,15 @@ namespace grr
 				if (Directory.Exists(filter))
 					message = new DirectChangeDirectoryMessage(filter);
 				else
-					message = new RepositoryChangeDirectoryMessage(filter);
+					message = new ChangeToRepositoryDirectoryMessage(filter);
+			}
+
+			if (verb == CommandLineOptions.BrowseDirectoryCommand)
+			{
+				//if (Directory.Exists(filter))
+					message = new BrowseDirectoryMessage(filter);
+				//else
+					//message = new ChangeToRepositoryDirectoryMessage(filter);
 			}
 		}
 

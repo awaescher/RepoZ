@@ -6,11 +6,11 @@ namespace grr.Messages
 {
 
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public class RepositoryChangeDirectoryMessage : IMessage
+	public class ChangeToRepositoryDirectoryMessage : IMessage
 	{
 		private readonly string _repositoryFilter;
 
-		public RepositoryChangeDirectoryMessage(string repositoryFilter)
+		public ChangeToRepositoryDirectoryMessage(string repositoryFilter)
 		{
 			_repositoryFilter = repositoryFilter;
 		}
