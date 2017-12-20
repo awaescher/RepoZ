@@ -159,20 +159,10 @@ namespace grr
 				message = new ListMessage(filter);
 
 			if (verb == CommandLineOptions.ChangeDirectoryCommand)
-			{
-				if (Directory.Exists(filter))
-					message = new DirectChangeDirectoryMessage(filter);
-				else
-					message = new ChangeToRepositoryDirectoryMessage(filter);
-			}
+					message = new ChangeToDirectoryMessage(filter);
 
 			if (verb == CommandLineOptions.BrowseDirectoryCommand)
-			{
-				//if (Directory.Exists(filter))
 					message = new BrowseDirectoryMessage(filter);
-				//else
-					//message = new ChangeToRepositoryDirectoryMessage(filter);
-			}
 		}
 
 		private static string ApplyMessageFilters(string message)

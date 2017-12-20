@@ -12,10 +12,11 @@ namespace grr
 	{
 		public const string ListCommand = "list";
 		public const string ChangeDirectoryCommand = "cd";
+
 		public const string BrowseDirectoryCommand = "browse";
+
 		public const string HelpCommand = "help";
 		public const char HelpCommandChar = '?';
-
 
 		[VerbOption(ListCommand, HelpText = "Lists the repositories found by RepoZ including their current branch and the corresponding status.")]
 		public FilterOptions ListOptions { get; set; }

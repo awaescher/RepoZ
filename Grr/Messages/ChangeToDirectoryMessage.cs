@@ -5,9 +5,9 @@ using System.Linq;
 namespace grr.Messages
 {
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public class BrowseDirectoryMessage : DirectoryMessage
+	public class ChangeToDirectoryMessage : DirectoryMessage
 	{
-		public BrowseDirectoryMessage(string argument)
+		public ChangeToDirectoryMessage(string argument)
 			: base(argument)
 		{
 		}
@@ -17,7 +17,9 @@ namespace grr.Messages
 			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
 			directory = directory.Replace(@"\", "/");
 
-			Process.Start($"\"{directory}\"");
+			var command = $"cd \"{directory}\"";
+			var parentProcess = Process.GetCurrentProcess();
+			ConsoleExtensions.WriteConsoleInput(parentProcess, command);
 		}
 
 		protected override void ExecuteRepositoryQuery(Repository[] repositories)
