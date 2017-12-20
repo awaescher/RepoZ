@@ -12,8 +12,7 @@ namespace grr
 	{
 		public const string ListCommand = "list";
 		public const string ChangeDirectoryCommand = "cd";
-
-		public const string BrowseDirectoryCommand = "browse";
+		public const string OpenDirectoryCommand = "open";
 
 		public const string HelpCommand = "help";
 		public const char HelpCommandChar = '?';
@@ -24,15 +23,15 @@ namespace grr
 		[VerbOption(ChangeDirectoryCommand, HelpText = "Navigates to the directory of a given repository.")]
 		public FilterOptions ChangeDirectoryOptions { get; set; }
 
-		[VerbOption(BrowseDirectoryCommand, HelpText = "Opens the directory of a given repository with the default shell.")]
-		public FilterOptions BrowseOptions { get; set; }
+		[VerbOption(OpenDirectoryCommand, HelpText = "Opens the directory of a given repository with the default shell.")]
+		public FilterOptions OpenDirectoryOptions { get; set; }
 
 		[Option(HelpCommandChar, HelpCommand, HelpText = "Shows this help page")]
 		public bool Help { get; set; }
 
 		public static bool IsKnownArgument(string arg)
 		{
-			var args = new string[] { ListCommand, ChangeDirectoryCommand, BrowseDirectoryCommand, HelpCommand, HelpCommandChar.ToString() };
+			var args = new string[] { ListCommand, ChangeDirectoryCommand, OpenDirectoryCommand, HelpCommand, HelpCommandChar.ToString() };
 			arg = arg.TrimStart('-').TrimStart('/');
 
 			return args.Contains(arg, StringComparer.OrdinalIgnoreCase);
@@ -55,7 +54,7 @@ namespace grr
 			help.AddPostOptionsLine("  grr \t\t\tLists all repositories found in RepoZ");
 			help.AddPostOptionsLine("  grr list SomeRepo \tShows the branch and status of a given repository");
 			help.AddPostOptionsLine("  grr cd SomeRepo \tNavigates to the main directory of a given repository");
-			help.AddPostOptionsLine("  grr browse SomeRepo \tOpens the main directory of a given repository with the default shell");
+			help.AddPostOptionsLine("  grr open SomeRepo \tOpens the main directory of a given repository with the default shell");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("Use RegEx patterns for advanced filtering:");
 			help.AddPostOptionsLine("  grr list .*_.* \tLists all repositories containing a \"_\"");

@@ -161,8 +161,8 @@ namespace grr
 			if (verb == CommandLineOptions.ChangeDirectoryCommand)
 					message = new ChangeToDirectoryMessage(filter);
 
-			if (verb == CommandLineOptions.BrowseDirectoryCommand)
-					message = new BrowseDirectoryMessage(filter);
+			if (verb == CommandLineOptions.OpenDirectoryCommand)
+					message = new OpenDirectoryMessage(filter);
 		}
 
 		private static string ApplyMessageFilters(string message)

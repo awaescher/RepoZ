@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 
 namespace grr.Messages
 {
@@ -24,7 +25,24 @@ namespace grr.Messages
 
 		protected abstract void ExecuteExistingDirectory(string directory);
 
-		protected abstract void ExecuteRepositoryQuery(Repository[] repositories);
+		protected virtual void ExecuteRepositoryQuery(Repository[] repositories)
+		{
+			if (repositories == null || repositories.Length <= 0)
+				return;
+
+			string directory = repositories.First().Path;
+
+			if (string.IsNullOrWhiteSpace(directory))
+			{
+				System.Console.WriteLine("Repository path is empty. Aborting.");
+				return;
+			}
+
+			if (Directory.Exists(directory))
+				ExecuteExistingDirectory(directory);
+			else
+				System.Console.WriteLine("Repository path does not exist:\n" + directory);
+		}
 
 		public virtual string GetRemoteCommand()
 		{

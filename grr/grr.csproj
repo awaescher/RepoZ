@@ -56,7 +56,9 @@
     <Compile Include="History\IHistoryRepository.cs" />
     <Compile Include="History\State.cs" />
     <Compile Include="History\RegistryHistoryRepository.cs" />
-    <Compile Include="Messages\BrowseDirectoryMessage.cs" />
+    <Compile Include="Messages\FileMessage.cs" />
+    <Compile Include="Messages\OpenFileMessage.cs" />
+    <Compile Include="Messages\OpenDirectoryMessage.cs" />
     <Compile Include="Messages\DirectoryMessage.cs" />
     <Compile Include="Messages\Filters\IMessageFilter.cs" />
     <Compile Include="Messages\Filters\GoBackMessageFilter.cs" />
