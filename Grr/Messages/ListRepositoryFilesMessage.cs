@@ -10,8 +10,8 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public class ListRepositoryFilesMessage : FileMessage
 	{
-		public ListRepositoryFilesMessage(string repositoryArgument, string fileArgument)
-			: base(repositoryArgument, fileArgument)
+		public ListRepositoryFilesMessage(RepositoryFilterOptions filter)
+			: base(filter)
 		{
 		}
 
@@ -23,9 +23,10 @@ namespace grr.Messages
 			}
 		}
 
-		protected override IEnumerable<string> FindItems(string directory, string filter)
+		protected override IEnumerable<string> FindItems(string directory, RepositoryFilterOptions filter)
 		{
-			return Directory.GetFileSystemEntries(directory, filter)
+			var searchOption = Filter.RecursiveFileFilter ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+			return Directory.GetFileSystemEntries(directory, filter.FileFilter, searchOption)
 				.OrderBy(i => i);
 		}
 	}

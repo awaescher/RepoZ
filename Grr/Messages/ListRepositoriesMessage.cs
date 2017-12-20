@@ -11,9 +11,14 @@ namespace grr.Messages
 	{
 		private readonly string _repositoryFilter;
 
-		public ListRepositoriesMessage(string repositoryFilter)
+		public ListRepositoriesMessage()
+			: this(null)
 		{
-			_repositoryFilter = repositoryFilter;
+		}
+
+		public ListRepositoriesMessage(RepositoryFilterOptions filter)
+		{
+			_repositoryFilter = filter?.RepositoryFilter ?? "";
 		}
 
 		public void Execute(Repository[] repositories)

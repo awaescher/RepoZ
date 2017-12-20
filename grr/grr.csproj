@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleExtensions.cs" />
+    <Compile Include="RepositoryFilterOptions.cs" />
     <Compile Include="History\IHistoryRepository.cs" />
     <Compile Include="History\State.cs" />
     <Compile Include="History\RegistryHistoryRepository.cs" />

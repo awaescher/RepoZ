@@ -33,7 +33,7 @@ namespace grr
 			}
 			else
 			{
-				if (CommandLine.Parser.Default.ParseArguments(args, new CommandLineOptions(), 
+				if (CommandLine.Parser.Default.ParseArguments(args, new CommandLineOptions(),
 					(v, o) => ParseCommandLineOptions(v, o, out message)))
 				{
 					if (message.HasRemoteCommand)
@@ -149,34 +149,36 @@ namespace grr
 		private static void ParseCommandLineOptions(string verb, object options, out IMessage message)
 		{
 			// default should be listing all repositories
-			message = new ListRepositoriesMessage("");
+			message = new ListRepositoriesMessage();
 
-			string repositoryFilter = (options as CommandLineOptions.FilterOptions)?.RepositoryFilter;
-			string fileFilter = (options as CommandLineOptions.FilterOptions)?.FileFilter;
+			var filter = options as RepositoryFilterOptions;
 
-			repositoryFilter = ApplyMessageFilters(repositoryFilter);
-
-			if (verb == CommandLineOptions.ListCommand)
+			if (filter != null)
 			{
-				if (string.IsNullOrEmpty(fileFilter))
-					message = new ListRepositoriesMessage(repositoryFilter);
-				else
-					message = new ListRepositoryFilesMessage(repositoryFilter, fileFilter);
-			}
+				ApplyMessageFilters(filter);
 
-			if (verb == CommandLineOptions.ChangeDirectoryCommand)
-					message = new ChangeToDirectoryMessage(repositoryFilter);
+				if (verb == CommandLineOptions.ListCommand)
+				{
+					if (filter.HasFileFilter)
+						message = new ListRepositoryFilesMessage(filter);
+					else
+						message = new ListRepositoriesMessage(filter);
+				}
 
-			if (verb == CommandLineOptions.OpenDirectoryCommand)
-			{
-				if (string.IsNullOrEmpty(fileFilter))
-					message = new OpenDirectoryMessage(repositoryFilter);
-				else
-					message = new OpenFileMessage(repositoryFilter, fileFilter);
+				if (verb == CommandLineOptions.ChangeDirectoryCommand)
+					message = new ChangeToDirectoryMessage(filter);
+
+				if (verb == CommandLineOptions.OpenDirectoryCommand)
+				{
+					if (filter.HasFileFilter)
+						message = new OpenFileMessage(filter);
+					else
+						message = new OpenDirectoryMessage(filter);
+				}
 			}
 		}
 
-		private static string ApplyMessageFilters(string message)
+		private static void ApplyMessageFilters(RepositoryFilterOptions filter)
 		{
 			var historyRepository = new History.RegistryHistoryRepository();
 			var filters = new IMessageFilter[]
@@ -186,9 +188,7 @@ namespace grr
 			};
 
 			foreach (var messageFilter in filters)
-				message = messageFilter.Filter(message);
-
-			return message;
+				messageFilter.Filter(filter);
 		}
 
 		private static bool IsHelpRequested(string[] args)

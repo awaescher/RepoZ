@@ -16,21 +16,21 @@ namespace grr.Messages.Filters
 			_historyRepository = historyRepository ?? throw new ArgumentNullException(nameof(historyRepository));
 		}
 
-		public string Filter(string value)
+		public void Filter(RepositoryFilterOptions filter)
 		{
-			if (value?.StartsWith(":") ?? false)
+			string filterValue = filter?.RepositoryFilter ?? "";
+
+			if (filterValue.StartsWith(":"))
 			{
-				string rest = value.Substring(1);
+				string rest = filterValue.Substring(1);
 				if (int.TryParse(rest, out int index))
 				{
 					index--; // the index visible to the user are 1-based, not 0-based
 					var state = _historyRepository.Load();
-					if (state.LastRepositories.Length > index)
-						value = state.LastRepositories[index]?.Name ?? value;
+					if (index >= 0 && state.LastRepositories.Length > index)
+						filter.RepositoryFilter = state.LastRepositories[index]?.Name ?? filterValue;
 				}
 			}
-
-			return value;
 		}
 	}
 }

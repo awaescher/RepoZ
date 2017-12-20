@@ -8,6 +8,6 @@ namespace grr.Messages.Filters
 {
 	public interface IMessageFilter
 	{
-		string Filter(string value);
+		void Filter(RepositoryFilterOptions filter);
 	}
 }

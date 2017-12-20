@@ -9,12 +9,9 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public abstract class FileMessage : DirectoryMessage
 	{
-		private string _fileFilter;
-
-		public FileMessage(string repositoryFilter, string fileFilter)
-			: base(repositoryFilter)
+		public FileMessage(RepositoryFilterOptions filter)
+			: base(filter)
 		{
-			_fileFilter = fileFilter;
 		}
 
 		protected override void ExecuteExistingDirectory(string directory)
@@ -23,7 +20,7 @@ namespace grr.Messages
 
 			try
 			{
-				items = FindItems(directory, _fileFilter).ToArray();
+				items = FindItems(directory, Filter).ToArray();
 			}
 			catch (Exception ex)
 			{
@@ -33,16 +30,17 @@ namespace grr.Messages
 
 			if (items == null || items.Length == 0)
 			{
-				System.Console.WriteLine($"No files found.\n  Directory:\t{directory}\n  Filter:\t{_fileFilter}");
+				System.Console.WriteLine($"No files found.\n  Directory:\t{directory}\n  Filter:\t{Filter.FileFilter}");
 				return;
 			}
 
 			ExecuteFound(items);
 		}
 
-		protected virtual IEnumerable<string> FindItems(string directory, string filter)
+		protected virtual IEnumerable<string> FindItems(string directory, RepositoryFilterOptions filter)
 		{
-			return Directory.GetFiles(directory, filter)
+			var searchOption = Filter.RecursiveFileFilter ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+			return Directory.GetFiles(directory, filter.FileFilter, searchOption)
 				.OrderBy(i => i);
 		}
 

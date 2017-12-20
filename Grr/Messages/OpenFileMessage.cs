@@ -7,8 +7,8 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public class OpenFileMessage : FileMessage
 	{
-		public OpenFileMessage(string repositoryArgument, string fileArgument)
-			: base(repositoryArgument, fileArgument)
+		public OpenFileMessage(RepositoryFilterOptions filter)
+			: base(filter)
 		{
 		}
 

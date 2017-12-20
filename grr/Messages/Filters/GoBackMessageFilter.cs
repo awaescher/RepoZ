@@ -16,15 +16,14 @@ namespace grr.Messages.Filters
 			_historyRepository = historyRepository ?? throw new ArgumentNullException(nameof(historyRepository));
 		}
 
-		public string Filter(string value)
+		public void Filter(RepositoryFilterOptions filter)
 		{
-			if ("-" == value)
+			string filterValue = filter?.RepositoryFilter ?? "";
+			if ("-" == filterValue)
 			{
 				var state = _historyRepository.Load();
-				value = state.LastLocation ?? value;
+				filter.RepositoryFilter = state.LastLocation ?? filterValue;
 			}
-
-			return value;
 		}
 	}
 }

@@ -6,19 +6,18 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public abstract class DirectoryMessage : IMessage
 	{
-		private readonly string _repositoryFilter;
 		private readonly bool _argumentIsExistingDirectory;
 
-		public DirectoryMessage(string repositoryFilter)
+		public DirectoryMessage(RepositoryFilterOptions filter)
 		{
-			_repositoryFilter = repositoryFilter;
-			_argumentIsExistingDirectory = Directory.Exists(_repositoryFilter);
+			Filter = filter;
+			_argumentIsExistingDirectory = Directory.Exists(Filter.RepositoryFilter);
 		}
 
 		public void Execute(Repository[] repositories)
 		{
 			if (_argumentIsExistingDirectory)
-				ExecuteExistingDirectory(_repositoryFilter);
+				ExecuteExistingDirectory(Filter.RepositoryFilter);
 			else
 				ExecuteRepositoryQuery(repositories);
 		}
@@ -30,18 +29,21 @@ namespace grr.Messages
 			if (repositories == null || repositories.Length <= 0)
 				return;
 
-			string directory = repositories.First().Path;
-
-			if (string.IsNullOrWhiteSpace(directory))
+			foreach (var repository in repositories)
 			{
-				System.Console.WriteLine("Repository path is empty. Aborting.");
-				return;
-			}
+				var directory = repository.Path;
 
-			if (Directory.Exists(directory))
-				ExecuteExistingDirectory(directory);
-			else
-				System.Console.WriteLine("Repository path does not exist:\n" + directory);
+				if (string.IsNullOrWhiteSpace(directory))
+				{
+					System.Console.WriteLine("Repository path is empty. Aborting.");
+					return;
+				}
+
+				if (Directory.Exists(directory))
+					ExecuteExistingDirectory(directory);
+				else
+					System.Console.WriteLine("Repository path does not exist:\n" + directory);
+			}
 		}
 
 		public virtual string GetRemoteCommand()
@@ -49,9 +51,9 @@ namespace grr.Messages
 			if (!HasRemoteCommand)
 				return null;
 
-			return string.IsNullOrEmpty(_repositoryFilter)
+			return string.IsNullOrEmpty(Filter?.RepositoryFilter)
 				? null /* makes no sense */
-				: $"list:^{_repositoryFilter}$";
+				: $"list:^{Filter.RepositoryFilter}$";
 		}
 
 		public virtual bool HasRemoteCommand
@@ -61,9 +63,10 @@ namespace grr.Messages
 				if (_argumentIsExistingDirectory)
 					return false;
 
-				return !string.IsNullOrEmpty(_repositoryFilter);
+				return !string.IsNullOrEmpty(Filter?.RepositoryFilter);
 			}
 		}
 
+		public RepositoryFilterOptions Filter { get; }
 	}
 }

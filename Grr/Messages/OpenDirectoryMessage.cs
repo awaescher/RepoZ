@@ -7,8 +7,8 @@ namespace grr.Messages
 	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
 	public class OpenDirectoryMessage : DirectoryMessage
 	{
-		public OpenDirectoryMessage(string argument)
-			: base(argument)
+		public OpenDirectoryMessage(RepositoryFilterOptions filter)
+			: base(filter)
 		{
 		}
 
