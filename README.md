@@ -26,6 +26,8 @@ See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell 
 
 See the topic **Installing grr** on how to to make use of **grr** throughout the system.
 
+#### Don't forget to have a look at `grr help` once you get your hands on.
+
 ## Enhanced Windows Explorer Titles
 As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a Git repository.
 
