@@ -14,9 +14,12 @@ namespace grr.Messages
 
 		protected override void ExecuteFound(string[] files)
 		{
-			System.Console.WriteLine($"Opening {files[0]} ...");
-			var psi = new ProcessStartInfo(files[0]);
-			Process.Start(psi);
+			foreach (var file in files)
+			{
+				System.Console.WriteLine($"Opening {file} ...");
+				var psi = new ProcessStartInfo(file);
+				Process.Start(psi);
+			}
 		}
 	}
 }
