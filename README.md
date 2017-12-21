@@ -15,8 +15,11 @@ With **grr**, the information from RepoZ can be brought to any command line tool
 
 It supports ...
  - listing all repositories found in RepoZ including their branch and status information
- - jumping directly to a repository path (:sparkling_heart:) by adding the `cd` command, like `grr cd RepoZ`
- - filtering for repository names (to list or jump) by regex patterns.
+ - filtering for repository names (to list or jump) by regex patterns, like `grr M.*`
+ - jumping directly to a repository path by adding the `cd` command, like `grr cd MyRepo`
+ - opening a file explorer in a repository from anywhere in your command prompt with `grr open MyRepo`
+ - list files in a repository following a pattern with `grr list MyRepo *.sln` (add `-r` for recursive search)
+ - open files in a repository directly with `grr open MyRepo *.sln` (add `-e` for elevated mode, "as Admin")
  
 See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell console:
 ![Screenshot](_doc/grr-5fps-compressed.gif)
