@@ -5,9 +5,9 @@ using RepoZ.Api.Common.Git;
 
 namespace RepoZ.Api.Mac.Git
 {
-    public class MacRepositoryCache : FileRepositoryCache
+    public class MacRepositoryStore : FileRepositoryStore
     {
-        public MacRepositoryCache(IErrorHandler errorHandler)
+        public MacRepositoryStore(IErrorHandler errorHandler)
             : base(errorHandler)
         {
         }

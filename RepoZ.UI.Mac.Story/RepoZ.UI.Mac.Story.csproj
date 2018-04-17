@@ -91,6 +91,7 @@
     <Compile Include="UIErrorHandler.cs" />
     <Compile Include="Model\RepositoryTableDataSource.cs" />
     <Compile Include="Model\RepositoryTableDelegate.cs" />
+    <Compile Include="MacThreadDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

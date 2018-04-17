@@ -8,6 +8,7 @@ using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using System.Threading;
 using RepoZ.Api.Common;
+using System.IO;
 
 namespace RepoZ.Api.Common.Git
 {
@@ -125,6 +126,9 @@ namespace RepoZ.Api.Common.Git
 
 			foreach (var path in _pathProvider.GetPaths())
 			{
+                if (!Directory.Exists(path))
+                    continue;
+
 				var detector = _repositoryDetectorFactory.Create();
 				_detectors.Add(detector);
 

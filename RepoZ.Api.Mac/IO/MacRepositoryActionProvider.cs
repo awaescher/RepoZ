@@ -1,35 +1,94 @@
 ﻿using System.Diagnostics;
 using System.Collections.Generic;
 using RepoZ.Api.Git;
+using System.Linq;
+using System;
+using RepoZ.Api.Common;
 
 namespace RepoZ.Api.Mac
 {
 	public class MacRepositoryActionProvider : IRepositoryActionProvider
 	{
-		public IEnumerable<RepositoryAction> GetFor(Repository repository)
-		{
-			yield return createDefaultAction("Open in Finder", repository.Path);
-		}
+        private IRepositoryWriter _repositoryWriter;
+        private IErrorHandler _errorHandler;
 
-		private RepositoryAction createAction(string name, string command)
-		{
-			return new RepositoryAction()
-			{
-				Name = name,
-				Action = (sender, args) => startProcess(command)
-			};
-		}
+        public MacRepositoryActionProvider(IRepositoryWriter repositoryWriter, IErrorHandler errorHandler)
+        {
+            _repositoryWriter = repositoryWriter;
+            _errorHandler = errorHandler;
+        }
 
-		private RepositoryAction createDefaultAction(string name, string command)
-		{
-			var action = createAction(name, command);
-			action.IsDefault = true;
-			return action;
-		}
+		public IEnumerable<RepositoryAction> GetFor(IEnumerable<Repository> repositories)
+        {
+            var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-		private void startProcess(string command)
-		{
-			Process.Start(command);
-		}
+            if (singleRepository != null)
+            {
+                var defaultAction = CreateProcessRunnerAction("Open in Finder", singleRepository.Path);
+                defaultAction.IsDefault = true;
+                yield return defaultAction;
+            }
+            yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
+            yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
+            yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+
+        }
+
+        private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+        {
+            return new RepositoryAction()
+            {
+                Name = name,
+                Action = (sender, args) => StartProcess(process, arguments)
+            };
+        }
+
+        private RepositoryAction CreateActionForMultipleRepositories(string name,
+            IEnumerable<Repository> repositories,
+            Action<Repository> action,
+            bool beginGroup = false,
+            bool executionCausesSynchronizing = false)
+        {
+            return new RepositoryAction()
+            {
+                Name = name,
+                Action = (sender, args) =>
+                {
+                    // copy over to an array to not get an exception
+                    // once the enumerator changes (which can happen when a change
+                    // is detected and a repository is renewed) while the loop is running
+                    var repositoryArray = repositories.ToArray();
+
+                    foreach (var repository in repositoryArray)
+                        SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
+                },
+                BeginGroup = beginGroup,
+                ExecutionCausesSynchronizing = executionCausesSynchronizing
+            };
+        }
+
+        private void SafelyExecute(Action<Repository> action, Repository repository)
+        {
+            try
+            {
+                action(repository);
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.Handle(ex.Message);
+            }
+        }
+
+        private void StartProcess(string process, string arguments)
+        {
+            try
+            {
+                Process.Start(process, arguments);
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.Handle(ex.Message);
+            }
+        }
 	}
 }

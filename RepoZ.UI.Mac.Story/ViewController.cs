@@ -66,6 +66,7 @@ namespace RepoZ.UI.Mac.Story
 			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
 
 			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
+            container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
@@ -73,22 +74,23 @@ namespace RepoZ.UI.Mac.Story
 			container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-			container.Register<IRepositoryCache, MacRepositoryCache>();
+			container.Register<IRepositoryStore, MacRepositoryStore>();
 			container.Register<IPathProvider, MacDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, MacPathSkipper>();
+            container.Register<IThreadDispatcher, MacThreadDispatcher>().AsSingleton();
+            container.Register<IGitCommander, MacGitCommander>();
 		}
-
 
 		private void UseRepositoryMonitor(TinyIoCContainer container)
 		{
 			var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
-            _repositoryMonitor.OnChangeDetected = (repo) => InvokeOnMainThread(() =>
-            {
-                repositoryInformationAggregator.Add(repo);
-            });
-            _repositoryMonitor.OnDeletionDetected = (repoPath) => InvokeOnMainThread(() => repositoryInformationAggregator.RemoveByPath(repoPath));
+          //  _repositoryMonitor.OnChangeDetected = (repo) => InvokeOnMainThread(() =>
+         //   {
+         //       repositoryInformationAggregator.Add(repo);
+         //   });
+           // _repositoryMonitor.OnDeletionDetected = (repoPath) => InvokeOnMainThread(() => repositoryInformationAggregator.RemoveByPath(repoPath));
 			_repositoryMonitor.Observe();
 		}
     }
