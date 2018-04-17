@@ -37,7 +37,7 @@ namespace RepoZ.UI.Mac.Story.Model
 					view.StringValue = DataSource.Repositories[(int)row].Name;
 					break;
 				case "Status":
-					view.StringValue = DataSource.Repositories[(int)row].Status;
+					view.StringValue = DataSource.Repositories[(int)row].BranchWithStatus;
 					break;
 			}
 

@@ -17,9 +17,9 @@ namespace RepoZ.UI.Mac.Story
     public partial class ViewController : NSViewController
     {
         private IRepositoryInformationAggregator _aggregator;
-		private IRepositoryMonitor _repositoryMonitor;
+        private IRepositoryMonitor _repositoryMonitor;
 
-		public ViewController(IntPtr handle) : base(handle)
+        public ViewController(IntPtr handle) : base(handle)
         {
         }
 
@@ -61,37 +61,37 @@ namespace RepoZ.UI.Mac.Story
             }
         }
 
-		private void RegisterServices(TinyIoCContainer container)
-		{
-			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
+        private void RegisterServices(TinyIoCContainer container)
+        {
+            container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
 
-			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
+            container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
             container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
-			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
-			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
+            container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
+            container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
-			container.Register<IErrorHandler, UIErrorHandler>();
-			container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
-			container.Register<IRepositoryReader, DefaultRepositoryReader>();
-			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-			container.Register<IRepositoryStore, MacRepositoryStore>();
-			container.Register<IPathProvider, MacDriveEnumerator>();
-			container.Register<IPathCrawler, GravellPathCrawler>();
-			container.Register<IPathSkipper, MacPathSkipper>();
+            container.Register<IErrorHandler, UIErrorHandler>();
+            container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
+            container.Register<IRepositoryReader, DefaultRepositoryReader>();
+            container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
+            container.Register<IRepositoryStore, MacRepositoryStore>();
+            container.Register<IPathProvider, MacDriveEnumerator>();
+            container.Register<IPathCrawler, GravellPathCrawler>();
+            container.Register<IPathSkipper, MacPathSkipper>();
             container.Register<IThreadDispatcher, MacThreadDispatcher>().AsSingleton();
             container.Register<IGitCommander, MacGitCommander>();
-		}
+        }
 
-		private void UseRepositoryMonitor(TinyIoCContainer container)
-		{
-			var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
-			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
-          //  _repositoryMonitor.OnChangeDetected = (repo) => InvokeOnMainThread(() =>
-         //   {
-         //       repositoryInformationAggregator.Add(repo);
-         //   });
-           // _repositoryMonitor.OnDeletionDetected = (repoPath) => InvokeOnMainThread(() => repositoryInformationAggregator.RemoveByPath(repoPath));
-			_repositoryMonitor.Observe();
-		}
+        private void UseRepositoryMonitor(TinyIoCContainer container)
+        {
+            var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
+
+            _repositoryMonitor = container.Resolve<IRepositoryMonitor>();
+
+            _repositoryMonitor.OnChangeDetected += (sender, repo) => repositoryInformationAggregator.Add(repo);
+            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) => repositoryInformationAggregator.RemoveByPath(repoPath);
+            
+            _repositoryMonitor.Observe();
+        }
     }
 }
