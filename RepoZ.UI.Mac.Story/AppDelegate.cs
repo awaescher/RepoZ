@@ -1,10 +1,10 @@
-﻿using AppKit;
+using AppKit;
 using Foundation;
 
 namespace RepoZ.UI.Mac.Story
 {
     [Register("AppDelegate")]
-    public class AppDelegate : NSApplicationDelegate
+    public partial class AppDelegate : NSApplicationDelegate
     {
         public AppDelegate()
         {
@@ -13,6 +13,9 @@ namespace RepoZ.UI.Mac.Story
         public override void DidFinishLaunching(NSNotification notification)
         {
             // Insert code here to initialize your application
+            var statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(70);
+            statusItem.Menu = SystemTrayStatusMenu;
+            statusItem.Title = SystemTrayStatusMenu.Title;
         }
 
         public override void WillTerminate(NSNotification notification)
