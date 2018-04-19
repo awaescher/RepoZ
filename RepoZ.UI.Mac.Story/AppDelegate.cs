@@ -25,25 +25,19 @@ namespace RepoZ.UI.Mac.Story
 
         public override void DidFinishLaunching(NSNotification notification)
         {
-            // Insert code here to initialize your application
             _statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
-            //statusItem.Menu = SystemTrayStatusMenu;
-            // statusItem.View = new NSView();
             _statusItem.Title = "RepoZ";
             _statusItem.Target = this;
             _statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 
-            _pop = new NSPopover();
-            _pop.Behavior = NSPopoverBehavior.ApplicationDefined;
-            _pop.Delegate = this;
-
-            //_pop.Show(new CoreGraphics.CGRect(100, 100, 100, 100), statusItem.Button, NSRectEdge.MinYEdge);
-
             var container = TinyIoCContainer.Current;
-
             RegisterServices(container);
-
             UseRepositoryMonitor(container);
+
+            _pop = new NSPopover();
+            _pop.Behavior = NSPopoverBehavior.Transient;
+            _pop.Delegate = this;
+            _pop.ContentViewController = new PopupViewController();
         }
 
         public override void WillTerminate(NSNotification notification)
@@ -55,9 +49,10 @@ namespace RepoZ.UI.Mac.Story
         [Export("MenuAction")]
         private void MenuAction()
         {
-            _pop.ContentSize = new CoreGraphics.CGSize(100, 100);
-            _pop.ContentViewController = new PopupViewController();
-            _pop.Show(_statusItem.Button.Frame, _statusItem.Button, NSRectEdge.MaxYEdge);
+            if (_pop.Shown)
+                _pop.Close();
+            else
+                _pop.Show(_statusItem.Button.Frame, _statusItem.Button, NSRectEdge.MaxYEdge);
         }
 
         private void RegisterServices(TinyIoCContainer container)
