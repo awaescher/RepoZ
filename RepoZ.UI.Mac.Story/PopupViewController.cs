@@ -48,10 +48,7 @@ namespace RepoZ.UI.Mac.Story
 
             _aggregator = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
 
-            _aggregator.Repositories.Add(new RepositoryView(new Repository() { Name = "RepoZ", CurrentBranch = "Fix-Mac", AheadBy = 3, BehindBy = 1, Path = "/source/RepoZ" }));
-            _aggregator.Repositories.Add(new RepositoryView(new Repository() { Name = "PoshX", CurrentBranch = "master", AheadBy = 0, BehindBy = 0, Path = "/source/PoshX" }));
-
-            // Do any additional setup after loading the view.
+             // Do any additional setup after loading the view.
             var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
             RepoTab.DataSource = datasource;
             RepoTab.Delegate = new RepositoryTableDelegate(RepoTab, datasource);
