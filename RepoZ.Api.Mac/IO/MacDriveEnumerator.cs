@@ -8,11 +8,7 @@ namespace RepoZ.Api.Mac.IO
     {
         public string[] GetPaths()
         {
-            return System.IO.DriveInfo.GetDrives()
-                .Where(d => d.DriveType == System.IO.DriveType.Fixed)
-                .Where(p => !p.RootDirectory.FullName.StartsWith("/private", StringComparison.OrdinalIgnoreCase))
-                .Select(d => d.RootDirectory.FullName)
-                .ToArray();
+            return new string[] { Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) };
         }
     }
 }
