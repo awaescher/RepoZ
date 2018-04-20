@@ -9,7 +9,7 @@ namespace RepoZ.Api.Mac.IO
 		public string[] GetPaths()
 		{
 			// TODO
-			return new string[] { "/Users/andreaswascher/source/" };
+			return new string[] { "/Users/andreaswascher/develop/" };
 		}
 	}
 }

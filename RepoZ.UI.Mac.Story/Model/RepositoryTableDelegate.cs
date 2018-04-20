@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AppKit;
 using Foundation;
 
@@ -24,9 +25,10 @@ namespace RepoZ.UI.Mac.Story.Model
 
             var repository = DataSource.Repositories[(int)row];
 
-            var RepositoryLabel = (cell.Subviews[1] as NSTextField);
-            var PathLabel = (cell.Subviews[2] as NSTextField);
-            var StatusLabel = (cell.Subviews[3] as NSTextField);
+            var labels = cell.Subviews.OfType<NSTextField>().ToArray();
+            var RepositoryLabel = labels[0];
+            var PathLabel = labels[1];
+            var StatusLabel = labels[2];
 
             RepositoryLabel.StringValue = repository.Name;
             PathLabel.StringValue = repository.Path;

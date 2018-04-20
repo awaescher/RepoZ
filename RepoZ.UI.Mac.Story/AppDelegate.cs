@@ -82,8 +82,15 @@ namespace RepoZ.UI.Mac.Story
 
             _repositoryMonitor = container.Resolve<IRepositoryMonitor>();
 
-            _repositoryMonitor.OnChangeDetected += (sender, repo) => repositoryInformationAggregator.Add(repo);
-            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) => repositoryInformationAggregator.RemoveByPath(repoPath);
+            _repositoryMonitor.OnChangeDetected += (sender, repo) =>
+            {
+                repositoryInformationAggregator.Add(repo);
+            };
+
+            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) => 
+            { 
+                repositoryInformationAggregator.RemoveByPath(repoPath); 
+            };
 
             _repositoryMonitor.Observe();
         }
