@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 using AppKit;
+using RepoZ.Api.Git;
+using RepoZ.UI.Mac.Story.Model;
 
 namespace RepoZ.UI.Mac.Story
 {
@@ -29,5 +31,6 @@ namespace RepoZ.UI.Mac.Story
         }
 
         #endregion
+
     }
 }

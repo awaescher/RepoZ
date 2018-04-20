@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 using AppKit;
+using RepoZ.UI.Mac.Story.Model;
+using RepoZ.Api.Git;
 
 namespace RepoZ.UI.Mac.Story
 {
     public partial class PopupViewController : AppKit.NSViewController
     {
+        private IRepositoryInformationAggregator _aggregator;
         #region Constructors
 
         // Called when created from unmanaged code
@@ -36,13 +39,27 @@ namespace RepoZ.UI.Mac.Story
 
         #endregion
 
-        //strongly typed view accessor
-        public new PopupView View
+        public override void ViewWillAppear()
         {
-            get
-            {
-                return (PopupView)base.View;
-            }
+            base.ViewWillAppear();
+
+            if (_aggregator != null)
+                return;
+
+            _aggregator = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+
+            _aggregator.Repositories.Add(new RepositoryView(new Repository() { Name = "RepoZ", CurrentBranch = "Fix-Mac", AheadBy = 3, BehindBy = 1, Path = "/source/RepoZ" }));
+            _aggregator.Repositories.Add(new RepositoryView(new Repository() { Name = "PoshX", CurrentBranch = "master", AheadBy = 0, BehindBy = 0, Path = "/source/PoshX" }));
+
+            // Do any additional setup after loading the view.
+            var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
+            RepoTab.DataSource = datasource;
+            RepoTab.Delegate = new RepositoryTableDelegate(RepoTab, datasource);
+
+            RepoTab.BackgroundColor = NSColor.Clear;
+            RepoTab.EnclosingScrollView.DrawsBackground = false;
         }
+
+        public new PopupView View => (PopupView)base.View;
     }
 }
