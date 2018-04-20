@@ -142,6 +142,9 @@ namespace RepoZ.Api.Common.Git
 		{
 			if (_detectors == null)
 			{
+                // see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
+                Environment.SetEnvironmentVariable("MONO_MANAGED_WATCHER", "enabled");
+
 				if (ScanInitially)
 				{
 					ScanRepositoriesFromStoreAsync();
