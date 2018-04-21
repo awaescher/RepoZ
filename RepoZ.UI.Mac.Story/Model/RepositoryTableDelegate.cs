@@ -28,10 +28,12 @@ namespace RepoZ.UI.Mac.Story.Model
             var labels = cell.Subviews.OfType<NSTextField>().ToArray();
             var RepositoryLabel = labels[0];
             var PathLabel = labels[1];
-            var StatusLabel = labels[2];
+            var CurrentBranchLabel = labels[2];
+            var StatusLabel = labels[3];
 
             RepositoryLabel.StringValue = repository.Name;
             PathLabel.StringValue = repository.Path;
+            CurrentBranchLabel.StringValue = repository.CurrentBranch;
             StatusLabel.StringValue = repository.Status;
 
             return cell;
