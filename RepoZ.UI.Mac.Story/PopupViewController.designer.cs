@@ -17,12 +17,20 @@ namespace RepoZ.UI.Mac.Story
 
 		[Outlet]
 		AppKit.NSTableView RepoTab { get; set; }
+
+		[Outlet]
+		AppKit.NSSearchField SearchBox { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
 			if (NameTextField != null) {
 				NameTextField.Dispose ();
 				NameTextField = null;
+			}
+
+			if (SearchBox != null) {
+				SearchBox.Dispose ();
+				SearchBox = null;
 			}
 
 			if (RepoTab != null) {

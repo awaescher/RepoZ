@@ -57,6 +57,13 @@ namespace RepoZ.UI.Mac.Story
             RepoTab.EnclosingScrollView.DrawsBackground = false;
         }
 
-        public new PopupView View => (PopupView)base.View;
+		public override void ViewDidAppear()
+		{
+            base.ViewDidAppear();
+
+            SearchBox.BecomeFirstResponder();
+		}
+
+		public new PopupView View => (PopupView)base.View;
     }
 }
