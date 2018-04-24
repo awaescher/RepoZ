@@ -26,7 +26,7 @@ namespace RepoZ.UI.Mac.Story
         public override void DidFinishLaunching(NSNotification notification)
         {
             _statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
-            _statusItem.Title = "RepoZ";
+            _statusItem.Image = new NSImage("StatusBarImage.png");
             _statusItem.Target = this;
             _statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 

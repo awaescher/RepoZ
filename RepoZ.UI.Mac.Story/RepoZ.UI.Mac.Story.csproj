@@ -127,5 +127,9 @@
       <SmartLink>False</SmartLink>
     </NativeReference>
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\StatusBarImage.png" />
+    <BundleResource Include="Resources\StatusBarImage%402x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
