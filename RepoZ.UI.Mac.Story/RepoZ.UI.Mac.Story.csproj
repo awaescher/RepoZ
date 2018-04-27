@@ -77,6 +77,8 @@
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="Model\" />
+    <Folder Include="NativeSupport\" />
+    <Folder Include="NativeSupport\Git\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -87,10 +89,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="TinyIoC.cs" />
-    <Compile Include="UIErrorHandler.cs" />
     <Compile Include="Model\RepositoryTableDataSource.cs" />
     <Compile Include="Model\RepositoryTableDelegate.cs" />
-    <Compile Include="MacThreadDispatcher.cs" />
     <Compile Include="AppDelegate.designer.cs">
       <DependentUpon>AppDelegate.cs</DependentUpon>
     </Compile>
@@ -102,6 +102,13 @@
     <Compile Include="PopupViewController.designer.cs">
       <DependentUpon>PopupViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="NativeSupport\Git\MacRepositoryDetector.cs" />
+    <Compile Include="NativeSupport\Git\MacRepositoryDetectorFactory.cs" />
+    <Compile Include="NativeSupport\Git\MacRepositoryObserver.cs" />
+    <Compile Include="NativeSupport\Git\MacRepositoryObserverFactory.cs" />
+    <Compile Include="NativeSupport\MacThreadDispatcher.cs" />
+    <Compile Include="NativeSupport\UIErrorHandler.cs" />
+    <Compile Include="UiStateHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />

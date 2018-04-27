@@ -108,13 +108,16 @@
                     </scroller>
                 </scrollView>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" misplaced="YES" textCompletion="NO" id="QMD-2c-EhY">
-                    <rect key="frame" x="7" y="318" width="300" height="22"/>
+                    <rect key="frame" x="8" y="318" width="299" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </searchFieldCell>
+                    <connections>
+                        <action selector="SearchChanged:" target="-2" id="NdQ-fh-oTD"/>
+                    </connections>
                 </searchField>
             </subviews>
             <connections>

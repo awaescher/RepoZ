@@ -20,6 +20,9 @@ namespace RepoZ.UI.Mac.Story
 
 		[Outlet]
 		AppKit.NSSearchField SearchBox { get; set; }
+
+		[Action ("SearchChanged:")]
+		partial void SearchChanged (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -28,14 +31,14 @@ namespace RepoZ.UI.Mac.Story
 				NameTextField = null;
 			}
 
-			if (SearchBox != null) {
-				SearchBox.Dispose ();
-				SearchBox = null;
-			}
-
 			if (RepoTab != null) {
 				RepoTab.Dispose ();
 				RepoTab = null;
+			}
+
+			if (SearchBox != null) {
+				SearchBox.Dispose ();
+				SearchBox = null;
 			}
 		}
 	}
