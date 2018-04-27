@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RepoZ.Api.Common.Git
+namespace RepoZ.UI.Mac.Story.NativeSupport.Git
 {
 	public class MacRepositoryObserver : IRepositoryObserver, IDisposable
 	{

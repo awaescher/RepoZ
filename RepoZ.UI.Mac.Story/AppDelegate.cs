@@ -9,6 +9,8 @@ using RepoZ.Api.IO;
 using RepoZ.Api.Mac;
 using RepoZ.Api.Mac.Git;
 using RepoZ.Api.Mac.IO;
+using RepoZ.UI.Mac.Story.NativeSupport;
+using RepoZ.UI.Mac.Story.NativeSupport.Git;
 using TinyIoC;
 
 namespace RepoZ.UI.Mac.Story
@@ -22,6 +24,7 @@ namespace RepoZ.UI.Mac.Story
 
         private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _repositoryMonitor;
+        private NSObject _eventMonitor;
 
         public override void DidFinishLaunching(NSNotification notification)
         {
@@ -38,11 +41,14 @@ namespace RepoZ.UI.Mac.Story
             _pop.Behavior = NSPopoverBehavior.Transient;
             _pop.Delegate = this;
             _pop.ContentViewController = new PopupViewController();
+
+            _eventMonitor = NSEvent.AddGlobalMonitorForEventsMatchingMask(NSEventMask.KeyDown, HandleGlobalEventHandler);
         }
 
         public override void WillTerminate(NSNotification notification)
         {
             // Insert code here to tear down your application
+            NSEvent.RemoveMonitor(_eventMonitor);
         }
 
         // Handler method definition
@@ -60,8 +66,8 @@ namespace RepoZ.UI.Mac.Story
             container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
 
             container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
-            container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
-            container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
+            container.Register<IRepositoryDetectorFactory, MacRepositoryDetectorFactory>().AsSingleton();
+            container.Register<IRepositoryObserverFactory, MacRepositoryObserverFactory>().AsSingleton();
             container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
             container.Register<IErrorHandler, UIErrorHandler>();
@@ -87,12 +93,25 @@ namespace RepoZ.UI.Mac.Story
                 repositoryInformationAggregator.Add(repo);
             };
 
-            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) => 
-            { 
-                repositoryInformationAggregator.RemoveByPath(repoPath); 
+            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) =>
+            {
+                repositoryInformationAggregator.RemoveByPath(repoPath);
             };
 
             _repositoryMonitor.Observe();
+        }
+
+
+        void HandleGlobalEventHandler(NSEvent globalEvent)
+        {
+            if (globalEvent.KeyCode == (ushort)NSKey.R)
+            {
+                var holdsOption = globalEvent.ModifierFlags.HasFlag(NSEventModifierMask.AlternateKeyMask);
+                var holdsCommand = globalEvent.ModifierFlags.HasFlag(NSEventModifierMask.CommandKeyMask);
+
+                if (holdsOption && holdsCommand)
+                    MenuAction();
+            }
         }
     }
 }

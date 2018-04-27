@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.Git;
 
-namespace RepoZ.Api.Common.Git
+namespace RepoZ.UI.Mac.Story.NativeSupport.Git
 {
 	public class MacRepositoryObserverFactory : IRepositoryObserverFactory
 	{
