@@ -1,66 +1,72 @@
 ﻿<Controls:MetroWindow x:Class="RepoZ.UI.Win.Wpf.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:local="clr-namespace:RepoZ.UI.Win.Wpf"
-        mc:Ignorable="d"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="12"
-        TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"        
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
-        GlowBrush="{DynamicResource AccentColorBrush}"
-        BorderThickness="1"
-		TitleCharacterCasing="Normal"
-        Title="RepoZ" Height="630" Width="450" ShowMaxRestoreButton="False"
-        >
+					  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+					  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+					  xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+					  mc:Ignorable="d"
+					  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+					  TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+					  TextElement.FontWeight="Regular"
+					  TextElement.FontSize="12"
+					  TextOptions.TextFormattingMode="Ideal"
+					  TextOptions.TextRenderingMode="Auto"
+					  Background="{DynamicResource MaterialDesignPaper}"
+					  FontFamily="{DynamicResource MaterialDesignFont}"
+					  GlowBrush="{DynamicResource AccentColorBrush}"
+					  BorderThickness="1"
+					  TitleCharacterCasing="Normal"
+					  Title="RepoZ"
+					  Height="500"
+					  Width="350"
+					  ShowMaxRestoreButton="False">
 
 	<Grid Margin="10">
 
-		
-		
-        <materialDesign:Transitioner Name="transitionerMain" SelectedIndex="0">
-                <ListBox Name="lstRepositories" HorizontalContentAlignment="Stretch" MouseDoubleClick="lstRepositories_MouseDoubleClick" ContextMenuOpening="lstRepositories_ContextMenuOpening" SelectionMode="Extended">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="200" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0">
-                                    <TextBlock Text="{Binding Name}" TextElement.FontSize="15" Margin="5"/>
-                                    <TextBlock Text="{Binding Location}" TextElement.FontSize="10.5" Margin="5,3,0,0" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="0">
-                                    <TextBlock Text="{Binding CurrentBranch}" Margin="5,7,0,0" />
-                                    <TextBlock Text="{Binding Status}" Margin="5,8,0,0"  />
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    <ListBox.ContextMenu>
-                        <ContextMenu Name="mnuRepositoryContext" FontSize="12">
-                        </ContextMenu>
-                    </ListBox.ContextMenu>
-                </ListBox>
-                <StackPanel>
-                <TextBlock Name="txtHelp" TextWrapping="Wrap" TextElement.FontSize="12"/>
-                    <Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}" Content="Got it."></Button>
-                 </StackPanel>
-        </materialDesign:Transitioner>
+		<materialDesign:Transitioner Name="transitionerMain"
+									 SelectedIndex="0">
+			<ListBox Name="lstRepositories"
+					 HorizontalContentAlignment="Stretch"
+					 MouseDoubleClick="lstRepositories_MouseDoubleClick"
+					 ContextMenuOpening="lstRepositories_ContextMenuOpening"
+					 SelectionMode="Extended">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel>
+							<TextBlock Text="{Binding Name}"
+									   ToolTip="{Binding Path}"
+									   TextElement.FontSize="17"
+									   Foreground="{DynamicResource AccentColorBrush}"
+									   Margin="8, 4, 8 ,4" />
+							<TextBlock Text="{Binding CurrentBranch}"
+									   Margin="8, 4, 8 ,4" />
+							<TextBlock Text="{Binding Status}"
+									   Margin="8, 4, 8 ,4" />
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+				<ListBox.ContextMenu>
+					<ContextMenu Name="mnuRepositoryContext"
+								 FontSize="12">
+					</ContextMenu>
+				</ListBox.ContextMenu>
+			</ListBox>
+			<StackPanel>
+				<TextBlock Name="txtHelp"
+						   TextWrapping="Wrap"
+						   TextElement.FontSize="12" />
+				<Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+						Content="Got it."></Button>
+			</StackPanel>
+		</materialDesign:Transitioner>
 
 	</Grid>
 
-    <Controls:MetroWindow.RightWindowCommands>
-        <Controls:WindowCommands>
-            <Button Content="?" Click="HelpButton_Click" />
-        </Controls:WindowCommands>
-    </Controls:MetroWindow.RightWindowCommands>
-	
+	<Controls:MetroWindow.RightWindowCommands>
+		<Controls:WindowCommands>
+			<Button Content="?"
+					Click="HelpButton_Click" />
+		</Controls:WindowCommands>
+	</Controls:MetroWindow.RightWindowCommands>
+
 </Controls:MetroWindow>
