@@ -1,13 +1,15 @@
 # RepoZ
 
-RepoZ is a lightweight Git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of Git repositories on your development machine.
+RepoZ is a lightweight git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of git repositories on your development machine.
 
 🌈 [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries! 🌈
 
-## The Tool
-It simply provides a quick overview of your repositories including their current branch and a short status info. Additionally, it offers some shortcuts like opening a command line tool and checking out Git branches.
+## The UI
+RepoZ provides a quick overview of your repositories including their current branch and a short status info. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer or macOS Finder, opening a command line tool in a given repository and checking out git branches.
 
-![Screenshot](_doc/RepoZ-ReadMe-UI.png)
+RepoZ is available for Windows and macOS.
+
+![Screenshot](_doc/RepoZ-ReadMe-UI-Both.png)
 
 ## Command Line Sidekick
 RepoZ is a UI-centered tool but comes with a sidekick app called **grr** to empower the command line hackers. 
@@ -29,7 +31,7 @@ See the topic **Installing grr** on how to to make use of **grr** throughout the
 #### Don't forget to have a look at `grr help` once you get your hands on.
 
 ## Enhanced Windows Explorer Titles
-As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a Git repository.
+As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
 
