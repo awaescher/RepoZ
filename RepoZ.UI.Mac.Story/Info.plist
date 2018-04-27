@@ -32,5 +32,7 @@
 	<string>public.app-category.developer-tools</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>LSMultipleInstancesProhibited</key>
+	<true/>
 </dict>
 </plist>
