@@ -2,7 +2,7 @@
 using AppKit;
 using RepoZ.Api.Common;
 
-namespace RepoZ.UI.Mac
+namespace RepoZ.UI.Mac.Story.NativeSupport
 {
     public class UIErrorHandler : IErrorHandler
     {
