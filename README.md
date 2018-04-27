@@ -4,14 +4,14 @@ RepoZ is a lightweight git repository information aggregator with Windows Explor
 
 🌈 [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries! 🌈
 
-## The UI
+## The UI ![windows][windows] ![macos][macOS]
 RepoZ provides a quick overview of your repositories including their current branch and a short status info. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer or macOS Finder, opening a command line tool in a given repository and checking out git branches.
 
 RepoZ is available for Windows and macOS.
 
 ![Screenshot](_doc/RepoZ-ReadMe-UI-Both.png)
 
-## Command Line Sidekick
+## Command Line Sidekick ![windows][windows]
 RepoZ is a UI-centered tool but comes with a sidekick app called **grr** to empower the command line hackers. 
 With **grr**, the information from RepoZ can be brought to any command line tool.
 
@@ -30,7 +30,7 @@ See the topic **Installing grr** on how to to make use of **grr** throughout the
 
 #### Don't forget to have a look at `grr help` once you get your hands on.
 
-## Enhanced Windows Explorer Titles
+## Enhanced Windows Explorer Titles ![windows][windows]
 As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
@@ -42,3 +42,7 @@ Press `Windows`-`R`, run `SystemPropertiesAdvanced.exe` and click the button "En
 
 ## Credits
 The **grr** app icon was made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> and is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+
+
+[windows]: https://raw.githubusercontent.com/MarcBruins/awesome-xamarin/master/images/windows.png
+[macos]: https://raw.githubusercontent.com/MarcBruins/awesome-xamarin/master/images/ios.png
