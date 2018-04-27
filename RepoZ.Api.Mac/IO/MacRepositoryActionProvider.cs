@@ -18,16 +18,25 @@ namespace RepoZ.Api.Mac
             _errorHandler = errorHandler;
         }
 
-		public IEnumerable<RepositoryAction> GetFor(IEnumerable<Repository> repositories)
+        public RepositoryAction GetPrimaryAction(Repository repository)
+        { 
+            var action = CreateProcessRunnerAction("Open in Finder", repository.Path);
+            action.IsDefault = true;
+            return action;
+        }
+
+        public RepositoryAction GetSecondaryAction(Repository repository)
+        {
+            return CreateProcessRunnerAction("Open in Terminal", "open", $"-b com.apple.terminal \"{repository.Path}\"");
+        }
+
+        public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
         {
             var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
             if (singleRepository != null)
-            {
-                var defaultAction = CreateProcessRunnerAction("Open in Finder", singleRepository.Path);
-                defaultAction.IsDefault = true;
-                yield return defaultAction;
-            }
+                yield return GetPrimaryAction(singleRepository);
+            
             yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
