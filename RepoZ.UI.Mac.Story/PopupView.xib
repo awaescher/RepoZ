@@ -57,7 +57,7 @@
                                                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="aj6-Yv-BzW">
                                                         <rect key="frame" x="7" y="52" width="17" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSActionTemplate" id="KIE-Zp-h4j"/>
+                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSIconViewTemplate" id="KIE-Zp-h4j"/>
                                                     </imageView>
                                                     <textField identifier="RepositoryLabel" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" allowsExpansionToolTips="YES" id="Tgn-Zf-a7x">
                                                         <rect key="frame" x="29" y="46" width="282" height="24"/>
@@ -127,6 +127,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="NSActionTemplate" width="14" height="14"/>
+        <image name="NSIconViewTemplate" width="10" height="10"/>
     </resources>
 </document>
