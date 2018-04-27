@@ -20,9 +20,7 @@ namespace RepoZ.Api.Mac
 
         public RepositoryAction GetPrimaryAction(Repository repository)
         { 
-            var action = CreateProcessRunnerAction("Open in Finder", repository.Path);
-            action.IsDefault = true;
-            return action;
+            return CreateProcessRunnerAction("Open in Finder", repository.Path);
         }
 
         public RepositoryAction GetSecondaryAction(Repository repository)
