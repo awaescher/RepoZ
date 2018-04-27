@@ -1,4 +1,4 @@
-// WARNING
+﻿// WARNING
 //
 // This file has been generated automatically by Visual Studio to store outlets and
 // actions made in the UI designer. If it is removed, they will be lost.
@@ -9,18 +9,12 @@ using System.CodeDom.Compiler;
 
 namespace RepoZ.UI.Mac.Story
 {
-	[Register ("ViewController")]
-	partial class ViewController
+	[Register ("PopupView")]
+	partial class PopupView
 	{
-		[Outlet]
-		AppKit.NSTableView RepositoryTable { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (RepositoryTable != null) {
-				RepositoryTable.Dispose ();
-				RepositoryTable = null;
-			}
 		}
 	}
 }

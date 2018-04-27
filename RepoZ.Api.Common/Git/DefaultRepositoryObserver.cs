@@ -105,7 +105,7 @@ namespace RepoZ.Api.Common.Git
 				_watcher.Changed -= _watcher_Changed;
 				_watcher.Deleted -= _watcher_Deleted;
 				_watcher.Renamed -= _watcher_Renamed;
-				_watcher?.Dispose();
+				_watcher.Dispose();
 			}
 		}
 

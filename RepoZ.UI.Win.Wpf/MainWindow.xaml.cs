@@ -75,9 +75,12 @@ namespace RepoZ.UI.Win.Wpf
 			if (selectedView == null || !selectedView.WasFound)
 				return;
 
-			var innerRepositories = new Repository[] { selectedView.Repository };
-			var action = _repositoryActionProvider.GetFor(innerRepositories)
-						 .FirstOrDefault(a => a.IsDefault);
+			RepositoryAction action;
+
+			if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftCtrl))
+				action = _repositoryActionProvider.GetSecondaryAction(selectedView.Repository);
+			else
+				action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
 
 			action?.Action?.Invoke(sender, e);
 		}
@@ -96,7 +99,7 @@ namespace RepoZ.UI.Win.Wpf
 			items.Clear();
 
 			var innerRepositories = selectedViews.Select(view => view.Repository);
-			foreach (var action in _repositoryActionProvider.GetFor(innerRepositories))
+			foreach (var action in _repositoryActionProvider.GetContextMenuActions(innerRepositories))
 			{
 				if (action.BeginGroup && items.Count > 0)
 					items.Add(new Separator());

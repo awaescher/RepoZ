@@ -24,17 +24,26 @@ namespace RepoZ.Api.Win.IO
 			_errorHandler = errorHandler;
 		}
 
-		public IEnumerable<RepositoryAction> GetFor(IEnumerable<Repository> repositories)
+
+		public RepositoryAction GetPrimaryAction(Repository repository)
+		{
+			return CreateProcessRunnerAction("Open in Windows File Explorer", repository.Path);
+		}
+
+		public RepositoryAction GetSecondaryAction(Repository repository)
+		{
+			return CreateProcessRunnerAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{repository.Path}'\"");
+		}
+
+		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
 		{
 			var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
 			if (singleRepository != null)
 			{
-				var defaultAction = CreateProcessRunnerAction("Open in Windows File Explorer", singleRepository.Path);
-				defaultAction.IsDefault = true;
-				yield return defaultAction;
+				yield return GetPrimaryAction(singleRepository);
+				yield return GetSecondaryAction(singleRepository);
 				yield return CreateProcessRunnerAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
-				yield return CreateProcessRunnerAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{singleRepository.Path}'\"");
 
 				string bashSubpath = @"Git\git-bash.exe";
 				string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");

@@ -12,8 +12,6 @@ namespace RepoZ.Api.Git
 
 		public Action<object, object> Action { get; set; }
 
-		public bool IsDefault { get; set; }
-
 		public bool BeginGroup { get; set; }
 
 		public bool ExecutionCausesSynchronizing { get; set; }

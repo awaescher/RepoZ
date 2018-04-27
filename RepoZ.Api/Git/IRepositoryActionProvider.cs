@@ -8,6 +8,10 @@ namespace RepoZ.Api.Git
 {
 	public interface IRepositoryActionProvider
 	{
-		IEnumerable<RepositoryAction> GetFor(IEnumerable<Repository> repositories);
+        RepositoryAction GetPrimaryAction(Repository repository);
+
+        RepositoryAction GetSecondaryAction(Repository repository);
+
+        IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories);
 	}
 }

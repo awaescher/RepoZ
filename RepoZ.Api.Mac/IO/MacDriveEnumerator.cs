@@ -4,12 +4,11 @@ using System.Linq;
 
 namespace RepoZ.Api.Mac.IO
 {
-	public class MacDriveEnumerator : IPathProvider
-	{
-		public string[] GetPaths()
-		{
-			// TODO
-			return new string[] { "/Users/andreaswascher/source/" };
-		}
-	}
+    public class MacDriveEnumerator : IPathProvider
+    {
+        public string[] GetPaths()
+        {
+            return new string[] { Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) };
+        }
+    }
 }

@@ -8,6 +8,7 @@ using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using System.Threading;
 using RepoZ.Api.Common;
+using System.IO;
 
 namespace RepoZ.Api.Common.Git
 {
@@ -125,6 +126,9 @@ namespace RepoZ.Api.Common.Git
 
 			foreach (var path in _pathProvider.GetPaths())
 			{
+                if (!Directory.Exists(path))
+                    continue;
+
 				var detector = _repositoryDetectorFactory.Create();
 				_detectors.Add(detector);
 
@@ -138,6 +142,9 @@ namespace RepoZ.Api.Common.Git
 		{
 			if (_detectors == null)
 			{
+                // see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
+                Environment.SetEnvironmentVariable("MONO_MANAGED_WATCHER", "enabled");
+
 				if (ScanInitially)
 				{
 					ScanRepositoriesFromStoreAsync();
@@ -168,10 +175,10 @@ namespace RepoZ.Api.Common.Git
 			if (string.IsNullOrEmpty(path))
 				return;
 
-			OnChangeDetected?.Invoke(this, repo);
-
 			if (!_repositoryInformationAggregator.HasRepository(path))
 				CreateRepositoryObserver(repo, path);
+
+            OnChangeDetected?.Invoke(this, repo);
 
 			_repositoryInformationAggregator.Add(repo);
 
