@@ -9,7 +9,6 @@ namespace RepoZ.Api.Common.Git
 	{
 		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
 		
-		private string _path;
 		private FileSystemWatcher _watcher;
 		private IRepositoryReader _repositoryReader;
 
@@ -25,8 +24,7 @@ namespace RepoZ.Api.Common.Git
 		{
 			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
-			_path = path;
-			_watcher = new FileSystemWatcher(_path);
+			_watcher = new FileSystemWatcher(path);
 			_watcher.Created += _watcher_Created;
 			_watcher.Changed += _watcher_Changed;
 			_watcher.Deleted += _watcher_Deleted;
@@ -118,7 +116,7 @@ namespace RepoZ.Api.Common.Git
 				_watcher.Changed -= _watcher_Changed;
 				_watcher.Deleted -= _watcher_Deleted;
 				_watcher.Renamed -= _watcher_Renamed;
-				_watcher?.Dispose();
+				_watcher.Dispose();
 			}
 		}
 

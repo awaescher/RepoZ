@@ -175,10 +175,10 @@ namespace RepoZ.Api.Common.Git
 			if (string.IsNullOrEmpty(path))
 				return;
 
-			OnChangeDetected?.Invoke(this, repo);
-
 			if (!_repositoryInformationAggregator.HasRepository(path))
 				CreateRepositoryObserver(repo, path);
+
+            OnChangeDetected?.Invoke(this, repo);
 
 			_repositoryInformationAggregator.Add(repo);
 
