@@ -51,13 +51,15 @@
 					</ContextMenu>
 				</ListBox.ContextMenu>
 			</ListBox>
-			<StackPanel>
-				<TextBlock Name="txtHelp"
-						   TextWrapping="Wrap"
-						   TextElement.FontSize="12" />
-				<Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-						Content="Got it."></Button>
-			</StackPanel>
+			<ScrollViewer>
+				<StackPanel>
+					<TextBlock Name="txtHelp"
+							   TextWrapping="Wrap"
+							   TextElement.FontSize="12" />
+					<Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+							Content="Got it."></Button>
+				</StackPanel>
+			</ScrollViewer>
 		</materialDesign:Transitioner>
 
 	</Grid>
