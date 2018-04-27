@@ -1,6 +1,6 @@
 # RepoZ
 
-RepoZ is a lightweight Git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of Git repositories on your development machine.
+RepoZ is a lightweight git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of git repositories on your development machine.
 
 🌈 [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries! 🌈
 
@@ -31,7 +31,7 @@ See the topic **Installing grr** on how to to make use of **grr** throughout the
 #### Don't forget to have a look at `grr help` once you get your hands on.
 
 ## Enhanced Windows Explorer Titles
-As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a Git repository.
+As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
 
