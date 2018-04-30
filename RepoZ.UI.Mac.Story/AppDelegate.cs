@@ -22,14 +22,16 @@ namespace RepoZ.UI.Mac.Story
         NSPopover _pop;
         public static NSViewController _ctrl;
 
-        private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _repositoryMonitor;
         private NSObject _eventMonitor;
 
         public override void DidFinishLaunching(NSNotification notification)
         {
+            var isRetina = NSScreen.MainScreen.BackingScaleFactor > 1.0;
+            string statusItemImageName = $"StatusBarImage{(isRetina ? "@2x" : "")}.png";
+
             _statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
-            _statusItem.Image = new NSImage("StatusBarImage.png");
+            _statusItem.Image = new NSImage(statusItemImageName);
             _statusItem.Target = this;
             _statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 
