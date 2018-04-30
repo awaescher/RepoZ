@@ -9,7 +9,6 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PopupViewController">
             <connections>
-                <outlet property="NameTextField" destination="Tgn-Zf-a7x" id="7g3-Xi-RoU"/>
                 <outlet property="RepoTab" destination="xKt-lX-EKK" id="iHf-Cf-Fm8"/>
                 <outlet property="RepositoryTable" destination="atb-MD-Rrh" id="xWt-F6-jGC"/>
                 <outlet property="SearchBox" destination="QMD-2c-EhY" id="B5D-pO-JJF"/>
