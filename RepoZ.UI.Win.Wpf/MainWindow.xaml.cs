@@ -17,6 +17,9 @@ using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 using RepoZ.Api.Win.Git;
 using TinyIoC;
+using TinySoup;
+using TinySoup.Identifier;
+using TinySoup.Model;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -54,6 +57,31 @@ namespace RepoZ.UI.Win.Wpf
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
 			PlaceFormToLowerRight();
+
+			Task.Run(() => CheckForUpdatesAsync());
+		}
+
+		private async Task CheckForUpdatesAsync()
+		{
+			var request = new UpdateRequest()
+			{
+				ApplicationIdentifier = "RepoZ",
+				ClientIdentifier = new AnonymousClientIdentifier(),
+				CurrentVersionInUse = "1.81",
+				Channel = "stable",
+				UserAgent = $"WPF {Environment.OSVersion}"
+			};
+
+			var client = new WebSoupClient();
+			client.RegisterExceptionHandler(ex => AppendFromAsync(ex.Message));
+			var updates = await client.CheckForUpdatesAsync(request);
+			AppendFromAsync(string.Join(Environment.NewLine, updates.Select(u => u.ToString())));
+		}
+
+		private void AppendFromAsync(string value)
+		{
+			Action act = () => Title = value;
+			Dispatcher.BeginInvoke(act);
 		}
 
 		protected override void OnClosed(EventArgs e)
