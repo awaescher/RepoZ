@@ -5,6 +5,10 @@ using Foundation;
 using AppKit;
 using RepoZ.UI.Mac.Story.Model;
 using RepoZ.Api.Git;
+using TinySoup.Model;
+using TinySoup.Identifier;
+using TinySoup;
+using System.Threading.Tasks;
 
 namespace RepoZ.UI.Mac.Story
 {
@@ -67,6 +71,29 @@ namespace RepoZ.UI.Mac.Story
             base.ViewDidAppear();
 
             SearchBox.BecomeFirstResponder();
+			Task.Run(() => CheckForUpdatesAsync());
+        }
+
+		private async Task CheckForUpdatesAsync()
+        {
+            var request = new UpdateRequest()
+            {
+                ApplicationIdentifier = "RepoZ",
+                ClientIdentifier = new AnonymousClientIdentifier(),
+                CurrentVersionInUse = "1.81",
+                Channel = "stable",
+                UserAgent = $"Mac {Environment.OSVersion}"
+            };
+
+            var client = new WebSoupClient();
+            client.RegisterExceptionHandler(ex => AppendFromAsync(ex.Message));
+            var updates = await client.CheckForUpdatesAsync(request);
+            AppendFromAsync(string.Join(Environment.NewLine, updates.Select(u => u.ToString())));
+        }
+
+        private void AppendFromAsync(string value)
+        {
+			InvokeOnMainThread(() => SearchBox.PlaceholderString = value);
         }
 
 		public override void ViewWillDisappear()
