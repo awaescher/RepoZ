@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,7 +75,13 @@ namespace RepoZ.UI.Win.Wpf
 
 			var newest = updates.FirstOrDefault();
 			if (newest != null)
-				Dispatcher.Invoke((Action)(() => Title = newest.ToString()));
+			{
+				this.Invoke(() =>
+				{
+					UpdateButton.Visibility = Visibility.Visible;
+					UpdateButton.Tag = newest;
+				});
+			}
 		}
 
 		protected override void OnClosed(EventArgs e)
@@ -132,6 +139,14 @@ namespace RepoZ.UI.Win.Wpf
 		private void HelpButton_Click(object sender, RoutedEventArgs e)
 		{
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
+		}
+
+		private void UpdateButton_Click(object sender, RoutedEventArgs e)
+		{
+			var availableVersion = UpdateButton.Tag as AvailableVersion;
+			bool hasLink = !string.IsNullOrWhiteSpace(availableVersion?.Url);
+			if (hasLink)
+				Process.Start(availableVersion.Url);
 		}
 
 		private void PlaceFormToLowerRight()
