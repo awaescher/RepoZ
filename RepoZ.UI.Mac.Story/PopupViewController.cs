@@ -76,24 +76,21 @@ namespace RepoZ.UI.Mac.Story
 
 		private async Task CheckForUpdatesAsync()
         {
+			var bundleVersion = NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString();
+
             var request = new UpdateRequest()
-            {
-                ApplicationIdentifier = "RepoZ",
-                ClientIdentifier = new AnonymousClientIdentifier(),
-                CurrentVersionInUse = "1.81",
-                Channel = "stable",
-                UserAgent = $"Mac {Environment.OSVersion}"
-            };
+				.WithNameAndVersionFromEntryAssembly()
+				.WithVersion(bundleVersion)
+                .AsAnonymousClient()
+                .OnChannel("stable")
+                .OnPlatform(new OperatingSystemIdentifier().WithSuffix("(Mac)"));
 
             var client = new WebSoupClient();
-            client.RegisterExceptionHandler(ex => AppendFromAsync(ex.Message));
             var updates = await client.CheckForUpdatesAsync(request);
-            AppendFromAsync(string.Join(Environment.NewLine, updates.Select(u => u.ToString())));
-        }
 
-        private void AppendFromAsync(string value)
-        {
-			InvokeOnMainThread(() => SearchBox.PlaceholderString = value);
+            var newest = updates.FirstOrDefault();
+            if (newest != null)
+				InvokeOnMainThread(() => SearchBox.PlaceholderString = newest.ToString());
         }
 
 		public override void ViewWillDisappear()
