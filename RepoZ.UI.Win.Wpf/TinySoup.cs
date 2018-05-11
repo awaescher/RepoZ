@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Runtime.InteropServices;
+using System.Reflection;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -24,24 +25,32 @@ namespace TinySoup
 
 		private Action<Exception> _exceptionHandler;
 
-		public Task<IList<AvailableVersion>> CheckForUpdatesAsync(UpdateRequest request)
+		public Task<IList<AvailableVersion>> CheckForUpdatesAsync(UpdateRequest request) => CheckForUpdatesAsync(request, new DefaultVersionComparer());
+		
+		public async Task<IList<AvailableVersion>> CheckForUpdatesAsync(UpdateRequest request, IComparer<Version> versionComparer)
 		{
 			var parameters = new ServiceParameterCollection
 			{
-				{ "cid", Uri.EscapeDataString(request.ClientIdentifier?.GetIdentifier() ?? "") },
+				{ "cid", Uri.EscapeDataString(request.ClientIdentifier?.ToString() ?? "") },
 				{ "pid", Uri.EscapeDataString(request.ApplicationIdentifier ?? "") },
-				{ "ver", Uri.EscapeDataString(request.CurrentVersionInUse ?? "") },
+				{ "ver", Uri.EscapeDataString(request.CurrentVersionInUse?.ToString() ?? "") },
 				{ "vai", Uri.EscapeDataString(request.Channel ?? "") },
-				{ "ext", Uri.EscapeDataString(request.UserAgent ?? "") },
+				{ "ext", Uri.EscapeDataString(request.PlatformIdentifier?.ToString() ?? "") },
 				{ "vol", Uri.EscapeDataString(request.FreeText ?? "") }
 			};
 
-			return PutAsync(parameters.ToString());
+			var versions = await PutAsync(parameters.ToString());
+
+			return versions
+				.Where(v => versionComparer.Compare(v.Version, request.CurrentVersionInUse) > 0)
+				.OrderByDescending(v => v.Version, versionComparer)
+				.ToList();
 		}
 
-		public void RegisterExceptionHandler(Action<Exception> exceptionHandler)
+		public WebSoupClient WithExceptionHandler(Action<Exception> exceptionHandler)
 		{
 			_exceptionHandler = exceptionHandler;
+			return this;
 		}
 
 		internal Task<IList<AvailableVersion>> PutAsync(string parameterString)
@@ -78,18 +87,22 @@ namespace TinySoup
 			}
 		}
 	}
+
+	public class DefaultVersionComparer : IComparer<Version>
+	{
+		public int Compare(Version x, Version y) => x.CompareTo(y);
+	}
 }
 
 namespace TinySoup.Identifier
 {
 	public interface IClientIdentifier
 	{
-		string GetIdentifier();
 	}
 
 	public class AnonymousClientIdentifier : IClientIdentifier
 	{
-		public string GetIdentifier()
+		public override string ToString()
 		{
 			var id = "";
 
@@ -216,14 +229,33 @@ namespace TinySoup.Internal
 
 namespace TinySoup.Model
 {
+	[System.Diagnostics.DebuggerDisplay("{ApplicationIdentifier,nq} {Version.ToString(), nq}")]
 	[DataContract]
 	public class AvailableVersion
 	{
+		private Version _version;
+		private string _versionString;
+
 		[DataMember(Name = "Application")]
 		public string ApplicationIdentifier { get; set; } = "";
 
+		[IgnoreDataMember]
+		public Version Version
+		{
+			get => _version ?? new Version();
+		}
+
 		[DataMember(Name = "VersionString")]
-		public string Version { get; set; } = "";
+		public string VersionString
+		{
+			get => _versionString;
+			set
+			{
+				_versionString = value;
+				if (!Version.TryParse(_versionString, out _version))
+					_version = null;
+			}
+		}
 
 		[DataMember(Name = "VersionAdditionalInfo")]
 		public string Channel { get; set; } = "";
@@ -236,22 +268,102 @@ namespace TinySoup.Model
 
 		public override string ToString()
 		{
-			return $"{ApplicationIdentifier ?? ""} {Version ?? ""}".Trim();
+			return $"{ApplicationIdentifier ?? ""} {Version.ToString() ?? ""}".Trim();
 		}
 	}
 
+	[System.Diagnostics.DebuggerDisplay("{ApplicationIdentifier,nq} {CurrentVersionInUse.ToString(),nq}")]
 	public class UpdateRequest
 	{
+		public UpdateRequest WithNameAndVersionFromAssembly(Assembly assembly)
+		{
+			var name = assembly.GetName();
+			ApplicationIdentifier = name.Name;
+			CurrentVersionInUse = name.Version;
+
+			return this;
+		}
+
+		public UpdateRequest WithNameAndVersionFromEntryAssembly() => WithNameAndVersionFromAssembly(Assembly.GetEntryAssembly());
+
+		public UpdateRequest WithNameAndVersionFromExecutingAssembly() => WithNameAndVersionFromAssembly(Assembly.GetExecutingAssembly());
+
+		public UpdateRequest WithNameAndVersionFromCallingAssembly() => WithNameAndVersionFromAssembly(Assembly.GetCallingAssembly());
+
+		public UpdateRequest WithClientIdentifier(IClientIdentifier clientIdentifier)
+		{
+			ClientIdentifier = clientIdentifier;
+			return this;
+		}
+
+		public UpdateRequest AsAnonymousClient() => WithClientIdentifier(new AnonymousClientIdentifier());
+
+		public UpdateRequest OnChannel(string channel)
+		{
+			Channel = channel;
+			return this;
+		}
+
+		public UpdateRequest OnPlatform(IPlatformIdentifier platformIdentifier)
+		{
+			PlatformIdentifier = platformIdentifier;
+			return this;
+		}
+
+		public UpdateRequest WithVersion(Version version)
+		{
+			CurrentVersionInUse = version;
+			return this;
+		}
+
+		public UpdateRequest WithVersion(string version)
+		{
+			CurrentVersionInUse = Version.Parse(version);
+			return this;
+		}
+
 		public IClientIdentifier ClientIdentifier { get; set; }
 
 		public string ApplicationIdentifier { get; set; }
 
-		public string CurrentVersionInUse { get; set; }
+		public Version CurrentVersionInUse { get; set; }
 
 		public string Channel { get; set; }
 
-		public string UserAgent { get; set; }
+		public IPlatformIdentifier PlatformIdentifier { get; set; }
 
 		public string FreeText { get; set; }
+	}
+
+	public interface IPlatformIdentifier
+	{
+	}
+
+	public class OperatingSystemIdentifier : IPlatformIdentifier
+	{
+		public override string ToString()
+		{
+			var platformName = Environment.OSVersion.ToString();
+			var prefix = string.IsNullOrWhiteSpace(Prefix) ? "" : Prefix;
+			var suffix = string.IsNullOrWhiteSpace(Suffix) ? "" : Suffix;
+
+			return $"{prefix} {platformName} {suffix}".Trim();
+		}
+
+		public string Prefix { get; set; }
+
+		public string Suffix { get; set; }
+
+		public OperatingSystemIdentifier WithPrefix(string prefix)
+		{
+			Prefix = prefix;
+			return this;
+		}
+
+		public OperatingSystemIdentifier WithSuffix(string suffix)
+		{
+			Suffix = suffix;
+			return this;
+		}
 	}
 }

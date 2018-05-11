@@ -51,7 +51,7 @@ namespace RepoZ.UI.Win.Wpf
 
 
 			lstRepositories.Items.SortDescriptions.Add(
-				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), 
+				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name),
 				System.ComponentModel.ListSortDirection.Ascending));
 
 			txtHelp.Text = GetHelp(statusCharacterMap);
@@ -64,24 +64,17 @@ namespace RepoZ.UI.Win.Wpf
 		private async Task CheckForUpdatesAsync()
 		{
 			var request = new UpdateRequest()
-			{
-				ApplicationIdentifier = "RepoZ",
-				ClientIdentifier = new AnonymousClientIdentifier(),
-				CurrentVersionInUse = "1.81",
-				Channel = "stable",
-				UserAgent = $"WPF {Environment.OSVersion}"
-			};
+				.WithNameAndVersionFromEntryAssembly()
+				.AsAnonymousClient()
+				.OnChannel("stable")
+				.OnPlatform(new OperatingSystemIdentifier().WithSuffix("(WPF)"));
 
 			var client = new WebSoupClient();
-			client.RegisterExceptionHandler(ex => AppendFromAsync(ex.Message));
 			var updates = await client.CheckForUpdatesAsync(request);
-			AppendFromAsync(string.Join(Environment.NewLine, updates.Select(u => u.ToString())));
-		}
 
-		private void AppendFromAsync(string value)
-		{
-			Action act = () => Title = value;
-			Dispatcher.BeginInvoke(act);
+			var newest = updates.FirstOrDefault();
+			if (newest != null)
+				Dispatcher.Invoke((Action)(() => Title = newest.ToString()));
 		}
 
 		protected override void OnClosed(EventArgs e)
