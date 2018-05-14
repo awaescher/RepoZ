@@ -18,9 +18,6 @@ using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 using RepoZ.Api.Win.Git;
 using TinyIoC;
-using TinySoup;
-using TinySoup.Identifier;
-using TinySoup.Model;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -59,29 +56,13 @@ namespace RepoZ.UI.Win.Wpf
 
 			PlaceFormToLowerRight();
 
-			Task.Run(() => CheckForUpdatesAsync());
+			ShowUpdateIfAvailable();
 		}
 
-		private async Task CheckForUpdatesAsync()
+		private void ShowUpdateIfAvailable()
 		{
-			var request = new UpdateRequest()
-				.WithNameAndVersionFromEntryAssembly()
-				.AsAnonymousClient()
-				.OnChannel("stable")
-				.OnPlatform(new OperatingSystemIdentifier().WithSuffix("(WPF)"));
-
-			var client = new WebSoupClient();
-			var updates = await client.CheckForUpdatesAsync(request);
-
-			var newest = updates.FirstOrDefault();
-			if (newest != null)
-			{
-				this.Invoke(() =>
-				{
-					UpdateButton.Visibility = Visibility.Visible;
-					UpdateButton.Tag = newest;
-				});
-			}
+			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
+			UpdateButton.Tag = App.AvailableUpdate;
 		}
 
 		protected override void OnClosed(EventArgs e)
@@ -143,10 +124,9 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void UpdateButton_Click(object sender, RoutedEventArgs e)
 		{
-			var availableVersion = UpdateButton.Tag as AvailableVersion;
-			bool hasLink = !string.IsNullOrWhiteSpace(availableVersion?.Url);
+			bool hasLink = !string.IsNullOrWhiteSpace(App.AvailableUpdate?.Url);
 			if (hasLink)
-				Process.Start(availableVersion.Url);
+				Process.Start(App.AvailableUpdate.Url);
 		}
 
 		private void PlaceFormToLowerRight()
