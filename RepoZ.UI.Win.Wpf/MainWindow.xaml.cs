@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,12 +49,20 @@ namespace RepoZ.UI.Win.Wpf
 
 
 			lstRepositories.Items.SortDescriptions.Add(
-				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name), 
+				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name),
 				System.ComponentModel.ListSortDirection.Ascending));
 
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
 			PlaceFormToLowerRight();
+
+			ShowUpdateIfAvailable();
+		}
+
+		private void ShowUpdateIfAvailable()
+		{
+			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
+			UpdateButton.Tag = App.AvailableUpdate;
 		}
 
 		protected override void OnClosed(EventArgs e)
@@ -111,6 +120,13 @@ namespace RepoZ.UI.Win.Wpf
 		private void HelpButton_Click(object sender, RoutedEventArgs e)
 		{
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
+		}
+
+		private void UpdateButton_Click(object sender, RoutedEventArgs e)
+		{
+			bool hasLink = !string.IsNullOrWhiteSpace(App.AvailableUpdate?.Url);
+			if (hasLink)
+				Process.Start(App.AvailableUpdate.Url);
 		}
 
 		private void PlaceFormToLowerRight()

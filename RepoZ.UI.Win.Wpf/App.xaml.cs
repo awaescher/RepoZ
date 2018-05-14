@@ -20,6 +20,8 @@ using TinyIoC;
 using TinyIpc.Messaging;
 using System.Text.RegularExpressions;
 using Hardcodet.Wpf.TaskbarNotification;
+using TinySoup.Model;
+using TinySoup;
 
 namespace RepoZ.UI.Win.Wpf
 {
@@ -29,6 +31,7 @@ namespace RepoZ.UI.Win.Wpf
 	public partial class App : Application
 	{
 		private static Timer _explorerUpdateTimer;
+		private static Timer _updateTimer;
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private static TinyMessageBus _bus;
@@ -58,6 +61,24 @@ namespace RepoZ.UI.Win.Wpf
 
 			_bus = new TinyMessageBus("RepoZ-ipc");
 			_bus.MessageReceived += Bus_MessageReceived;
+
+			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
+		}
+
+		private async void CheckForUpdatesAsync(object state)
+		{
+			var request = new UpdateRequest()
+				.WithNameAndVersionFromEntryAssembly()
+				.AsAnonymousClient()
+				.OnChannel("stable")
+				.OnPlatform(new OperatingSystemIdentifier().WithSuffix("(WPF)"));
+
+			var client = new WebSoupClient();
+			var updates = await client.CheckForUpdatesAsync(request);
+
+			AvailableUpdate = updates.FirstOrDefault();
+
+			_updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
 		}
 
 		protected override void OnExit(ExitEventArgs e)
@@ -140,10 +161,12 @@ namespace RepoZ.UI.Win.Wpf
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
-		protected static void RefreshTimerCallback(Object state)
+		protected static void RefreshTimerCallback(object state)
 		{
 			_explorerHandler.UpdateTitles();
 			_explorerUpdateTimer.Change(500, Timeout.Infinite);
 		}
+
+		public static AvailableVersion AvailableUpdate { get; private set; }
 	}
 }

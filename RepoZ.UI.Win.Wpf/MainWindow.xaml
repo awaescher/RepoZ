@@ -66,6 +66,10 @@
 
 	<Controls:MetroWindow.RightWindowCommands>
 		<Controls:WindowCommands>
+			<Button Content="🡱 Update"
+					x:Name="UpdateButton"
+					Visibility="Hidden"
+					Click="UpdateButton_Click" />
 			<Button Content="?"
 					Click="HelpButton_Click" />
 		</Controls:WindowCommands>
