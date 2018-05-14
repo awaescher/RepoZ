@@ -9,6 +9,7 @@ using TinySoup.Model;
 using TinySoup.Identifier;
 using TinySoup;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace RepoZ.UI.Mac.Story
 {
@@ -70,28 +71,24 @@ namespace RepoZ.UI.Mac.Story
 
             base.ViewDidAppear();
 
+			ShowUpdateIfAvailable();
             SearchBox.BecomeFirstResponder();
-			Task.Run(() => CheckForUpdatesAsync());
         }
 
-		private async Task CheckForUpdatesAsync()
-        {
-			var bundleVersion = NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString();
+		private void ShowUpdateIfAvailable()
+		{
+			UpdateButton.ToolTip = AppDelegate.AvailableUpdate == null ? "" : $"Version {AppDelegate.AvailableUpdate.VersionString} is available.";
+			UpdateButton.Hidden = AppDelegate.AvailableUpdate == null;
 
-            var request = new UpdateRequest()
-				.WithNameAndVersionFromEntryAssembly()
-				.WithVersion(bundleVersion)
-                .AsAnonymousClient()
-                .OnChannel("stable")
-                .OnPlatform(new OperatingSystemIdentifier().WithSuffix("(Mac)"));
+            var newSearchBoxFrame = SearchBox.Frame;
 
-            var client = new WebSoupClient();
-            var updates = await client.CheckForUpdatesAsync(request);
+            if (UpdateButton.Hidden)
+                newSearchBoxFrame.Width = this.View.Frame.Width - (SearchBox.Frame.X * 2);
+            else
+                newSearchBoxFrame.Width = UpdateButton.Frame.X - SearchBox.Frame.X;
 
-            var newest = updates.FirstOrDefault();
-            if (newest != null)
-				InvokeOnMainThread(() => SearchBox.PlaceholderString = newest.ToString());
-        }
+            SearchBox.Frame = newSearchBoxFrame;
+		}
 
 		public override void ViewWillDisappear()
 		{
@@ -124,6 +121,14 @@ namespace RepoZ.UI.Mac.Story
             var filterString = (sender as NSControl).StringValue;
 
             dataSource.Filter(filterString);
+        }
+
+        partial void UpdateButton_Click(NSObject sender)
+        {
+			if (string.IsNullOrEmpty(AppDelegate.AvailableUpdate?.Url))
+                return;
+
+			Process.Start(AppDelegate.AvailableUpdate.Url);
         }
 
         public new PopupView View => (PopupView)base.View;

@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using AppKit;
 using Foundation;
 using RepoZ.Api.Common;
@@ -12,6 +15,8 @@ using RepoZ.Api.Mac.IO;
 using RepoZ.UI.Mac.Story.NativeSupport;
 using RepoZ.UI.Mac.Story.NativeSupport.Git;
 using TinyIoC;
+using TinySoup;
+using TinySoup.Model;
 
 namespace RepoZ.UI.Mac.Story
 {
@@ -24,8 +29,9 @@ namespace RepoZ.UI.Mac.Story
 
         private IRepositoryMonitor _repositoryMonitor;
         private NSObject _eventMonitor;
+		private Timer _updateTimer;
 
-        public override void DidFinishLaunching(NSNotification notification)
+		public override void DidFinishLaunching(NSNotification notification)
         {
             var isRetina = NSScreen.MainScreen.BackingScaleFactor > 1.0;
             string statusItemImageName = $"StatusBarImage{(isRetina ? "@2x" : "")}.png";
@@ -45,6 +51,8 @@ namespace RepoZ.UI.Mac.Story
             _pop.ContentViewController = new PopupViewController();
 
             _eventMonitor = NSEvent.AddGlobalMonitorForEventsMatchingMask(NSEventMask.KeyDown, HandleGlobalEventHandler);
+
+			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
         }
 
         public override void WillTerminate(NSNotification notification)
@@ -90,19 +98,30 @@ namespace RepoZ.UI.Mac.Story
 
             _repositoryMonitor = container.Resolve<IRepositoryMonitor>();
 
-            _repositoryMonitor.OnChangeDetected += (sender, repo) =>
-            {
-                repositoryInformationAggregator.Add(repo);
-            };
-
-            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) =>
-            {
-                repositoryInformationAggregator.RemoveByPath(repoPath);
-            };
+            _repositoryMonitor.OnChangeDetected += (sender, repo) => repositoryInformationAggregator.Add(repo);
+            _repositoryMonitor.OnDeletionDetected += (sender, repoPath) => repositoryInformationAggregator.RemoveByPath(repoPath);
 
             _repositoryMonitor.Observe();
         }
 
+		private async void CheckForUpdatesAsync(object state)
+        {
+            var bundleVersion = NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString();
+
+            var request = new UpdateRequest()
+                .WithNameAndVersionFromEntryAssembly()
+                .WithVersion(bundleVersion)
+                .AsAnonymousClient()
+                .OnChannel("stable")
+                .OnPlatform(new OperatingSystemIdentifier().WithSuffix("(Mac)"));
+
+            var client = new WebSoupClient();
+            var updates = await client.CheckForUpdatesAsync(request);
+
+            AvailableUpdate = updates.FirstOrDefault();
+
+			_updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
+        }
 
         void HandleGlobalEventHandler(NSEvent globalEvent)
         {
@@ -115,5 +134,7 @@ namespace RepoZ.UI.Mac.Story
                     MenuAction();
             }
         }
+
+		public static AvailableVersion AvailableUpdate { get; private set; }
     }
 }
