@@ -21,8 +21,14 @@ namespace RepoZ.UI.Mac.Story
 		[Outlet]
 		AppKit.NSSearchField SearchBox { get; set; }
 
+		[Outlet]
+		AppKit.NSButton UpdateButton { get; set; }
+
 		[Action ("SearchChanged:")]
 		partial void SearchChanged (Foundation.NSObject sender);
+
+		[Action ("UpdateButton_Click:")]
+		partial void UpdateButton_Click (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -39,6 +45,11 @@ namespace RepoZ.UI.Mac.Story
 			if (SearchBox != null) {
 				SearchBox.Dispose ();
 				SearchBox = null;
+			}
+
+			if (UpdateButton != null) {
+				UpdateButton.Dispose ();
+				UpdateButton = null;
 			}
 		}
 	}

@@ -12,6 +12,7 @@
                 <outlet property="RepoTab" destination="xKt-lX-EKK" id="iHf-Cf-Fm8"/>
                 <outlet property="RepositoryTable" destination="atb-MD-Rrh" id="xWt-F6-jGC"/>
                 <outlet property="SearchBox" destination="QMD-2c-EhY" id="B5D-pO-JJF"/>
+                <outlet property="UpdateButton" destination="M6p-5h-EnC" id="EXb-IR-gqE"/>
                 <outlet property="view" destination="4" id="17"/>
             </connections>
         </customObject>
@@ -107,7 +108,7 @@
                     </scroller>
                 </scrollView>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" misplaced="YES" textCompletion="NO" id="QMD-2c-EhY">
-                    <rect key="frame" x="8" y="318" width="299" height="22"/>
+                    <rect key="frame" x="8" y="318" width="264" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
                         <font key="font" metaFont="system"/>
@@ -118,6 +119,17 @@
                         <action selector="SearchChanged:" target="-2" id="NdQ-fh-oTD"/>
                     </connections>
                 </searchField>
+                <button hidden="YES" verticalHuggingPriority="750" misplaced="YES" id="M6p-5h-EnC">
+                    <rect key="frame" x="274" y="312" width="40" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="⬆" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zRT-OM-19Y">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="UpdateButton_Click:" target="-2" id="KTA-1g-ngq"/>
+                    </connections>
+                </button>
             </subviews>
             <connections>
                 <outlet property="RepositoryTable" destination="xKt-lX-EKK" id="BCu-N9-f5T"/>

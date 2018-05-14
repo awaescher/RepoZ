@@ -9,12 +9,14 @@ using TinySoup.Model;
 using TinySoup.Identifier;
 using TinySoup;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace RepoZ.UI.Mac.Story
 {
     public partial class PopupViewController : AppKit.NSViewController
     {
         private IRepositoryInformationAggregator _aggregator;
+        private AvailableVersion _newestUpdate;
 
         #region Constructors
 
@@ -79,8 +81,8 @@ namespace RepoZ.UI.Mac.Story
 			var bundleVersion = NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString();
 
             var request = new UpdateRequest()
-				.WithNameAndVersionFromEntryAssembly()
-				.WithVersion(bundleVersion)
+                .WithNameAndVersionFromEntryAssembly()
+                .WithVersion(bundleVersion)
                 .AsAnonymousClient()
                 .OnChannel("stable")
                 .OnPlatform(new OperatingSystemIdentifier().WithSuffix("(Mac)"));
@@ -88,9 +90,16 @@ namespace RepoZ.UI.Mac.Story
             var client = new WebSoupClient();
             var updates = await client.CheckForUpdatesAsync(request);
 
-            var newest = updates.FirstOrDefault();
-            if (newest != null)
-				InvokeOnMainThread(() => SearchBox.PlaceholderString = newest.ToString());
+            _newestUpdate = updates.FirstOrDefault();
+
+            if (_newestUpdate == null)
+                return;
+            
+            InvokeOnMainThread(() =>
+            {
+                UpdateButton.ToolTip = $"Version {_newestUpdate.VersionString} is available.";
+                UpdateButton.Hidden = false;
+            });
         }
 
 		public override void ViewWillDisappear()
@@ -124,6 +133,14 @@ namespace RepoZ.UI.Mac.Story
             var filterString = (sender as NSControl).StringValue;
 
             dataSource.Filter(filterString);
+        }
+
+        partial void UpdateButton_Click(Foundation.NSObject sender)
+        {
+            if (string.IsNullOrEmpty(_newestUpdate?.Url))
+                return;
+
+            Process.Start(_newestUpdate.Url);
         }
 
         public new PopupView View => (PopupView)base.View;
