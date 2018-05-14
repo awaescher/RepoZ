@@ -92,13 +92,19 @@ namespace RepoZ.UI.Mac.Story
 
             _newestUpdate = updates.FirstOrDefault();
 
-            if (_newestUpdate == null)
-                return;
-            
             InvokeOnMainThread(() =>
             {
-                UpdateButton.ToolTip = $"Version {_newestUpdate.VersionString} is available.";
-                UpdateButton.Hidden = false;
+                UpdateButton.ToolTip = _newestUpdate == null ? "" : $"Version {_newestUpdate.VersionString} is available.";
+                UpdateButton.Hidden = _newestUpdate == null;
+
+                var newSearchBoxFrame = SearchBox.Frame;
+
+                if (UpdateButton.Hidden)
+                    newSearchBoxFrame.Width = this.View.Frame.Width - (SearchBox.Frame.X * 2);
+                else
+                    newSearchBoxFrame.Width = UpdateButton.Frame.X - SearchBox.Frame.X;
+
+                SearchBox.Frame = newSearchBoxFrame;
             });
         }
 
@@ -135,7 +141,7 @@ namespace RepoZ.UI.Mac.Story
             dataSource.Filter(filterString);
         }
 
-        partial void UpdateButton_Click(Foundation.NSObject sender)
+        partial void UpdateButton_Click(NSObject sender)
         {
             if (string.IsNullOrEmpty(_newestUpdate?.Url))
                 return;
