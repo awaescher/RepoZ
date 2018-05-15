@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TinySoup.Identifier;
 using TinySoup.Internal;
 using TinySoup.Model;
+using System.Net;
 
 namespace TinySoup
 {
@@ -26,7 +27,7 @@ namespace TinySoup
 		private Action<Exception> _exceptionHandler;
 
 		public Task<IList<AvailableVersion>> CheckForUpdatesAsync(UpdateRequest request) => CheckForUpdatesAsync(request, new DefaultVersionComparer());
-		
+
 		public async Task<IList<AvailableVersion>> CheckForUpdatesAsync(UpdateRequest request, IComparer<Version> versionComparer)
 		{
 			var parameters = new ServiceParameterCollection
@@ -71,14 +72,34 @@ namespace TinySoup
 
 		internal async Task<IList<AvailableVersion>> CallWebServiceAsync(string method, string parameterString)
 		{
-			var url = $"{URL}?method={method}&{parameterString}";
+			HttpClient client;
+
+			var uri = new Uri($"{URL}?method={method}&{parameterString}");
 
 			var serializer = new DataContractJsonSerializer(typeof(List<AvailableVersion>));
 
 			try
 			{
-				var client = new HttpClient();
-				return serializer.ReadObject(await client.GetStreamAsync(url).ConfigureAwait(false)) as List<AvailableVersion>;
+				var proxyUri = new Uri(WebRequest.DefaultWebProxy.GetProxy(uri).AbsoluteUri);
+				var directAccess = proxyUri?.Authority?.Equals(uri.Authority) == true;
+
+				if (directAccess)
+				{
+					client = new HttpClient();
+				}
+				else
+				{
+					var proxy = new WebProxy()
+					{
+						Address = proxyUri,
+						BypassProxyOnLocal = false,
+						UseDefaultCredentials = true
+					};
+					var httpClientHandler = new HttpClientHandler() { Proxy = proxy };
+					client = new HttpClient(handler: httpClientHandler, disposeHandler: true);
+				}
+
+				return serializer.ReadObject(await client.GetStreamAsync(uri).ConfigureAwait(false)) as List<AvailableVersion>;
 			}
 			catch (Exception ex)
 			{

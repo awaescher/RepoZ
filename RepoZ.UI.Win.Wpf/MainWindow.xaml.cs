@@ -62,6 +62,7 @@ namespace RepoZ.UI.Win.Wpf
 		private void ShowUpdateIfAvailable()
 		{
 			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
+			UpdateButton.ToolTip = $"Version {App.AvailableUpdate.VersionString} is available.";
 			UpdateButton.Tag = App.AvailableUpdate;
 		}
 
