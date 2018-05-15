@@ -33,6 +33,6 @@
 	<key>LSMultipleInstancesProhibited</key>
 	<true/>
 	<key>CFBundleShortVersionString</key>
-	<string>3.0</string>
+	<string>3.1</string>
 </dict>
 </plist>
