@@ -46,7 +46,8 @@ namespace RepoZ.UI.Win.Wpf
 			_repositoryActionProvider = repositoryActionProvider;
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
-
+			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
+			view.Filter = FilterRepositories;
 
 			lstRepositories.Items.SortDescriptions.Add(
 				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name),
@@ -59,11 +60,11 @@ namespace RepoZ.UI.Win.Wpf
 			ShowUpdateIfAvailable();
 		}
 
-		private void ShowUpdateIfAvailable()
+		protected override void OnActivated(EventArgs e)
 		{
-			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
-			UpdateButton.ToolTip = $"Version {App.AvailableUpdate.VersionString} is available.";
-			UpdateButton.Tag = App.AvailableUpdate;
+			base.OnActivated(e);
+
+			txtFilter.Focus();
 		}
 
 		protected override void OnClosed(EventArgs e)
@@ -134,6 +135,13 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			Top = SystemParameters.WorkArea.Height - Height - 1;
 			Left = SystemParameters.WorkArea.Width - Width - 1;
+		}
+
+		private void ShowUpdateIfAvailable()
+		{
+			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
+			UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : $"Version {App.AvailableUpdate.VersionString} is available.";
+			UpdateButton.Tag = App.AvailableUpdate;
 		}
 
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
@@ -223,5 +231,17 @@ Note that the status might be shorter if possible to improve readablility.
 ";
 		}
 
+		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource).Refresh();
+		}
+
+		private bool FilterRepositories(object item)
+		{
+			if (String.IsNullOrEmpty(txtFilter.Text))
+				return true;
+			else
+				return (item as RepositoryView).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) > -1;
+		}
 	}
 }
