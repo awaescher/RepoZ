@@ -243,5 +243,11 @@ Note that the status might be shorter if possible to improve readablility.
 			else
 				return (item as RepositoryView).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) > -1;
 		}
+
+		private void txtFilter_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Escape)
+				txtFilter.Clear();
+		}
 	}
 }

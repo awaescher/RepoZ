@@ -26,36 +26,42 @@
 		<materialDesign:Transitioner Name="transitionerMain"
 									 SelectedIndex="0">
 			<StackPanel>
-				<TextBox x:Name="txtFilter" TextChanged="txtFilter_TextChanged" FontSize="17" />
+
+				<TextBox x:Name="txtFilter"
+						 TextChanged="txtFilter_TextChanged"
+						 FontSize="17"
+						 VerticalAlignment="Top"
+						 KeyDown="txtFilter_KeyDown" />
 				<ListBox Name="lstRepositories"
-					 HorizontalContentAlignment="Stretch"
-					 MouseDoubleClick="lstRepositories_MouseDoubleClick"
-					 ContextMenuOpening="lstRepositories_ContextMenuOpening"
-					 SelectionMode="Extended">
+						 HorizontalContentAlignment="Stretch"
+						 MouseDoubleClick="lstRepositories_MouseDoubleClick"
+						 ContextMenuOpening="lstRepositories_ContextMenuOpening"
+						 SelectionMode="Extended">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<StackPanel>
 								<TextBlock Text="{Binding Name}"
-									   ToolTip="{Binding Path}"
-									   TextElement.FontSize="17"
-									   Foreground="{DynamicResource AccentColorBrush}"
-									   Margin="8, 4, 8 ,4" />
+										   ToolTip="{Binding Path}"
+										   TextElement.FontSize="17"
+										   Foreground="{DynamicResource AccentColorBrush}"
+										   Margin="8, 4, 8 ,4" />
 								<TextBlock Text="{Binding CurrentBranch}"
-									   Margin="8, 4, 8 ,4" />
+										   Margin="8, 4, 8 ,4" />
 								<TextBlock Text="{Binding Status}"
-									   Margin="8, 4, 8 ,4" />
+										   Margin="8, 4, 8 ,4" />
 							</StackPanel>
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 					<ListBox.ContextMenu>
 						<ContextMenu Name="mnuRepositoryContext"
-								 FontSize="12">
+									 FontSize="12">
 						</ContextMenu>
 					</ListBox.ContextMenu>
 				</ListBox>
 			</StackPanel>
 			<ScrollViewer>
 				<StackPanel>
+
 					<TextBlock Name="txtHelp"
 							   TextWrapping="Wrap"
 							   TextElement.FontSize="12" />
