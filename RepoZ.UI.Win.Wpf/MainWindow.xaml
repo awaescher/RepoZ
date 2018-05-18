@@ -26,8 +26,8 @@
 
 		<materialDesign:Transitioner Name="transitionerMain"
 									 SelectedIndex="0">
-			<StackPanel>
-				<Grid>
+			<DockPanel>
+				<Grid DockPanel.Dock="Top">
 					<controls:ZTextBox x:Name="txtFilter"
 									   TextChanged="txtFilter_TextChanged"
 									   FontSize="17"
@@ -58,6 +58,7 @@
 				</Grid>
 
 				<ListBox Name="lstRepositories"
+						 DockPanel.Dock="Top"
 						 HorizontalContentAlignment="Stretch"
 						 MouseDoubleClick="lstRepositories_MouseDoubleClick"
 						 ContextMenuOpening="lstRepositories_ContextMenuOpening"
@@ -83,7 +84,7 @@
 						</ContextMenu>
 					</ListBox.ContextMenu>
 				</ListBox>
-			</StackPanel>
+			</DockPanel>
 			<ScrollViewer>
 				<StackPanel>
 
