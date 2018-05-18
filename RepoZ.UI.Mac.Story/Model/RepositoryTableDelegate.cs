@@ -69,7 +69,6 @@ namespace RepoZ.UI.Mac.Story.Model
         public void InvokeRepositoryAction(nint rowIndex)
         {
             var repositoryView = DataSource.GetRepositoryViewByIndex((int)rowIndex);
-            //tableView.DeselectAll(tableView);
 
             if (repositoryView == null)
                 return;

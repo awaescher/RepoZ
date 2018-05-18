@@ -107,7 +107,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <searchField wantsLayer="YES" verticalHuggingPriority="750" misplaced="YES" textCompletion="NO" id="QMD-2c-EhY">
+                <searchField wantsLayer="YES" verticalHuggingPriority="750" misplaced="YES" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
                     <rect key="frame" x="8" y="318" width="299" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">

@@ -19,7 +19,7 @@ namespace RepoZ.UI.Mac.Story
 		AppKit.NSTableView RepoTab { get; set; }
 
 		[Outlet]
-		AppKit.NSSearchField SearchBox { get; set; }
+		RepoZ.UI.Mac.Story.Controls.ZSearchField SearchBox { get; set; }
 
 		[Outlet]
 		AppKit.NSButton UpdateButton { get; set; }

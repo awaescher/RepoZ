@@ -83,6 +83,7 @@
     <Folder Include="Model\" />
     <Folder Include="NativeSupport\" />
     <Folder Include="NativeSupport\Git\" />
+    <Folder Include="Controls\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -114,6 +115,7 @@
     <Compile Include="NativeSupport\UIErrorHandler.cs" />
     <Compile Include="UiStateHelper.cs" />
     <Compile Include="TinySoup.cs" />
+    <Compile Include="Controls\ZSearchField.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />
