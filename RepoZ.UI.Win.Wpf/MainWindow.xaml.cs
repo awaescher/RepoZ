@@ -196,6 +196,37 @@ namespace RepoZ.UI.Win.Wpf
 			this.Title = "RepoZ" + (isScanning ? " (scanning ...)" : "");
 		}
 
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+
+			if (e.Key == Key.F && Keyboard.IsKeyDown(Key.LeftCtrl))
+			{
+				txtFilter.Focus();
+				txtFilter.SelectAll();
+			}
+		}
+
+		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource).Refresh();
+		}
+
+		private bool FilterRepositories(object item)
+		{
+			if (String.IsNullOrEmpty(txtFilter.Text))
+				return true;
+			else
+				return (item as RepositoryView).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) > -1;
+		}
+
+		private void txtFilter_Finish(object sender, EventArgs e)
+		{
+			lstRepositories.Focus();
+			if (lstRepositories.Items.Count > 0)
+				lstRepositories.SelectedIndex = 0;
+		}
+
 		private string GetHelp(StatusCharacterMap statusCharacterMap)
 		{
 			return $@"
@@ -229,25 +260,6 @@ This information reflects the state of the remote tracked branch after the last 
 Note that the status might be shorter if possible to improve readablility.
 
 ";
-		}
-
-		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource).Refresh();
-		}
-
-		private bool FilterRepositories(object item)
-		{
-			if (String.IsNullOrEmpty(txtFilter.Text))
-				return true;
-			else
-				return (item as RepositoryView).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) > -1;
-		}
-
-		private void txtFilter_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Escape)
-				txtFilter.Clear();
 		}
 	}
 }
