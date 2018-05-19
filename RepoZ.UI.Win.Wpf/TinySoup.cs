@@ -289,7 +289,7 @@ namespace TinySoup.Model
 
 		public override string ToString()
 		{
-			return $"{ApplicationIdentifier ?? ""} {Version.ToString() ?? ""}".Trim();
+			return $"{ApplicationIdentifier ?? ""} {Version.ToString(4) ?? ""}".Trim();
 		}
 	}
 
