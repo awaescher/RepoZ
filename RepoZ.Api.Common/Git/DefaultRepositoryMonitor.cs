@@ -51,7 +51,7 @@ namespace RepoZ.Api.Common.Git
 			_storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 		}
 
-		private void ScanForRepositoriesAsync()
+		public Task ScanForLocalRepositoriesAsync()
 		{
 			Scanning = true;
 			OnScanStateChanged?.Invoke(this, Scanning);
@@ -60,12 +60,11 @@ namespace RepoZ.Api.Common.Git
 
 			var paths = _pathProvider.GetPaths();
 
-			foreach (var path in paths.AsParallel())
+			var tasks = paths.Select(path =>
 			{
-				var crawler = _pathCrawlerFactory.Create();
-				Task.Run(() => crawler.Find(path, "HEAD", OnFoundNewRepository, null))
-					.ContinueWith((t) => scannedPaths++)
-					.ContinueWith((t) =>
+				return Task.Run(() => _pathCrawlerFactory.Create().Find(path, "HEAD", OnFoundNewRepository, null))
+					.ContinueWith(t => scannedPaths++)
+					.ContinueWith(t =>
 					{
 						bool newScanningState = (scannedPaths < paths.Length);
 						bool didChange = newScanningState != Scanning;
@@ -74,7 +73,9 @@ namespace RepoZ.Api.Common.Git
 						if (didChange)
 							OnScanStateChanged?.Invoke(this, Scanning);
 					});
-			}
+			});
+
+			return Task.WhenAll(tasks);
 		}
 
 		private void ScanRepositoriesFromStoreAsync()
@@ -126,8 +127,8 @@ namespace RepoZ.Api.Common.Git
 
 			foreach (var path in _pathProvider.GetPaths())
 			{
-                if (!Directory.Exists(path))
-                    continue;
+				if (!Directory.Exists(path))
+					continue;
 
 				var detector = _repositoryDetectorFactory.Create();
 				_detectors.Add(detector);
@@ -142,20 +143,17 @@ namespace RepoZ.Api.Common.Git
 		{
 			if (_detectors == null)
 			{
-                // see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
-                Environment.SetEnvironmentVariable("MONO_MANAGED_WATCHER", "enabled");
+				// see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
+				Environment.SetEnvironmentVariable("MONO_MANAGED_WATCHER", "enabled");
 
-				if (ScanInitially)
-				{
-					ScanRepositoriesFromStoreAsync();
-					ScanForRepositoriesAsync();
-				}
+				ScanRepositoriesFromStoreAsync();
 
 				ObserveRepositoryChanges();
 			}
 
 			_detectors.ForEach(w => w.Start()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
 		}
+
 
 		public void Stop()
 		{
@@ -178,7 +176,7 @@ namespace RepoZ.Api.Common.Git
 			if (!_repositoryInformationAggregator.HasRepository(path))
 				CreateRepositoryObserver(repo, path);
 
-            OnChangeDetected?.Invoke(this, repo);
+			OnChangeDetected?.Invoke(this, repo);
 
 			_repositoryInformationAggregator.Add(repo);
 
@@ -221,8 +219,6 @@ namespace RepoZ.Api.Common.Git
 		}
 
 		public bool Scanning { get; set; } = false;
-
-		public bool ScanInitially { get; set; } = true;
 
 		public int DelayGitRepositoryStatusAfterCreationMilliseconds { get; set; } = 5000;
 

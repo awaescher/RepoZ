@@ -28,11 +28,26 @@
 		<materialDesign:Transitioner Name="transitionerMain"
 									 SelectedIndex="0"
 									 Focusable="False">
+
+			<TextBlock x:Name="tbNoRepositories"
+					   DockPanel.Dock="Top"
+					   Text="There are no repositories yet 😐&#x0a;&#x0a;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#x0a;&#x0a;Alternatively, you can scan your computer manually for repositories by clicking the button on the top right."
+					   TextWrapping="Wrap"
+					   FontSize="15"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   TextAlignment="Center"
+					   Focusable="False"
+					   Foreground="Gray">
+			</TextBlock>
+			
 			<DockPanel 
-				Focusable="False">
-				<Grid 
-					DockPanel.Dock="Top" 
-					Focusable="False">
+				x:Name="dockMain"
+				Visibility="Hidden"
+				Focusable="False"
+				>
+				<Grid DockPanel.Dock="Top"
+					  Focusable="False">
 					<controls:ZTextBox x:Name="txtFilter"
 									   TextChanged="txtFilter_TextChanged"
 									   FontSize="17"
@@ -69,6 +84,8 @@
 						 MouseDoubleClick="lstRepositories_MouseDoubleClick"
 						 KeyDown="lstRepositories_KeyDown"
 						 ContextMenuOpening="lstRepositories_ContextMenuOpening"
+						 VerticalAlignment="Center"
+						 VerticalContentAlignment="Top"
 						 SelectionMode="Extended">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
@@ -112,7 +129,10 @@
 					x:Name="UpdateButton"
 					Visibility="Hidden"
 					Click="UpdateButton_Click" />
-			<Button Content="?"
+			<Button Content="⚡ Scan computer"
+					x:Name="ScanButton"
+					Click="ScanButton_Click" />
+			<Button Content="❓"
 					Click="HelpButton_Click" />
 		</Controls:WindowCommands>
 	</Controls:MetroWindow.RightWindowCommands>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace RepoZ.Api.Git
 {
@@ -11,5 +12,7 @@ namespace RepoZ.Api.Git
 		void Stop();
 
 		void Observe();
+
+		Task ScanForLocalRepositoriesAsync();
 	}
 }

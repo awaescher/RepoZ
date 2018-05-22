@@ -49,6 +49,7 @@ namespace RepoZ.UI.Win.Wpf
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
 			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
+			view.CollectionChanged += View_CollectionChanged;
 			view.Filter = FilterRepositories;
 
 			lstRepositories.Items.SortDescriptions.Add(
@@ -60,6 +61,13 @@ namespace RepoZ.UI.Win.Wpf
 			PlaceFormToLowerRight();
 
 			ShowUpdateIfAvailable();
+		}
+
+		private void View_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			// do not check the CollectionViewSource because this one is filtered, use the list's items directly.
+			dockMain.Visibility = lstRepositories.Items.Count > 0 ? Visibility.Visible : Visibility.Hidden;
+			tbNoRepositories.Visibility = lstRepositories.Items.Count > 0 ? Visibility.Hidden : Visibility.Visible;
 		}
 
 		protected override void OnActivated(EventArgs e)
@@ -164,6 +172,11 @@ namespace RepoZ.UI.Win.Wpf
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
 		}
 
+		private void ScanButton_Click(object sender, RoutedEventArgs e)
+		{
+			_monitor.ScanForLocalRepositoriesAsync();
+		}
+
 		private void UpdateButton_Click(object sender, RoutedEventArgs e)
 		{
 			bool hasLink = !string.IsNullOrWhiteSpace(App.AvailableUpdate?.Url);
@@ -233,7 +246,8 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void ShowScanningState(bool isScanning)
 		{
-			this.Title = "RepoZ" + (isScanning ? " (scanning ...)" : "");
+			ScanButton.IsEnabled = !isScanning;
+			ScanButton.Content = isScanning ? "Scanning ..." : "⚡ Scan computer";
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
