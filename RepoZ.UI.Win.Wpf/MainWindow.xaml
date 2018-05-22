@@ -20,7 +20,13 @@
 					  Title="RepoZ"
 					  Height="500"
 					  Width="350"
-					  ShowMaxRestoreButton="False" ShowInTaskbar="False" ShowCloseButton="False" ShowMinButton="False" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" IsCloseButtonEnabled="False">
+					  ShowMaxRestoreButton="False"
+					  ShowInTaskbar="False"
+					  ShowCloseButton="False"
+					  ShowMinButton="False"
+					  IsMinButtonEnabled="False"
+					  IsMaxRestoreButtonEnabled="False"
+					  IsCloseButtonEnabled="False">
 
 	<Grid Margin="10"
 		  Focusable="False">
@@ -29,86 +35,84 @@
 									 SelectedIndex="0"
 									 Focusable="False">
 
-			<TextBlock x:Name="tbNoRepositories"
-					   DockPanel.Dock="Top"
-					   Text="There are no repositories yet 😐&#x0a;&#x0a;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#x0a;&#x0a;Alternatively, you can scan your computer manually for repositories by clicking the button on the top right."
-					   TextWrapping="Wrap"
-					   FontSize="15"
-					   HorizontalAlignment="Center"
-					   VerticalAlignment="Center"
-					   TextAlignment="Center"
-					   Focusable="False"
-					   Foreground="Gray">
-			</TextBlock>
-			
-			<DockPanel 
-				x:Name="dockMain"
-				Visibility="Hidden"
-				Focusable="False"
-				>
-				<Grid DockPanel.Dock="Top"
-					  Focusable="False">
-					<controls:ZTextBox x:Name="txtFilter"
-									   TextChanged="txtFilter_TextChanged"
-									   FontSize="17"
-									   VerticalAlignment="Top"
-									   Finish="txtFilter_Finish">
+			<Grid>
+				<TextBlock x:Name="tbNoRepositories"
+						   Text="There are no repositories yet 😐&#x0a;&#x0a;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#x0a;&#x0a;Alternatively, you can scan your computer manually for repositories by clicking the button on the top right."
+						   TextWrapping="Wrap"
+						   FontSize="15"
+						   HorizontalAlignment="Center"
+						   VerticalAlignment="Center"
+						   TextAlignment="Center"
+						   Focusable="False"
+						   Foreground="Gray">
+				</TextBlock>
 
-					</controls:ZTextBox>
-					<TextBlock IsHitTestVisible="False"
-							   Text="🔍 Search"
-							   VerticalAlignment="Center"
-							   FontSize="15"
-							   HorizontalAlignment="Left"
-							   Focusable="False"
-							   Foreground="Gray">
-						<TextBlock.Style>
-							<Style TargetType="{x:Type TextBlock}">
-								<Setter Property="Visibility"
-										Value="Collapsed" />
-								<Style.Triggers>
-									<DataTrigger Binding="{Binding Text, ElementName=txtFilter}"
-												 Value="">
-										<Setter Property="Visibility"
-												Value="Visible" />
-									</DataTrigger>
-								</Style.Triggers>
-							</Style>
-						</TextBlock.Style>
-					</TextBlock>
-				</Grid>
+				<DockPanel x:Name="dockMain"
+						   Focusable="False">
+					<Grid DockPanel.Dock="Top"
+						  Focusable="False">
+						<controls:ZTextBox x:Name="txtFilter"
+										   TextChanged="txtFilter_TextChanged"
+										   FontSize="17"
+										   VerticalAlignment="Top"
+										   Finish="txtFilter_Finish">
 
-				<ListBox Name="lstRepositories"
-						 DockPanel.Dock="Top"
-						 HorizontalContentAlignment="Stretch"
-						 MouseDoubleClick="lstRepositories_MouseDoubleClick"
-						 KeyDown="lstRepositories_KeyDown"
-						 ContextMenuOpening="lstRepositories_ContextMenuOpening"
-						 VerticalAlignment="Center"
-						 VerticalContentAlignment="Top"
-						 SelectionMode="Extended">
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<StackPanel>
-								<TextBlock Text="{Binding Name}"
-										   ToolTip="{Binding Path}"
-										   TextElement.FontSize="17"
-										   Foreground="{DynamicResource AccentColorBrush}"
-										   Margin="8, 4, 8 ,4" />
-								<TextBlock Text="{Binding CurrentBranch}"
-										   Margin="8, 4, 8 ,4" />
-								<TextBlock Text="{Binding Status}"
-										   Margin="8, 4, 8 ,4" />
-							</StackPanel>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-					<ListBox.ContextMenu>
-						<ContextMenu Name="mnuRepositoryContext"
-									 FontSize="12">
-						</ContextMenu>
-					</ListBox.ContextMenu>
-				</ListBox>
-			</DockPanel>
+						</controls:ZTextBox>
+						<TextBlock IsHitTestVisible="False"
+								   Text="🔍 Search"
+								   VerticalAlignment="Center"
+								   FontSize="15"
+								   HorizontalAlignment="Left"
+								   Focusable="False"
+								   Foreground="Gray">
+							<TextBlock.Style>
+								<Style TargetType="{x:Type TextBlock}">
+									<Setter Property="Visibility"
+											Value="Collapsed" />
+									<Style.Triggers>
+										<DataTrigger Binding="{Binding Text, ElementName=txtFilter}"
+													 Value="">
+											<Setter Property="Visibility"
+													Value="Visible" />
+										</DataTrigger>
+									</Style.Triggers>
+								</Style>
+							</TextBlock.Style>
+						</TextBlock>
+					</Grid>
+
+					<ListBox Name="lstRepositories"
+							 DockPanel.Dock="Top"
+							 HorizontalContentAlignment="Stretch"
+							 MouseDoubleClick="lstRepositories_MouseDoubleClick"
+							 KeyDown="lstRepositories_KeyDown"
+							 ContextMenuOpening="lstRepositories_ContextMenuOpening"
+							 VerticalAlignment="Top"
+							 VerticalContentAlignment="Top"
+							 SelectionMode="Extended">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<StackPanel>
+									<TextBlock Text="{Binding Name}"
+											   ToolTip="{Binding Path}"
+											   TextElement.FontSize="17"
+											   Foreground="{DynamicResource AccentColorBrush}"
+											   Margin="8, 4, 8 ,4" />
+									<TextBlock Text="{Binding CurrentBranch}"
+											   Margin="8, 4, 8 ,4" />
+									<TextBlock Text="{Binding Status}"
+											   Margin="8, 4, 8 ,4" />
+								</StackPanel>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+						<ListBox.ContextMenu>
+							<ContextMenu Name="mnuRepositoryContext"
+										 FontSize="12">
+							</ContextMenu>
+						</ListBox.ContextMenu>
+					</ListBox>
+				</DockPanel>
+			</Grid>
 			<ScrollViewer>
 				<StackPanel>
 
