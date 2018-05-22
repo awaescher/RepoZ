@@ -20,7 +20,7 @@
 					  Title="RepoZ"
 					  Height="500"
 					  Width="350"
-					  ShowMaxRestoreButton="False">
+					  ShowMaxRestoreButton="False" ShowInTaskbar="False" ShowCloseButton="False" ShowMinButton="False" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" IsCloseButtonEnabled="False">
 
 	<Grid Margin="10">
 

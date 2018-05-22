@@ -27,7 +27,7 @@
 	<tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="/App.ico"
                     ToolTipText="RepoZ"
-                    DoubleClickCommand="{Binding OpenCommand}"
+                    LeftClickCommand="{Binding OpenCommand}"
                     ContextMenu="{StaticResource SysTrayMenu}">
 
 		<!-- self-assign a data context (could also be done programmatically) -->

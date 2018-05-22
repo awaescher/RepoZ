@@ -20,13 +20,8 @@ namespace RepoZ.UI.Win.Wpf
 			{
 				return new DelegateCommand
 				{
-					CanExecuteFunc = () => Application.Current.MainWindow == null,
-					CommandAction = () =>
-					{
-						var window = TinyIoC.TinyIoCContainer.Current.Resolve<MainWindow>();
-						Application.Current.MainWindow = window;
-						Application.Current.MainWindow.Show();
-					}
+					CanExecuteFunc = () => (Application.Current.MainWindow as MainWindow)?.IsShown == false,
+					CommandAction = () => (Application.Current.MainWindow as MainWindow)?.ShowAndActivate()
 				};
 			}
 		}
@@ -38,10 +33,7 @@ namespace RepoZ.UI.Win.Wpf
 				return new DelegateCommand
 				{
 					CanExecuteFunc = () => !AutoStart.IsStartup("RepoZ"),
-					CommandAction = () =>
-					{
-						AutoStart.SetStartup("RepoZ", true);
-					}
+					CommandAction = () => AutoStart.SetStartup("RepoZ", true)
 				};
 			}
 		}
@@ -53,10 +45,7 @@ namespace RepoZ.UI.Win.Wpf
 				return new DelegateCommand
 				{
 					CanExecuteFunc = () => AutoStart.IsStartup("RepoZ"),
-					CommandAction = () =>
-					{
-						AutoStart.SetStartup("RepoZ", false);
-					}
+					CommandAction = () => AutoStart.SetStartup("RepoZ", false)
 				};
 			}
 		}

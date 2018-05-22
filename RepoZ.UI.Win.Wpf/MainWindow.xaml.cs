@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,7 @@ namespace RepoZ.UI.Win.Wpf
 	public partial class MainWindow : MetroWindow
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
+
 		private DefaultRepositoryMonitor _monitor;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
@@ -50,8 +52,8 @@ namespace RepoZ.UI.Win.Wpf
 			view.Filter = FilterRepositories;
 
 			lstRepositories.Items.SortDescriptions.Add(
-				new System.ComponentModel.SortDescription(nameof(RepositoryView.Name),
-				System.ComponentModel.ListSortDirection.Ascending));
+				new SortDescription(nameof(RepositoryView.Name),
+				ListSortDirection.Ascending));
 
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
@@ -63,16 +65,40 @@ namespace RepoZ.UI.Win.Wpf
 		protected override void OnActivated(EventArgs e)
 		{
 			base.OnActivated(e);
-
 			txtFilter.Focus();
 		}
 
-		protected override void OnClosed(EventArgs e)
+		protected override void OnDeactivated(EventArgs e)
 		{
-			if (_monitor != null)
-				_monitor.OnScanStateChanged -= OnScanStateChanged;
+			base.OnDeactivated(e);
+			Hide();
+		}
 
-			base.OnClosed(e);
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			e.Cancel = true;
+			Hide();
+		}
+
+		protected override void OnPreviewKeyDown(KeyEventArgs e)
+		{
+			base.OnPreviewKeyDown(e);
+
+			if (e.Key == Key.Escape)
+			{
+				bool isFilterActive = txtFilter.IsFocused && !string.IsNullOrEmpty(txtFilter.Text);
+				if (!isFilterActive)
+					Hide();
+			}
+		}
+
+		public void ShowAndActivate()
+		{
+			if (!IsShown)
+				Show();
+
+			Activate();
+			txtFilter.Focus();
 		}
 
 		private void OnScanStateChanged(object sender, bool isScanning)
@@ -261,5 +287,7 @@ Note that the status might be shorter if possible to improve readablility.
 
 ";
 		}
+
+		public bool IsShown => Visibility == Visibility.Visible && IsActive;
 	}
 }

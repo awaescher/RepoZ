@@ -32,6 +32,7 @@ namespace RepoZ.UI.Win.Wpf
 	{
 		private static Timer _explorerUpdateTimer;
 		private static Timer _updateTimer;
+		private HotKey _hotkey;
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private static TinyMessageBus _bus;
@@ -49,7 +50,6 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			base.OnStartup(e);
 
-			//create the notifyicon (it's a resource declared in NotifyIconResources.xaml
 			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
 			var container = TinyIoCContainer.Current;
@@ -63,71 +63,29 @@ namespace RepoZ.UI.Win.Wpf
 			_bus.MessageReceived += Bus_MessageReceived;
 
 			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
-		}
 
-		private async void CheckForUpdatesAsync(object state)
-		{
-			var request = new UpdateRequest()
-				.WithNameAndVersionFromEntryAssembly()
-				.AsAnonymousClient()
-				.OnChannel("stable")
-				.OnPlatform(new OperatingSystemIdentifier().WithSuffix("(WPF)"));
-
-			var client = new WebSoupClient();
-			var updates = await client.CheckForUpdatesAsync(request);
-
-			AvailableUpdate = updates.FirstOrDefault();
-
-			_updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
+			_hotkey = new HotKey(47110815);
+			_hotkey.Register(container.Resolve<MainWindow>(), HotKey.VK_Z, HotKey.MOD_WIN | HotKey.MOD_ALT, OnHotKeyPressed);
 		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
+			_hotkey.Unregister();
+
 			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
 			var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
 			explorerHandler.CleanTitles();
 
-			_notifyIcon.Dispose(); //the icon would clean up automatically, but this is cleaner
+			_notifyIcon.Dispose();
 
 			base.OnExit(e);
 		}
 
-		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
-		{
-			string message = Encoding.UTF8.GetString(e.Message);
-
-			if (string.IsNullOrEmpty(message))
-				return;
-
-			if (message.StartsWith("list:"))
-			{
-				string repositoryNamePattern = message.Substring("list:".Length);
-				var bus = (TinyMessageBus)sender;
-
-				string answer = "(no repositories found)";
-				try
-				{
-					var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-					var repos = aggregator.Repositories
-						.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-						.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
-						.ToArray();
-
-					if (repos.Any())
-						answer = string.Join(Environment.NewLine, repos);
-				}
-				catch (Exception ex)
-				{
-					answer = ex.Message;
-				}
-
-				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
-			}
-		}
-
 		protected static void RegisterServices(TinyIoCContainer container)
 		{
+			container.Register<MainWindow>().AsSingleton();
+
 			container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
 
 			container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
@@ -161,10 +119,64 @@ namespace RepoZ.UI.Win.Wpf
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
+		private async void CheckForUpdatesAsync(object state)
+		{
+			var request = new UpdateRequest()
+				.WithNameAndVersionFromEntryAssembly()
+				.AsAnonymousClient()
+				.OnChannel("stable")
+				.OnPlatform(new OperatingSystemIdentifier().WithSuffix("(WPF)"));
+
+			var client = new WebSoupClient();
+			var updates = await client.CheckForUpdatesAsync(request);
+
+			AvailableUpdate = updates.FirstOrDefault();
+
+			_updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
+		}
+
 		protected static void RefreshTimerCallback(object state)
 		{
 			_explorerHandler.UpdateTitles();
 			_explorerUpdateTimer.Change(500, Timeout.Infinite);
+		}
+
+		private void OnHotKeyPressed()
+		{
+			(Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
+		}
+
+		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
+		{
+			string message = Encoding.UTF8.GetString(e.Message);
+
+			if (string.IsNullOrEmpty(message))
+				return;
+
+			if (message.StartsWith("list:"))
+			{
+				string repositoryNamePattern = message.Substring("list:".Length);
+				var bus = (TinyMessageBus)sender;
+
+				string answer = "(no repositories found)";
+				try
+				{
+					var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+					var repos = aggregator.Repositories
+						.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+						.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+						.ToArray();
+
+					if (repos.Any())
+						answer = string.Join(Environment.NewLine, repos);
+				}
+				catch (Exception ex)
+				{
+					answer = ex.Message;
+				}
+
+				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
+			}
 		}
 
 		public static AvailableVersion AvailableUpdate { get; private set; }
