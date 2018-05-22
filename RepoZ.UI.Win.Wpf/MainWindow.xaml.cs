@@ -94,11 +94,14 @@ namespace RepoZ.UI.Win.Wpf
 
 		public void ShowAndActivate()
 		{
-			if (!IsShown)
-				Show();
+			Dispatcher.Invoke(() =>
+			{
+				if (!IsShown)
+					Show();
 
-			Activate();
-			txtFilter.Focus();
+				Activate();
+				txtFilter.Focus();
+			});
 		}
 
 		private void OnScanStateChanged(object sender, bool isScanning)
@@ -108,18 +111,7 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
-			var selectedView = lstRepositories.SelectedItem as RepositoryView;
-			if (selectedView == null || !selectedView.WasFound)
-				return;
-
-			RepositoryAction action;
-
-			if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftCtrl))
-				action = _repositoryActionProvider.GetSecondaryAction(selectedView.Repository);
-			else
-				action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
-
-			action?.Action?.Invoke(sender, e);
+			InvokeActionOnCurrentRepository();
 		}
 
 		private void lstRepositories_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -143,6 +135,28 @@ namespace RepoZ.UI.Win.Wpf
 
 				items.Add(CreateMenuItem(sender, action, selectedViews));
 			}
+		}
+
+		private void lstRepositories_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return || e.Key == Key.Enter)
+				InvokeActionOnCurrentRepository();
+		}
+
+		private void InvokeActionOnCurrentRepository()
+		{
+			var selectedView = lstRepositories.SelectedItem as RepositoryView;
+			if (selectedView == null || !selectedView.WasFound)
+				return;
+
+			RepositoryAction action;
+
+			if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.LeftCtrl))
+				action = _repositoryActionProvider.GetSecondaryAction(selectedView.Repository);
+			else
+				action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
+
+			action?.Action?.Invoke(this, new EventArgs());
 		}
 
 		private void HelpButton_Click(object sender, RoutedEventArgs e)
@@ -231,6 +245,9 @@ namespace RepoZ.UI.Win.Wpf
 				txtFilter.Focus();
 				txtFilter.SelectAll();
 			}
+
+			if (e.Key == Key.Down && txtFilter.IsFocused)
+				lstRepositories.Focus();
 		}
 
 		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)

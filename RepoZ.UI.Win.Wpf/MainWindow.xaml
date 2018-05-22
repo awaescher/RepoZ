@@ -22,12 +22,17 @@
 					  Width="350"
 					  ShowMaxRestoreButton="False" ShowInTaskbar="False" ShowCloseButton="False" ShowMinButton="False" IsMinButtonEnabled="False" IsMaxRestoreButtonEnabled="False" IsCloseButtonEnabled="False">
 
-	<Grid Margin="10">
+	<Grid Margin="10"
+		  Focusable="False">
 
 		<materialDesign:Transitioner Name="transitionerMain"
-									 SelectedIndex="0">
-			<DockPanel>
-				<Grid DockPanel.Dock="Top">
+									 SelectedIndex="0"
+									 Focusable="False">
+			<DockPanel 
+				Focusable="False">
+				<Grid 
+					DockPanel.Dock="Top" 
+					Focusable="False">
 					<controls:ZTextBox x:Name="txtFilter"
 									   TextChanged="txtFilter_TextChanged"
 									   FontSize="17"
@@ -40,6 +45,7 @@
 							   VerticalAlignment="Center"
 							   FontSize="15"
 							   HorizontalAlignment="Left"
+							   Focusable="False"
 							   Foreground="Gray">
 						<TextBlock.Style>
 							<Style TargetType="{x:Type TextBlock}">
@@ -61,6 +67,7 @@
 						 DockPanel.Dock="Top"
 						 HorizontalContentAlignment="Stretch"
 						 MouseDoubleClick="lstRepositories_MouseDoubleClick"
+						 KeyDown="lstRepositories_KeyDown"
 						 ContextMenuOpening="lstRepositories_ContextMenuOpening"
 						 SelectionMode="Extended">
 					<ListBox.ItemTemplate>
