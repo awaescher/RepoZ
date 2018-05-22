@@ -16,7 +16,7 @@ namespace RepoZ.UI.Mac.Story
 		AppKit.NSTextField NameTextField { get; set; }
 
 		[Outlet]
-		AppKit.NSTableView RepoTab { get; set; }
+        RepoZ.UI.Mac.Story.Controls.ZTableView RepoTab { get; set; }
 
 		[Outlet]
 		RepoZ.UI.Mac.Story.Controls.ZSearchField SearchBox { get; set; }

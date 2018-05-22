@@ -15,7 +15,7 @@ namespace RepoZ.UI.Mac.Story
 {
 	public partial class PopupViewController : AppKit.NSViewController
 	{
-		private IRepositoryInformationAggregator _aggregator;
+       	private IRepositoryInformationAggregator _aggregator;
 
 		#region Constructors
 
@@ -43,9 +43,16 @@ namespace RepoZ.UI.Mac.Story
 		{
 		}
 
-		#endregion
+        protected override void Dispose(bool disposing)
+        {
+            SearchBox.FinishInput -= SearchBox_FinishInput;
 
-		public override void ViewWillAppear()
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        public override void ViewWillAppear()
 		{
 			base.ViewWillAppear();
 
@@ -62,6 +69,10 @@ namespace RepoZ.UI.Mac.Story
 
 			RepoTab.BackgroundColor = NSColor.Clear;
 			RepoTab.EnclosingScrollView.DrawsBackground = false;
+
+            SearchBox.FinishInput += SearchBox_FinishInput;
+
+            SearchBox.NextKeyView = RepoTab;
 		}
 
 		public override void ViewDidAppear()
@@ -72,8 +83,15 @@ namespace RepoZ.UI.Mac.Story
 			base.ViewDidAppear();
 
 			ShowUpdateIfAvailable();
-			SearchBox.BecomeFirstResponder();
+            this.View.Window.MakeFirstResponder(SearchBox);
 		}
+
+        public override void ViewWillDisappear()
+        {
+            UiStateHelper.Reset();
+
+            base.ViewWillDisappear();
+        }
 
 		private void ShowUpdateIfAvailable()
 		{
@@ -88,22 +106,22 @@ namespace RepoZ.UI.Mac.Story
 			SearchBox.Frame = newSearchBoxFrame;
 		}
 
-		public override void ViewWillDisappear()
-		{
-			UiStateHelper.Reset();
+        void SearchBox_FinishInput(object sender, EventArgs e)
+        {
+            this.View.Window.MakeFirstResponder(RepoTab);
+            if (RepoTab.RowCount > 0)
+                RepoTab.SelectRow(0, byExtendingSelection: false);
+        }
 
-			base.ViewWillDisappear();
-		}
+        public override void KeyDown(NSEvent theEvent)
+        {
+            if (theEvent.KeyCode == (ushort)NSKey.F && UiStateHelper.CommandKeyDown)
+                this.View.Window.MakeFirstResponder(SearchBox);
+            else
+                base.KeyDown(theEvent);
+        }
 
-		public override void KeyDown(NSEvent theEvent)
-		{
-			base.KeyDown(theEvent);
-
-			if (theEvent.KeyCode == (ushort)NSKey.Return)
-				(RepoTab.Delegate as RepositoryTableDelegate).InvokeRepositoryAction(RepoTab.SelectedRow);
-		}
-
-		public override void FlagsChanged(NSEvent theEvent)
+        public override void FlagsChanged(NSEvent theEvent)
 		{
 			base.FlagsChanged(theEvent);
 

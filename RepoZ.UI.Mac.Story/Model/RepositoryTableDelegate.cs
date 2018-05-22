@@ -3,6 +3,7 @@ using System.Linq;
 using AppKit;
 using Foundation;
 using RepoZ.Api.Git;
+using RepoZ.UI.Mac.Story.Controls;
 
 namespace RepoZ.UI.Mac.Story.Model
 {
@@ -10,18 +11,20 @@ namespace RepoZ.UI.Mac.Story.Model
     {
         private const string CellIdentifier = "RepositoryCell";
 
-        public RepositoryTableDelegate(NSTableView tableView, RepositoryTableDataSource datasource, IRepositoryActionProvider repositoryActionProvider)
+        public RepositoryTableDelegate(ZTableView tableView, RepositoryTableDataSource datasource, IRepositoryActionProvider repositoryActionProvider)
         {
             RepositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
 
             TableView = tableView;
             DataSource = datasource;
 
+            TableView.RepositoryActionRequested += TableView_RepositoryActionRequested;
             DataSource.CollectionChanged += ReloadTableView;
         }
 
 		protected override void Dispose(bool disposing)
 		{
+            TableView.RepositoryActionRequested -= TableView_RepositoryActionRequested;
             DataSource.CollectionChanged -= ReloadTableView;
 
             base.Dispose(disposing);
@@ -56,13 +59,8 @@ namespace RepoZ.UI.Mac.Story.Model
             return cell;
         }
 
-        public override void SelectionIsChanging(NSNotification notification)
+        void TableView_RepositoryActionRequested(object sender, nint rowIndex)
         {
-            var tableView = (NSTableView)notification.Object;
-            var rowIndex = tableView.SelectedRow;
-            if (rowIndex < 0)
-                return;
-
             InvokeRepositoryAction(rowIndex);
         }
 
@@ -85,7 +83,7 @@ namespace RepoZ.UI.Mac.Story.Model
             action?.Action?.Invoke(this, EventArgs.Empty);
         }
 
-        public NSTableView TableView { get; }
+        public ZTableView TableView { get; }
 
         public RepositoryTableDataSource DataSource { get; }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using AppKit;
 using CoreGraphics;
@@ -10,6 +11,8 @@ namespace RepoZ.UI.Mac.Story.Controls
     [DesignTimeVisible(true)]
     public class ZSearchField : NSSearchField
     {
+        public event EventHandler FinishInput;
+
         public ZSearchField(NSCoder coder) : base(coder)
         {
         }
@@ -26,9 +29,14 @@ namespace RepoZ.UI.Mac.Story.Controls
         {
         }
 
-        public override void KeyDown(NSEvent theEvent)
+        public override void KeyUp(NSEvent theEvent)
         {
-            base.KeyDown(theEvent);
+            base.KeyUp(theEvent);
+
+            if (FinisherKeys.Contains(theEvent.KeyCode))
+                FinishInput?.Invoke(this, EventArgs.Empty);
         }
+
+        protected List<ushort> FinisherKeys { get; } = new List<ushort> { (ushort)NSKey.DownArrow, (ushort)NSKey.Return, (ushort)NSKey.KeypadEnter };
     }
 }
