@@ -6,6 +6,7 @@
 					  xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
 					  mc:Ignorable="d"
 					  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+					  xmlns:controls="clr-namespace:RepoZ.UI.Win.Wpf.Controls"
 					  TextElement.Foreground="{DynamicResource MaterialDesignBody}"
 					  TextElement.FontWeight="Regular"
 					  TextElement.FontSize="12"
@@ -25,14 +26,39 @@
 
 		<materialDesign:Transitioner Name="transitionerMain"
 									 SelectedIndex="0">
-			<StackPanel>
+			<DockPanel>
+				<Grid DockPanel.Dock="Top">
+					<controls:ZTextBox x:Name="txtFilter"
+									   TextChanged="txtFilter_TextChanged"
+									   FontSize="17"
+									   VerticalAlignment="Top"
+									   Finish="txtFilter_Finish">
 
-				<TextBox x:Name="txtFilter"
-						 TextChanged="txtFilter_TextChanged"
-						 FontSize="17"
-						 VerticalAlignment="Top"
-						 KeyDown="txtFilter_KeyDown" />
+					</controls:ZTextBox>
+					<TextBlock IsHitTestVisible="False"
+							   Text="🔍 Search"
+							   VerticalAlignment="Center"
+							   FontSize="15"
+							   HorizontalAlignment="Left"
+							   Foreground="Gray">
+						<TextBlock.Style>
+							<Style TargetType="{x:Type TextBlock}">
+								<Setter Property="Visibility"
+										Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Text, ElementName=txtFilter}"
+												 Value="">
+										<Setter Property="Visibility"
+												Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</TextBlock.Style>
+					</TextBlock>
+				</Grid>
+
 				<ListBox Name="lstRepositories"
+						 DockPanel.Dock="Top"
 						 HorizontalContentAlignment="Stretch"
 						 MouseDoubleClick="lstRepositories_MouseDoubleClick"
 						 ContextMenuOpening="lstRepositories_ContextMenuOpening"
@@ -58,7 +84,7 @@
 						</ContextMenu>
 					</ListBox.ContextMenu>
 				</ListBox>
-			</StackPanel>
+			</DockPanel>
 			<ScrollViewer>
 				<StackPanel>
 

@@ -34,7 +34,7 @@ namespace TinySoup
             {
                 { "cid", Uri.EscapeDataString(request.ClientIdentifier?.ToString() ?? "") },
                 { "pid", Uri.EscapeDataString(request.ApplicationIdentifier ?? "") },
-                { "ver", Uri.EscapeDataString(request.CurrentVersionInUse?.ToString() ?? "") },
+                { "ver", Uri.EscapeDataString(MakeFourDigitVersionNumber(request.CurrentVersionInUse)) }, // Mono's Version.ToString(4) skips zeros anyway
                 { "vai", Uri.EscapeDataString(request.Channel ?? "") },
                 { "ext", Uri.EscapeDataString(request.PlatformIdentifier?.ToString() ?? "") },
                 { "vol", Uri.EscapeDataString(request.FreeText ?? "") }
@@ -106,6 +106,17 @@ namespace TinySoup
                 _exceptionHandler?.Invoke(ex);
                 return await Task.FromResult(new List<AvailableVersion>()).ConfigureAwait(false);
             }
+        }
+
+        private string MakeFourDigitVersionNumber(Version version)
+        {
+            if (version == null)
+                version = new Version(0, 0, 0, 0);
+            
+            int NotNegative(int value) => Math.Max(value, 0);
+
+            // Mono's Version.ToString(4) skips zeros, lets format this manually
+            return $"{NotNegative(version.Major)}.{NotNegative(version.Minor)}.{NotNegative(version.Build)}.{NotNegative(version.Revision)}";
         }
     }
 
