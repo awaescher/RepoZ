@@ -13,6 +13,7 @@
                 <outlet property="RepositoryTable" destination="atb-MD-Rrh" id="xWt-F6-jGC"/>
                 <outlet property="SearchBox" destination="QMD-2c-EhY" id="B5D-pO-JJF"/>
                 <outlet property="UpdateButton" destination="M6p-5h-EnC" id="EXb-IR-gqE"/>
+                <outlet property="lblNoRepositories" destination="4Ey-0t-T95" id="Sk3-3R-wPD"/>
                 <outlet property="view" destination="4" id="17"/>
             </connections>
         </customObject>
@@ -110,7 +111,7 @@
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" misplaced="YES" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
                     <rect key="frame" x="8" y="318" width="299" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
+                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search or command" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -119,6 +120,16 @@
                         <action selector="SearchChanged:" target="-2" id="NdQ-fh-oTD"/>
                     </connections>
                 </searchField>
+                <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="4Ey-0t-T95">
+                    <rect key="frame" x="6" y="0.0" width="303" height="231"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="kTy-1m-j5Y">
+                        <font key="font" metaFont="system"/>
+                        <string key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by writing the command ":scan" into the text field.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
                 <button hidden="YES" verticalHuggingPriority="750" misplaced="YES" id="M6p-5h-EnC">
                     <rect key="frame" x="277" y="316" width="30" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>

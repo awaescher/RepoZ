@@ -13,10 +13,13 @@ namespace RepoZ.UI.Mac.Story
 	partial class PopupViewController
 	{
 		[Outlet]
+		AppKit.NSTextField lblNoRepositories { get; set; }
+
+		[Outlet]
 		AppKit.NSTextField NameTextField { get; set; }
 
 		[Outlet]
-        RepoZ.UI.Mac.Story.Controls.ZTableView RepoTab { get; set; }
+		RepoZ.UI.Mac.Story.Controls.ZTableView RepoTab { get; set; }
 
 		[Outlet]
 		RepoZ.UI.Mac.Story.Controls.ZSearchField SearchBox { get; set; }
@@ -32,6 +35,11 @@ namespace RepoZ.UI.Mac.Story
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (lblNoRepositories != null) {
+				lblNoRepositories.Dispose ();
+				lblNoRepositories = null;
+			}
+
 			if (NameTextField != null) {
 				NameTextField.Dispose ();
 				NameTextField = null;

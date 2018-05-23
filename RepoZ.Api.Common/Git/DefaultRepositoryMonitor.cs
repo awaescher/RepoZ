@@ -151,7 +151,7 @@ namespace RepoZ.Api.Common.Git
 				ObserveRepositoryChanges();
 			}
 
-			_detectors.ForEach(w => w.Start()); // TODO EXC_BAD_ACCESS (SIGABRT) on Mac?!
+			_detectors.ForEach(w => w.Start());
 		}
 
 

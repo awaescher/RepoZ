@@ -9,6 +9,8 @@ namespace RepoZ.Api.Git
 
 		event EventHandler<string> OnDeletionDetected;
 
+        event EventHandler<bool> OnScanStateChanged;
+
 		void Stop();
 
 		void Observe();

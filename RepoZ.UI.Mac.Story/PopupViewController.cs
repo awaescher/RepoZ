@@ -16,11 +16,12 @@ namespace RepoZ.UI.Mac.Story
 	public partial class PopupViewController : AppKit.NSViewController
 	{
        	private IRepositoryInformationAggregator _aggregator;
+        private IRepositoryMonitor _monitor;
 
-		#region Constructors
+        #region Constructors
 
-		// Called when created from unmanaged code
-		public PopupViewController(IntPtr handle) : base(handle)
+        // Called when created from unmanaged code
+        public PopupViewController(IntPtr handle) : base(handle)
 		{
 			Initialize();
 		}
@@ -62,10 +63,15 @@ namespace RepoZ.UI.Mac.Story
 			_aggregator = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
 			var actionProvider = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
 
+            _monitor = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryMonitor>();
+            _monitor.OnScanStateChanged += _monitor_OnScanStateChanged;
+
 			// Do any additional setup after loading the view.
 			var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
 			RepoTab.DataSource = datasource;
+            datasource.CollectionChanged += Datasource_CollectionChanged;
 			RepoTab.Delegate = new RepositoryTableDelegate(RepoTab, datasource, actionProvider);
+            SetControlVisibilityByRepositoryAvailability(hasRepositories: false);
 
 			RepoTab.BackgroundColor = NSColor.Clear;
 			RepoTab.EnclosingScrollView.DrawsBackground = false;
@@ -147,6 +153,22 @@ namespace RepoZ.UI.Mac.Story
 			Process.Start(AppDelegate.AvailableUpdate.Url);
 		}
 
-		public new PopupView View => (PopupView)base.View;
+        void _monitor_OnScanStateChanged(object sender, bool e)
+        {
+            
+        }
+
+        void Datasource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            SetControlVisibilityByRepositoryAvailability(e.NewItems?.Count > 0);
+        }
+
+        private void SetControlVisibilityByRepositoryAvailability(bool hasRepositories)
+        {
+            lblNoRepositories.Hidden = hasRepositories;
+            RepoTab.Hidden = !hasRepositories;
+        }
+
+        public new PopupView View => (PopupView)base.View;
 	}
 }
