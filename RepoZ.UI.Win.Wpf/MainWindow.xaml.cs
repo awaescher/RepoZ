@@ -59,8 +59,6 @@ namespace RepoZ.UI.Win.Wpf
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
 			PlaceFormToLowerRight();
-
-			ShowUpdateIfAvailable();
 		}
 
 		private void View_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -74,6 +72,7 @@ namespace RepoZ.UI.Win.Wpf
 		protected override void OnActivated(EventArgs e)
 		{
 			base.OnActivated(e);
+			ShowUpdateIfAvailable();
 			txtFilter.Focus();
 		}
 
