@@ -31,11 +31,17 @@ namespace RepoZ.UI.Mac.Story
             foreach (var command in commands)
                 _commands[CleanCommand(command)] = commandAction;
 
-            if (_helpBuilder.Length > 0)
+            if (_helpBuilder.Length == 0)
+            {
+                _helpBuilder.AppendLine("To execute a command instead of filtering the list of repositories, simply begin with a colon (:).");
                 _helpBuilder.AppendLine("");
+                _helpBuilder.AppendLine("Command reference:");
+            }
 
-            _helpBuilder.AppendLine(string.Join(", ", commands.OrderBy(c => c)));
-            _helpBuilder.AppendLine("\t"+ helpText);
+            _helpBuilder.AppendLine("");
+
+            _helpBuilder.AppendLine("\t:" + string.Join(" or :", commands.OrderBy(c => c)));
+            _helpBuilder.AppendLine("\t\t"+ helpText);
         }
 
         private string CleanCommand(string command)
