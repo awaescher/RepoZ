@@ -299,7 +299,7 @@ The current branch or the SHA of a detached HEAD.
 [i] Represents the branch status in relation to its remote (tracked origin) branch.
 
 [i] =  {statusCharacterMap.IdenticalSign}
-The local branch in at the same commit level as the remote branch.
+The local branch is at the same commit level as the remote branch.
 
 [i] =  {statusCharacterMap.ArrowUpSign}<num>
 The local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
