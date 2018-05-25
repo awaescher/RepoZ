@@ -70,6 +70,7 @@ namespace RepoZ.UI.Mac.Story
             _stringCommandHandler.Define(new string[] { "help", "man", "?" }, ShowCommandReference, "Shows this help page");
             _stringCommandHandler.Define(new string[] { "scan" }, async () => await _monitor.ScanForLocalRepositoriesAsync(), "Scans this Mac for git repositories");
             _stringCommandHandler.Define(new string[] { "reset" }, _monitor.Reset, "Resets the repository cache");
+            _stringCommandHandler.Define(new string[] { "info", "stats" }, ShowStats, "Shows process informations");
             _stringCommandHandler.Define(new string[] { "quit", "close", "exit" }, () => NSApplication.SharedApplication.Terminate(this), "Closes the application");
 
             // Do any additional setup after loading the view.
@@ -195,6 +196,27 @@ namespace RepoZ.UI.Mac.Story
             var alert = new NSAlert
             {
                 MessageText = _stringCommandHandler.GetHelpText(),
+                AlertStyle = NSAlertStyle.Informational
+            };
+            alert.AddButton("OK");
+            var returnValue = alert.RunModal();
+        }
+		
+		private void ShowStats()
+        {
+            var process = Process.GetCurrentProcess();
+
+            var stats = string.Join("", new string[] {
+                "Version\t\t\t", NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString(),
+                "\nRepositories\t\t", (_aggregator.Repositories?.Count ?? 0).ToString(),
+                "\nProcess Id\t\t", process.Id.ToString(),
+                "\nWorking Set\t\t", (process.WorkingSet64 / 1024 / 1024).ToString() + " MB",
+                "\nRunning Since\t", (DateTime.UtcNow - process.StartTime.ToUniversalTime()).ToString("")
+            });
+
+            var alert = new NSAlert
+            {
+                MessageText = stats,
                 AlertStyle = NSAlertStyle.Informational
             };
             alert.AddButton("OK");
