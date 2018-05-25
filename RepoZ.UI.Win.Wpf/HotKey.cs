@@ -19,6 +19,7 @@ namespace RepoZ.UI.Win.Wpf
 			[In] IntPtr hWnd,
 			[In] int id);
 
+		public const uint VK_R = 0x52;
 		public const uint VK_Z = 0x5A;
 		public const uint MOD_ALT = 0x0001;
 		public const uint MOD_CTRL = 0x0002;

@@ -65,7 +65,7 @@ namespace RepoZ.UI.Win.Wpf
 			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
 
 			_hotkey = new HotKey(47110815);
-			_hotkey.Register(container.Resolve<MainWindow>(), HotKey.VK_Z, HotKey.MOD_WIN | HotKey.MOD_ALT, OnHotKeyPressed);
+			_hotkey.Register(container.Resolve<MainWindow>(), HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
 		}
 
 		protected override void OnExit(ExitEventArgs e)
