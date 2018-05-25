@@ -43,7 +43,6 @@ namespace Specs
 					new DirectThreadDispatcher())
 				);
 
-			_monitor.ScanInitially = false;
 			_monitor.DelayGitRepositoryStatusAfterCreationMilliseconds = 100;
 			_monitor.DelayGitStatusAfterFileOperationMilliseconds = 100;
 

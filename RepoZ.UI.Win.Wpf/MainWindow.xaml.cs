@@ -65,9 +65,10 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void View_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			// do not check the CollectionViewSource because this one is filtered, use the list's items directly.
-			dockMain.Visibility = lstRepositories.Items.Count > 0 ? Visibility.Visible : Visibility.Hidden;
-			tbNoRepositories.Visibility = lstRepositories.Items.Count > 0 ? Visibility.Hidden : Visibility.Visible;
+			// use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
+			var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryView>().Any();
+			dockMain.Visibility = hasRepositories ? Visibility.Visible : Visibility.Hidden;
+			tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
 		}
 
 		protected override void OnActivated(EventArgs e)
