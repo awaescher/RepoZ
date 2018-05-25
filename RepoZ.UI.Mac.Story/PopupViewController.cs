@@ -13,36 +13,37 @@ using System.Diagnostics;
 
 namespace RepoZ.UI.Mac.Story
 {
-	public partial class PopupViewController : AppKit.NSViewController
-	{
-       	private IRepositoryInformationAggregator _aggregator;
+    public partial class PopupViewController : AppKit.NSViewController
+    {
+        private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _monitor;
+        private StringCommandHandler _stringCommandHandler = new StringCommandHandler();
 
         #region Constructors
 
         // Called when created from unmanaged code
         public PopupViewController(IntPtr handle) : base(handle)
-		{
-			Initialize();
-		}
+        {
+            Initialize();
+        }
 
-		// Called when created directly from a XIB file
-		[Export("initWithCoder:")]
-		public PopupViewController(NSCoder coder) : base(coder)
-		{
-			Initialize();
-		}
+        // Called when created directly from a XIB file
+        [Export("initWithCoder:")]
+        public PopupViewController(NSCoder coder) : base(coder)
+        {
+            Initialize();
+        }
 
-		// Call to load from the XIB/NIB file
-		public PopupViewController() : base("PopupView", NSBundle.MainBundle)
-		{
-			Initialize();
-		}
+        // Call to load from the XIB/NIB file
+        public PopupViewController() : base("PopupView", NSBundle.MainBundle)
+        {
+            Initialize();
+        }
 
-		// Shared initialization code
-		void Initialize()
-		{
-		}
+        // Shared initialization code
+        void Initialize()
+        {
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -54,43 +55,48 @@ namespace RepoZ.UI.Mac.Story
         #endregion
 
         public override void ViewWillAppear()
-		{
-			base.ViewWillAppear();
+        {
+            base.ViewWillAppear();
 
-			if (_aggregator != null)
-				return;
+            if (_aggregator != null)
+                return;
 
-			_aggregator = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-			var actionProvider = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
+            _aggregator = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+            var actionProvider = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
 
             _monitor = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryMonitor>();
             _monitor.OnScanStateChanged += _monitor_OnScanStateChanged;
 
-			// Do any additional setup after loading the view.
-			var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
-			RepoTab.DataSource = datasource;
-            datasource.CollectionChanged += Datasource_CollectionChanged;
-			RepoTab.Delegate = new RepositoryTableDelegate(RepoTab, datasource, actionProvider);
-            SetControlVisibilityByRepositoryAvailability(hasRepositories: false);
+            _stringCommandHandler.Define(new string[] { "help", "man", "?" }, ShowCommandReference, "Shows this help page");
+            _stringCommandHandler.Define(new string[] { "scan" }, async () => await _monitor.ScanForLocalRepositoriesAsync(), "Scans this Mac for git repositories");
+            _stringCommandHandler.Define(new string[] { "reset" }, _monitor.Reset, "Resets the repository cache");
+            _stringCommandHandler.Define(new string[] { "quit", "close", "exit" }, () => NSApplication.SharedApplication.Terminate(this), "Closes the application");
 
-			RepoTab.BackgroundColor = NSColor.Clear;
-			RepoTab.EnclosingScrollView.DrawsBackground = false;
+            // Do any additional setup after loading the view.
+            var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
+            RepoTab.DataSource = datasource;
+            datasource.CollectionChanged += Datasource_CollectionChanged;
+            RepoTab.Delegate = new RepositoryTableDelegate(RepoTab, datasource, actionProvider);
+            SetControlVisibilityByRepositoryAvailability();
+
+            RepoTab.BackgroundColor = NSColor.Clear;
+            RepoTab.EnclosingScrollView.DrawsBackground = false;
 
             SearchBox.FinishInput += SearchBox_FinishInput;
 
             SearchBox.NextKeyView = RepoTab;
-		}
+        }
 
-		public override void ViewDidAppear()
-		{
-			// make sure the app gets focused directly when opened
-			NSApplication.SharedApplication.ActivateIgnoringOtherApps(true);
+        public override void ViewDidAppear()
+        {
+            // make sure the app gets focused directly when opened
+            NSApplication.SharedApplication.ActivateIgnoringOtherApps(true);
 
-			base.ViewDidAppear();
+            base.ViewDidAppear();
 
-			ShowUpdateIfAvailable();
+            ShowUpdateIfAvailable();
             this.View.Window.MakeFirstResponder(SearchBox);
-		}
+        }
 
         public override void ViewWillDisappear()
         {
@@ -99,24 +105,36 @@ namespace RepoZ.UI.Mac.Story
             base.ViewWillDisappear();
         }
 
-		private void ShowUpdateIfAvailable()
-		{
-			UpdateButton.ToolTip = AppDelegate.AvailableUpdate == null ? "" : $"Version {AppDelegate.AvailableUpdate.VersionString} is available.";
-			UpdateButton.Hidden = AppDelegate.AvailableUpdate == null;
+        private void ShowUpdateIfAvailable()
+        {
+            UpdateButton.ToolTip = AppDelegate.AvailableUpdate == null ? "" : $"Version {AppDelegate.AvailableUpdate.VersionString} is available.";
+            UpdateButton.Hidden = AppDelegate.AvailableUpdate == null;
 
-			var newSearchBoxFrame = SearchBox.Frame;
+            var newSearchBoxFrame = SearchBox.Frame;
 
-			var availableWidth = UpdateButton.Hidden ? this.View.Frame.Width : UpdateButton.Frame.X;
-			newSearchBoxFrame.Width = availableWidth - (SearchBox.Frame.X * 2);
+            var availableWidth = UpdateButton.Hidden ? this.View.Frame.Width : UpdateButton.Frame.X;
+            newSearchBoxFrame.Width = availableWidth - (SearchBox.Frame.X * 2);
 
-			SearchBox.Frame = newSearchBoxFrame;
-		}
+            SearchBox.Frame = newSearchBoxFrame;
+        }
 
         void SearchBox_FinishInput(object sender, EventArgs e)
         {
-            this.View.Window.MakeFirstResponder(RepoTab);
-            if (RepoTab.RowCount > 0)
-                RepoTab.SelectRow(0, byExtendingSelection: false);
+            string value = SearchBox.StringValue;
+
+            if (_stringCommandHandler.IsCommand(value))
+            {
+                if (_stringCommandHandler.Handle(value))
+                    SearchBox.StringValue = "";
+                else
+                    SearchBox.SelectText(this);
+            }
+            else
+            {
+                this.View.Window.MakeFirstResponder(RepoTab);
+                if (RepoTab.RowCount > 0)
+                    RepoTab.SelectRow(0, byExtendingSelection: false);
+            }
         }
 
         public override void KeyDown(NSEvent theEvent)
@@ -128,47 +146,61 @@ namespace RepoZ.UI.Mac.Story
         }
 
         public override void FlagsChanged(NSEvent theEvent)
-		{
-			base.FlagsChanged(theEvent);
+        {
+            base.FlagsChanged(theEvent);
 
-			UiStateHelper.CommandKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.CommandKeyMask);
-			UiStateHelper.OptionKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.AlternateKeyMask);
-			UiStateHelper.ShiftKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.ShiftKeyMask);
-			UiStateHelper.ControlKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.ControlKeyMask);
-		}
+            UiStateHelper.CommandKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.CommandKeyMask);
+            UiStateHelper.OptionKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.AlternateKeyMask);
+            UiStateHelper.ShiftKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.ShiftKeyMask);
+            UiStateHelper.ControlKeyDown = theEvent.ModifierFlags.HasFlag(NSEventModifierMask.ControlKeyMask);
+        }
 
-		partial void SearchChanged(NSObject sender)
-		{
-			var dataSource = RepoTab.DataSource as RepositoryTableDataSource;
-			var filterString = (sender as NSControl).StringValue;
+        partial void SearchChanged(NSObject sender)
+        {
+            var dataSource = RepoTab.DataSource as RepositoryTableDataSource;
+            var filterString = (sender as NSControl).StringValue;
 
-			dataSource.Filter(filterString);
-		}
+            if (!_stringCommandHandler.IsCommand(filterString))
+                dataSource.Filter(filterString);
+        }
 
-		partial void UpdateButton_Click(NSObject sender)
-		{
-			if (string.IsNullOrEmpty(AppDelegate.AvailableUpdate?.Url))
-				return;
+        partial void UpdateButton_Click(NSObject sender)
+        {
+            if (string.IsNullOrEmpty(AppDelegate.AvailableUpdate?.Url))
+                return;
 
-			Process.Start(AppDelegate.AvailableUpdate.Url);
-		}
+            Process.Start(AppDelegate.AvailableUpdate.Url);
+        }
 
         void _monitor_OnScanStateChanged(object sender, bool e)
         {
-            
+
         }
 
         void Datasource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            SetControlVisibilityByRepositoryAvailability(e.NewItems?.Count > 0);
+            this.InvokeOnMainThread(SetControlVisibilityByRepositoryAvailability);
         }
 
-        private void SetControlVisibilityByRepositoryAvailability(bool hasRepositories)
+        private void SetControlVisibilityByRepositoryAvailability()
         {
+            var unfilteredRepositoryCount = _aggregator.Repositories?.Count;
+            var hasRepositories = unfilteredRepositoryCount > 0;
             lblNoRepositories.Hidden = hasRepositories;
             RepoTab.Hidden = !hasRepositories;
         }
 
+        private void ShowCommandReference()
+        {
+            var alert = new NSAlert
+            {
+                MessageText = _stringCommandHandler.GetHelpText(),
+                AlertStyle = NSAlertStyle.Informational
+            };
+            alert.AddButton("OK");
+            var returnValue = alert.RunModal();
+        }
+
         public new PopupView View => (PopupView)base.View;
-	}
+    }
 }

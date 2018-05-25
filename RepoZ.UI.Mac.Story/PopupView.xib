@@ -121,11 +121,11 @@
                     </connections>
                 </searchField>
                 <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="4Ey-0t-T95">
-                    <rect key="frame" x="6" y="0.0" width="303" height="231"/>
+                    <rect key="frame" x="6" y="0.0" width="303" height="248"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="kTy-1m-j5Y">
                         <font key="font" metaFont="system"/>
-                        <string key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by writing the command ":scan" into the text field.</string>
+                        <mutableString key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by entering the command ":scan" into the text field.  Enter ":help" for a short command reference.</mutableString>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>

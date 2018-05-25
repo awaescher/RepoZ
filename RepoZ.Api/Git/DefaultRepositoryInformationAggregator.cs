@@ -79,6 +79,11 @@ namespace RepoZ.Api.Git
 			return GetRepositoryByPath(path) != null;
 		}
 
+        public void Reset()
+        {
+            _dataSource.Clear();  
+        }
+
 		public ObservableCollection<RepositoryView> Repositories => _dataSource;
 	}
 }

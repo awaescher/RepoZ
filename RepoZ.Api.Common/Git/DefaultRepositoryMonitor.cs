@@ -97,13 +97,7 @@ namespace RepoZ.Api.Common.Git
 		{
 			var repo = _repositoryReader.ReadRepository(file);
 			if (repo.WasFound)
-			{
 				OnRepositoryChangeDetected(repo);
-
-				// use that delay to prevent a lot of sequential writes 
-				// when a lot repositories get found in a row
-				_storeFlushTimer.Change(5000, Timeout.Infinite);
-			}
 		}
 
 		private void OnCheckKnownRepository(string file, KnownRepositoryNotification notification)
@@ -154,16 +148,26 @@ namespace RepoZ.Api.Common.Git
 			_detectors.ForEach(w => w.Start());
 		}
 
+        public void Reset()
+        {
+            Stop();
+
+            foreach (var observer in _repositoryObservers.Values)
+            {
+                observer.Stop();
+                observer.Dispose();
+            }
+            _repositoryObservers.Clear();
+
+            _repositoryInformationAggregator.Reset();
+            RepositoryStoreFlushTimerCallback(null);
+
+            Observe();
+        }
 
 		public void Stop()
 		{
 			_detectors?.ForEach(w => w.Stop());
-		}
-
-		public void Reset()
-		{
-			Stop();
-			_detectors = null;
 		}
 
 		private void OnRepositoryChangeDetected(Repository repo)
@@ -173,13 +177,18 @@ namespace RepoZ.Api.Common.Git
 			if (string.IsNullOrEmpty(path))
 				return;
 
-			if (!_repositoryInformationAggregator.HasRepository(path))
-				CreateRepositoryObserver(repo, path);
+            if (!_repositoryInformationAggregator.HasRepository(path))
+            {
+                CreateRepositoryObserver(repo, path);
+
+                // use that delay to prevent a lot of sequential writes 
+                // when a lot repositories get found in a row
+                _storeFlushTimer.Change(5000, Timeout.Infinite);
+            }
 
 			OnChangeDetected?.Invoke(this, repo);
 
 			_repositoryInformationAggregator.Add(repo);
-
 		}
 
 		private void CreateRepositoryObserver(Repository repo, string path)

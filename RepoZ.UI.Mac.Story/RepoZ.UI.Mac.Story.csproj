@@ -117,6 +117,7 @@
     <Compile Include="TinySoup.cs" />
     <Compile Include="Controls\ZSearchField.cs" />
     <Compile Include="Controls\ZTableView.cs" />
+    <Compile Include="StringCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />

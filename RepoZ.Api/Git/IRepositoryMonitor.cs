@@ -15,6 +15,8 @@ namespace RepoZ.Api.Git
 
 		void Observe();
 
+        void Reset();
+
 		Task ScanForLocalRepositoriesAsync();
 	}
 }

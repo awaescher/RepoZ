@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Git
 {
-	public interface IRepositoryObserver
+    public interface IRepositoryObserver : IDisposable
 	{
 		void Setup(Repository repository, int detectionToAlertDelayMilliseconds);
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.UI.Mac.Story.NativeSupport.Git
 {
-	public class MacRepositoryObserver : IRepositoryObserver, IDisposable
+	public class MacRepositoryObserver : IRepositoryObserver
 	{
 		private Repository _repository;
         private FSEventStream _eventStream;

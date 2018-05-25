@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RepoZ.Api.Common.Git
 {
-	public class DefaultRepositoryObserver : IRepositoryObserver, IDisposable
+	public class DefaultRepositoryObserver : IRepositoryObserver
 	{
 		private Repository _repository;
 		private FileSystemWatcher _watcher;

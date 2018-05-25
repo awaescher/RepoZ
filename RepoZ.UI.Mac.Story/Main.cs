@@ -13,7 +13,6 @@ namespace RepoZ.UI.Mac.Story
 {
 	static class MainClass
 	{
-
 		static void Main(string[] args)
 		{
             NSApplication.Init();

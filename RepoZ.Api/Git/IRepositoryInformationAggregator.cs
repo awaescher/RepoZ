@@ -13,6 +13,8 @@ namespace RepoZ.Api.Git
 
 		ObservableCollection<RepositoryView> Repositories { get; }
 
+        void Reset();
+
 		bool HasRepository(string path);
 	}
 }
