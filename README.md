@@ -2,7 +2,7 @@
 
 RepoZ is a lightweight git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of git repositories on your development machine.
 
-🌈 [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries! 🌈
+[Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries!
 
 ## The UI ![windows][windows] ![macos][macOS]
 RepoZ provides a quick overview of your repositories including their current branch and a short status info. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer or macOS Finder, opening a command line tool in a given repository and checking out git branches.
@@ -10,6 +10,19 @@ RepoZ provides a quick overview of your repositories including their current bra
 RepoZ is available for Windows and macOS.
 
 ![Screenshot](_doc/RepoZ-ReadMe-UI-Both.png)
+
+
+> **"Well ok, that's a neat summary"** you might say, continued with **"... but how does this help?"**.
+
+If you are working on different Git repositories throughout the day, you might find yourself wasting time by permanently switching over from one repository to another. If you are like me, you tend to keep all those windows open to be reused later, ending up on a window list which has to be looped through all the time.
+
+With RepoZ, you can instantly jump into a given repository with a file browser or command prompt. This is shown in the following gif.
+
+For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show RepoZ. On Mac it's <kbd>Command</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd><sup>*</sup>. 
+
+![Screenshot](_doc/QuickNavigation.gif)
+
+<sup>*</sup> On Mac you need to give RepoZ access to the [keyboard events in the system privacy settings](http://mizage.com/help/accessibility.html). Once you have done this, you might need to restart the app.
 
 ## Command Line Sidekick ![windows][windows]
 RepoZ is a UI-centered tool but comes with a sidekick app called **grr** to empower the command line hackers. 
@@ -19,7 +32,7 @@ It supports ...
  - listing all repositories found in RepoZ including their branch and status information
  - filtering for repository names (to list or jump) by regex patterns, like `grr M.*`
  - jumping directly to a repository path by adding the `cd` command, like `grr cd MyRepo`
- - opening a file explorer in a repository from anywhere in your command prompt with `grr open MyRepo`
+ - opening a file browser in a repository from anywhere in your command prompt with `grr open MyRepo`
  - list files in a repository following a pattern with `grr list MyRepo *.sln` (add `-r` for recursive search)
  - open files in a repository directly with `grr open MyRepo *.sln` (add `-e` for elevated mode, "as Admin")
  
