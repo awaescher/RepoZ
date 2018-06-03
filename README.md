@@ -2,7 +2,7 @@
 
 RepoZ is a lightweight git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of git repositories on your development machine.
 
-[Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries!
+📦  [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries!
 
 ## The UI ![windows][windows] ![macos][macOS]
 RepoZ provides a quick overview of your repositories including their current branch and a short status info. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer or macOS Finder, opening a command line tool in a given repository and checking out git branches.
@@ -18,9 +18,11 @@ If you are working on different Git repositories throughout the day, you might f
 
 With RepoZ, you can instantly jump into a given repository with a file browser or command prompt. This is shown in the following gif.
 
+![Navigation](_doc/QuickNavigation.gif)
+
 For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show RepoZ. On Mac it's <kbd>Command</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd><sup>*</sup>. 
 
-![Screenshot](_doc/QuickNavigation.gif)
+To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you selected a repository. To open a command prompt instead, hold <kbd>Ctrl</kbd> on Windows or <kbd>Command</kbd> on macOS while pressing <kbd>Return</kbd>. These modifier keys will also work with mouse navigation.
 
 <sup>*</sup> On Mac you need to give RepoZ access to the [keyboard events in the system privacy settings](http://mizage.com/help/accessibility.html). Once you have done this, you might need to restart the app.
 
