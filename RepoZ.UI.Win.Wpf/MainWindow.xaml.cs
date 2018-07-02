@@ -119,7 +119,9 @@ namespace RepoZ.UI.Win.Wpf
 
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
-			InvokeActionOnCurrentRepository();
+			// prevent doubleclicks from scrollbars and other non-data areas
+			if (e.OriginalSource is Grid)
+				InvokeActionOnCurrentRepository();
 		}
 
 		private void lstRepositories_ContextMenuOpening(object sender, ContextMenuEventArgs e)
