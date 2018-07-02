@@ -61,11 +61,16 @@ namespace RepoZ.UI.Win.Wpf
 
 			_bus = new TinyMessageBus("RepoZ-ipc");
 			_bus.MessageReceived += Bus_MessageReceived;
-
+			
 			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
 
+			// We noticed that the hotkey registration causes a high CPU utilization if the window was not shown before.
+			// To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
+			var window = container.Resolve<MainWindow>();
+			EnsureWindowHandle(window);
+			
 			_hotkey = new HotKey(47110815);
-			_hotkey.Register(container.Resolve<MainWindow>(), HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
+			_hotkey.Register(window, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
 		}
 
 		protected override void OnExit(ExitEventArgs e)
@@ -139,6 +144,23 @@ namespace RepoZ.UI.Win.Wpf
 		{
 			_explorerHandler.UpdateTitles();
 			_explorerUpdateTimer.Change(500, Timeout.Infinite);
+		}
+
+		private void EnsureWindowHandle(Window window)
+		{
+			// We noticed that the hotkey registration at app start causes a high CPU utilization if the main window was not shown before.
+			// To fix this, we need to make the window visible. However, to prevent flickering we set the opacity to 0.0 for a short time.
+
+			try
+			{
+				window.Opacity = 0.0;
+				window.Show();
+				window.Hide();
+			}
+			finally
+			{
+				window.Opacity = 1.0;
+			}
 		}
 
 		private void OnHotKeyPressed()
