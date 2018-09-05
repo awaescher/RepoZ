@@ -53,7 +53,7 @@ namespace grr.Messages
 
 			return string.IsNullOrEmpty(Filter?.RepositoryFilter)
 				? null /* makes no sense */
-				: $"list:^{Filter.RepositoryFilter}$";
+				: $"list:.*{Filter.RepositoryFilter}.*";
 		}
 
 		public virtual bool HasRemoteCommand
