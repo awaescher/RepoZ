@@ -23,12 +23,13 @@ namespace grr.Messages
 
 		public void Execute(Repository[] repositories)
 		{
+			
 			// nothing to do
 		}
 
 		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter) 
 			? "list:.*" /* show all with RegEx pattern ".*" */
-			: $"list:^{_repositoryFilter}$";
+			: $"list:.*{_repositoryFilter}.*";
 
 		public bool HasRemoteCommand => true;
 		
