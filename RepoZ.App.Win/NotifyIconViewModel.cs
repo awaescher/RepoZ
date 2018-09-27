@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 
-namespace RepoZ.UI.Win.Wpf
+namespace RepoZ.App.Win
 {
 	/// <summary>
 	/// Provides bindable properties and commands for the NotifyIcon. In this sample, the

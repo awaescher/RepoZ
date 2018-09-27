@@ -100,7 +100,7 @@ Task("Deploy")
 	EnsureDirectoryExists(outputDir);
 	CleanDirectory(outputDir);
 	
-	CopyFiles("RepoZ.UI.Win.Wpf/bin/" + configuration + "/**/*.*", outputDir, true);
+	CopyFiles("RepoZ.App.Win/bin/" + configuration + "/**/*.*", outputDir, true);
 	CopyFiles("grr/bin/" + configuration + "/**/*.*", outputDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})

@@ -7,7 +7,7 @@
     <ProjectGuid>{15B095B0-474F-46EE-A880-70EFA4204579}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RepoZ.UI.Win.Wpf</RootNamespace>
+    <RootNamespace>RepoZ.App.Win</RootNamespace>
     <AssemblyName>RepoZ</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

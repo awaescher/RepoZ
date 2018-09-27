@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Win", "RepoZ.Api.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A6B79146-761A-40C3-951D-7415297792FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.UI.Win.Wpf", "RepoZ.UI.Win.Wpf\RepoZ.UI.Win.Wpf.csproj", "{15B095B0-474F-46EE-A880-70EFA4204579}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.App.Win", "RepoZ.App.Win\RepoZ.App.Win.csproj", "{15B095B0-474F-46EE-A880-70EFA4204579}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Common", "RepoZ.Api.Common\RepoZ.Api.Common.csproj", "{8104948C-EB24-496B-B15B-D769535B7DAB}"
 EndProject

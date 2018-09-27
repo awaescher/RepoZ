@@ -7,7 +7,7 @@
     <ProjectGuid>{2E92803F-C92B-4C56-B913-87F64476EAE2}</ProjectGuid>
     <ProjectTypeGuids>{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RepoZ.UI.Mac.Story</RootNamespace>
+    <RootNamespace>RepoZ.App.Mac</RootNamespace>
     <AssemblyName>RepoZ</AssemblyName>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
     <UseXamMacFullFramework>true</UseXamMacFullFramework>

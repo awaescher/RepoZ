@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 
-namespace RepoZ.UI.Win.Wpf
+namespace RepoZ.App.Win
 {
 	public static class AutoStart
 	{

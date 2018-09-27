@@ -20,7 +20,7 @@ using RepoZ.Api.Git;
 using RepoZ.Api.Win.Git;
 using TinyIoC;
 
-namespace RepoZ.UI.Win.Wpf
+namespace RepoZ.App.Win
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml

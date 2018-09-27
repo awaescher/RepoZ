@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace RepoZ.UI.Win.Wpf.Controls
+namespace RepoZ.App.Win.Controls
 {
     public class ZTextBox : TextBox
     {

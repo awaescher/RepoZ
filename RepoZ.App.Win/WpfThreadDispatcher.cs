@@ -2,7 +2,7 @@
 using RepoZ.Api.Common;
 using System.Windows;
 
-namespace RepoZ.UI.Win.Wpf
+namespace RepoZ.App.Win
 {
 	internal class WpfThreadDispatcher : IThreadDispatcher
 	{

@@ -23,7 +23,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 using TinySoup.Model;
 using TinySoup;
 
-namespace RepoZ.UI.Win.Wpf
+namespace RepoZ.App.Win
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using RepoZ.Api.Common;
 
-namespace RepoZ.UI.Win.Wpf
+namespace RepoZ.App.Win
 {
 	public class UIErrorHandler : IErrorHandler
 	{

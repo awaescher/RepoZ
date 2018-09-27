@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RepoZ.UI.Win.Wpf.Properties
+namespace RepoZ.App.Win.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace RepoZ.UI.Win.Wpf.Properties
 			{
 				if ((resourceMan == null))
 				{
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RepoZ.UI.Win.Wpf.Properties.Resources", typeof(Resources).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RepoZ.App.Win.Properties.Resources", typeof(Resources).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;

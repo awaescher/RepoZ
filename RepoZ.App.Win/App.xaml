@@ -1,8 +1,8 @@
-﻿<Application x:Class="RepoZ.UI.Win.Wpf.App"
+﻿<Application x:Class="RepoZ.App.Win.App"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:local="clr-namespace:RepoZ.UI.Win.Wpf"
-			 xmlns:controls="clr-namespace:RepoZ.UI.Win.Wpf.Controls"
+			 xmlns:local="clr-namespace:RepoZ.App.Win"
+			 xmlns:controls="clr-namespace:RepoZ.App.Win.Controls"
 			 ShutdownMode="OnExplicitShutdown">
 	<Application.Resources>
 

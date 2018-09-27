@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RepoZ.UI.Win.Wpf.Properties
+namespace RepoZ.App.Win.Properties
 {
 
 
