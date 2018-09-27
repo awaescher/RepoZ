@@ -120,7 +120,7 @@ namespace RepoZ.App.Win
 		private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			// prevent doubleclicks from scrollbars and other non-data areas
-			if (e.OriginalSource is Grid)
+			if (e.OriginalSource is Grid || e.OriginalSource is TextBlock)
 				InvokeActionOnCurrentRepository();
 		}
 
