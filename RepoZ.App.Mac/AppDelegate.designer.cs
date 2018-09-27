@@ -1,4 +1,4 @@
-// WARNING
+﻿// WARNING
 //
 // This file has been generated automatically by Visual Studio to store outlets and
 // actions made in the UI designer. If it is removed, they will be lost.
@@ -7,7 +7,7 @@
 using Foundation;
 using System.CodeDom.Compiler;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
     partial class AppDelegate
     {

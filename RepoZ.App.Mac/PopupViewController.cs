@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 using AppKit;
-using RepoZ.UI.Mac.Story.Model;
+using RepoZ.App.Mac.Model;
 using RepoZ.Api.Git;
 using TinySoup.Model;
 using TinySoup.Identifier;
@@ -11,7 +11,7 @@ using TinySoup;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
     public partial class PopupViewController : AppKit.NSViewController
     {

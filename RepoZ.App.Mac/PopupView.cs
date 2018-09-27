@@ -4,9 +4,9 @@ using System.Linq;
 using Foundation;
 using AppKit;
 using RepoZ.Api.Git;
-using RepoZ.UI.Mac.Story.Model;
+using RepoZ.App.Mac.Model;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
     public partial class PopupView : AppKit.NSView
     {

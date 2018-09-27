@@ -3,9 +3,9 @@ using System.Linq;
 using AppKit;
 using Foundation;
 using RepoZ.Api.Git;
-using RepoZ.UI.Mac.Story.Controls;
+using RepoZ.App.Mac.Controls;
 
-namespace RepoZ.UI.Mac.Story.Model
+namespace RepoZ.App.Mac.Model
 {
     public class RepositoryTableDelegate : NSTableViewDelegate, INSTextFieldDelegate
     {

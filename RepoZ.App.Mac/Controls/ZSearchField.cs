@@ -5,7 +5,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 
-namespace RepoZ.UI.Mac.Story.Controls
+namespace RepoZ.App.Mac.Controls
 {
     [Register("ZSearchField")]
     [DesignTimeVisible(true)]

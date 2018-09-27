@@ -1,4 +1,4 @@
-// WARNING
+﻿// WARNING
 //
 // This file has been generated automatically by Visual Studio to store outlets and
 // actions made in the UI designer. If it is removed, they will be lost.
@@ -7,7 +7,7 @@
 using Foundation;
 using System.CodeDom.Compiler;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
 	[Register ("PopupViewController")]
 	partial class PopupViewController
@@ -19,10 +19,10 @@ namespace RepoZ.UI.Mac.Story
 		AppKit.NSTextField NameTextField { get; set; }
 
 		[Outlet]
-		RepoZ.UI.Mac.Story.Controls.ZTableView RepoTab { get; set; }
+		RepoZ.App.Mac.Controls.ZTableView RepoTab { get; set; }
 
 		[Outlet]
-		RepoZ.UI.Mac.Story.Controls.ZSearchField SearchBox { get; set; }
+		RepoZ.App.Mac.Controls.ZSearchField SearchBox { get; set; }
 
 		[Outlet]
 		AppKit.NSButton UpdateButton { get; set; }
