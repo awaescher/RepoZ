@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
-        <capability name="system font weights other than Regular or Bold" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PopupViewController">
@@ -19,11 +19,11 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView misplaced="YES" id="4" customClass="PopupView">
+        <customView id="4" customClass="PopupView">
             <rect key="frame" x="0.0" y="0.0" width="315" height="349"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="80" horizontalPageScroll="10" verticalLineScroll="80" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="atb-MD-Rrh">
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="80" horizontalPageScroll="10" verticalLineScroll="80" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="atb-MD-Rrh">
                     <rect key="frame" x="0.0" y="0.0" width="315" height="310"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Fj6-st-85h">
@@ -38,7 +38,7 @@
                                 <tableViewGridLines key="gridStyleMask" vertical="YES" horizontal="YES"/>
                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                 <tableColumns>
-                                    <tableColumn identifier="" width="312" minWidth="10" maxWidth="3.4028234663852886e+38" id="BOB-Ym-hHd">
+                                    <tableColumn width="312" minWidth="10" maxWidth="3.4028234663852886e+38" id="BOB-Ym-hHd">
                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -51,25 +51,25 @@
                                         </textFieldCell>
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         <prototypeCellViews>
-                                            <tableCellView identifier="RepositoryCell" misplaced="YES" id="Ff7-Zt-kDJ" customClass="RepositoryCell">
+                                            <tableCellView identifier="RepositoryCell" id="Ff7-Zt-kDJ" customClass="RepositoryCell">
                                                 <rect key="frame" x="1" y="1" width="312" height="78"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="aj6-Yv-BzW">
+                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="aj6-Yv-BzW">
                                                         <rect key="frame" x="7" y="52" width="17" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSIconViewTemplate" id="KIE-Zp-h4j"/>
                                                     </imageView>
-                                                    <textField identifier="RepositoryLabel" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" allowsExpansionToolTips="YES" id="Tgn-Zf-a7x">
+                                                    <textField identifier="RepositoryLabel" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" id="Tgn-Zf-a7x">
                                                         <rect key="frame" x="29" y="46" width="282" height="24"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="RepoZ" id="cGH-SL-E5G">
                                                             <font key="font" metaFont="systemLight" size="16"/>
-                                                            <color key="textColor" name="keyboardFocusIndicatorColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="textColor" name="controlAccentColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField identifier="CurrentBranchLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="1cL-QX-vvQ">
+                                                    <textField identifier="CurrentBranchLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1cL-QX-vvQ">
                                                         <rect key="frame" x="29" y="28" width="282" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="feature/macOS_UI_Redesign" id="kdc-1q-Zmp">
@@ -78,7 +78,7 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField identifier="StatusLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="tyH-7E-oSE">
+                                                    <textField identifier="StatusLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tyH-7E-oSE">
                                                         <rect key="frame" x="29" y="9" width="282" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="= +1 -2 ~3" id="kbt-F6-lUh">
@@ -98,17 +98,18 @@
                                 </tableColumns>
                             </tableView>
                         </subviews>
+                        <nil key="backgroundColor"/>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="LDp-bX-6xd">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="LDp-bX-6xd">
                         <rect key="frame" x="0.0" y="333" width="315" height="16"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Bgo-wV-md5">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Bgo-wV-md5">
                         <rect key="frame" x="224" y="17" width="15" height="102"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
-                <searchField wantsLayer="YES" verticalHuggingPriority="750" misplaced="YES" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
+                <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
                     <rect key="frame" x="8" y="318" width="299" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search or command" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
@@ -120,17 +121,17 @@
                         <action selector="SearchChanged:" target="-2" id="NdQ-fh-oTD"/>
                     </connections>
                 </searchField>
-                <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="4Ey-0t-T95">
+                <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="4Ey-0t-T95">
                     <rect key="frame" x="6" y="0.0" width="303" height="248"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="kTy-1m-j5Y">
                         <font key="font" metaFont="system"/>
-                        <mutableString key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by entering the command ":scan" into the text field.  Enter ":help" for a short command reference.</mutableString>
+                        <string key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by entering the command ":scan" into the text field.  Enter ":help" for a short command reference.</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button hidden="YES" verticalHuggingPriority="750" misplaced="YES" id="M6p-5h-EnC">
+                <button hidden="YES" verticalHuggingPriority="750" id="M6p-5h-EnC">
                     <rect key="frame" x="277" y="316" width="30" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <buttonCell key="cell" type="roundTextured" title="⬆" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zRT-OM-19Y">
@@ -149,6 +150,6 @@
         </customView>
     </objects>
     <resources>
-        <image name="NSIconViewTemplate" width="10" height="10"/>
+        <image name="NSIconViewTemplate" width="14" height="10"/>
     </resources>
 </document>
