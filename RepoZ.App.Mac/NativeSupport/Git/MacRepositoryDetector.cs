@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RepoZ.UI.Mac.Story.NativeSupport.Git
+namespace RepoZ.App.Mac.NativeSupport.Git
 {
     public class MacRepositoryDetector : IRepositoryDetector, IDisposable
     {

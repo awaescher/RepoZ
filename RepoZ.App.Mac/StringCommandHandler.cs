@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
     public class StringCommandHandler
     {

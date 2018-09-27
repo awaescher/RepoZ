@@ -9,7 +9,7 @@ using RepoZ.Api.Mac.Git;
 using RepoZ.Api.Mac.IO;
 using TinyIoC;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
 	static class MainClass
 	{

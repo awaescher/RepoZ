@@ -7,7 +7,7 @@ using AppKit;
 using Foundation;
 using RepoZ.Api.Git;
 
-namespace RepoZ.UI.Mac.Story.Model
+namespace RepoZ.App.Mac.Model
 {
     public class RepositoryTableDataSource : NSTableViewDataSource
     {

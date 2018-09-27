@@ -1,5 +1,5 @@
 ﻿using System;
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
     public static class UiStateHelper
     {

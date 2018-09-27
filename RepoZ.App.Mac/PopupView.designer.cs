@@ -7,7 +7,7 @@
 using Foundation;
 using System.CodeDom.Compiler;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
 	[Register ("PopupView")]
 	partial class PopupView

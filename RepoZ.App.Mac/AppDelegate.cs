@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,13 +12,13 @@ using RepoZ.Api.IO;
 using RepoZ.Api.Mac;
 using RepoZ.Api.Mac.Git;
 using RepoZ.Api.Mac.IO;
-using RepoZ.UI.Mac.Story.NativeSupport;
-using RepoZ.UI.Mac.Story.NativeSupport.Git;
+using RepoZ.App.Mac.NativeSupport;
+using RepoZ.App.Mac.NativeSupport.Git;
 using TinyIoC;
 using TinySoup;
 using TinySoup.Model;
 
-namespace RepoZ.UI.Mac.Story
+namespace RepoZ.App.Mac
 {
     [Register("AppDelegate")]
     public partial class AppDelegate : NSApplicationDelegate, INSPopoverDelegate

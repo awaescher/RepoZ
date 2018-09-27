@@ -3,7 +3,7 @@ using AppKit;
 using Foundation;
 using RepoZ.Api.Common;
 
-namespace RepoZ.UI.Mac.Story.NativeSupport
+namespace RepoZ.App.Mac.NativeSupport
 {
     public class MacThreadDispatcher : IThreadDispatcher
     {
