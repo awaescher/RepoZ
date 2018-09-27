@@ -16,22 +16,6 @@ var solutionPaths = solutions.Select(solution => solution.GetDirectory());
 var appVersion = FileReadLines("app.version").First();
 
 ///////////////////////////////////////////////////////////////////////////////
-// SETUP / TEARDOWN
-///////////////////////////////////////////////////////////////////////////////
-
-Setup(() =>
-{
-    // Executed BEFORE the first task.
-    Information("Running tasks...");
-});
-
-Teardown(() =>
-{
-    // Executed AFTER the last task.
-    Information("Finished running tasks.");
-});
-
-///////////////////////////////////////////////////////////////////////////////
 // TASK DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -100,6 +84,7 @@ Task("Deploy")
 	EnsureDirectoryExists(outputDir);
 	CleanDirectory(outputDir);
 	
+	
 	CopyFiles("RepoZ.App.Win/bin/" + configuration + "/**/*.*", outputDir, true);
 	CopyFiles("grr/bin/" + configuration + "/**/*.*", outputDir, true);
 	
@@ -109,7 +94,7 @@ Task("Deploy")
 	var dotIndex = appVersion.IndexOf(".");
 	dotIndex = appVersion.IndexOf(".", dotIndex + 1); // find the second "." for "2.1" from "2.1.0.0"
 	var shortVersion = appVersion.Substring(0, dotIndex);
-	Zip(outputDir, outputDir.Path + "/v" + shortVersion + ".zip");
+	Zip(outputDir, outputDir.Path + "/v" + shortVersion + "-win.zip");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
