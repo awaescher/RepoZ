@@ -45,7 +45,7 @@
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "..\_output\${PRODUCT_NAME} ${PRODUCT_VERSION} Setup.exe"
-InstallDir "$PROGRAMFILES64\awaescher\RepoZ"
+InstallDir "$PROGRAMFILES64\RepoZ"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
@@ -58,6 +58,7 @@ Section "RepoZ"
   SetOutPath "$INSTDIR"
   SetOverwrite on
   File /r ..\_output\Assemblies\*.*
+  File ..\_ref\PathEd.exe
   CreateShortCut "$SMPROGRAMS\RepoZ.lnk" $INSTDIR\RepoZ.exe
 SectionEnd
 
@@ -73,10 +74,7 @@ Section -Post
 SectionEnd
 
 Function .onInstSuccess
-  IfFileExists $INSTDIR\UpdateToolbox.exe label_370 label_371
-label_370:
-  Exec $INSTDIR\UpdateToolbox.exe
-label_371:
+  Exec "$INSTDIR\PathEd.exe add $INSTDIR"
 FunctionEnd
 
 Function un.onUninstSuccess
