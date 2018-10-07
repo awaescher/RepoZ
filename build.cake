@@ -99,7 +99,7 @@ Task("Deploy")
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
 	
-	Zip(assemblyDir, outputDir.Path + "/v" + _appVersionShort + "-win.zip");
+	Zip(assemblyDir, outputDir.Path + "/v" + _appVersionShort + "-win-portable.zip");
 });
 
 Task("CompileWinSetup")

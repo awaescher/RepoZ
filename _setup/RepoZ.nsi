@@ -60,6 +60,9 @@ Section "RepoZ"
   File /r ..\_output\Assemblies\*.*
   File ..\_ref\PathEd.exe
   CreateShortCut "$SMPROGRAMS\RepoZ.lnk" $INSTDIR\RepoZ.exe
+  
+  ; Add the installation folder to the system PATH -> to enable grr.exe
+  ExecWait '$INSTDIR\PathEd.exe add "$INSTDIR"' ; put the path in quotes because of possible spaces
 SectionEnd
 
 Section -Post
@@ -72,10 +75,6 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
-
-Function .onInstSuccess
-  Exec "$INSTDIR\PathEd.exe add $INSTDIR"
-FunctionEnd
 
 Function un.onUninstSuccess
   HideWindow
@@ -91,6 +90,9 @@ FunctionEnd
 Section Uninstall
 
   Delete "$SMPROGRAMS\RepoZ.lnk"
+  
+  ; Remove the installation folder from the system PATH -> was required for grr.exe
+  ExecWait '$INSTDIR\PathEd.exe remove "$INSTDIR"'
   
   RMDir /r "$INSTDIR"
 
