@@ -45,7 +45,7 @@
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "..\_output\${PRODUCT_NAME} ${PRODUCT_VERSION} Setup.exe"
-InstallDir "$PROGRAMFILES64\RepoZ"
+InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
@@ -59,18 +59,21 @@ Section "RepoZ"
   SetOverwrite on
   File /r ..\_output\Assemblies\*.*
   File ..\_ref\PathEd.exe
-  CreateShortCut "$SMPROGRAMS\RepoZ.lnk" $INSTDIR\RepoZ.exe
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" $INSTDIR\${PRODUCT_NAME}.exe
   
   ; Add the installation folder to the system PATH -> to enable grr.exe
   ExecWait '$INSTDIR\PathEd.exe add "$INSTDIR"' ; put the path in quotes because of possible spaces
+  
+  ; Write RepoZ executable to Windows AutoStart: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}" '"$INSTDIR\${PRODUCT_NAME}.exe"'
 SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninstall.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\RepoZ.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\${PRODUCT_NAME}.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninstall.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\RepoZ.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${PRODUCT_NAME}.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
@@ -89,11 +92,14 @@ FunctionEnd
 
 Section Uninstall
 
-  Delete "$SMPROGRAMS\RepoZ.lnk"
+  ; Remove RepoZ from the Windows AutoStart
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}"
   
   ; Remove the installation folder from the system PATH -> was required for grr.exe
   ExecWait '$INSTDIR\PathEd.exe remove "$INSTDIR"'
   
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}.lnk"
+    
   RMDir /r "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
