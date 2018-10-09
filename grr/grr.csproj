@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleExtensions.cs" />
+    <Compile Include="RegexFilter.cs" />
     <Compile Include="RepositoryFilterOptions.cs" />
     <Compile Include="History\IHistoryRepository.cs" />
     <Compile Include="History\State.cs" />

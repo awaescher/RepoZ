@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace grr.Messages
 {
@@ -53,7 +54,7 @@ namespace grr.Messages
 
 			return string.IsNullOrEmpty(Filter?.RepositoryFilter)
 				? null /* makes no sense */
-				: $"list:.*{Filter.RepositoryFilter}.*";
+				: $"list:{RegexFilter.Get(Filter.RepositoryFilter)}";
 		}
 
 		public virtual bool HasRemoteCommand
