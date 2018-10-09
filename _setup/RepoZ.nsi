@@ -17,6 +17,10 @@
 !define MUI_ICON "res\Setup.ico"
 !define MUI_UNICON "res\Setup.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "res\modern-wizard.bmp" 
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of ${PRODUCT_NAME} and its command line sidekick 'grr'.\r\n\r\nIn addition to that, it will add ${PRODUCT_NAME} to the Windows Autostart. You can change this at any time after the installation by right-clicking the app icon in the system tray.\r\n\r\nIf you are fine with that, click Next to continue."
+!define MUI_FINISHPAGE_RUN "$INSTDIR\${PRODUCT_NAME}.exe"
+!define MUI_FINISHPAGE_TEXT "${PRODUCT_NAME} ${PRODUCT_VERSION} has been installed on your computer.\r\n\r\nDon't forget to try the ${PRODUCT_NAME} command line sidekick 'grr'.\r\nRun 'grr --help' for more information.\r\n\r\nPlease note that you might need to restart currently opened command line tools to find grr."
+!define MUI_FINISHPAGE_TEXT_LARGE ; extra space for the finishpage-text
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
