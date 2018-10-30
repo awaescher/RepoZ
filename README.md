@@ -1,6 +1,6 @@
 # RepoZ
 
-RepoZ is a lightweight git repository information aggregator with Windows Explorer- & CLI-enhancements helping you keeping track of git repositories on your development machine.
+RepoZ is a lightweight git repository hub with Windows Explorer- & CLI-enhancements helping you keeping track of git repositories on your development machine.
 
 📦  [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest binaries!
 
