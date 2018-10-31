@@ -6,7 +6,7 @@ RepoZ is a lightweight git repository hub with Windows Explorer- & CLI-enhanceme
 
 **Keep your favorite git clients, RepoZ will not compete with them.** It's not about working within a repository to commit stuff or analyse logs: It's a new way to use all of your repositories to make your daily work easier.
 
-> Let's face it, we don't have just that one single repository we're working on.
+> Let's face it, we don't just have that one single repository we're working on.
 
 Try RepoZ, it's so easy: There's no additional work to do, no configuration to set up, no refresh to trigger. It just works.
 
@@ -20,7 +20,7 @@ RepoZ is available for Windows and macOS.
 ![Screenshot](_doc/RepoZ-ReadMe-UI-Both.png)
 
 
-> **"Well ok, that's a neat summary"** you might say **"... but how does this help?"**.
+> **"Well ok, that's a neat summary ..."** you might say **"... but how does this help?"**.
 
 If you are working on different git repositories throughout the day, you might find yourself wasting time by permanently switching over from one repository to another. If you are like me, you tend to keep all those windows open to be reused later, ending up on a window list which has to be looped through all the time.
 
@@ -48,8 +48,6 @@ It supports ...
  
 See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell console:
 ![Screenshot](_doc/grr-5fps-compressed.gif)
-
-See the topic **Installing grr** on how to to make use of **grr** throughout the system.
 
 #### Don't forget to have a look at `grr help` once you get your hands on.
 
