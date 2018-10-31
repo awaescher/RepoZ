@@ -9,7 +9,7 @@
     <RootNamespace>RepoZ.Api.Mac</RootNamespace>
     <AssemblyName>RepoZ.Api.Mac</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ReleaseVersion>3.1</ReleaseVersion>
+    <ReleaseVersion>3.3</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

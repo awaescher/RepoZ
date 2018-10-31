@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PopupViewController">
+            <connections>
+                <outlet property="RepoTab" destination="xKt-lX-EKK" id="iHf-Cf-Fm8"/>
+                <outlet property="RepositoryTable" destination="atb-MD-Rrh" id="xWt-F6-jGC"/>
+                <outlet property="SearchBox" destination="QMD-2c-EhY" id="B5D-pO-JJF"/>
+                <outlet property="UpdateButton" destination="M6p-5h-EnC" id="EXb-IR-gqE"/>
+                <outlet property="lblNoRepositories" destination="4Ey-0t-T95" id="Sk3-3R-wPD"/>
+                <outlet property="view" destination="4" id="17"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="4" customClass="PopupView">
+            <rect key="frame" x="0.0" y="0.0" width="315" height="349"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="80" horizontalPageScroll="10" verticalLineScroll="80" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="atb-MD-Rrh">
+                    <rect key="frame" x="0.0" y="0.0" width="315" height="310"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Fj6-st-85h">
+                        <rect key="frame" x="0.0" y="0.0" width="315" height="310"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="78" rowSizeStyle="automatic" viewBased="YES" id="xKt-lX-EKK" customClass="ZTableView">
+                                <rect key="frame" x="0.0" y="0.0" width="315" height="310"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <size key="intercellSpacing" width="3" height="2"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <tableViewGridLines key="gridStyleMask" vertical="YES" horizontal="YES"/>
+                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                <tableColumns>
+                                    <tableColumn width="312" minWidth="10" maxWidth="3.4028234663852886e+38" id="BOB-Ym-hHd">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </tableHeaderCell>
+                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" drawsBackground="YES" id="C37-B2-AAT">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                        <prototypeCellViews>
+                                            <tableCellView identifier="RepositoryCell" id="Ff7-Zt-kDJ" customClass="RepositoryCell">
+                                                <rect key="frame" x="1" y="1" width="312" height="78"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="aj6-Yv-BzW">
+                                                        <rect key="frame" x="7" y="52" width="17" height="17"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSIconViewTemplate" id="KIE-Zp-h4j"/>
+                                                    </imageView>
+                                                    <textField identifier="RepositoryLabel" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" id="Tgn-Zf-a7x">
+                                                        <rect key="frame" x="29" y="46" width="282" height="24"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="RepoZ" id="cGH-SL-E5G">
+                                                            <font key="font" metaFont="systemLight" size="16"/>
+                                                            <color key="textColor" name="controlAccentColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField identifier="CurrentBranchLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1cL-QX-vvQ">
+                                                        <rect key="frame" x="29" y="28" width="282" height="17"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="feature/macOS_UI_Redesign" id="kdc-1q-Zmp">
+                                                            <font key="font" metaFont="systemLight" size="13"/>
+                                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField identifier="StatusLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tyH-7E-oSE">
+                                                        <rect key="frame" x="29" y="9" width="282" height="17"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="= +1 -2 ~3" id="kbt-F6-lUh">
+                                                            <font key="font" metaFont="systemLight" size="13"/>
+                                                            <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                                <connections>
+                                                    <outlet property="imageView" destination="aj6-Yv-BzW" id="WTC-3w-Wck"/>
+                                                    <outlet property="textField" destination="Tgn-Zf-a7x" id="Bns-dp-fq6"/>
+                                                </connections>
+                                            </tableCellView>
+                                        </prototypeCellViews>
+                                    </tableColumn>
+                                </tableColumns>
+                            </tableView>
+                        </subviews>
+                        <nil key="backgroundColor"/>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="LDp-bX-6xd">
+                        <rect key="frame" x="0.0" y="333" width="315" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Bgo-wV-md5">
+                        <rect key="frame" x="224" y="17" width="15" height="102"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
+                <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
+                    <rect key="frame" x="8" y="318" width="299" height="22"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search or command" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </searchFieldCell>
+                    <connections>
+                        <action selector="SearchChanged:" target="-2" id="NdQ-fh-oTD"/>
+                    </connections>
+                </searchField>
+                <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="4Ey-0t-T95">
+                    <rect key="frame" x="6" y="0.0" width="303" height="248"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="kTy-1m-j5Y">
+                        <font key="font" metaFont="system"/>
+                        <string key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by entering the command ":scan" into the text field.  Enter ":help" for a short command reference.</string>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button hidden="YES" verticalHuggingPriority="750" id="M6p-5h-EnC">
+                    <rect key="frame" x="277" y="316" width="30" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="roundTextured" title="⬆" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zRT-OM-19Y">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="UpdateButton_Click:" target="-2" id="KTA-1g-ngq"/>
+                    </connections>
+                </button>
+            </subviews>
+            <connections>
+                <outlet property="RepositoryTable" destination="xKt-lX-EKK" id="BCu-N9-f5T"/>
+            </connections>
+            <point key="canvasLocation" x="61.5" y="141.5"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="NSIconViewTemplate" width="14" height="10"/>
+    </resources>
+</document>

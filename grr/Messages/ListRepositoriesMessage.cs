@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace grr.Messages
@@ -23,15 +24,14 @@ namespace grr.Messages
 
 		public void Execute(Repository[] repositories)
 		{
-			
 			// nothing to do
 		}
 
-		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter) 
+		public string GetRemoteCommand() => string.IsNullOrEmpty(_repositoryFilter)
 			? "list:.*" /* show all with RegEx pattern ".*" */
-			: $"list:.*{_repositoryFilter}.*";
+			: $"list:{RegexFilter.Get(_repositoryFilter)}";
 
 		public bool HasRemoteCommand => true;
-		
+
 	}
 }

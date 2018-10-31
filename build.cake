@@ -1,4 +1,5 @@
 #addin "Cake.FileHelpers"
+#tool "nsis"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -11,25 +12,12 @@ var configuration = Argument<string>("configuration", "Release");
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 
-var solutions = GetFiles("./**/*Win.sln");
-var solutionPaths = solutions.Select(solution => solution.GetDirectory());
-var appVersion = FileReadLines("app.version").First();
-
-///////////////////////////////////////////////////////////////////////////////
-// SETUP / TEARDOWN
-///////////////////////////////////////////////////////////////////////////////
-
-Setup(() =>
-{
-    // Executed BEFORE the first task.
-    Information("Running tasks...");
-});
-
-Teardown(() =>
-{
-    // Executed AFTER the last task.
-    Information("Finished running tasks.");
-});
+var _solutions = GetFiles("./**/*Win.sln");
+var _solutionPaths = _solutions.Select(solution => solution.GetDirectory());
+var _appVersion = FileReadLines("app.version").First();
+var dotIndex = _appVersion.IndexOf(".");
+dotIndex = _appVersion.IndexOf(".", dotIndex + 1); // find the second "." for "2.1" from "2.1.0.0"
+var _appVersionShort = _appVersion.Substring(0, dotIndex);
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASK DEFINITIONS
@@ -40,7 +28,7 @@ Task("Clean")
     .Does(() =>
 {
     // Clean solution directories.
-    foreach(var path in solutionPaths)
+    foreach(var path in _solutionPaths)
     {
         Information("Cleaning {0}", path);
         CleanDirectories(path + "/**/bin/" + configuration);
@@ -53,7 +41,7 @@ Task("Restore")
     .Does(() =>
 {
     // Restore all NuGet packages.
-    foreach(var solution in solutions)
+    foreach(var solution in _solutions)
     {
         Information("Restoring {0}...", solution);
         NuGetRestore(solution);
@@ -66,10 +54,13 @@ Task("SetVersion")
    {
        ReplaceRegexInFiles("../**/AssemblyInfo.*", 
                            "(?<=AssemblyVersion\\(\")(.+?)(?=\"\\))", 
-                           appVersion);
+                           _appVersion);
+
        ReplaceRegexInFiles("../**/AssemblyInfo.*", 
                            "(?<=AssemblyFileVersion\\(\")(.+?)(?=\"\\))", 
-                           appVersion);
+                           _appVersion);
+						   
+						   
    });
 
 Task("Build")
@@ -79,8 +70,8 @@ Task("Build")
 	.IsDependentOn("SetVersion")
     .Does(() =>
 {
-    // Build all solutions.
-    foreach(var solution in solutions)
+    // Build all _solutions.
+    foreach(var solution in _solutions)
     {
         Information("Building {0}", solution);
         MSBuild(solution, settings =>
@@ -95,21 +86,33 @@ Task("Deploy")
 	.IsDependentOn("Build")
 	.Does(() => 
 {
+	var assemblyDir = Directory("_output/Assemblies");
 	var outputDir = Directory("_output");
 	
 	EnsureDirectoryExists(outputDir);
 	CleanDirectory(outputDir);
-	
-	CopyFiles("RepoZ.UI.Win.Wpf/bin/" + configuration + "/**/*.*", outputDir, true);
-	CopyFiles("grr/bin/" + configuration + "/**/*.*", outputDir, true);
+	EnsureDirectoryExists(assemblyDir);
+		
+	CopyFiles("RepoZ.App.Win/bin/" + configuration + "/**/*.*", assemblyDir, true);
+	CopyFiles("grr/bin/" + configuration + "/**/*.*", assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
-		DeleteFiles(outputDir.Path + "/*." + extension);
+		DeleteFiles(assemblyDir.Path + "/*." + extension);
 	
-	var dotIndex = appVersion.IndexOf(".");
-	dotIndex = appVersion.IndexOf(".", dotIndex + 1); // find the second "." for "2.1" from "2.1.0.0"
-	var shortVersion = appVersion.Substring(0, dotIndex);
-	Zip(outputDir, outputDir.Path + "/v" + shortVersion + ".zip");
+	Zip(assemblyDir, outputDir.Path + "/v" + _appVersionShort + "-win-portable.zip");
+});
+
+Task("CompileWinSetup")
+	.IsDependentOn("Deploy")
+	.Does(() => 
+{	
+	MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
+	{
+		Defines = new Dictionary<string, string>
+		{
+			{ "PRODUCT_VERSION", _appVersionShort }
+		}
+	});
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +121,7 @@ Task("Deploy")
 
 Task("Default")
     .Description("This is the default task which will be ran if no specific target is passed in.")
-    .IsDependentOn("Deploy");
+    .IsDependentOn("CompileWinSetup");
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXECUTION

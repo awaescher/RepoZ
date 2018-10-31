@@ -53,7 +53,7 @@ namespace grr
 			help.AddPreOptionsLine(" ");
 			help.AddPreOptionsLine(" ");
 			help.AddPreOptionsLine("USAGE:");
-			help.AddPreOptionsLine($"  grr [{knownCommandsPiped}] [repository name or filter] [file name or filter] [file options]");
+			help.AddPreOptionsLine($"  grr [{knownCommandsPiped}] [repository filter or RegEx pattern] [file filter] [file options]");
 			help.AddPreOptionsLine(" ");
 			help.AddPreOptionsLine(" ");
 			help.AddPreOptionsLine(" ");
@@ -64,11 +64,14 @@ namespace grr
 			help.AddPostOptionsLine(" ");
 			help.AddPostOptionsLine("FILTERS:");
 			help.AddPostOptionsLine("");
-			help.AddPostOptionsLine("  Repository name or filter:");
-			help.AddPostOptionsLine("    The name of a repository or a RegEx filter expression to find matching repositories.");
+			help.AddPostOptionsLine("  Repository filter or RegEx pattern:");
+			help.AddPostOptionsLine("    The filter pattern to find matching repositories with a like search.");
+			help.AddPostOptionsLine("    If a like search is too broad, use a RegEx pattern instead by adding square brackets.");
+			help.AddPostOptionsLine("    Like [.*Z] for all repositories ending with \"Z\".");
+			help.AddPostOptionsLine("    Note that you should put the filter or RegEx pattern in quotes if it contains spaces.");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("  File name or filter:");
-			help.AddPostOptionsLine("    The name of a file or a filter pattern to find matching files of a given repository.");
+			help.AddPostOptionsLine("    The filter pattern to find matching files of a given repository with a like search.");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("");
@@ -85,7 +88,6 @@ namespace grr
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("");
 
-
 			help.AddPostOptionsLine("EXAMPLES:");
 			help.AddPostOptionsLine("  (to keep the examples short, \"Repo\" is used as placeholder for a repository name");
 			help.AddPostOptionsLine("   like \"RepoZ\" or \"NSidekick\", for example)");
@@ -101,11 +103,10 @@ namespace grr
 			help.AddPostOptionsLine("  grr list Repo *.txt \tLists all text files in the given repository matching the filter *.txt");
 			help.AddPostOptionsLine("  grr open Repo *.sln \tOpens the Visual Studio solutions in the given repository");
 			help.AddPostOptionsLine("");
-			help.AddPostOptionsLine("RegEx patterns for advanced repository filtering:");
-			help.AddPostOptionsLine("  grr list .*_.* \tLists all repositories containing a \"_\"");
-			help.AddPostOptionsLine("  grr list \".*[X|Z]\" \tLists all repositories ending with \"X\" or \"Z\"");
-			help.AddPostOptionsLine("  grr cd Re.* \t\tNavigates to the first repository starting with \"Re\"");
-			help.AddPostOptionsLine("  grr open .*Z *.sln \tOpens each Visual Studio solution in every repository ending with \"Z\"");
+			help.AddPostOptionsLine("RegEx patterns for advanced repository filtering (note the square brackets):");
+			help.AddPostOptionsLine("  grr list [.*_.*] \tLists all repositories containing a \"_\"");
+			help.AddPostOptionsLine("  grr cd [Re.*] \tNavigates to the first repository starting with \"Re\"");
+			help.AddPostOptionsLine("  grr open [.*Z] *.sln \tOpens each Visual Studio solution in every repository ending with \"Z\"");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("Advanced: grr defines indexes for found repositories. They can be used for the next execution:");
 			help.AddPostOptionsLine("  grr list :3 \t\tShows the branch and status of the repository at index 3");
@@ -117,7 +118,8 @@ namespace grr
 			help.AddPostOptionsLine("  grr cd - \t\tNavigates back to the last path grr was called from");
 			help.AddPostOptionsLine("  ");
 			help.AddPostOptionsLine("Noteworthy:");
-			help.AddPostOptionsLine("  The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect");
+			help.AddPostOptionsLine("  The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect.");
+			help.AddPostOptionsLine("  Put your filter in quotes if it contains spaces.");
 			help.AddPostOptionsLine("  RepoZ has to be running on this system to use grr.");
 			help.AddPostOptionsLine("");
 

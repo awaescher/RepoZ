@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Mac", "RepoZ.Api.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Api.Common", "RepoZ.Api.Common\RepoZ.Api.Common.csproj", "{8104948C-EB24-496B-B15B-D769535B7DAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.UI.Mac.Story", "RepoZ.UI.Mac.Story\RepoZ.UI.Mac.Story.csproj", "{2E92803F-C92B-4C56-B913-87F64476EAE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.App.Mac", "RepoZ.App.Mac\RepoZ.App.Mac.csproj", "{2E92803F-C92B-4C56-B913-87F64476EAE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +38,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		version = 3.1
+		version = 3.3
 	EndGlobalSection
 EndGlobal
