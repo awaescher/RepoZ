@@ -1,4 +1,4 @@
-[![BuitlWithDot.Net shield](https://builtwithdot.net/project/53/repoz/badge)](https://builtwithdot.net/project/53/repoz)
+[![BuitlWithDot.Net shield](https://builtwithdot.net/project/53/repoz/badge)](https://builtwithdot.net/project/53/repoz) [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/awaescher.RepoZ%20Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=1)
 
 # RepoZ
 
@@ -6,7 +6,7 @@ RepoZ is a lightweight git repository hub with Windows Explorer- & CLI-enhanceme
 
 **Keep your favorite git clients, RepoZ will not compete with them.** It's not about working within a repository to commit stuff or analyse logs: It's a new way to use all of your repositories to make your daily work easier.
 
-> Let's face it, we don't just have that one single repository we're working on.
+Let's face it, we don't just have that one single repository we're working on.
 
 Try RepoZ, it's so easy: There's no additional work to do, no configuration to set up, no refresh to trigger. It just works.
 
