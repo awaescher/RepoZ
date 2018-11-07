@@ -96,7 +96,7 @@ namespace grr
 
 		private static void WriteRepositories()
 		{
-			var maxRepoNameLenhth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
+			var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
 			var maxIndexStringLength = _repos.Length.ToString().Length;
 			var ellipsesSign = "\u2026";
 			var writeIndex = _repos.Length > 1;
@@ -112,7 +112,7 @@ namespace grr
 				Console.Write(" ");
 				if (writeIndex)
 					Console.Write($" [{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ");
-				Console.Write(repoName.PadRight(maxRepoNameLenhth + 3));
+				Console.Write(repoName.PadRight(maxRepoNameLength + 3));
 				Console.Write(_repos[i].BranchWithStatus);
 				Console.WriteLine();
 			}
