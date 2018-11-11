@@ -67,7 +67,15 @@ namespace grrui
 					if (repositories?.Length > _repositoryList.SelectedItem)
 					{
 						var current = _repositoriesView.Repositories[_repositoryList.SelectedItem];
-						Process.Start(new ProcessStartInfo(current.Repository.Path) { UseShellExecute = true });
+
+						//Process.Start(new ProcessStartInfo(current.Repository.Path) { UseShellExecute = true });
+						// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
+						var path = current.Repository.Path.Replace(@"\", "/");
+						var command = $"cd \"{path}\"";
+
+						TextCopy.Clipboard.SetText(command);
+						TimelyMessage.ShowMessage("Path copied to clipboard", TimeSpan.FromMilliseconds(100));
+
 						Application.RequestStop();
 					}
 				}
