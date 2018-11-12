@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "grrCore": {
+      "commandName": "Project",
+      "commandLineArgs": "list *"
+    }
+  }
+}
