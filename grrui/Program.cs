@@ -112,6 +112,9 @@ namespace grrui
 		{
 			ExecuteOnSelectedRepository(r =>
 			{
+				var path = r.Path.Replace(@"\", "/");
+				var command = $"cd \"{path}\"";
+
 				TimelyMessage.ShowMessage("Not implemented yet.", TimeSpan.FromMilliseconds(100));
 			});
 		}
@@ -132,9 +135,8 @@ namespace grrui
 			{
 				// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
 				var path = r.Path.Replace(@"\", "/");
-				var command = $"cd \"{path}\"";
 
-				TextCopy.Clipboard.SetText(command);
+				TextCopy.Clipboard.SetText(path);
 				TimelyMessage.ShowMessage("Path copied to clipboard", TimeSpan.FromMilliseconds(100));
 			});
 		}
