@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,37 +14,37 @@ namespace grr.History
 
 		public void Save(State state)
 		{
-			// TODO NETCORE
+			var lines = new string[] { state?.LastLocation ?? "", Serialize(state?.LastRepositories ?? new Repository[0]) };
 
-			//var key = Registry.CurrentUser.OpenSubKey(RegistryPath, true);
-			//if (key == null)
-			//	key = Registry.CurrentUser.CreateSubKey(RegistryPath, RegistryKeyPermissionCheck.ReadWriteSubTree);
-
-			//key.SetValue("LastLocation", state.LastLocation, RegistryValueKind.String);
-			//if (state.OverwriteRepositories)
-			//	key.SetValue("LastRepositories", Serialize(state.LastRepositories), RegistryValueKind.String);
-
-			//key.Close();
+			try
+			{
+				File.WriteAllLines(GetFileName(), lines, Encoding.Default);
+			}
+			catch (Exception)
+			{ /* safely ignore this, saving the state is optional */ }
 		}
 
 		public State Load()
 		{
-			// TODO NETCORE
+			string[] lines = null;
 
-			//var key = Registry.CurrentUser.OpenSubKey(RegistryPath);
-			//if (key == null)
-			//	return null;
+			try
+			{
+				lines = File.ReadAllLines(GetFileName(), Encoding.Default);
+			}
+			catch { /* safely ignore this, reading the state is optional */ }
 
-			//string location = (string)key.GetValue("LastLocation");
-			//string repositories = (string)key.GetValue("LastRepositories");
-			//key.Close();
+			if (lines?.Length != 2)
+				return new State() { LastLocation = "", LastRepositories = new Repository[0] };
 
-			//return new State() {
-			//	LastLocation = location,
-			//	LastRepositories = Deserialize(repositories)
-			//};
-			return new State();
+			return new State()
+			{
+				LastLocation = lines[0],
+				LastRepositories = Deserialize(lines[1])
+			};
 		}
+
+		private string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ\\state.grr");
 
 		private string Serialize(IEnumerable<Repository> repositories)
 		{
