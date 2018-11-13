@@ -8,12 +8,25 @@ using System.Threading.Tasks;
 
 namespace grr.History
 {
-	public class RegistryHistoryRepository : IHistoryRepository
+	public class FileHistoryRepository : IHistoryRepository
 	{
 		public static string RegistryPath { get; } = @"Software\RepoZ\grr\";
 
 		public void Save(State state)
 		{
+			// if multiple repositories were found the last time we ran grr,
+			// these were written to the last state.
+			// if the user selects one with an index like "grr cd :2", we want
+			// to keep the last repositories to enable him to choose another one
+			// with the same indexes as before.
+			// so we have to get the old repositories - load and copy them if required
+			if (!state.OverwriteRepositories)
+			{
+				var oldState = Load();
+				if (oldState?.LastRepositories?.Length > 0)
+					state.LastRepositories = oldState.LastRepositories;
+			}
+
 			var lines = new string[] { state?.LastLocation ?? "", Serialize(state?.LastRepositories ?? new Repository[0]) };
 
 			try

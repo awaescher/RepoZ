@@ -95,9 +95,17 @@ namespace grr
 				LastLocation = FindCallerWorkingDirectory(),
 				LastRepositories = _repos,
 				OverwriteRepositories = (_repos?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
+
+				// OverwriteRepositories = false?!
+				// if multiple repositories were found the last time we ran grr,
+				// these were written to the last state.
+				// if the user selects one with an index like "grr cd :2", we want
+				// to keep the last repositories to enable him to choose another one
+				// with the same indexes as before.
+				// so we have to get the old repositories - load and copy them if required
 			};
 
-			var repository = new History.RegistryHistoryRepository();
+			var repository = new History.FileHistoryRepository();
 			repository.Save(history);
 		}
 
@@ -191,7 +199,7 @@ namespace grr
 
 		private static void ApplyMessageFilters(RepositoryFilterOptions filter)
 		{
-			var historyRepository = new History.RegistryHistoryRepository();
+			var historyRepository = new History.FileHistoryRepository();
 			var filters = new IMessageFilter[]
 			{
 				new IndexMessageFilter(historyRepository),
