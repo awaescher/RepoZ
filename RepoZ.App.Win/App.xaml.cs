@@ -37,7 +37,7 @@ namespace RepoZ.App.Win
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private TaskbarIcon _notifyIcon;
-		private static ResponseSocket _socketService;
+		private static ResponseSocket _socketServer;
 
 		[STAThread]
 		public static void Main()
@@ -75,8 +75,8 @@ namespace RepoZ.App.Win
 
 		protected override void OnExit(ExitEventArgs e)
 		{
-			_socketService?.Disconnect(Ipc.RepoZIpcEndpoint.Address);
-			_socketService?.Dispose();
+			_socketServer?.Disconnect(Ipc.RepoZIpcEndpoint.Address);
+			_socketServer?.Dispose();
 
 			_hotkey.Unregister();
 
@@ -173,12 +173,12 @@ namespace RepoZ.App.Win
 
 		private static void ListenForSocketRequests()
 		{
-			_socketService = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address);
+			_socketServer = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address);
 			
 			while (true)
 			{
 				bool hasMore;
-				var load = _socketService.ReceiveFrameBytes(out hasMore);
+				var load = _socketServer.ReceiveFrameBytes(out hasMore);
 
 				string message = Encoding.UTF8.GetString(load);
 
@@ -206,7 +206,7 @@ namespace RepoZ.App.Win
 						answer = ex.Message;
 					}
 
-					_socketService.SendFrame(Encoding.UTF8.GetBytes(answer));
+					_socketServer.SendFrame(Encoding.UTF8.GetBytes(answer));
 				}
 
 				Thread.Sleep(100);
