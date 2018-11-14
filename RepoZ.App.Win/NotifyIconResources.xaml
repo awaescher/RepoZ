@@ -26,7 +26,6 @@
 	<!-- the application's NotifyIcon - started from App.xaml.cs. Declares its own view model. -->
 	<tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="/App.ico"
-                    ToolTipText="RepoZ"
                     LeftClickCommand="{Binding OpenCommand}"
                     ContextMenu="{StaticResource SysTrayMenu}">
 
