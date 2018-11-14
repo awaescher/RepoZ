@@ -37,6 +37,7 @@ namespace RepoZ.App.Win
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private TaskbarIcon _notifyIcon;
+		private static ResponseSocket _socketService;
 
 		[STAThread]
 		public static void Main()
@@ -65,15 +66,18 @@ namespace RepoZ.App.Win
 			// To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
 			var window = container.Resolve<MainWindow>();
 			EnsureWindowHandle(window);
-			
+
 			_hotkey = new HotKey(47110815);
 			_hotkey.Register(window, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
 
-			Task.Run(() => ListenForGrr());
+			Task.Run(() => ListenForSocketRequests());
 		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
+			_socketService?.Disconnect(Ipc.RepoZIpcEndpoint.Address);
+			_socketService?.Dispose();
+
 			_hotkey.Unregister();
 
 			_explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -167,46 +171,45 @@ namespace RepoZ.App.Win
 			(Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
 		}
 
-		private static void ListenForGrr()
+		private static void ListenForSocketRequests()
 		{
-			using (var server = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address))
+			_socketService = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address);
+			
+			while (true)
 			{
-				while (true)
+				bool hasMore;
+				var load = _socketService.ReceiveFrameBytes(out hasMore);
+
+				string message = Encoding.UTF8.GetString(load);
+
+				if (string.IsNullOrEmpty(message))
+					return;
+
+				if (message.StartsWith("list:", StringComparison.Ordinal))
 				{
-					bool hasMore;
-					var load = server.ReceiveFrameBytes(out hasMore);
+					string repositoryNamePattern = message.Substring("list:".Length);
 
-					string message = Encoding.UTF8.GetString(load);
-
-					if (string.IsNullOrEmpty(message))
-						return;
-
-					if (message.StartsWith("list:", StringComparison.Ordinal))
+					string answer = "(no repositories found)";
+					try
 					{
-						string repositoryNamePattern = message.Substring("list:".Length);
+						var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+						var repos = aggregator.Repositories
+							.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+							.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+							.ToArray();
 
-						string answer = "(no repositories found)";
-						try
-						{
-							var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-							var repos = aggregator.Repositories
-								.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-								.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
-								.ToArray();
-
-							if (repos.Any())
-								answer = string.Join(Environment.NewLine, repos);
-						}
-						catch (Exception ex)
-						{
-							answer = ex.Message;
-						}
-
-						server.SendFrame(Encoding.UTF8.GetBytes(answer));
+						if (repos.Any())
+							answer = string.Join(Environment.NewLine, repos);
+					}
+					catch (Exception ex)
+					{
+						answer = ex.Message;
 					}
 
-					Thread.Sleep(100);
+					_socketService.SendFrame(Encoding.UTF8.GetBytes(answer));
 				}
+
+				Thread.Sleep(100);
 			}
 		}
 
