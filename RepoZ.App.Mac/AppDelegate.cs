@@ -33,9 +33,10 @@ namespace RepoZ.App.Mac
 
         private IRepositoryMonitor _repositoryMonitor;
         private NSObject _eventMonitor;
-		private Timer _updateTimer;
+        private Timer _updateTimer;
+        private ResponseSocket _socketServer;
 
-		public override void DidFinishLaunching(NSNotification notification)
+        public override void DidFinishLaunching(NSNotification notification)
         {
             var isRetina = NSScreen.MainScreen.BackingScaleFactor > 1.0;
             string statusItemImageName = $"StatusBarImage{(isRetina ? "@2x" : "")}.png";
@@ -58,54 +59,14 @@ namespace RepoZ.App.Mac
 
             _updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
 
-            Task.Run(() => ListenForGrr());
-        }
-
-        private static void ListenForGrr()
-        {
-            using (var server = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address))
-            {
-                while (true)
-                {
-                    bool hasMore;
-                    var load = server.ReceiveFrameBytes(out hasMore);
-
-                    string message = Encoding.UTF8.GetString(load);
-
-                    if (string.IsNullOrEmpty(message))
-                        return;
-
-                    if (message.StartsWith("list:", StringComparison.Ordinal))
-                    {
-                        string repositoryNamePattern = message.Substring("list:".Length);
-
-                        string answer = "(no repositories found)";
-                        try
-                        {
-                            var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-                            var repos = aggregator.Repositories
-                                .Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-                                .Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
-                                .ToArray();
-
-                            if (repos.Any())
-                                answer = string.Join(Environment.NewLine, repos);
-                        }
-                        catch (Exception ex)
-                        {
-                            answer = ex.Message;
-                        }
-
-                        server.SendFrame(Encoding.UTF8.GetBytes(answer));
-                    }
-
-                    Thread.Sleep(100);
-                }
-            }
+            Task.Run(() => ListenForSocketRequests());
         }
 
         public override void WillTerminate(NSNotification notification)
         {
+            _socketServer?.Disconnect(Ipc.RepoZIpcEndpoint.Address);
+            _socketServer?.Dispose();
+
             // Insert code here to tear down your application
             NSEvent.RemoveMonitor(_eventMonitor);
         }
@@ -149,7 +110,7 @@ namespace RepoZ.App.Mac
             _repositoryMonitor.Observe();
         }
 
-		private async void CheckForUpdatesAsync(object state)
+        private async void CheckForUpdatesAsync(object state)
         {
             var bundleVersion = NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString();
 
@@ -165,7 +126,7 @@ namespace RepoZ.App.Mac
 
             AvailableUpdate = updates.FirstOrDefault();
 
-			_updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
+            _updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
         }
 
         void HandleGlobalEventHandler(NSEvent globalEvent)
@@ -180,6 +141,48 @@ namespace RepoZ.App.Mac
             }
         }
 
-		public static AvailableVersion AvailableUpdate { get; private set; }
+        private void ListenForSocketRequests()
+        {
+            _socketServer = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address);
+
+            while (true)
+            {
+                bool hasMore;
+                var load = _socketServer.ReceiveFrameBytes(out hasMore);
+
+                string message = Encoding.UTF8.GetString(load);
+
+                if (string.IsNullOrEmpty(message))
+                    return;
+
+                if (message.StartsWith("list:", StringComparison.Ordinal))
+                {
+                    string repositoryNamePattern = message.Substring("list:".Length);
+
+                    string answer = "(no repositories found)";
+                    try
+                    {
+                        var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+                        var repos = aggregator.Repositories
+                            .Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+                            .Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+                            .ToArray();
+
+                        if (repos.Any())
+                            answer = string.Join(Environment.NewLine, repos);
+                    }
+                    catch (Exception ex)
+                    {
+                        answer = ex.Message;
+                    }
+
+                    _socketServer.SendFrame(Encoding.UTF8.GetBytes(answer));
+                }
+
+                Thread.Sleep(100);
+            }
+        }
+
+        public static AvailableVersion AvailableUpdate { get; private set; }
     }
 }
