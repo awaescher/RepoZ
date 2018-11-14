@@ -7,13 +7,14 @@
 
 var target = Argument<string>("target", "Default");
 var configuration = Argument<string>("configuration", "Release");
+var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "netcoreapp2.1");
+var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", "win-x64");
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 
-var _solutions = GetFiles("./**/*Win.sln");
-var _solutionPaths = _solutions.Select(solution => solution.GetDirectory());
+var _solution = "./RepoZ.Win.sln";
 var _appVersion = FileReadLines("app.version").First();
 var dotIndex = _appVersion.IndexOf(".");
 dotIndex = _appVersion.IndexOf(".", dotIndex + 1); // find the second "." for "2.1" from "2.1.0.0"
@@ -27,36 +28,27 @@ Task("Clean")
     .Description("Cleans all directories that are used during the build process.")
     .Does(() =>
 {
-    // Clean solution directories.
-    foreach(var path in _solutionPaths)
-    {
-        Information("Cleaning {0}", path);
-        CleanDirectories(path + "/**/bin/" + configuration);
-        CleanDirectories(path + "/**/obj/" + configuration);
-    }
+	CleanDirectories("./**/bin/" + configuration);
+	CleanDirectories("./**/obj/" + configuration);
 });
 
 Task("Restore")
     .Description("Restores all the NuGet packages that are used by the specified solution.")
     .Does(() =>
 {
-    // Restore all NuGet packages.
-    foreach(var solution in _solutions)
-    {
-        Information("Restoring {0}...", solution);
-        NuGetRestore(solution);
-    }
+	Information("Restoring {0}...", _solution);
+	NuGetRestore(_solution);
 });
 
 Task("SetVersion")
     .IsDependentOn("Restore")
    .Does(() => 
    {
-       ReplaceRegexInFiles("../**/AssemblyInfo.*", 
+       ReplaceRegexInFiles("./**/AssemblyInfo.*", 
                            "(?<=AssemblyVersion\\(\")(.+?)(?=\"\\))", 
                            _appVersion);
 
-       ReplaceRegexInFiles("../**/AssemblyInfo.*", 
+       ReplaceRegexInFiles("./**/AssemblyInfo.*", 
                            "(?<=AssemblyFileVersion\\(\")(.+?)(?=\"\\))", 
                            _appVersion);
 						   
@@ -70,31 +62,41 @@ Task("Build")
 	.IsDependentOn("SetVersion")
     .Does(() =>
 {
-    // Build all _solutions.
-    foreach(var solution in _solutions)
-    {
-        Information("Building {0}", solution);
-        MSBuild(solution, settings =>
-            settings.SetPlatformTarget(PlatformTarget.MSIL)
-                .WithProperty("TreatWarningsAsErrors","true")
-                .WithTarget("Build")
-                .SetConfiguration(configuration));
-    }
+	// build the solution
+	Information("Building {0}", _solution);
+	MSBuild(_solution, settings =>
+		settings.SetPlatformTarget(PlatformTarget.MSIL)
+			.WithProperty("TreatWarningsAsErrors","true")
+			.WithTarget("Build")
+			.SetConfiguration(configuration));
 });
 
-Task("Deploy")
+Task("Publish")
 	.IsDependentOn("Build")
 	.Does(() => 
 {
-	var assemblyDir = Directory("_output/Assemblies");
+	// publish netcore apps
+	var settings = new DotNetCorePublishSettings
+	{
+		Framework = netcoreTargetFramework,
+		Configuration = configuration,
+		Runtime = netcoreTargetRuntime,
+		SelfContained = true
+	};
+	DotNetCorePublish("./grr/grr.csproj", settings);
+	DotNetCorePublish("./grrui/grrui.csproj", settings);
+	
+	// copy file to a single folder
 	var outputDir = Directory("_output");
+	var assemblyDir = Directory("_output/Assemblies");
 	
 	EnsureDirectoryExists(outputDir);
 	CleanDirectory(outputDir);
 	EnsureDirectoryExists(assemblyDir);
 		
 	CopyFiles("RepoZ.App.Win/bin/" + configuration + "/**/*.*", assemblyDir, true);
-	CopyFiles("grr/bin/" + configuration + "/**/*.*", assemblyDir, true);
+	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*.*", assemblyDir, true);
+	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*.*", assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
@@ -103,7 +105,7 @@ Task("Deploy")
 });
 
 Task("CompileWinSetup")
-	.IsDependentOn("Deploy")
+	.IsDependentOn("Publish")
 	.Does(() => 
 {	
 	MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
