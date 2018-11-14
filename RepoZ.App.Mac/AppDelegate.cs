@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AppKit;
 using Foundation;
+using NetMQ;
+using NetMQ.Sockets;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
@@ -52,7 +56,52 @@ namespace RepoZ.App.Mac
 
             _eventMonitor = NSEvent.AddGlobalMonitorForEventsMatchingMask(NSEventMask.KeyDown, HandleGlobalEventHandler);
 
-			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
+            _updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
+
+            Task.Run(() => ListenForGrr());
+        }
+
+        private static void ListenForGrr()
+        {
+            using (var server = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address))
+            {
+                while (true)
+                {
+                    bool hasMore;
+                    var load = server.ReceiveFrameBytes(out hasMore);
+
+                    string message = Encoding.UTF8.GetString(load);
+
+                    if (string.IsNullOrEmpty(message))
+                        return;
+
+                    if (message.StartsWith("list:", StringComparison.Ordinal))
+                    {
+                        string repositoryNamePattern = message.Substring("list:".Length);
+
+                        string answer = "(no repositories found)";
+                        try
+                        {
+                            var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+                            var repos = aggregator.Repositories
+                                .Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+                                .Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+                                .ToArray();
+
+                            if (repos.Any())
+                                answer = string.Join(Environment.NewLine, repos);
+                        }
+                        catch (Exception ex)
+                        {
+                            answer = ex.Message;
+                        }
+
+                        server.SendFrame(Encoding.UTF8.GetBytes(answer));
+                    }
+
+                    Thread.Sleep(100);
+                }
+            }
         }
 
         public override void WillTerminate(NSNotification notification)

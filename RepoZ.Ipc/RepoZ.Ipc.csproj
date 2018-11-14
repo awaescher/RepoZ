@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <ReleaseVersion>3.3</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TinyIpc" Version="1.0.3" />
+    <PackageReference Include="NetMQ" Version="4.0.0.1" />
   </ItemGroup>
 
 </Project>

@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using grr.Messages;
-using TinyIpc.Messaging;
 using grr.Messages.Filters;
 using System.IO;
+using NetMQ.Sockets;
+using NetMQ;
+using RepoZ.Ipc;
 
 namespace grr
 {
@@ -16,19 +18,15 @@ namespace grr
 	{
 		private const int MAX_REPO_NAME_LENGTH = 35;
 
-		private static TinyMessageBus _bus;
-		private static string _answer = null;
-		private static Repository[] _repos = null;
-
-		static void Main(string[] args)
+        static void Main(string[] args)
 		{
 			Console.OutputEncoding = Encoding.UTF8;
 
-			args = PrepareArguments(args);
+            args = PrepareArguments(args);
 
 			if (IsHelpRequested(args))
 			{
-				ShowHelp();
+                ShowHelp();
 			}
 			else
 			{
@@ -36,33 +34,22 @@ namespace grr
 
 				if (message != null)
 				{
-					if (message.HasRemoteCommand)
-					{
-						_bus = new TinyMessageBus("RepoZ-ipc");
-						_bus.MessageReceived += _bus_MessageReceived;
+                    RepoZIpcClient.Result result = null;
 
-						byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
-						_bus.PublishAsync(load);
+                    if (message.HasRemoteCommand)
+                    {
+                        var client = new RepoZIpcClient();
+                        result = client.GetRepositories(message.GetRemoteCommand());
 
-						var watch = Stopwatch.StartNew();
-
-						while (_answer == null && watch.ElapsedMilliseconds <= 3000)
-						{ /* ... wait ... */ }
-
-						if (_answer == null)
-							Console.WriteLine("RepoZ seems not to be running :(");
-
-						_bus?.Dispose();
-
-						if (_repos != null && _repos.Any())
-							WriteRepositories();
+						if (result.Repositories?.Length > 0)
+							WriteRepositories(result.Repositories);
 						else
-							Console.WriteLine(_answer);
+							Console.WriteLine(result.Answer);
 					}
 
-					message?.Execute(_repos);
+					message?.Execute(result?.Repositories);
 
-					WriteHistory();
+					WriteHistory(result?.Repositories);
 				}
 				else
 				{
@@ -88,13 +75,13 @@ namespace grr
 			}
 		}
 
-		private static void WriteHistory()
+		private static void WriteHistory(Repository[] repositories)
 		{
 			var history = new History.State()
 			{
 				LastLocation = FindCallerWorkingDirectory(),
-				LastRepositories = _repos,
-				OverwriteRepositories = (_repos?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
+				LastRepositories = repositories,
+				OverwriteRepositories = (repositories?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
 
 				// OverwriteRepositories = false?!
 				// if multiple repositories were found the last time we ran grr,
@@ -116,26 +103,26 @@ namespace grr
 			return System.IO.Directory.GetCurrentDirectory();
 		}
 
-		private static void WriteRepositories()
+		private static void WriteRepositories(Repository[] repositories)
 		{
-			var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
-			var maxIndexStringLength = _repos.Length.ToString().Length;
+			var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, repositories.Max(r => r.Name?.Length ?? 0));
+			var maxIndexStringLength = repositories.Length.ToString().Length;
 			var ellipsesSign = "\u2026";
-			var writeIndex = _repos.Length > 1;
+			var writeIndex = repositories.Length > 1;
 
-			for (int i = 0; i < _repos.Length; i++)
+			for (int i = 0; i < repositories.Length; i++)
 			{
 				var userIndex = i + 1; // the index visible to the user are 1-based, not 0-based;
 
-				string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
-					? _repos[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
-					: _repos[i].Name;
+				string repoName = (repositories[i].Name.Length > MAX_REPO_NAME_LENGTH)
+					? repositories[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
+					: repositories[i].Name;
 
 				Console.Write(" ");
 				if (writeIndex)
 					Console.Write($" [{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ");
 				Console.Write(repoName.PadRight(maxRepoNameLength + 3));
-				Console.Write(_repos[i].BranchWithStatus);
+				Console.Write(repositories[i].BranchWithStatus);
 				Console.WriteLine();
 			}
 		}
@@ -153,19 +140,6 @@ namespace grr
 			}
 
 			return args;
-		}
-
-		private static void _bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
-		{
-			var answer = Encoding.UTF8.GetString(e.Message);
-
-			_repos = answer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
-				.Select(s => Repository.FromString(s))
-				.Where(r => r != null)
-				.OrderBy(r => r.Name)
-				.ToArray();
-
-			_answer = answer;
 		}
 
 		private static IMessage GetMessage(RepositoryFilterOptions options)

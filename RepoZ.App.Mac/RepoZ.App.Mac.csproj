@@ -66,6 +66,13 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="AsyncIO">
+      <HintPath>..\packages\AsyncIO.0.1.26.0\lib\net40\AsyncIO.dll</HintPath>
+    </Reference>
+    <Reference Include="NetMQ">
+      <HintPath>..\packages\NetMQ.4.0.0.1\lib\net40\NetMQ.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -93,7 +100,6 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="TinyIoC.cs" />
     <Compile Include="Model\RepositoryTableDataSource.cs" />
     <Compile Include="Model\RepositoryTableDelegate.cs" />
     <Compile Include="AppDelegate.designer.cs">
@@ -118,6 +124,10 @@
     <Compile Include="Controls\ZSearchField.cs" />
     <Compile Include="Controls\ZTableView.cs" />
     <Compile Include="StringCommandHandler.cs" />
+    <Compile Include="TinyIoC.cs" />
+    <Compile Include="..\RepoZ.Ipc\RepoZIpcEndpoint.cs">
+      <Link>RepoZIpcEndpoint.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />

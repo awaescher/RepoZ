@@ -7,7 +7,6 @@ using RepoZ.Api.IO;
 using RepoZ.Api.Mac;
 using RepoZ.Api.Mac.Git;
 using RepoZ.Api.Mac.IO;
-using TinyIoC;
 
 namespace RepoZ.App.Mac
 {

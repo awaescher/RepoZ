@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using RepoZ.Ipc;
 using System;
 using System.Collections.Generic;
 using System.IO;

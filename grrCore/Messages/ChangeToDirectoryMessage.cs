@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using RepoZ.Ipc;
 
 namespace grr.Messages
 {

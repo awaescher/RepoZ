@@ -9,11 +9,14 @@
     <PackageProjectUrl>https://github.com/awaescher/RepoZ</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/awaescher/RepoZ/master/grr/grr.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/awaescher/RepoZ</RepositoryUrl>
+    <ReleaseVersion>3.3</ReleaseVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="TinyIpc" Version="1.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj" />
+  </ItemGroup>
 </Project>
