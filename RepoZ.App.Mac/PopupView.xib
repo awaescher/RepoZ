@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="System colors introduced in macOS 10.14" minToolsVersion="10.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -61,7 +61,7 @@
                                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSIconViewTemplate" id="KIE-Zp-h4j"/>
                                                     </imageView>
                                                     <textField identifier="RepositoryLabel" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsExpansionToolTips="YES" id="Tgn-Zf-a7x">
-                                                        <rect key="frame" x="29" y="46" width="282" height="24"/>
+                                                        <rect key="frame" x="29" y="46" width="272" height="24"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="RepoZ" id="cGH-SL-E5G">
                                                             <font key="font" metaFont="systemLight" size="16"/>
@@ -70,7 +70,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField identifier="CurrentBranchLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1cL-QX-vvQ">
-                                                        <rect key="frame" x="29" y="28" width="282" height="17"/>
+                                                        <rect key="frame" x="29" y="28" width="272" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="feature/macOS_UI_Redesign" id="kdc-1q-Zmp">
                                                             <font key="font" metaFont="systemLight" size="13"/>
@@ -79,7 +79,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField identifier="StatusLabel" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="tyH-7E-oSE">
-                                                        <rect key="frame" x="29" y="9" width="282" height="17"/>
+                                                        <rect key="frame" x="29" y="9" width="272" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="= +1 -2 ~3" id="kbt-F6-lUh">
                                                             <font key="font" metaFont="systemLight" size="13"/>
