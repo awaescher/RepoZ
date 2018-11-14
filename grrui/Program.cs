@@ -9,13 +9,13 @@ namespace grrui
 {
 	class Program
 	{
-		private static RepozIpcClient _client;
+		private static RepoZIpcClient _client;
 		private static ListView _repositoryList;
 		private static RepositoriesView _repositoriesView;
 
 		static void Main(string[] args)
 		{
-			_client = new RepozIpcClient();
+			_client = new RepoZIpcClient();
 			var answer = _client.GetRepositories();
 
 			if (answer.Repositories == null)

@@ -17,11 +17,12 @@ using RepoZ.Api.Win.Git;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
-using TinyIpc.Messaging;
 using System.Text.RegularExpressions;
 using Hardcodet.Wpf.TaskbarNotification;
 using TinySoup.Model;
 using TinySoup;
+using NetMQ.Sockets;
+using NetMQ;
 
 namespace RepoZ.App.Win
 {
@@ -35,7 +36,6 @@ namespace RepoZ.App.Win
 		private HotKey _hotkey;
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
-		private static TinyMessageBus _bus;
 		private TaskbarIcon _notifyIcon;
 
 		[STAThread]
@@ -59,9 +59,6 @@ namespace RepoZ.App.Win
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
-			_bus = new TinyMessageBus("RepoZ-ipc");
-			_bus.MessageReceived += Bus_MessageReceived;
-			
 			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
 
 			// We noticed that the hotkey registration causes a high CPU utilization if the window was not shown before.
@@ -71,6 +68,8 @@ namespace RepoZ.App.Win
 			
 			_hotkey = new HotKey(47110815);
 			_hotkey.Register(window, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
+
+			Task.Run(() => ListenForGrr());
 		}
 
 		protected override void OnExit(ExitEventArgs e)
@@ -168,36 +167,46 @@ namespace RepoZ.App.Win
 			(Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
 		}
 
-		private static void Bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
+		private static void ListenForGrr()
 		{
-			string message = Encoding.UTF8.GetString(e.Message);
-
-			if (string.IsNullOrEmpty(message))
-				return;
-
-			if (message.StartsWith("list:"))
+			using (var server = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address))
 			{
-				string repositoryNamePattern = message.Substring("list:".Length);
-				var bus = (TinyMessageBus)sender;
-
-				string answer = "(no repositories found)";
-				try
+				while (true)
 				{
-					var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-					var repos = aggregator.Repositories
-						.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-						.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
-						.ToArray();
+					bool hasMore;
+					var load = server.ReceiveFrameBytes(out hasMore);
 
-					if (repos.Any())
-						answer = string.Join(Environment.NewLine, repos);
-				}
-				catch (Exception ex)
-				{
-					answer = ex.Message;
-				}
+					string message = Encoding.UTF8.GetString(load);
 
-				bus.PublishAsync(Encoding.UTF8.GetBytes(answer));
+					if (string.IsNullOrEmpty(message))
+						return;
+
+					if (message.StartsWith("list:", StringComparison.Ordinal))
+					{
+						string repositoryNamePattern = message.Substring("list:".Length);
+
+						string answer = "(no repositories found)";
+						try
+						{
+							var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+							var repos = aggregator.Repositories
+								.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+								.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+								.ToArray();
+
+							if (repos.Any())
+								answer = string.Join(Environment.NewLine, repos);
+						}
+						catch (Exception ex)
+						{
+							answer = ex.Message;
+						}
+
+						server.SendFrame(Encoding.UTF8.GetBytes(answer));
+					}
+
+					Thread.Sleep(100);
+				}
 			}
 		}
 
