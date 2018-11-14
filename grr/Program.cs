@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using grr.Messages;
-using TinyIpc.Messaging;
 using grr.Messages.Filters;
 using System.IO;
+using NetMQ.Sockets;
+using NetMQ;
+using RepoZ.Ipc;
 
 namespace grr
 {
@@ -16,53 +18,38 @@ namespace grr
 	{
 		private const int MAX_REPO_NAME_LENGTH = 35;
 
-		private static TinyMessageBus _bus;
-		private static string _answer = null;
-		private static Repository[] _repos = null;
-
-		static void Main(string[] args)
+        static void Main(string[] args)
 		{
 			Console.OutputEncoding = Encoding.UTF8;
-			IMessage message = null;
 
-			args = PrepareArguments(args);
+            args = PrepareArguments(args);
 
 			if (IsHelpRequested(args))
 			{
-				ShowHelp();
+                ShowHelp();
 			}
 			else
 			{
-				if (CommandLine.Parser.Default.ParseArguments(args, new CommandLineOptions(),
-					(v, o) => ParseCommandLineOptions(v, o, out message)))
+				var message = TryParseArgumentsToMessage(args);
+
+				if (message != null)
 				{
-					if (message.HasRemoteCommand)
-					{
-						_bus = new TinyMessageBus("RepoZ-ipc");
-						_bus.MessageReceived += _bus_MessageReceived;
+                    RepoZIpcClient.Result result = null;
 
-						byte[] load = Encoding.UTF8.GetBytes(message.GetRemoteCommand());
-						_bus.PublishAsync(load);
+                    if (message.HasRemoteCommand)
+                    {
+                        var client = new RepoZIpcClient();
+                        result = client.GetRepositories(message.GetRemoteCommand());
 
-						var watch = Stopwatch.StartNew();
-
-						while (_answer == null && watch.ElapsedMilliseconds <= 3000)
-						{ /* ... wait ... */ }
-
-						if (_answer == null)
-							Console.WriteLine("RepoZ seems not to be running :(");
-
-						_bus?.Dispose();
-
-						if (_repos != null && _repos.Any())
-							WriteRepositories();
+						if (result.Repositories?.Length > 0)
+							WriteRepositories(result.Repositories);
 						else
-							Console.WriteLine(_answer);
+							Console.WriteLine(result.Answer);
 					}
 
-					message?.Execute(_repos);
+					message?.Execute(result?.Repositories);
 
-					WriteHistory();
+					WriteHistory(result?.Repositories);
 				}
 				else
 				{
@@ -74,16 +61,38 @@ namespace grr
 				Console.ReadKey();
 		}
 
-		private static void WriteHistory()
+		private static IMessage TryParseArgumentsToMessage(string[] args)
+		{
+			try
+			{
+				var parseResult = CommandLine.Parser.Default.ParseArguments(args, typeof(ListOptions), typeof(ChangeDirectoryOptions), typeof(OpenDirectoryOptions));
+				var options = parseResult.GetType().GetProperty("Value").GetValue(parseResult);
+				return GetMessage(options as RepositoryFilterOptions);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		private static void WriteHistory(Repository[] repositories)
 		{
 			var history = new History.State()
 			{
 				LastLocation = FindCallerWorkingDirectory(),
-				LastRepositories = _repos,
-				OverwriteRepositories = (_repos?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
+				LastRepositories = repositories,
+				OverwriteRepositories = (repositories?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
+
+				// OverwriteRepositories = false?!
+				// if multiple repositories were found the last time we ran grr,
+				// these were written to the last state.
+				// if the user selects one with an index like "grr cd :2", we want
+				// to keep the last repositories to enable him to choose another one
+				// with the same indexes as before.
+				// so we have to get the old repositories - load and copy them if required
 			};
 
-			var repository = new History.RegistryHistoryRepository();
+			var repository = new History.FileHistoryRepository();
 			repository.Save(history);
 		}
 
@@ -94,26 +103,26 @@ namespace grr
 			return System.IO.Directory.GetCurrentDirectory();
 		}
 
-		private static void WriteRepositories()
+		private static void WriteRepositories(Repository[] repositories)
 		{
-			var maxRepoNameLenhth = Math.Min(MAX_REPO_NAME_LENGTH, _repos.Max(r => r.Name?.Length ?? 0));
-			var maxIndexStringLength = _repos.Length.ToString().Length;
+			var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, repositories.Max(r => r.Name?.Length ?? 0));
+			var maxIndexStringLength = repositories.Length.ToString().Length;
 			var ellipsesSign = "\u2026";
-			var writeIndex = _repos.Length > 1;
+			var writeIndex = repositories.Length > 1;
 
-			for (int i = 0; i < _repos.Length; i++)
+			for (int i = 0; i < repositories.Length; i++)
 			{
 				var userIndex = i + 1; // the index visible to the user are 1-based, not 0-based;
 
-				string repoName = (_repos[i].Name.Length > MAX_REPO_NAME_LENGTH)
-					? _repos[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
-					: _repos[i].Name;
+				string repoName = (repositories[i].Name.Length > MAX_REPO_NAME_LENGTH)
+					? repositories[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
+					: repositories[i].Name;
 
 				Console.Write(" ");
 				if (writeIndex)
 					Console.Write($" [{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ");
-				Console.Write(repoName.PadRight(maxRepoNameLenhth + 3));
-				Console.Write(_repos[i].BranchWithStatus);
+				Console.Write(repoName.PadRight(maxRepoNameLength + 3));
+				Console.Write(repositories[i].BranchWithStatus);
 				Console.WriteLine();
 			}
 		}
@@ -133,54 +142,38 @@ namespace grr
 			return args;
 		}
 
-		private static void _bus_MessageReceived(object sender, TinyMessageReceivedEventArgs e)
-		{
-			var answer = Encoding.UTF8.GetString(e.Message);
-
-			_repos = answer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
-				.Select(s => Repository.FromString(s))
-				.Where(r => r != null)
-				.OrderBy(r => r.Name)
-				.ToArray();
-
-			_answer = answer;
-		}
-
-		private static void ParseCommandLineOptions(string verb, object options, out IMessage message)
+		private static IMessage GetMessage(RepositoryFilterOptions options)
 		{
 			// default should be listing all repositories
-			message = new ListRepositoriesMessage();
+			IMessage message = new ListRepositoriesMessage();
 
-			var filter = options as RepositoryFilterOptions;
+			ApplyMessageFilters(options);
 
-			if (filter != null)
+			if (options is ListOptions)
 			{
-				ApplyMessageFilters(filter);
-
-				if (verb == CommandLineOptions.ListCommand)
-				{
-					if (filter.HasFileFilter)
-						message = new ListRepositoryFilesMessage(filter);
-					else
-						message = new ListRepositoriesMessage(filter);
-				}
-
-				if (verb == CommandLineOptions.ChangeDirectoryCommand)
-					message = new ChangeToDirectoryMessage(filter);
-
-				if (verb == CommandLineOptions.OpenDirectoryCommand)
-				{
-					if (filter.HasFileFilter)
-						message = new OpenFileMessage(filter);
-					else
-						message = new OpenDirectoryMessage(filter);
-				}
+				if (options.HasFileFilter)
+					message = new ListRepositoryFilesMessage(options);
+				else
+					message = new ListRepositoriesMessage(options);
 			}
+
+			if (options is ChangeDirectoryOptions)
+				message = new ChangeToDirectoryMessage(options);
+
+			if (options is OpenDirectoryOptions)
+			{
+				if (options.HasFileFilter)
+					message = new OpenFileMessage(options);
+				else
+					message = new OpenDirectoryMessage(options);
+			}
+
+			return message;
 		}
 
 		private static void ApplyMessageFilters(RepositoryFilterOptions filter)
 		{
-			var historyRepository = new History.RegistryHistoryRepository();
+			var historyRepository = new History.FileHistoryRepository();
 			var filters = new IMessageFilter[]
 			{
 				new IndexMessageFilter(historyRepository),

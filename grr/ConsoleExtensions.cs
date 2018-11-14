@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 
 namespace grr
 {
@@ -17,8 +17,10 @@ namespace grr
 		public static void WriteConsoleInput(Process target, string value)
 		{
 			SetForegroundWindow(target.MainWindowHandle);
-			SendKeys.SendWait(value);
-			SendKeys.SendWait("{Enter}");
+			
+			// TODO NETCORE
+			//SendKeys.SendWait(value);
+			//SendKeys.SendWait("{Enter}");
 		}
 	}
 }

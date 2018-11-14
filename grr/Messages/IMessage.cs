@@ -1,4 +1,6 @@
-﻿namespace grr.Messages
+﻿using RepoZ.Ipc;
+
+namespace grr.Messages
 {
 	public interface IMessage
 	{

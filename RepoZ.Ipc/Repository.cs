@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace grr
+﻿namespace RepoZ.Ipc
 {
 	[System.Diagnostics.DebuggerDisplay("{Name}")]
 	public class Repository
@@ -24,7 +18,9 @@ namespace grr
 		}
 
 		public string Name { get; set; }
+
 		public string BranchWithStatus { get; set; }
+
 		public string Path { get; set; }
 	}
 }
