@@ -19,8 +19,9 @@ namespace grr.Messages
 			directory = directory.Replace(@"\", "/");
 
 			var command = $"cd \"{directory}\"";
-			var parentProcess = Process.GetCurrentProcess();
-			ConsoleExtensions.WriteConsoleInput(parentProcess, command);
+
+			// type the path into the console which is hosting grr.exe to change to the directory
+			ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command);
 		}
 
 		protected override void ExecuteRepositoryQuery(Repository[] repositories)

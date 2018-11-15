@@ -52,6 +52,7 @@ Section "RepoZ"
   
   File /r ..\_output\Assemblies\*.*
   File ..\_ref\PathEd.exe ; Add PathEd.exe to add the RepoZ directory to the system's PATH easily
+  File ..\_ref\SendKeys.exe ; Add SendKeys.exe to add the RepoZ directory for grr and grrui
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" $INSTDIR\${PRODUCT_NAME}.exe
   
   ; Add the installation folder to the system PATH -> to enable grr.exe

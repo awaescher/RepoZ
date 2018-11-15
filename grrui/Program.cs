@@ -115,7 +115,9 @@ namespace grrui
 				var path = r.Path.Replace(@"\", "/");
 				var command = $"cd \"{path}\"";
 
-				TimelyMessage.ShowMessage("Not implemented yet.", TimeSpan.FromMilliseconds(100));
+				// type the path into the console which is hosting grrui.exe to change to the directory
+				grr.ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command, waitMilliseconds: 1000);
+				Application.RequestStop();
 			});
 		}
 
