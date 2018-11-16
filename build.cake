@@ -7,14 +7,15 @@
 
 var target = Argument<string>("target", "Default");
 var configuration = Argument<string>("configuration", "Release");
+var system = Argument<string>("system", "win");
 var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "netcoreapp2.1");
-var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", "win-x64");
+var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", system=="win" ? "win-x64" : "osx-x64");
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLOBAL VARIABLES
 ///////////////////////////////////////////////////////////////////////////////
 
-var _solution = "./RepoZ.Win.sln";
+var _solution = $"./RepoZ.{system}.sln";
 var _appVersion = FileReadLines("app.version").First();
 var dotIndex = _appVersion.IndexOf(".");
 dotIndex = _appVersion.IndexOf(".", dotIndex + 1); // find the second "." for "2.1" from "2.1.0.0"
@@ -87,34 +88,37 @@ Task("Publish")
 	DotNetCorePublish("./grrui/grrui.csproj", settings);
 	
 	// copy file to a single folder
-	var outputDir = Directory("_output");
-	var assemblyDir = Directory("_output/Assemblies");
+	var outputDir = Directory($"_output/{system}");
+	var assemblyDir = Directory($"_output/{system}/Assemblies");
 	
 	EnsureDirectoryExists(outputDir);
 	CleanDirectory(outputDir);
 	EnsureDirectoryExists(assemblyDir);
 		
-	CopyFiles("RepoZ.App.Win/bin/" + configuration + "/**/*.*", assemblyDir, true);
-	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*.*", assemblyDir, true);
-	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*.*", assemblyDir, true);
+	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*.*", assemblyDir, true);
+	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
+	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
 	
-	Zip(assemblyDir, outputDir.Path + "/v" + _appVersionShort + "-win-portable.zip");
+	Zip(assemblyDir, outputDir.Path + "/v" + _appVersionShort + $"-{system}-portable.zip");
 });
 
-Task("CompileWinSetup")
+Task("CompileSetup")
 	.IsDependentOn("Publish")
 	.Does(() => 
 {	
-	MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
+	if (system == "win")
 	{
-		Defines = new Dictionary<string, string>
+		MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
 		{
-			{ "PRODUCT_VERSION", _appVersionShort }
-		}
-	});
+			Defines = new Dictionary<string, string>
+			{
+				{ "PRODUCT_VERSION", _appVersionShort }
+			}
+		});
+	}
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,7 +127,7 @@ Task("CompileWinSetup")
 
 Task("Default")
     .Description("This is the default task which will be ran if no specific target is passed in.")
-    .IsDependentOn("CompileWinSetup");
+    .IsDependentOn("CompileSetup");
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXECUTION
