@@ -2,10 +2,6 @@
 pool:
   vmImage: 'VS2017-Win2016'
   
-
-steps:
-  - task: powershell@1
-    inputs:
-      filePath: .\build.ps1
-      arguments: -System win
-    displayName: 'Running Cake build ...'
+- powershell: |
+    '.\build.ps1 -Target CompileSetup -System win -Verbosity Verbose'
+  displayName: 'Running Cake build ...'
