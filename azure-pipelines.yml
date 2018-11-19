@@ -3,6 +3,6 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 steps:
-- script: |
+- powershell: |
     build.ps1 -System win
   displayName: 'Running Cake build ...'
