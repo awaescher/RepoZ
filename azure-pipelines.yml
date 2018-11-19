@@ -2,8 +2,8 @@
 pool:
   vmImage: 'VS2017-Win2016'
   
-- task: powershell@1
+  - task: powershell@1
     inputs:
-      filePath:.\build.ps1
+      filePath: .\build.ps1
       arguments: -System win
     displayName: 'Running Cake build ...'
