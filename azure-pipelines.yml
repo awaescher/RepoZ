@@ -4,5 +4,5 @@ pool:
 
 steps:
 - powershell: |
-    .\build.ps1 -System win -Verbosity Verbose
+    .\build.ps1 -Target CompileWinSetup -System win -Verbosity Verbose
   displayName: 'Running Cake build ...'
