@@ -9,5 +9,5 @@ steps:
   inputs:
     targetType: filePath
     filePath: .\build.ps1 
-    arguments: -Verbosity=Diagnostic
+    arguments: 
 
