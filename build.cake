@@ -1,5 +1,7 @@
 #addin "Cake.FileHelpers"
 #tool "nsis"
+#tool "nuget:?package=NUnit.ConsoleRunner"
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -72,8 +74,24 @@ Task("Build")
 			.SetConfiguration(configuration));
 });
 
-Task("Publish")
+Task("Test")
 	.IsDependentOn("Build")
+	.Does(() => 
+{
+	var assemblies = new[] 
+	{
+		$"./Tests/bin/{configuration}/Tests.dll",
+		$"./Specs/bin/{configuration}/Specs.dll"
+	};
+	
+	NUnit3(assemblies, new NUnit3Settings
+	{
+		NoResults = true
+    });
+});
+
+Task("Publish")
+	.IsDependentOn("Test")
 	.Does(() => 
 {
 	// publish netcore apps
