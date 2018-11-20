@@ -2,6 +2,7 @@
 pool:
   vmImage: 'VS2017-Win2016'
   
-- script: |
-    .\build.ps1 '-Target CompileSetup -System win -Verbosity Diagnostic'
+steps:
+- powershell: |
+    build.ps1 '-Target CompileSetup -System win -Verbosity Diagnostic'
   displayName: 'Running Cake build ...'
