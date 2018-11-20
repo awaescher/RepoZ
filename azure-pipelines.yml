@@ -9,5 +9,5 @@ steps:
   inputs:
     targetType: filePath
     filePath: .\build.ps1 
-    arguments: -Target=CompileSetup -System=in -Verbosity=Diagnostic
+    arguments: -Verbosity=Diagnostic
 
