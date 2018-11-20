@@ -4,5 +4,6 @@ pool:
   
 steps:
 - powershell: |
-    .\build.ps1 '-Target CompileSetup -System win -Verbosity Diagnostic'
+    .\build.ps1 
+  arguments: '-Target CompileSetup -System win -Verbosity Diagnostic'
   displayName: 'Running Cake build ...'
