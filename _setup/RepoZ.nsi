@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "RepoZ"
 ; !define PRODUCT_VERSION "0.0"   ; Comes as Cake argument
-!define PRODUCT_PUBLISHER "Andreas Wäscher"
+!define PRODUCT_PUBLISHER "Andreas WÃ¤scher"
 !define PRODUCT_WEB_SITE "https://github.com/awaescher/RepoZ"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -50,7 +50,7 @@ Section "RepoZ"
   SetOutPath "$INSTDIR"
   SetOverwrite on
   
-  File /r ..\_output\Assemblies\*.*
+  File /r ..\_output\win\Assemblies\*.*
   File ..\_ref\PathEd.exe ; Add PathEd.exe to add the RepoZ directory to the system's PATH easily
   File ..\_ref\SendKeys.exe ; Add SendKeys.exe to add the RepoZ directory for grr and grrui
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}.lnk" $INSTDIR\${PRODUCT_NAME}.exe
