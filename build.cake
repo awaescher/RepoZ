@@ -1,7 +1,7 @@
 #addin "Cake.FileHelpers"
 #tool "nsis"
 #tool "nuget:?package=NUnit.ConsoleRunner"
-
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -18,10 +18,7 @@ var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", system=="win
 ///////////////////////////////////////////////////////////////////////////////
 
 var _solution = $"./RepoZ.{system}.sln";
-var _appVersion = FileReadLines("app.version").First();
-var dotIndex = _appVersion.IndexOf(".");
-dotIndex = _appVersion.IndexOf(".", dotIndex + 1); // find the second "." for "2.1" from "2.1.0.0"
-var _appVersionShort = _appVersion.Substring(0, dotIndex);
+var _appVersion = "";
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASK DEFINITIONS
@@ -44,19 +41,19 @@ Task("Restore")
 });
 
 Task("SetVersion")
-    .IsDependentOn("Restore")
-   .Does(() => 
-   {
-       ReplaceRegexInFiles("./**/AssemblyInfo.*", 
-                           "(?<=AssemblyVersion\\(\")(.+?)(?=\"\\))", 
-                           _appVersion);
+	.IsDependentOn("Restore")
+   	.Does(() => 
+	{
+		var gitVersion = GitVersion(new GitVersionSettings
+		{
+			UpdateAssemblyInfo = true
+		});
 
-       ReplaceRegexInFiles("./**/AssemblyInfo.*", 
-                           "(?<=AssemblyFileVersion\\(\")(.+?)(?=\"\\))", 
-                           _appVersion);
-						   
-						   
-   });
+		_appVersion = gitVersion.MajorMinorPatch;
+		Information($"GitVersion:\t{_appVersion}");
+
+		ReplaceRegexInFiles("./**/AssemblyInfo.*", "(?<=AssemblyBuildDate\\(\")([0-9\\-\\:T]+)(?=\"\\))", DateTime.Now.ToString("s"));
+	});
 
 Task("Build")
     .Description("Builds all the different parts of the project.")
@@ -120,7 +117,7 @@ Task("Publish")
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
 	
-	Zip(assemblyDir, outputDir.Path + "/v" + _appVersionShort + $"-{system}-portable.zip");
+	Zip(assemblyDir, outputDir.Path + "/v" + _appVersion + $"-{system}-portable.zip");
 });
 
 Task("CompileSetup")
@@ -133,7 +130,7 @@ Task("CompileSetup")
 		{
 			Defines = new Dictionary<string, string>
 			{
-				{ "PRODUCT_VERSION", _appVersionShort }
+				{ "PRODUCT_VERSION", _appVersion }
 			}
 		});
 	}
