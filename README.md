@@ -2,7 +2,7 @@
 
 ![windows][windows] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4)
 
-![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)
+![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)  <sup>(waiting for XCode 10 on Azure Pipelines)</sup>
 
 # RepoZ
 
