@@ -75,6 +75,9 @@ Task("Test")
 	.IsDependentOn("Build")
 	.Does(() => 
 {
+	if (system == "mac")
+		return;
+
 	var assemblies = new[] 
 	{
 		$"./Tests/bin/{configuration}/Tests.dll",
