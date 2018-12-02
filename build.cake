@@ -117,6 +117,18 @@ Task("Publish")
 	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	
+	var libFiles = GetFiles(assemblyDir.Path + "/*.dll")
+		.Where(f => !f.FullPath.Contains("hostfxr.dll") && !f.FullPath.Contains("hostpolicy.dll"));
+		
+	foreach	(var file in libFiles)
+		//MoveFileToDirectory(file.FullPath, assemblyDir.Path + "/lib/" + System.IO.Path.GetFileName(file.FullPath));
+		MoveFileToDirectory(file, assemblyDir.Path + "/lib/");
+	
+	// 
+	ReplaceRegexInFiles(outputDir.Path + "/**/*.deps.json", @"(?<="").*[/|\\](?=.*dll|.*exe)", "");
+	ReplaceRegexInFiles(outputDir.Path + "/**/*.runtimeconfig.json", ".*", "{ \"runtimeOptions\": { \"additionalProbingPaths\": [ \"lib\" ] } }");
+	
+	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
 	
