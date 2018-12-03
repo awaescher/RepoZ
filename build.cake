@@ -117,17 +117,18 @@ Task("Publish")
 	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	
-	var libFiles = GetFiles(assemblyDir.Path + "/*.dll")
-		.Where(f => !f.FullPath.Contains("hostfxr.dll") && !f.FullPath.Contains("hostpolicy.dll"));
+	// move dependencies out of the base directory, to a subfolder /lib
+	var exclusions = new List<string>() { "grr.dll", "grrui.dll", "hostfxr.dll", "hostpolicy.dll" };
+	
+	var libFilesToMove = GetFiles(assemblyDir.Path + "/*.dll")
+							.Where(f => !exclusions.Any(e => f.FullPath.IndexOf(e, StringComparison.OrdinalIgnoreCase) > -1));
 		
-	foreach	(var file in libFiles)
-		//MoveFileToDirectory(file.FullPath, assemblyDir.Path + "/lib/" + System.IO.Path.GetFileName(file.FullPath));
+	foreach	(var file in libFilesToMove)
 		MoveFileToDirectory(file, assemblyDir.Path + "/lib/");
 	
-	// 
+	// transform the dependency definitions of netcoreapps to the lib folder
 	ReplaceRegexInFiles(outputDir.Path + "/**/*.deps.json", @"(?<="").*[/|\\](?=.*dll|.*exe)", "");
-	ReplaceRegexInFiles(outputDir.Path + "/**/*.runtimeconfig.json", ".*", "{ \"runtimeOptions\": { \"additionalProbingPaths\": [ \"lib\" ] } }");
-	
+	ReplaceRegexInFiles(outputDir.Path + "/**/*.runtimeconfig.json", "\"runtimeOptions\": {}", "\"runtimeOptions\": { \"additionalProbingPaths\": [ \"lib\" ] }");
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
