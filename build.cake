@@ -1,4 +1,6 @@
 #addin "Cake.FileHelpers"
+#addin nuget:?package=Cake.Json
+#addin "nuget:?package=Newtonsoft.Json"
 #tool "nsis"
 #tool "nuget:?package=NUnit.ConsoleRunner"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
@@ -130,6 +132,39 @@ Task("Publish")
 	ReplaceRegexInFiles(outputDir.Path + "/**/*.deps.json", @"(?<="").*[/|\\](?=.*dll|.*exe)", "");
 	ReplaceRegexInFiles(outputDir.Path + "/**/*.runtimeconfig.json", "\"runtimeOptions\": {}", "\"runtimeOptions\": { \"additionalProbingPaths\": [ \"lib\" ] }");
 	
+	// remove relative path within a package
+	ReplaceRegexInFiles(outputDir.Path + "/**/*.deps.json", "\"path\":\\s\".*\"", "\"path\": \".\"");
+	
+	// add preceding slash (needed to correctly resolve coreclr.dll and clrjit.dll)
+	ReplaceRegexInFiles(outputDir.Path + "/**/*.deps.json", @"(coreclr|clrjit)\.dll", "/$1.dll");
+	
+	// add missing path property, because otherwise hostpolicy.dll will search at <PackageName>/<PackageVersion>/<DllPath> by default.
+	var depsFiles = GetFiles(outputDir.Path + "/**/*.deps.json");
+	
+	foreach(var file in depsFiles)
+	{
+		var dirty = false;
+		var pathProperty = new JProperty("path", ".");
+		var jObject = JObject.Parse(FileReadText(file));
+		var libraries = jObject.SelectToken("libraries");
+
+		foreach (var entry in libraries)
+		{
+			var packageProperties = entry.Last.Children();
+
+			if (packageProperties.Cast<JProperty>().Any(t => t.Name == "path")) continue;
+
+			((JObject)entry.Last).Add(pathProperty);
+
+			dirty = true;
+		}
+
+		if (dirty)
+		{
+			FileWriteText(file, jObject.ToString());
+		}
+	}
+		
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
 	
