@@ -174,6 +174,11 @@ namespace RepoZ.App.Win
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
 		}
 
+		private void SettingsButton_Click(object sender, RoutedEventArgs e)
+		{
+			SettingsButton.ContextMenu.IsOpen = true;
+		}
+
 		private void ScanButton_Click(object sender, RoutedEventArgs e)
 		{
 			_monitor.ScanForLocalRepositoriesAsync();
@@ -248,8 +253,8 @@ namespace RepoZ.App.Win
 
 		private void ShowScanningState(bool isScanning)
 		{
-			ScanButton.IsEnabled = !isScanning;
-			ScanButton.Content = isScanning ? "Scanning ..." : "⚡ Scan computer";
+			ScanMenuItem.IsEnabled = !isScanning;
+			ScanMenuItem.Header = isScanning ? "⚡ Scanning ..." : "⚡ Scan computer";
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)

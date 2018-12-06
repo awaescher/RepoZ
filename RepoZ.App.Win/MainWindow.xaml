@@ -133,11 +133,22 @@
 					x:Name="UpdateButton"
 					Visibility="Hidden"
 					Click="UpdateButton_Click" />
-			<Button Content="⚡ Scan computer"
-					x:Name="ScanButton"
-					Click="ScanButton_Click" />
-			<Button Content="❓"
-					Click="HelpButton_Click" />
+			<Button Content="⚙️"
+					x:Name="SettingsButton"
+					Click="SettingsButton_Click" >
+				<Button.ContextMenu>
+					<ContextMenu FontSize="13">
+						<MenuItem Header="❓ Help" Click="HelpButton_Click"/>
+						<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
+						<MenuItem Header="🕒 Auto fetch">
+							<MenuItem Header="💤 Off" IsCheckable="True"/>
+							<MenuItem Header="😇 Discretely" IsCheckable="True"/>
+							<MenuItem Header="😅 Adequate" IsCheckable="True"/>
+							<MenuItem Header="😈 Aggresive" IsCheckable="True"/>
+						</MenuItem>
+					</ContextMenu>
+				</Button.ContextMenu>
+			</Button>
 		</Controls:WindowCommands>
 	</Controls:MetroWindow.RightWindowCommands>
 
