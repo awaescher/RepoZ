@@ -28,11 +28,11 @@ namespace RepoZ.App.Win
 			IRepositoryInformationAggregator aggregator,
 			IRepositoryMonitor repositoryMonitor,
 			IRepositoryActionProvider repositoryActionProvider,
-			IAppSettingsProvider appSettingsProvider)
+			IAppSettingsService appSettingsService)
 		{
 			InitializeComponent();
 
-			DataContext = new MainWindowPageModel(appSettingsProvider);
+			DataContext = new MainWindowPageModel(appSettingsService);
 			SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
 			_monitor = repositoryMonitor as DefaultRepositoryMonitor;

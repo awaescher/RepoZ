@@ -14,28 +14,25 @@ namespace RepoZ.App.Win
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private AutoFetchMode _autoFetchMode;
-		private AppSettings _appSettings;
 
-		public MainWindowPageModel(IAppSettingsProvider appSettingsProvider)
+		public MainWindowPageModel(IAppSettingsService appSettingsService)
 		{
-			AppSettingsProvider = appSettingsProvider ?? throw new ArgumentNullException(nameof(appSettingsProvider));
-			_appSettings = appSettingsProvider.Load();
+			AppSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
 		}
 
 		public AutoFetchMode AutoFetchMode
 		{
-			get => _appSettings.AutoFetchMode;
+			get => AppSettingsService.AutoFetchMode;
 			set
 			{
-				_appSettings.AutoFetchMode = value;
+				AppSettingsService.AutoFetchMode = value;
 
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchOff)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggresive)));
-
-				AppSettingsProvider.Save(_appSettings);
 			}
 		}
 
@@ -63,6 +60,6 @@ namespace RepoZ.App.Win
 			set => AutoFetchMode = AutoFetchMode.Aggresive;
 		}
 
-		public IAppSettingsProvider AppSettingsProvider { get; }
+		public IAppSettingsService AppSettingsService { get; }
 	}
 }

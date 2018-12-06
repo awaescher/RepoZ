@@ -1,20 +1,21 @@
 ﻿using Newtonsoft.Json;
+using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.IO;
 using System;
 using System.IO;
 
 namespace RepoZ.Api.Common.Common
 {
-	public class FileAppSettingsProvider : IAppSettingsProvider
+	public class FileAppSettingsService : IAppSettingsService
 	{
-		public FileAppSettingsProvider(IAppDataPathProvider appDataPathProvider)
+		private AppSettings _settings;
+
+		public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
 		{
 			AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 		}
 
-		public IAppDataPathProvider AppDataPathProvider { get; }
-
-		public AppSettings Load()
+		private AppSettings Load()
 		{
 			string file = GetFileName();
 
@@ -31,7 +32,7 @@ namespace RepoZ.Api.Common.Common
 			return AppSettings.Default;
 		}
 
-		public void Save(AppSettings settings)
+		private void Save()
 		{
 			string file = GetFileName();
 			string path = Directory.GetParent(file).FullName;
@@ -41,11 +42,34 @@ namespace RepoZ.Api.Common.Common
 
 			try
 			{
-				File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(settings));
+				File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(_settings));
 			}
 			catch { }
 		}
 
 		private string GetFileName() =>  Path.Combine(AppDataPathProvider.GetAppDataPath(), "appsettings.json");
+
+		public IAppDataPathProvider AppDataPathProvider { get; }
+
+		public AppSettings Settings
+		{
+			get
+			{
+				if (_settings == null)
+					_settings = Load();
+
+				return _settings;
+			}
+		}
+
+		public AutoFetchMode AutoFetchMode
+		{
+			get => Settings.AutoFetchMode;
+			set
+			{
+				Settings.AutoFetchMode = value;
+				Save();
+			}
+		}
 	}
 }

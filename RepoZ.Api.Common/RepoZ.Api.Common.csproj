@@ -51,8 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\AppSettings.cs" />
-    <Compile Include="Common\FileAppSettingsProvider.cs" />
-    <Compile Include="Common\IAppSettingsProvider.cs" />
+    <Compile Include="Common\FileAppSettingsService.cs" />
+    <Compile Include="Common\IAppSettingsService.cs" />
     <Compile Include="Git\AutoFetch\AutoFetchMode.cs" />
     <Compile Include="Git\DefaultRepositoryObserver.cs" />
     <Compile Include="Git\DefaultRepositoryMonitor.cs" />

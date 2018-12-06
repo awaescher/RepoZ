@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
-using RepoZ.Api.Win.Git;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
@@ -114,7 +110,7 @@ namespace RepoZ.App.Win
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
 			container.Register<IGitCommander, WindowsGitCommander>();
-			container.Register<IAppSettingsProvider, FileAppSettingsProvider>();
+			container.Register<IAppSettingsService, FileAppSettingsService>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)
