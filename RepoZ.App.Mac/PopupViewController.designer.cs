@@ -1,4 +1,4 @@
-﻿// WARNING
+// WARNING
 //
 // This file has been generated automatically by Visual Studio to store outlets and
 // actions made in the UI designer. If it is removed, they will be lost.
@@ -14,6 +14,9 @@ namespace RepoZ.App.Mac
 	{
 		[Outlet]
 		AppKit.NSTextField lblNoRepositories { get; set; }
+
+		[Outlet]
+		AppKit.NSButton MenuButton { get; set; }
 
 		[Outlet]
 		AppKit.NSTextField NameTextField { get; set; }
@@ -58,6 +61,11 @@ namespace RepoZ.App.Mac
 			if (UpdateButton != null) {
 				UpdateButton.Dispose ();
 				UpdateButton = null;
+			}
+
+			if (MenuButton != null) {
+				MenuButton.Dispose ();
+				MenuButton = null;
 			}
 		}
 	}

@@ -69,7 +69,7 @@ namespace RepoZ.App.Mac
 
             _stringCommandHandler.Define(new string[] { "help", "man", "?" }, ShowCommandReference, "Shows this help page");
             _stringCommandHandler.Define(new string[] { "scan" }, async () => await _monitor.ScanForLocalRepositoriesAsync(), "Scans this Mac for git repositories");
-            _stringCommandHandler.Define(new string[] { "reset" }, _monitor.Reset, "Resets the repository cache");
+            _stringCommandHandler.Define(new string[] { "reset", "clear" }, _monitor.Reset, "Resets the repository cache");
             _stringCommandHandler.Define(new string[] { "info", "stats" }, ShowStats, "Shows process informations");
             _stringCommandHandler.Define(new string[] { "quit", "close", "exit" }, () => NSApplication.SharedApplication.Terminate(this), "Closes the application");
 
@@ -113,7 +113,7 @@ namespace RepoZ.App.Mac
 
             var newSearchBoxFrame = SearchBox.Frame;
 
-            var availableWidth = UpdateButton.Hidden ? this.View.Frame.Width : UpdateButton.Frame.X;
+            var availableWidth = UpdateButton.Hidden ? MenuButton.Frame.X : UpdateButton.Frame.X;
             newSearchBoxFrame.Width = availableWidth - (SearchBox.Frame.X * 2);
 
             SearchBox.Frame = newSearchBoxFrame;

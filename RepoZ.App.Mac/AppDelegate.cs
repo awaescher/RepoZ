@@ -102,7 +102,7 @@ namespace RepoZ.App.Mac
             container.Register<IPathSkipper, MacPathSkipper>();
             container.Register<IThreadDispatcher, MacThreadDispatcher>().AsSingleton();
             container.Register<IGitCommander, MacGitCommander>();
-            container.Register<IAppSettingsProvider, FileAppSettingsProvider>();
+            container.Register<IAppSettingsService, FileAppSettingsService>();
         }
 
         private void UseRepositoryMonitor(TinyIoCContainer container)
