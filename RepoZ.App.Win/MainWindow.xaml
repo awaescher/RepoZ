@@ -37,7 +37,7 @@
 
 			<Grid>
 				<TextBlock x:Name="tbNoRepositories"
-						   Text="There are no repositories yet 😐&#x0a;&#x0a;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#x0a;&#x0a;Alternatively, you can scan your computer manually for repositories by clicking the button on the top right."
+						   Text="There are no repositories yet 😐&#xA;&#xA;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#xA;&#xA;Alternatively, you can scan your computer manually for repositories in the settings menu on the top right."
 						   TextWrapping="Wrap"
 						   FontSize="15"
 						   HorizontalAlignment="Center"
@@ -133,18 +133,18 @@
 					x:Name="UpdateButton"
 					Visibility="Hidden"
 					Click="UpdateButton_Click" />
-			<Button Content="⚙️"
+			<Button Content="⚙️ Settings"
 					x:Name="SettingsButton"
 					Click="SettingsButton_Click" >
 				<Button.ContextMenu>
-					<ContextMenu FontSize="13">
+					<ContextMenu x:Name="SettingsMenu" FontSize="13">
 						<MenuItem Header="❓ Help" Click="HelpButton_Click"/>
 						<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
 						<MenuItem Header="🕒 Auto fetch">
-							<MenuItem Header="💤 Off" IsCheckable="True"/>
-							<MenuItem Header="😇 Discretely" IsCheckable="True"/>
-							<MenuItem Header="😅 Adequate" IsCheckable="True"/>
-							<MenuItem Header="😈 Aggresive" IsCheckable="True"/>
+							<MenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
+							<MenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
+							<MenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
+							<MenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
 						</MenuItem>
 					</ContextMenu>
 				</Button.ContextMenu>

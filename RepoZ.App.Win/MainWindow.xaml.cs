@@ -3,22 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
-using RepoZ.Api.Win.Git;
-using TinyIoC;
 
 namespace RepoZ.App.Win
 {
@@ -37,6 +29,9 @@ namespace RepoZ.App.Win
 			IRepositoryActionProvider repositoryActionProvider)
 		{
 			InitializeComponent();
+
+			DataContext = new MainWindowPageModel() { AutoFetchMode = Api.Common.Git.AutoFetch.AutoFetchMode.Adequate };
+			SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
 			_monitor = repositoryMonitor as DefaultRepositoryMonitor;
 			if (_monitor != null)
