@@ -17,7 +17,10 @@ namespace grr.Messages
 			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
 			directory = directory.Replace(@"\", "/");
 
-			Process.Start(new ProcessStartInfo($"\"{directory}\"") { UseShellExecute = true });
+            if (Platform == "win")
+                directory == $"\"{directory}\"";
+
+            Process.Start(new ProcessStartInfo(directory) { UseShellExecute = true });
 		}
 	}
 }
