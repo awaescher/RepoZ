@@ -9,6 +9,7 @@ using Foundation;
 using NetMQ;
 using NetMQ.Sockets;
 using RepoZ.Api.Common;
+using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
@@ -90,16 +91,18 @@ namespace RepoZ.App.Mac
             container.Register<IRepositoryObserverFactory, MacRepositoryObserverFactory>().AsSingleton();
             container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
+            container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
             container.Register<IErrorHandler, UIErrorHandler>();
             container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
             container.Register<IRepositoryReader, DefaultRepositoryReader>();
             container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-            container.Register<IRepositoryStore, MacRepositoryStore>();
+            container.Register<IRepositoryStore, DefaultRepositoryStore>();
             container.Register<IPathProvider, MacDriveEnumerator>();
             container.Register<IPathCrawler, GravellPathCrawler>();
             container.Register<IPathSkipper, MacPathSkipper>();
             container.Register<IThreadDispatcher, MacThreadDispatcher>().AsSingleton();
             container.Register<IGitCommander, MacGitCommander>();
+            container.Register<IAppSettingsProvider, FileAppSettingsProvider>();
         }
 
         private void UseRepositoryMonitor(TinyIoCContainer container)

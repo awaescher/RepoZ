@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using RepoZ.Api.Common;
-using RepoZ.Api.Common.Git;
 using RepoZ.Api.IO;
 
-namespace RepoZ.Api.Win.Git
+namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryStore : FileRepositoryStore
 	{
