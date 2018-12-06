@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
+using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 
@@ -26,11 +27,12 @@ namespace RepoZ.App.Win
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
 			IRepositoryMonitor repositoryMonitor,
-			IRepositoryActionProvider repositoryActionProvider)
+			IRepositoryActionProvider repositoryActionProvider,
+			IAppSettingsProvider appSettingsProvider)
 		{
 			InitializeComponent();
 
-			DataContext = new MainWindowPageModel() { AutoFetchMode = Api.Common.Git.AutoFetch.AutoFetchMode.Adequate };
+			DataContext = new MainWindowPageModel(appSettingsProvider);
 			SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
 			_monitor = repositoryMonitor as DefaultRepositoryMonitor;

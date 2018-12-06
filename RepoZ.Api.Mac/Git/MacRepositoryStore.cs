@@ -13,5 +13,6 @@ namespace RepoZ.Api.Mac.Git
         }
 
         public override string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ/Repositories.cache");
-    }
+		public override string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ\\Repositories.cache");
+	}
 }

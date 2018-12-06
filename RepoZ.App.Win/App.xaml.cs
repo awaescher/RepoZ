@@ -23,6 +23,7 @@ using TinySoup.Model;
 using TinySoup;
 using NetMQ.Sockets;
 using NetMQ;
+using RepoZ.Api.Common.Common;
 
 namespace RepoZ.App.Win
 {
@@ -102,16 +103,18 @@ namespace RepoZ.App.Win
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
+			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-			container.Register<IRepositoryStore, WindowsRepositoryStore>();
+			container.Register<IRepositoryStore, DefaultRepositoryStore>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
 			container.Register<IGitCommander, WindowsGitCommander>();
+			container.Register<IAppSettingsProvider, FileAppSettingsProvider>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

@@ -1,4 +1,5 @@
-﻿using RepoZ.Api.Common.Git.AutoFetch;
+﻿using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git.AutoFetch;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,19 +14,28 @@ namespace RepoZ.App.Win
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private AutoFetchMode _autoFetchMode;
+		private AppSettings _appSettings;
+
+		public MainWindowPageModel(IAppSettingsProvider appSettingsProvider)
+		{
+			AppSettingsProvider = appSettingsProvider ?? throw new ArgumentNullException(nameof(appSettingsProvider));
+			_appSettings = appSettingsProvider.Load();
+		}
 
 		public AutoFetchMode AutoFetchMode
 		{
-			get => _autoFetchMode;
+			get => _appSettings.AutoFetchMode;
 			set
 			{
-				_autoFetchMode = value;
+				_appSettings.AutoFetchMode = value;
 
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchOff)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggresive)));
+
+				AppSettingsProvider.Save(_appSettings);
 			}
 		}
 
@@ -52,5 +62,7 @@ namespace RepoZ.App.Win
 			get => AutoFetchMode == AutoFetchMode.Aggresive;
 			set => AutoFetchMode = AutoFetchMode.Aggresive;
 		}
+
+		public IAppSettingsProvider AppSettingsProvider { get; }
 	}
 }
