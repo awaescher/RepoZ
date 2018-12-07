@@ -30,6 +30,9 @@ namespace RepoZ.App.Mac
 		[Outlet]
 		AppKit.NSButton UpdateButton { get; set; }
 
+		[Action ("MenuButton_Click:")]
+		partial void MenuButton_Click (Foundation.NSObject sender);
+
 		[Action ("SearchChanged:")]
 		partial void SearchChanged (Foundation.NSObject sender);
 
@@ -41,6 +44,11 @@ namespace RepoZ.App.Mac
 			if (lblNoRepositories != null) {
 				lblNoRepositories.Dispose ();
 				lblNoRepositories = null;
+			}
+
+			if (MenuButton != null) {
+				MenuButton.Dispose ();
+				MenuButton = null;
 			}
 
 			if (NameTextField != null) {
@@ -61,11 +69,6 @@ namespace RepoZ.App.Mac
 			if (UpdateButton != null) {
 				UpdateButton.Dispose ();
 				UpdateButton = null;
-			}
-
-			if (MenuButton != null) {
-				MenuButton.Dispose ();
-				MenuButton = null;
 			}
 		}
 	}

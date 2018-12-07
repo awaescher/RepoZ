@@ -140,7 +140,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="UpdateButton_Click:" target="-2" id="T86-ud-u9c"/>
+                        <action selector="MenuButton_Click:" target="-2" id="G4F-Md-LAz"/>
                     </connections>
                 </button>
                 <button hidden="YES" verticalHuggingPriority="750" id="M6p-5h-EnC">

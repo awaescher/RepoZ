@@ -97,6 +97,8 @@ namespace RepoZ.App.Mac
 
             ShowUpdateIfAvailable();
             this.View.Window.MakeFirstResponder(SearchBox);
+
+            CreateMenu();
         }
 
         public override void ViewWillDisappear()
@@ -171,6 +173,30 @@ namespace RepoZ.App.Mac
                 return;
 
             Process.Start(AppDelegate.AvailableUpdate.Url);
+        }
+
+        private void CreateMenu()
+        {
+            var items = new List<NSMenuItem>();
+            items.Add(new NSMenuItem("Help", HandleEventHandler));
+            items.Add(new NSMenuItem("Scan mac", HandleEventHandler));
+            items.Add(new NSMenuItem("Auto fetch", HandleEventHandler));
+
+            MenuButton.Menu = new NSMenu("Pop up")
+            {
+                // TODO -> Items require macOS 10.14?
+                Items = items.ToArray()
+            };
+        }
+
+        partial void MenuButton_Click(NSObject sender)
+        {
+            MenuButton.Menu.PopUpMenu(null, CoreGraphics.CGPoint.Empty, MenuButton);
+        }
+
+        void HandleEventHandler(object sender, EventArgs e)
+        {
+
         }
 
         void _monitor_OnScanStateChanged(object sender, bool e)
