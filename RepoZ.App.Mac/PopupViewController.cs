@@ -10,6 +10,8 @@ using TinySoup.Identifier;
 using TinySoup;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git.AutoFetch;
 
 namespace RepoZ.App.Mac
 {
@@ -17,6 +19,7 @@ namespace RepoZ.App.Mac
     {
         private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _monitor;
+        private IAppSettingsService _appSettingsService;
         private StringCommandHandler _stringCommandHandler = new StringCommandHandler();
 
         #region Constructors
@@ -65,7 +68,7 @@ namespace RepoZ.App.Mac
             var actionProvider = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
 
             _monitor = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryMonitor>();
-            _monitor.OnScanStateChanged += _monitor_OnScanStateChanged;
+            _appSettingsService = TinyIoC.TinyIoCContainer.Current.Resolve<IAppSettingsService>();
 
             _stringCommandHandler.Define(new string[] { "help", "man", "?" }, ShowCommandReference, "Shows this help page");
             _stringCommandHandler.Define(new string[] { "scan" }, async () => await _monitor.ScanForLocalRepositoriesAsync(), "Scans this Mac for git repositories");
@@ -177,21 +180,33 @@ namespace RepoZ.App.Mac
 
         private void CreateMenu()
         {
-            var items = new List<NSMenuItem>();
-            items.Add(new NSMenuItem("Help", HandleEventHandler));
-            items.Add(new NSMenuItem("Scan mac", HandleEventHandler));
-            items.Add(new NSMenuItem("Auto fetch", HandleEventHandler));
-
+            // TODO -> Items require macOS 10.14?
             MenuButton.Menu = new NSMenu("Pop up")
             {
-                // TODO -> Items require macOS 10.14?
-                Items = items.ToArray()
-            };
+                Items = new NSMenuItem[]
+                    {
+                        new NSMenuItem("Help", HandleEventHandler),
+                        new NSMenuItem("Scan mac", HandleEventHandler),
+                        new NSMenuItem("Auto fetch", HandleEventHandler)
+                        {
+                            Submenu = new NSMenu
+                            {
+                                Items = new NSMenuItem[]
+                                {
+                                    new NSMenuItem(nameof(AutoFetchMode.Off), HandleAutoFetchChange),
+                                    new NSMenuItem(nameof(AutoFetchMode.Discretely), HandleAutoFetchChange),
+                                    new NSMenuItem(nameof(AutoFetchMode.Adequate), HandleAutoFetchChange),
+                                    new NSMenuItem(nameof(AutoFetchMode.Aggresive), HandleAutoFetchChange)
+                                }
+                            }
+                        }
+                    }
+             };
         }
 
         partial void MenuButton_Click(NSObject sender)
         {
-            MenuButton.Menu.PopUpMenu(null, CoreGraphics.CGPoint.Empty, MenuButton);
+            MenuButton.Menu.PopUpMenu(null, new CoreGraphics.CGPoint() { X = 0, Y = MenuButton.Frame.Height }, MenuButton);
         }
 
         void HandleEventHandler(object sender, EventArgs e)
@@ -199,8 +214,10 @@ namespace RepoZ.App.Mac
 
         }
 
-        void _monitor_OnScanStateChanged(object sender, bool e)
+        void HandleAutoFetchChange(object sender, EventArgs e)
         {
+            var newMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), (sender as NSMenuItem).Title);
+            _appSettingsService.AutoFetchMode = newMode;
 
         }
 
@@ -227,8 +244,8 @@ namespace RepoZ.App.Mac
             alert.AddButton("OK");
             var returnValue = alert.RunModal();
         }
-		
-		private void ShowStats()
+
+        private void ShowStats()
         {
             var process = Process.GetCurrentProcess();
 

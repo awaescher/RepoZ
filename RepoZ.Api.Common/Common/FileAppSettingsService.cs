@@ -2,20 +2,22 @@
 using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.IO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace RepoZ.Api.Common.Common
 {
 	public class FileAppSettingsService : IAppSettingsService
 	{
-		private AppSettings _settings;
+        private AppSettings _settings;
+        private List<Action> _invalidationHandlers = new List<Action>();
 
-		public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
+        public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
 		{
 			AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 		}
 
-		private AppSettings Load()
+        private AppSettings Load()
 		{
 			string file = GetFileName();
 
@@ -67,9 +69,25 @@ namespace RepoZ.Api.Common.Common
 			get => Settings.AutoFetchMode;
 			set
 			{
-				Settings.AutoFetchMode = value;
-				Save();
+                if (value != Settings.AutoFetchMode)
+                {
+                    Settings.AutoFetchMode = value;
+
+                    NotifyChange();
+                    Save();
+                }
 			}
 		}
-	}
+
+        public void RegisterInvalidationHandler(Action handler)
+        {
+            _invalidationHandlers.Add(handler);
+        }
+
+        public void NotifyChange()
+        {
+            _invalidationHandlers.ForEach(h => h.Invoke());
+        }
+
+    }
 }
