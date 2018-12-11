@@ -113,15 +113,27 @@ namespace RepoZ.App.Mac
 
         private void ShowUpdateIfAvailable()
         {
-            UpdateButton.ToolTip = AppDelegate.AvailableUpdate == null ? "" : $"Version {AppDelegate.AvailableUpdate.VersionString} is available.";
-            UpdateButton.Hidden = AppDelegate.AvailableUpdate == null;
+            bool hasUpdate = AppDelegate.AvailableUpdate != null;
+
+            // to debug
+            hasUpdate = false;
+
+            UpdateButton.ToolTip = hasUpdate ? $"Version {AppDelegate.AvailableUpdate?.VersionString ?? "?.?"} is available." : "";
+            UpdateButton.Hidden = !hasUpdate;
 
             var newSearchBoxFrame = SearchBox.Frame;
 
-            var availableWidth = UpdateButton.Hidden ? MenuButton.Frame.X : UpdateButton.Frame.X;
+            var availableWidth = hasUpdate ? UpdateButton.Frame.X : View.Frame.Width;
             newSearchBoxFrame.Width = availableWidth - (SearchBox.Frame.X * 2);
 
             SearchBox.Frame = newSearchBoxFrame;
+
+            var inline = (SearchBox.Frame.Height - MenuButton.Frame.Height) / 2;
+            var menuButtonLocation = new CoreGraphics.CGPoint(SearchBox.Frame.Right - MenuButton.Frame.Width - inline, SearchBox.Frame.Top + inline);
+            MenuButton.Frame = new CoreGraphics.CGRect(menuButtonLocation, MenuButton.Frame.Size);
+
+            inline = (SearchBox.Frame.Height - UpdateButton.Frame.Height) / 2;
+            UpdateButton.Frame = new CoreGraphics.CGRect(new CoreGraphics.CGPoint(SearchBox.Frame.Right + SearchBox.Frame.Left, SearchBox.Frame.Top + inline), UpdateButton.Frame.Size);
         }
 
         void SearchBox_FinishInput(object sender, EventArgs e)
@@ -201,7 +213,7 @@ namespace RepoZ.App.Mac
                             }
                         }
                     }
-             };
+            };
         }
 
         partial void MenuButton_Click(NSObject sender)

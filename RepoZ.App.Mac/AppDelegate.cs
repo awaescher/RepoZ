@@ -11,6 +11,7 @@ using NetMQ.Sockets;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
+using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
@@ -103,6 +104,7 @@ namespace RepoZ.App.Mac
             container.Register<IThreadDispatcher, MacThreadDispatcher>().AsSingleton();
             container.Register<IGitCommander, MacGitCommander>();
             container.Register<IAppSettingsService, FileAppSettingsService>();
+            container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
         }
 
         private void UseRepositoryMonitor(TinyIoCContainer container)
