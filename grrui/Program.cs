@@ -3,6 +3,7 @@ using grrui.UI;
 using RepoZ.Ipc;
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Terminal.Gui;
 
 namespace grrui
@@ -127,7 +128,11 @@ namespace grrui
 			{
 				// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
 				var path = r.Path.Replace(@"\", "/");
-				Process.Start(new ProcessStartInfo(r.Path) { UseShellExecute = true });
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    path = $"\"{path}\"";
+
+                Process.Start(new ProcessStartInfo(r.Path) { UseShellExecute = true });
 			});
 		}
 

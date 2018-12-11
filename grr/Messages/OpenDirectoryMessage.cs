@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace grr.Messages
 {
@@ -17,8 +18,8 @@ namespace grr.Messages
 			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
 			directory = directory.Replace(@"\", "/");
 
-            if (Platform == "win")
-                directory == $"\"{directory}\"";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                directory = $"\"{directory}\"";
 
             Process.Start(new ProcessStartInfo(directory) { UseShellExecute = true });
 		}
