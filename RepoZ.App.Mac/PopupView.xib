@@ -111,7 +111,7 @@
                     </scroller>
                 </scrollView>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
-                    <rect key="frame" x="10" y="317" width="261" height="22"/>
+                    <rect key="frame" x="10" y="317" width="236" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search or command" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
                         <font key="font" metaFont="system"/>
@@ -133,9 +133,9 @@
                     </textFieldCell>
                 </textField>
                 <button hidden="YES" verticalHuggingPriority="750" id="M6p-5h-EnC">
-                    <rect key="frame" x="279" y="304" width="30" height="25"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="roundTextured" title="⬆" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zRT-OM-19Y">
+                    <rect key="frame" x="268" y="311" width="45" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="push" title="↑" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" inset="2" id="zRT-OM-19Y">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -144,11 +144,11 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" id="npx-xu-SqQ" userLabel="Menu Button">
-                    <rect key="frame" x="282" y="329" width="25" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="disclosure" bezelStyle="roundedDisclosure" image="buttonCell:3PM-LU-pbM:image" imagePosition="only" alignment="center" controlSize="small" borderStyle="border" inset="2" id="3PM-LU-pbM">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="smallSystem"/>
+                    <rect key="frame" x="247" y="315" width="27" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="disclosure" bezelStyle="roundedDisclosure" image="buttonCell:3PM-LU-pbM:image" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="3PM-LU-pbM">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                        <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
                         <action selector="MenuButton_Click:" target="-2" id="G4F-Md-LAz"/>

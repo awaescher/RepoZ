@@ -74,6 +74,7 @@ namespace RepoZ.App.Mac
             _stringCommandHandler.Define(new string[] { "scan" }, async () => await _monitor.ScanForLocalRepositoriesAsync(), "Scans this Mac for git repositories");
             _stringCommandHandler.Define(new string[] { "reset", "clear" }, _monitor.Reset, "Resets the repository cache");
             _stringCommandHandler.Define(new string[] { "info", "stats" }, ShowStats, "Shows process informations");
+            _stringCommandHandler.Define(new string[] { "ui" }, ShowUpdateIfAvailable, "Aligns the UI");
             _stringCommandHandler.Define(new string[] { "quit", "close", "exit" }, () => NSApplication.SharedApplication.Terminate(this), "Closes the application");
 
             // Do any additional setup after loading the view.
@@ -113,27 +114,22 @@ namespace RepoZ.App.Mac
 
         private void ShowUpdateIfAvailable()
         {
+            // don't make the buttons toggle their state (XCode resets that in designer)
+            MenuButton.State = NSCellStateValue.Off;
+            MenuButton.SetButtonType(NSButtonType.MomentaryPushIn);
+
             bool hasUpdate = AppDelegate.AvailableUpdate != null;
 
             // to debug
-            hasUpdate = false;
+            hasUpdate = true;
 
             UpdateButton.ToolTip = hasUpdate ? $"Version {AppDelegate.AvailableUpdate?.VersionString ?? "?.?"} is available." : "";
             UpdateButton.Hidden = !hasUpdate;
 
-            var newSearchBoxFrame = SearchBox.Frame;
-
-            var availableWidth = hasUpdate ? UpdateButton.Frame.X : View.Frame.Width;
-            newSearchBoxFrame.Width = availableWidth - (SearchBox.Frame.X * 2);
-
-            SearchBox.Frame = newSearchBoxFrame;
-
-            var inline = (SearchBox.Frame.Height - MenuButton.Frame.Height) / 2;
-            var menuButtonLocation = new CoreGraphics.CGPoint(SearchBox.Frame.Right - MenuButton.Frame.Width - inline, SearchBox.Frame.Top + inline);
-            MenuButton.Frame = new CoreGraphics.CGRect(menuButtonLocation, MenuButton.Frame.Size);
-
-            inline = (SearchBox.Frame.Height - UpdateButton.Frame.Height) / 2;
-            UpdateButton.Frame = new CoreGraphics.CGRect(new CoreGraphics.CGPoint(SearchBox.Frame.Right + SearchBox.Frame.Left, SearchBox.Frame.Top + inline), UpdateButton.Frame.Size);
+            //var maxX = hasUpdate ? UpdateButton.Frame.X : View.Frame.Right;
+            var maxX = hasUpdate ? View.Frame.Right - UpdateButton.Frame.Width : View.Frame.Right;
+            MenuButton.Frame = new CoreGraphics.CGRect(maxX - MenuButton.Frame.Width, SearchBox.Frame.Y, MenuButton.Frame.Width, SearchBox.Frame.Height);
+            SearchBox.Frame = new CoreGraphics.CGRect(SearchBox.Frame.X, SearchBox.Frame.Y, MenuButton.Frame.X - SearchBox.Frame.X, MenuButton.Frame.Height);
         }
 
         void SearchBox_FinishInput(object sender, EventArgs e)
@@ -197,9 +193,9 @@ namespace RepoZ.App.Mac
             {
                 Items = new NSMenuItem[]
                     {
-                        new NSMenuItem("Help", HandleEventHandler),
-                        new NSMenuItem("Scan mac", HandleEventHandler),
-                        new NSMenuItem("Auto fetch", HandleEventHandler)
+                        new NSMenuItem("Help", (s, e) => ShowCommandReference()),
+                        new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
+                        new NSMenuItem("Auto fetch")
                         {
                             Submenu = new NSMenu
                             {
@@ -219,11 +215,6 @@ namespace RepoZ.App.Mac
         partial void MenuButton_Click(NSObject sender)
         {
             MenuButton.Menu.PopUpMenu(null, new CoreGraphics.CGPoint() { X = 0, Y = MenuButton.Frame.Height }, MenuButton);
-        }
-
-        void HandleEventHandler(object sender, EventArgs e)
-        {
-
         }
 
         void HandleAutoFetchChange(object sender, EventArgs e)
