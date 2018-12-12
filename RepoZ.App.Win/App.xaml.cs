@@ -20,6 +20,7 @@ using TinySoup;
 using NetMQ.Sockets;
 using NetMQ;
 using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git.AutoFetch;
 
 namespace RepoZ.App.Win
 {
@@ -111,6 +112,7 @@ namespace RepoZ.App.Win
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
 			container.Register<IGitCommander, WindowsGitCommander>();
 			container.Register<IAppSettingsService, FileAppSettingsService>();
+			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)
