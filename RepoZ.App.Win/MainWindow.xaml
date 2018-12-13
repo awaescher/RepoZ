@@ -29,7 +29,7 @@
 					  IsMaxRestoreButtonEnabled="False"
 					  IsCloseButtonEnabled="False">
 	<Window.Resources>
-		<converters:HumanizerDateTimeConverter x:Key="HumanizerDateTimeConverter" />
+		<converters:UtcToLocalDateTimeConverter x:Key="UtcToLocalDateTimeConverter" />
 	</Window.Resources>
 	<Grid Margin="10"
 		  Focusable="False">
@@ -106,7 +106,7 @@
 									<TextBlock Text="{Binding Status}"
 											   Margin="8, 4, 8 ,4" >
 										<TextBlock.ToolTip>
-											<TextBlock Text="{Binding UpdateStampUtc, Converter={StaticResource HumanizerDateTimeConverter}}"/>
+											<TextBlock Text="{Binding UpdateStampUtc, Converter={StaticResource UtcToLocalDateTimeConverter}}"/>
 										</TextBlock.ToolTip>
 									</TextBlock>
 								</StackPanel>
