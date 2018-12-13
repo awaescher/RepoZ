@@ -63,16 +63,17 @@ namespace RepoZ.Api.Common.Git.AutoFetch
 			// temporarily disable the timer to prevent parallel fetch executions
 			UpdateBehavior(AutoFetchMode.Off);
 
+			_lastFetchRepository++;
+
+			if (count <= _lastFetchRepository)
+				_lastFetchRepository = 0;
+
+			var repositoryView = RepositoryInformationAggregator.Repositories[_lastFetchRepository];
+			Console.WriteLine("Auto-fetching " + repositoryView.Name);
+
+			repositoryView.IsSynchronizing = true;
 			try
 			{
-				_lastFetchRepository++;
-
-				if (count <= _lastFetchRepository)
-					_lastFetchRepository = 0;
-
-				var repositoryView = RepositoryInformationAggregator.Repositories[_lastFetchRepository];
-				Console.WriteLine("Auto-fetching " + repositoryView.Name);
-
 				// TODO: process might never return and therefore the timer is not enabled again ...
 				RepositoryWriter.Fetch(repositoryView.Repository);
 			}
@@ -84,6 +85,8 @@ namespace RepoZ.Api.Common.Git.AutoFetch
 			{
 				// re-enable the timer to get to the next fetch
 				UpdateBehavior();
+
+				repositoryView.IsSynchronizing = false;
 			}
 		}
 
