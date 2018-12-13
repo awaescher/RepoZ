@@ -106,7 +106,7 @@
 									<TextBlock Text="{Binding Status}"
 											   Margin="8, 4, 8 ,4" >
 										<TextBlock.ToolTip>
-											<TextBlock Text="{Binding UpdateStampUtc, Converter={StaticResource UtcToLocalDateTimeConverter}}"/>
+											<TextBlock Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToLocalDateTimeConverter}}"/>
 										</TextBlock.ToolTip>
 									</TextBlock>
 								</StackPanel>

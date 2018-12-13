@@ -49,6 +49,13 @@ namespace RepoZ.App.Win
 		{
 			base.OnStartup(e);
 
+			// Ensure the current culture passed into bindings is the OS culture.
+			// By default, WPF uses en-US as the culture, regardless of the system settings.
+			// see: https://stackoverflow.com/a/520334/704281
+			FrameworkElement.LanguageProperty.OverrideMetadata(
+				typeof(FrameworkElement),
+				new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
+
 			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
 			var container = TinyIoCContainer.Current;
