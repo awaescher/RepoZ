@@ -7,6 +7,7 @@
 					  mc:Ignorable="d"
 					  xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 					  xmlns:controls="clr-namespace:RepoZ.App.Win.Controls"
+					  xmlns:converters="clr-namespace:RepoZ.App.Win.Converters"
 					  TextElement.Foreground="{DynamicResource MaterialDesignBody}"
 					  TextElement.FontWeight="Regular"
 					  TextElement.FontSize="12"
@@ -27,7 +28,9 @@
 					  IsMinButtonEnabled="False"
 					  IsMaxRestoreButtonEnabled="False"
 					  IsCloseButtonEnabled="False">
-
+	<Window.Resources>
+		<converters:HumanizerDateTimeConverter x:Key="HumanizerDateTimeConverter" />
+	</Window.Resources>
 	<Grid Margin="10"
 		  Focusable="False">
 
@@ -101,7 +104,11 @@
 									<TextBlock Text="{Binding CurrentBranch}"
 											   Margin="8, 4, 8 ,4" />
 									<TextBlock Text="{Binding Status}"
-											   Margin="8, 4, 8 ,4" />
+											   Margin="8, 4, 8 ,4" >
+										<TextBlock.ToolTip>
+											<TextBlock Text="{Binding UpdateStampUtc, Converter={StaticResource HumanizerDateTimeConverter}}"/>
+										</TextBlock.ToolTip>
+									</TextBlock>
 								</StackPanel>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
