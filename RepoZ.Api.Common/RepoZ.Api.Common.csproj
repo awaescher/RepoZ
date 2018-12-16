@@ -65,6 +65,10 @@
     <Compile Include="Git\DefaultRepositoryWriter.cs" />
     <Compile Include="Git\IGitCommander.cs" />
     <Compile Include="Git\DefaultRepositoryStore.cs" />
+    <Compile Include="Git\ProcessExecution\GitCommandException.cs" />
+    <Compile Include="Git\ProcessExecution\GitProcess.cs" />
+    <Compile Include="Git\ProcessExecution\ProcessStdoutReader.cs" />
+    <Compile Include="Git\ProcessExecution\ProcessExecutingGitCommander.cs" />
     <Compile Include="IO\DefaultAppDataPathProvider.cs" />
     <Compile Include="IO\DefaultDriveEnumerator.cs" />
     <Compile Include="IO\DefaultPathCrawler.cs" />

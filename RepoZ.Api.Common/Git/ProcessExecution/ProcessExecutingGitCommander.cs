@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Text;
-using RepoZ.Api.Common.Git;
 using System.Linq;
+using System.Threading;
 
-namespace RepoZ.Api.Win.IO
+namespace RepoZ.Api.Common.Git.ProcessExecution
 {
-	public class WindowsGitCommander : IGitCommander
+	public class ProcessExecutingGitCommander : IGitCommander
 	{
 		/// <summary>
 		/// Starting with version 1.7.10, Git uses UTF-8.
@@ -68,87 +68,6 @@ namespace RepoZ.Api.Win.IO
 			return new ProcessStdoutReader(this, process);
 		}
 
-		private class ProcessStdoutReader : TextReader
-		{
-			private readonly GitProcess _process;
-			private readonly WindowsGitCommander _gitCommander;
-
-			public ProcessStdoutReader(WindowsGitCommander gitCommander, GitProcess process)
-			{
-				_gitCommander = gitCommander;
-				_process = process;
-			}
-
-			public override void Close()
-			{
-				_gitCommander.Close(_process);
-			}
-
-			public override System.Runtime.Remoting.ObjRef CreateObjRef(Type requestedType)
-			{
-				return _process.StandardOutput.CreateObjRef(requestedType);
-			}
-
-			protected override void Dispose(bool disposing)
-			{
-				if (disposing && _process != null)
-				{
-					Close();
-				}
-				base.Dispose(disposing);
-			}
-
-			public override bool Equals(object obj)
-			{
-				return _process.StandardOutput.Equals(obj);
-			}
-
-			public override int GetHashCode()
-			{
-				return _process.StandardOutput.GetHashCode();
-			}
-
-			public override object InitializeLifetimeService()
-			{
-				return _process.StandardOutput.InitializeLifetimeService();
-			}
-
-			public override int Peek()
-			{
-				return _process.StandardOutput.Peek();
-			}
-
-			public override int Read()
-			{
-				return _process.StandardOutput.Read();
-			}
-
-			public override int Read(char[] buffer, int index, int count)
-			{
-				return _process.StandardOutput.Read(buffer, index, count);
-			}
-
-			public override int ReadBlock(char[] buffer, int index, int count)
-			{
-				return _process.StandardOutput.ReadBlock(buffer, index, count);
-			}
-
-			public override string ReadLine()
-			{
-				return _process.StandardOutput.ReadLine();
-			}
-
-			public override string ReadToEnd()
-			{
-				return _process.StandardOutput.ReadToEnd();
-			}
-
-			public override string ToString()
-			{
-				return _process.StandardOutput.ToString();
-			}
-		}
-
 		public void CommandInputPipe(Api.Git.Repository repository, Action<TextWriter> action, params string[] command)
 		{
 			Time(command, () =>
@@ -205,7 +124,7 @@ namespace RepoZ.Api.Win.IO
 			}
 		}
 
-		private void Close(GitProcess process)
+		public void Close(GitProcess process)
 		{
 			// if caller doesn't read entire stdout to the EOF - it is possible that 
 			// child process will hang waiting until there will be free space in stdout
@@ -221,6 +140,8 @@ namespace RepoZ.Api.Win.IO
 				throw new GitCommandException("Command did not terminate.", process);
 			if (process.ExitCode != 0)
 				throw new GitCommandException(string.Format("Command exited with error code: {0}\n{1}", process.ExitCode, process.StandardErrorString), process);
+
+			process?.Dispose();
 		}
 
 		private void RedirectStdout(ProcessStartInfo startInfo)
@@ -248,19 +169,61 @@ namespace RepoZ.Api.Win.IO
 
 		protected virtual GitProcess Start(Api.Git.Repository repository, string[] command, Action<ProcessStartInfo> initialize)
 		{
-			var startInfo = new ProcessStartInfo();
-			startInfo.FileName = "git";
-			startInfo.WorkingDirectory = repository.Path;
-			SetArguments(startInfo, command);
-			startInfo.CreateNoWindow = true;
-			startInfo.UseShellExecute = false;
-			startInfo.EnvironmentVariables["GIT_PAGER"] = "cat";
-			RedirectStderr(startInfo);
-			initialize(startInfo);
-			Trace.WriteLine("Starting process: " + startInfo.FileName + " " + startInfo.Arguments + " on " + repository.Name, "git command");
-			var process = new GitProcess(Process.Start(startInfo));
-			process.ConsumeStandardError();
-			return process;
+			var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
+
+			var psi = new ProcessStartInfo();
+
+			psi.FileName = "git";
+			psi.WorkingDirectory = repository.Path;
+			SetArguments(psi, command);
+			psi.CreateNoWindow = true;
+			psi.UseShellExecute = false;
+			psi.EnvironmentVariables["GIT_PAGER"] = "cat";
+			RedirectStderr(psi);
+			initialize(psi);
+
+			var output = new StringBuilder();
+			var error = new StringBuilder();
+
+			using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
+			using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+			{
+				var process = new Process();
+				process.StartInfo = psi;
+
+				process.OutputDataReceived += (sender, e) =>
+				{
+					if (e.Data == null)
+						outputWaitHandle.Set();
+					else
+						output.AppendLine(e.Data);
+				};
+
+				process.ErrorDataReceived += (sender, e) =>
+				{
+					if (e.Data == null)
+						errorWaitHandle.Set();
+					else
+						error.AppendLine(e.Data);
+				};
+
+				var gitProcess = new GitProcess(process);
+				process.Start();
+				gitProcess.ConsumeStandardError();
+
+				if (process.WaitForExit(timeout) &&
+					outputWaitHandle.WaitOne(timeout) &&
+					errorWaitHandle.WaitOne(timeout))
+				{
+					// Process completed. Check process.ExitCode here.
+				}
+				else
+				{
+					// Timed out.
+				}
+
+				return gitProcess;
+			}
 		}
 
 		public static void SetArguments(ProcessStartInfo startInfo, params string[] args)
@@ -291,57 +254,11 @@ namespace RepoZ.Api.Win.IO
 		}
 
 		private static readonly Regex ValidCommandName = new Regex("^[a-z0-9A-Z_-]+$");
+
 		private static void AssertValidCommand(string[] command)
 		{
 			if (command.Length < 1 || !ValidCommandName.IsMatch(command[0]))
 				throw new Exception("bad git command: " + (command.Length == 0 ? "" : command[0]));
-		}
-
-		protected class GitProcess
-		{
-			private readonly Process _process;
-
-			public GitProcess(Process process)
-			{
-				_process = process;
-			}
-
-			public static implicit operator Process(GitProcess process)
-			{
-				return process._process;
-			}
-
-			public string StandardErrorString { get; private set; }
-
-			public void ConsumeStandardError()
-			{
-				StandardErrorString = "";
-				_process.ErrorDataReceived += StdErrReceived;
-				_process.BeginErrorReadLine();
-			}
-
-			private void StdErrReceived(object sender, DataReceivedEventArgs e)
-			{
-				if (e.Data != null && e.Data.Trim() != "")
-				{
-					var data = e.Data;
-					Trace.WriteLine(data.TrimEnd(), "git stderr");
-					StandardErrorString += data;
-				}
-			}
-
-			// Delegate a bunch of things to the Process.
-
-			public ProcessStartInfo StartInfo { get { return _process.StartInfo; } }
-			public int ExitCode { get { return _process.ExitCode; } }
-
-			public StreamWriter StandardInput { get { return _process.StandardInput; } }
-			public StreamReader StandardOutput { get { return _process.StandardOutput; } }
-
-			public bool WaitForExit(int milliseconds)
-			{
-				return _process.WaitForExit(milliseconds);
-			}
 		}
 	}
 }

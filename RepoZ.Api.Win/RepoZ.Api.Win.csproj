@@ -58,7 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Git\GitCommandException.cs" />
-    <Compile Include="Git\WindowsGitCommander.cs" />
     <Compile Include="Git\WindowsRepositoryActionProvider.cs" />
     <Compile Include="IO\WindowsPathSkipper.cs" />
     <Compile Include="PInvoke\Combridge.cs" />

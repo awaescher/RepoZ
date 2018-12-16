@@ -21,6 +21,7 @@ using NetMQ.Sockets;
 using NetMQ;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
+using RepoZ.Api.Common.Git.ProcessExecution;
 
 namespace RepoZ.App.Win
 {
@@ -117,7 +118,7 @@ namespace RepoZ.App.Win
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
-			container.Register<IGitCommander, WindowsGitCommander>();
+			container.Register<IGitCommander, ProcessExecutingGitCommander>();
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>();
 		}

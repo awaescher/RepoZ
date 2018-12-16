@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using RepoZ.Api.Common.Git.ProcessExecution;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepoZ.Api.Common.Git
 {
@@ -16,5 +13,6 @@ namespace RepoZ.Api.Common.Git
 		void CommandInputPipe(Api.Git.Repository repository, Action<TextWriter> action, params string[] command);
 		void CommandInputOutputPipe(Api.Git.Repository repository, Action<TextWriter, TextReader> interact, params string[] command);
 		void WrapGitCommandErrors(string exceptionMessage, Action action);
+		void Close(GitProcess process);
 	}
 }
