@@ -22,7 +22,7 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 		public string Command(Api.Git.Repository repository, params string[] command)
 		{
 			string retVal = null;
-			CommandOutputPipe(repository, stdout => retVal = stdout.ReadToEnd(), command);
+			CommandOutputPipe(repository, output => retVal = output, command);
 			return retVal;
 		}
 
@@ -32,7 +32,7 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 		public string CommandOneline(Api.Git.Repository repository, params string[] command)
 		{
 			string retVal = null;
-			CommandOutputPipe(repository, stdout => retVal = stdout.ReadLine(), command);
+			CommandOutputPipe(repository, output => retVal = output, command);
 			return retVal;
 		}
 
@@ -41,52 +41,19 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 		/// </summary>
 		public void CommandNoisy(Api.Git.Repository repository, params string[] command)
 		{
-			CommandOutputPipe(repository, stdout => Trace.TraceInformation(stdout.ReadToEnd()), command);
+			CommandOutputPipe(repository, output => Trace.TraceInformation(output), command);
 		}
 
 		/// <summary>
 		/// Runs the given git command, and redirects STDOUT to the provided action.
 		/// </summary>
-		public void CommandOutputPipe(Api.Git.Repository repository, Action<TextReader> handleOutput, params string[] command)
+		public void CommandOutputPipe(Api.Git.Repository repository, Action<string> handleOutput, params string[] command)
 		{
 			Time(command, () =>
 			{
 				AssertValidCommand(command);
-				var process = Start(repository, command, RedirectStdout);
-				handleOutput(process.StandardOutput);
-				Close(process);
-			});
-		}
-
-		/// <summary>
-		/// Runs the given git command, and returns a reader for STDOUT. NOTE: The returned value MUST be disposed!
-		/// </summary>
-		public TextReader CommandOutputPipe(Api.Git.Repository repository, params string[] command)
-		{
-			AssertValidCommand(command);
-			var process = Start(repository, command, RedirectStdout);
-			return new ProcessStdoutReader(this, process);
-		}
-
-		public void CommandInputPipe(Api.Git.Repository repository, Action<TextWriter> action, params string[] command)
-		{
-			Time(command, () =>
-			{
-				AssertValidCommand(command);
-				var process = Start(repository, command, RedirectStdin);
-				action(NewStreamWithEncoding(process.StandardInput, _encoding));
-				Close(process);
-			});
-		}
-
-		public void CommandInputOutputPipe(Api.Git.Repository repository, Action<TextWriter, TextReader> interact, params string[] command)
-		{
-			Time(command, () =>
-			{
-				AssertValidCommand(command);
-				var process = Start(repository, command, And<ProcessStartInfo>(RedirectStdin, RedirectStdout));
-				interact(NewStreamWithEncoding(process.StandardInput, _encoding), process.StandardOutput);
-				Close(process);
+				var output = Start(repository, command, RedirectStdout);
+				handleOutput(output);
 			});
 		}
 
@@ -124,26 +91,6 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 			}
 		}
 
-		public void Close(GitProcess process)
-		{
-			// if caller doesn't read entire stdout to the EOF - it is possible that 
-			// child process will hang waiting until there will be free space in stdout
-			// buffer to write the rest of the output.
-			// See https://github.com/git-tfs/git-tfs/issues/121 for details.
-			if (process.StartInfo.RedirectStandardOutput)
-			{
-				process.StandardOutput.BaseStream.CopyTo(Stream.Null);
-				process.StandardOutput.Close();
-			}
-
-			if (!process.WaitForExit((int)TimeSpan.FromSeconds(10).TotalMilliseconds))
-				throw new GitCommandException("Command did not terminate.", process);
-			if (process.ExitCode != 0)
-				throw new GitCommandException(string.Format("Command exited with error code: {0}\n{1}", process.ExitCode, process.StandardErrorString), process);
-
-			process?.Dispose();
-		}
-
 		private void RedirectStdout(ProcessStartInfo startInfo)
 		{
 			startInfo.RedirectStandardOutput = true;
@@ -162,12 +109,7 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 			// there is no StandardInputEncoding property, use extension method StreamWriter.WithEncoding instead
 		}
 
-		private GitProcess Start(Api.Git.Repository repository, string[] command)
-		{
-			return Start(repository, command, x => { });
-		}
-
-		protected virtual GitProcess Start(Api.Git.Repository repository, string[] command, Action<ProcessStartInfo> initialize)
+		protected virtual string Start(Api.Git.Repository repository, string[] command, Action<ProcessStartInfo> initialize)
 		{
 			var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
 
@@ -207,22 +149,34 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 						error.AppendLine(e.Data);
 				};
 
-				var gitProcess = new GitProcess(process);
-				process.Start();
-				gitProcess.ConsumeStandardError();
-
-				if (process.WaitForExit(timeout) &&
-					outputWaitHandle.WaitOne(timeout) &&
-					errorWaitHandle.WaitOne(timeout))
+				try
 				{
-					// Process completed. Check process.ExitCode here.
-				}
-				else
-				{
-					// Timed out.
-				}
+					process.Start();
+					process.BeginOutputReadLine();
+					process.BeginErrorReadLine();
 
-				return gitProcess;
+					if (process.WaitForExit(timeout) &&
+						outputWaitHandle.WaitOne(timeout) &&
+						errorWaitHandle.WaitOne(timeout))
+					{
+						// Process completed. Check process.ExitCode here.
+						return output.ToString();
+					}
+					else
+					{
+						// Timed out.
+						return error?.ToString() ?? "Unknown error";
+					}
+				}
+				finally
+				{
+					if (!process.WaitForExit((int)TimeSpan.FromSeconds(10).TotalMilliseconds))
+						throw new GitCommandException("Command did not terminate.", process);
+					if (process.ExitCode != 0)
+						throw new GitCommandException(string.Format("Command exited with error code: {0}\n{1}", process.ExitCode, error?.ToString() ?? "Unknown error"), process);
+
+					process?.Dispose();
+				}
 			}
 		}
 
