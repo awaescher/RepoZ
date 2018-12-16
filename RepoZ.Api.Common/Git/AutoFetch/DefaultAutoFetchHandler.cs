@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Git;
@@ -55,26 +56,34 @@ namespace RepoZ.Api.Common.Git.AutoFetch
 
 		private void FetchNext(object timerState)
 		{
-			var count = RepositoryInformationAggregator.Repositories?.Count ?? 0;
-
-			if (count == 0)
+			var hasAny = RepositoryInformationAggregator.Repositories?.Any() ?? false;
+			if (!hasAny)
 				return;
+
+			// sort the repository list alphabetically each time because  ...
+			// 1. it's most comprehensive for the user
+			// 2. makes sure that no repository is jumped over because the list
+			//    of repositories is constantly changed and not sorted in any way in memory.
+			//    So we cannot guarantuee that each repository is fetched on each iteration if we do not sort.
+			var repositories = RepositoryInformationAggregator.Repositories
+				.OrderBy(r => r.Name)
+				.ToList();
 
 			// temporarily disable the timer to prevent parallel fetch executions
 			UpdateBehavior(AutoFetchMode.Off);
 
 			_lastFetchRepository++;
 
-			if (count <= _lastFetchRepository)
+			if (repositories.Count <= _lastFetchRepository)
 				_lastFetchRepository = 0;
 
-			var repositoryView = RepositoryInformationAggregator.Repositories[_lastFetchRepository];
-			Console.WriteLine($"Auto-fetching {repositoryView.Name} (index {_lastFetchRepository} of {count})");
+			var repositoryView = repositories[_lastFetchRepository];
+
+			Console.WriteLine($"Auto-fetching {repositoryView.Name} (index {_lastFetchRepository} of {repositories.Count})");
 
 			repositoryView.IsSynchronizing = true;
 			try
 			{
-				// TODO: process might never return and therefore the timer is not enabled again ...
 				RepositoryWriter.Fetch(repositoryView.Repository);
 			}
 			catch
