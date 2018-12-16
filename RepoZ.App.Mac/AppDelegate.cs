@@ -12,11 +12,11 @@ using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.Git.AutoFetch;
+using RepoZ.Api.Common.Git.ProcessExecution;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Mac;
-using RepoZ.Api.Mac.Git;
 using RepoZ.Api.Mac.IO;
 using RepoZ.App.Mac.NativeSupport;
 using RepoZ.App.Mac.NativeSupport.Git;
@@ -102,7 +102,7 @@ namespace RepoZ.App.Mac
             container.Register<IPathCrawler, GravellPathCrawler>();
             container.Register<IPathSkipper, MacPathSkipper>();
             container.Register<IThreadDispatcher, MacThreadDispatcher>().AsSingleton();
-            container.Register<IGitCommander, MacGitCommander>();
+            container.Register<IGitCommander, ProcessExecutingGitCommander>();
             container.Register<IAppSettingsService, FileAppSettingsService>();
             container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
         }

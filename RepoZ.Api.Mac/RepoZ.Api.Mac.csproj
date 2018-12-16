@@ -39,10 +39,8 @@
     <Compile Include="IO\MacDriveEnumerator.cs" />
     <Compile Include="IO\MacRepositoryActionProvider.cs" />
     <Compile Include="IO\MacPathSkipper.cs" />
-    <Compile Include="Git\MacGitCommander.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Git\" />
     <Folder Include="IO\" />
   </ItemGroup>
   <ItemGroup>
