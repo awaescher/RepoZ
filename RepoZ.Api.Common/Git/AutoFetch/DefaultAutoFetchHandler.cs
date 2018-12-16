@@ -69,7 +69,7 @@ namespace RepoZ.Api.Common.Git.AutoFetch
 				_lastFetchRepository = 0;
 
 			var repositoryView = RepositoryInformationAggregator.Repositories[_lastFetchRepository];
-			Console.WriteLine("Auto-fetching " + repositoryView.Name);
+			Console.WriteLine($"Auto-fetching {repositoryView.Name} (index {_lastFetchRepository} of {count})");
 
 			repositoryView.IsSynchronizing = true;
 			try
