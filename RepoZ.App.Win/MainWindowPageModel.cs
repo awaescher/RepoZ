@@ -13,8 +13,6 @@ namespace RepoZ.App.Win
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		private AutoFetchMode _autoFetchMode;
-
 		public MainWindowPageModel(IAppSettingsService appSettingsService)
 		{
 			AppSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));

@@ -17,7 +17,6 @@ namespace RepoZ.Api.Git
 		private string _cachedRepositoryStatus;
 		private string _cachedRepositoryStatusWithBranch;
 		private bool _isSynchronizing;
-		private DateTime? _updatedUtc;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
