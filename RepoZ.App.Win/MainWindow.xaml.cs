@@ -171,9 +171,9 @@ namespace RepoZ.App.Win
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
 		}
 
-		private void SettingsButton_Click(object sender, RoutedEventArgs e)
+		private void MenuButton_Click(object sender, RoutedEventArgs e)
 		{
-			SettingsButton.ContextMenu.IsOpen = true;
+			MenuButton.ContextMenu.IsOpen = true;
 		}
 
 		private void ScanButton_Click(object sender, RoutedEventArgs e)

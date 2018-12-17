@@ -52,37 +52,72 @@
 
 				<DockPanel x:Name="dockMain"
 						   Focusable="False">
-					<Grid DockPanel.Dock="Top"
-						  Focusable="False">
-						<controls:ZTextBox x:Name="txtFilter"
+					<DockPanel
+						Focusable="False"
+						DockPanel.Dock="Top">
+						<Button 
+							Name="MenuButton" 
+							Click="MenuButton_Click"
+							DockPanel.Dock="Right"
+							Content="☰" 
+							HorizontalAlignment="Center" 
+							Padding="0"
+							VerticalAlignment="Center" 
+							Width="32" 
+							Cursor="Arrow" 
+							FontSize="17"
+							Background="#00FFF0F0"
+							Margin="10,0,0,0"
+							Foreground="White"
+							Style="{DynamicResource MaterialDesignFlatButton}">
+							<Button.ContextMenu>
+								<ContextMenu x:Name="SettingsMenu" FontSize="13">
+									<MenuItem Header="❓ Help" Click="HelpButton_Click"/>
+									<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
+									<MenuItem Header="🕒 Auto fetch">
+										<MenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
+										<MenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
+										<MenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
+										<MenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
+									</MenuItem>
+								</ContextMenu>
+							</Button.ContextMenu>
+						</Button>
+
+						<Grid 
+							DockPanel.Dock="Left"
+						  Focusable="False" >
+							<controls:ZTextBox x:Name="txtFilter"
 										   TextChanged="txtFilter_TextChanged"
 										   FontSize="17"
 										   VerticalAlignment="Top"
 										   Finish="txtFilter_Finish">
+							</controls:ZTextBox>
 
-						</controls:ZTextBox>
-						<TextBlock IsHitTestVisible="False"
+							<TextBlock IsHitTestVisible="False"
 								   Text="🔍 Search"
 								   VerticalAlignment="Center"
 								   FontSize="15"
 								   HorizontalAlignment="Left"
 								   Focusable="False"
 								   Foreground="Gray">
-							<TextBlock.Style>
-								<Style TargetType="{x:Type TextBlock}">
-									<Setter Property="Visibility"
+								<TextBlock.Style>
+									<Style TargetType="{x:Type TextBlock}">
+										<Setter Property="Visibility"
 											Value="Collapsed" />
-									<Style.Triggers>
-										<DataTrigger Binding="{Binding Text, ElementName=txtFilter}"
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding Text, ElementName=txtFilter}"
 													 Value="">
-											<Setter Property="Visibility"
+												<Setter Property="Visibility"
 													Value="Visible" />
-										</DataTrigger>
-									</Style.Triggers>
-								</Style>
-							</TextBlock.Style>
-						</TextBlock>
-					</Grid>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+
+						</Grid>
+					</DockPanel>
 
 					<ListBox Name="lstRepositories"
 							 DockPanel.Dock="Top"
@@ -92,7 +127,9 @@
 							 ContextMenuOpening="lstRepositories_ContextMenuOpening"
 							 VerticalAlignment="Top"
 							 VerticalContentAlignment="Top"
-							 SelectionMode="Extended">
+							 SelectionMode="Extended"
+							 Margin="0,10,0,0"
+							 >
 						<ListBox.ItemTemplate>
 							<DataTemplate>
 								<StackPanel>
@@ -140,22 +177,6 @@
 					x:Name="UpdateButton"
 					Visibility="Hidden"
 					Click="UpdateButton_Click" />
-			<Button Content="⚙️ Settings"
-					x:Name="SettingsButton"
-					Click="SettingsButton_Click" >
-				<Button.ContextMenu>
-					<ContextMenu x:Name="SettingsMenu" FontSize="13">
-						<MenuItem Header="❓ Help" Click="HelpButton_Click"/>
-						<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
-						<MenuItem Header="🕒 Auto fetch">
-							<MenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
-							<MenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
-							<MenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
-							<MenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
-						</MenuItem>
-					</ContextMenu>
-				</Button.ContextMenu>
-			</Button>
 		</Controls:WindowCommands>
 	</Controls:MetroWindow.RightWindowCommands>
 
