@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using RepoZ.Api.Common.Git;
+using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
 using Specs.IO;
@@ -40,7 +42,8 @@ namespace Specs
 				new UselessRepositoryStore(),
 				new DefaultRepositoryInformationAggregator(
 					new StatusCompressor(new StatusCharacterMap()),
-					new DirectThreadDispatcher())
+					new DirectThreadDispatcher()),
+				new Mock<IAutoFetchHandler>().Object
 				);
 
 			_monitor.DelayGitRepositoryStatusAfterCreationMilliseconds = 100;

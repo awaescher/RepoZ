@@ -10,6 +10,9 @@ namespace grrui
 {
 	class Program
 	{
+        private const int BUTTON_BORDER = 4; // 2 chars to the left, 2 to the right
+        private const int BUTTON_DISTANCE = 1;
+
 		private static RepoZIpcClient _client;
 		private static ListView _repositoryList;
 		private static RepositoriesView _repositoriesView;
@@ -57,33 +60,36 @@ namespace grrui
 			win.Add(filterField);
 			win.Add(_repositoryList);
 
-			var navigationButton = new Button("Navigate")
+            var buttonX = Pos.Left(filterLabel);
+            var navigationButton = new Button("Navigate")
 			{
 				Clicked = Navigate,
-				X = Pos.Left(filterLabel),
+				X = buttonX,
 				Y = Pos.AnchorEnd(1),
 				CanFocus = false
 			};
 
-			var browseButton = new Button("Browse")
+            buttonX = buttonX + navigationButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
+            var browseButton = new Button("Browse")
 			{
 				Clicked = Browse,
-				X = Pos.Right(navigationButton) + 1,
+				X = buttonX,
 				Y = Pos.AnchorEnd(1),
 				CanFocus = false
 			};
 
-			var copyButton = new Button("Copy path")
+            buttonX = buttonX + browseButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
+            var copyButton = new Button("Copy path")
 			{
 				Clicked = CopyPath,
-				X = Pos.Right(browseButton) + 1,
-				Y = Pos.AnchorEnd(1),
+                X = buttonX,
+                Y = Pos.AnchorEnd(1),
 				CanFocus = false
 			};
 
 			var quitButton = new Button("Quit")
 			{
-				Clicked = () => Application.RequestStop(),
+				Clicked = Application.RequestStop,
 				X = Pos.AnchorEnd(8 + 1),
 				Y = Pos.AnchorEnd(1),
 				CanFocus = false
@@ -113,11 +119,20 @@ namespace grrui
 		{
 			ExecuteOnSelectedRepository(r =>
 			{
-				var path = r.Path.Replace(@"\", "/");
-				var command = $"cd \"{path}\"";
+				var command = $"cd \"{r.SafePath}\"";
 
-				// type the path into the console which is hosting grrui.exe to change to the directory
-				grr.ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command, waitMilliseconds: 1000);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // type the path into the console which is hosting grrui.exe to change to the directory
+                    grr.ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command, waitMilliseconds: 1000);
+                }
+                else
+                {
+                    // TODO
+                    TimelyMessage.ShowMessage("Not implemented. The command to navigate was copied to the clipboard.", TimeSpan.FromMilliseconds(100));
+                    TextCopy.Clipboard.SetText(command);
+                }
+
 				Application.RequestStop();
 			});
 		}
@@ -126,13 +141,7 @@ namespace grrui
 		{
 			ExecuteOnSelectedRepository(r =>
 			{
-				// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
-				var path = r.Path.Replace(@"\", "/");
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    path = $"\"{path}\"";
-
-                Process.Start(new ProcessStartInfo(r.Path) { UseShellExecute = true });
+				Process.Start(new ProcessStartInfo(r.SafePath) { UseShellExecute = true });
 			});
 		}
 
@@ -140,10 +149,7 @@ namespace grrui
 		{
 			ExecuteOnSelectedRepository(r =>
 			{
-				// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
-				var path = r.Path.Replace(@"\", "/");
-
-				TextCopy.Clipboard.SetText(path);
+				TextCopy.Clipboard.SetText(r.SafePath);
 				TimelyMessage.ShowMessage("Path copied to clipboard", TimeSpan.FromMilliseconds(100));
 			});
 		}

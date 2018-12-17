@@ -3,22 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
-using RepoZ.Api.Win.Git;
-using TinyIoC;
 
 namespace RepoZ.App.Win
 {
@@ -34,9 +27,13 @@ namespace RepoZ.App.Win
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
 			IRepositoryMonitor repositoryMonitor,
-			IRepositoryActionProvider repositoryActionProvider)
+			IRepositoryActionProvider repositoryActionProvider,
+			IAppSettingsService appSettingsService)
 		{
 			InitializeComponent();
+
+			DataContext = new MainWindowPageModel(appSettingsService);
+			SettingsMenu.DataContext = DataContext; // this is out of the visual tree
 
 			_monitor = repositoryMonitor as DefaultRepositoryMonitor;
 			if (_monitor != null)
@@ -174,6 +171,11 @@ namespace RepoZ.App.Win
 			transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
 		}
 
+		private void MenuButton_Click(object sender, RoutedEventArgs e)
+		{
+			MenuButton.ContextMenu.IsOpen = true;
+		}
+
 		private void ScanButton_Click(object sender, RoutedEventArgs e)
 		{
 			_monitor.ScanForLocalRepositoriesAsync();
@@ -248,8 +250,8 @@ namespace RepoZ.App.Win
 
 		private void ShowScanningState(bool isScanning)
 		{
-			ScanButton.IsEnabled = !isScanning;
-			ScanButton.Content = isScanning ? "Scanning ..." : "⚡ Scan computer";
+			ScanMenuItem.IsEnabled = !isScanning;
+			ScanMenuItem.Header = isScanning ? "⚡ Scanning ..." : "⚡ Scan computer";
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -291,33 +293,35 @@ namespace RepoZ.App.Win
 			return $@"
 RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
-    current_branch  [i]   +1   ~2   -3   |   +4   ~5   -6 
+    master  {statusCharacterMap.IdenticalSign}   +1   ~2   -3   |   +4   ~5   -6
 
 
-current_branch
-The current branch or the SHA of a detached HEAD.
+master
+... represents the current branch or the SHA of a detached HEAD.
 
-[i] Represents the branch status in relation to its remote (tracked origin) branch.
+{statusCharacterMap.IdenticalSign}
+... represents the branch status in relation to its remote (tracked origin) branch.
+In this case, the local branch is at the same commit level as the remote branch.
 
-[i] =  {statusCharacterMap.IdenticalSign}
-The local branch is at the same commit level as the remote branch.
+{statusCharacterMap.ArrowUpSign}<num>
+... indicates that the local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
 
-[i] =  {statusCharacterMap.ArrowUpSign}<num>
-The local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
+{statusCharacterMap.ArrowDownSign}<num>
+... indicates that the local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
 
-[i] =  {statusCharacterMap.ArrowDownSign}<num>
-The local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
+{statusCharacterMap.NoUpstreamSign}
+... indicates that the local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
 
-[i] =  {statusCharacterMap.NoUpstreamSign}
-The local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
+
 
 The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
 The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
 
 Please note:
-This information reflects the state of the remote tracked branch after the last git fetch/pull of the remote.
-Note that the status might be shorter if possible to improve readablility.
+This information reflects the state of the remote tracked branch after the last ""git fetch"".
+You can enable Auto fetch in the RepoZ menu to keep the information up to date.
 
+Note that the status might be shorter if possible to improve readablility.
 ";
 		}
 
