@@ -10,6 +10,8 @@ using TinySoup.Identifier;
 using TinySoup;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git.AutoFetch;
 
 namespace RepoZ.App.Mac
 {
@@ -17,7 +19,7 @@ namespace RepoZ.App.Mac
     {
         private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _monitor;
-        private StringCommandHandler _stringCommandHandler = new StringCommandHandler();
+        private IAppSettingsService _appSettingsService;
 
         #region Constructors
 
@@ -65,13 +67,7 @@ namespace RepoZ.App.Mac
             var actionProvider = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryActionProvider>();
 
             _monitor = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryMonitor>();
-            _monitor.OnScanStateChanged += _monitor_OnScanStateChanged;
-
-            _stringCommandHandler.Define(new string[] { "help", "man", "?" }, ShowCommandReference, "Shows this help page");
-            _stringCommandHandler.Define(new string[] { "scan" }, async () => await _monitor.ScanForLocalRepositoriesAsync(), "Scans this Mac for git repositories");
-            _stringCommandHandler.Define(new string[] { "reset" }, _monitor.Reset, "Resets the repository cache");
-            _stringCommandHandler.Define(new string[] { "info", "stats" }, ShowStats, "Shows process informations");
-            _stringCommandHandler.Define(new string[] { "quit", "close", "exit" }, () => NSApplication.SharedApplication.Terminate(this), "Closes the application");
+            _appSettingsService = TinyIoC.TinyIoCContainer.Current.Resolve<IAppSettingsService>();
 
             // Do any additional setup after loading the view.
             var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
@@ -97,6 +93,8 @@ namespace RepoZ.App.Mac
 
             ShowUpdateIfAvailable();
             this.View.Window.MakeFirstResponder(SearchBox);
+
+            CreateMenu();
         }
 
         public override void ViewWillDisappear()
@@ -108,34 +106,29 @@ namespace RepoZ.App.Mac
 
         private void ShowUpdateIfAvailable()
         {
-            UpdateButton.ToolTip = AppDelegate.AvailableUpdate == null ? "" : $"Version {AppDelegate.AvailableUpdate.VersionString} is available.";
-            UpdateButton.Hidden = AppDelegate.AvailableUpdate == null;
+            bool hasUpdate = AppDelegate.AvailableUpdate != null;
 
-            var newSearchBoxFrame = SearchBox.Frame;
+            // to debug
+            //hasUpdate = true;
 
-            var availableWidth = UpdateButton.Hidden ? this.View.Frame.Width : UpdateButton.Frame.X;
-            newSearchBoxFrame.Width = availableWidth - (SearchBox.Frame.X * 2);
+            UpdateButton.ToolTip = hasUpdate ? $"Version {AppDelegate.AvailableUpdate?.VersionString ?? "?.?"} is available." : "";
+            UpdateButton.Hidden = !hasUpdate;
 
-            SearchBox.Frame = newSearchBoxFrame;
+            if (UpdateButton.Hidden)
+            {
+                var additionalSpace = UpdateButton.Frame.Left - MenuButton.Frame.Left;
+                MenuButton.Frame = UpdateButton.Frame;
+                SearchBox.Frame = new CoreGraphics.CGRect(SearchBox.Frame.X, SearchBox.Frame.Y, SearchBox.Frame.Width + additionalSpace, SearchBox.Frame.Height);
+            }
         }
 
         void SearchBox_FinishInput(object sender, EventArgs e)
         {
             string value = SearchBox.StringValue;
 
-            if (_stringCommandHandler.IsCommand(value))
-            {
-                if (_stringCommandHandler.Handle(value))
-                    SearchBox.StringValue = "";
-                else
-                    SearchBox.SelectText(this);
-            }
-            else
-            {
-                this.View.Window.MakeFirstResponder(RepoTab);
-                if (RepoTab.RowCount > 0)
-                    RepoTab.SelectRow(0, byExtendingSelection: false);
-            }
+            this.View.Window.MakeFirstResponder(RepoTab);
+            if (RepoTab.RowCount > 0)
+                RepoTab.SelectRow(0, byExtendingSelection: false);
         }
 
         public override void KeyDown(NSEvent theEvent)
@@ -160,9 +153,7 @@ namespace RepoZ.App.Mac
         {
             var dataSource = RepoTab.DataSource as RepositoryTableDataSource;
             var filterString = (sender as NSControl).StringValue;
-
-            if (!_stringCommandHandler.IsCommand(filterString))
-                dataSource.Filter(filterString);
+            dataSource.Filter(filterString);
         }
 
         partial void UpdateButton_Click(NSObject sender)
@@ -173,8 +164,53 @@ namespace RepoZ.App.Mac
             Process.Start(AppDelegate.AvailableUpdate.Url);
         }
 
-        void _monitor_OnScanStateChanged(object sender, bool e)
+        private void CreateMenu()
         {
+
+            // TODO -> Items require macOS 10.14?
+            MenuButton.Menu = new NSMenu("Pop up")
+            {
+                Items = new NSMenuItem[]
+                    {
+                        new NSMenuItem("Help", (s, e) => ShowHelp()),
+                        new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
+                        new NSMenuItem("Auto fetch")
+                        {
+                            Identifier = "autofetch",
+                            Submenu = new NSMenu
+                            {
+                                Items = new NSMenuItem[]
+                                {
+                                    new NSMenuItem(nameof(AutoFetchMode.Off), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
+                                    new NSMenuItem(nameof(AutoFetchMode.Discretely), HandleAutoFetchChange) { Identifier = AutoFetchMode.Discretely.ToString() },
+                                    new NSMenuItem(nameof(AutoFetchMode.Adequate), HandleAutoFetchChange) { Identifier = AutoFetchMode.Adequate.ToString() },
+                                    new NSMenuItem(nameof(AutoFetchMode.Aggresive), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
+                                }
+                            }
+                        },
+                        new NSMenuItem("Quit", (s, e) => Quit()),
+                    }
+            };
+        }
+
+        partial void MenuButton_Click(NSObject sender)
+        {
+            var currentMode = _appSettingsService.AutoFetchMode;
+            var autoFetchItem = MenuButton.Menu.Items.First(i => i.Identifier?.Equals("autofetch") ?? false);
+
+            foreach (var item in autoFetchItem.Submenu.Items)
+            {
+                var itemMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), item.Identifier);
+                item.State = itemMode == currentMode ? NSCellStateValue.On : NSCellStateValue.Off;
+            }
+
+            MenuButton.Menu.PopUpMenu(null, new CoreGraphics.CGPoint() { X = 0, Y = MenuButton.Frame.Height }, MenuButton);
+        }
+
+        void HandleAutoFetchChange(object sender, EventArgs e)
+        {
+            var newMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), (sender as NSMenuItem).Title);
+            _appSettingsService.AutoFetchMode = newMode;
 
         }
 
@@ -191,36 +227,58 @@ namespace RepoZ.App.Mac
             RepoTab.Hidden = !hasRepositories;
         }
 
-        private void ShowCommandReference()
+        private void Quit()
+        {
+            NSApplication.SharedApplication.Terminate(this);
+        }
+
+        private void ShowHelp()
         {
             var alert = new NSAlert
             {
-                MessageText = _stringCommandHandler.GetHelpText(),
-                AlertStyle = NSAlertStyle.Informational
+                MessageText = "How the read the status information",
+                AlertStyle = NSAlertStyle.Informational,
+                InformativeText = GetHelp(TinyIoC.TinyIoCContainer.Current.Resolve<StatusCharacterMap>())
             };
-            alert.AddButton("OK");
+            alert.AddButton("Got it");
             var returnValue = alert.RunModal();
         }
-		
-		private void ShowStats()
+
+        private string GetHelp(StatusCharacterMap statusCharacterMap)
         {
-            var process = Process.GetCurrentProcess();
+            return $@"
+RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
-            var stats = string.Join("", new string[] {
-                "Version\t\t\t", NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString(),
-                "\nRepositories\t\t", (_aggregator.Repositories?.Count ?? 0).ToString(),
-                "\nProcess Id\t\t", process.Id.ToString(),
-                "\nWorking Set\t\t", (process.WorkingSet64 / 1024 / 1024).ToString() + " MB",
-                "\nRunning Since\t", (DateTime.UtcNow - process.StartTime.ToUniversalTime()).ToString("")
-            });
+    master  {statusCharacterMap.IdenticalSign}   +1   ~2   -3   |   +4   ~5   -6
 
-            var alert = new NSAlert
-            {
-                MessageText = stats,
-                AlertStyle = NSAlertStyle.Informational
-            };
-            alert.AddButton("OK");
-            var returnValue = alert.RunModal();
+
+master
+... represents the current branch or the SHA of a detached HEAD.
+
+{statusCharacterMap.IdenticalSign}
+... represents the branch status in relation to its remote (tracked origin) branch.
+In this case, the local branch is at the same commit level as the remote branch.
+
+{statusCharacterMap.ArrowUpSign}<num>
+... indicates that the local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
+
+{statusCharacterMap.ArrowDownSign}<num>
+... indicates that the local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
+
+{statusCharacterMap.NoUpstreamSign}
+... indicates that the local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
+
+
+
+The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
+The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
+
+Please note:
+This information reflects the state of the remote tracked branch after the last ""git fetch"".
+You can enable Auto fetch in the RepoZ menu to keep the information up to date.
+
+Note that the status might be shorter if possible to improve readablility.
+";
         }
 
         public new PopupView View => (PopupView)base.View;

@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
-using RepoZ.Api.Win.Git;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
@@ -23,6 +19,9 @@ using TinySoup.Model;
 using TinySoup;
 using NetMQ.Sockets;
 using NetMQ;
+using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git.AutoFetch;
+using RepoZ.Api.Common.Git.ProcessExecution;
 
 namespace RepoZ.App.Win
 {
@@ -50,6 +49,13 @@ namespace RepoZ.App.Win
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+
+			// Ensure the current culture passed into bindings is the OS culture.
+			// By default, WPF uses en-US as the culture, regardless of the system settings.
+			// see: https://stackoverflow.com/a/520334/704281
+			FrameworkElement.LanguageProperty.OverrideMetadata(
+				typeof(FrameworkElement),
+				new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
 			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
@@ -102,16 +108,19 @@ namespace RepoZ.App.Win
 			container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
+			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
 			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-			container.Register<IRepositoryStore, WindowsRepositoryStore>();
+			container.Register<IRepositoryStore, DefaultRepositoryStore>();
 			container.Register<IPathProvider, DefaultDriveEnumerator>();
 			container.Register<IPathCrawler, GravellPathCrawler>();
 			container.Register<IPathSkipper, WindowsPathSkipper>();
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
-			container.Register<IGitCommander, WindowsGitCommander>();
+			container.Register<IGitCommander, ProcessExecutingGitCommander>();
+			container.Register<IAppSettingsService, FileAppSettingsService>();
+			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

@@ -9,6 +9,7 @@ using RepoZ.Api.IO;
 using System.Threading;
 using RepoZ.Api.Common;
 using System.IO;
+using RepoZ.Api.Common.Git.AutoFetch;
 
 namespace RepoZ.Api.Common.Git
 {
@@ -36,19 +37,21 @@ namespace RepoZ.Api.Common.Git
 			IRepositoryObserverFactory repositoryObserverFactory,
 			IPathCrawlerFactory pathCrawlerFactory,
 			IRepositoryStore repositoryStore,
-			IRepositoryInformationAggregator repositoryInformationAggregator)
+			IRepositoryInformationAggregator repositoryInformationAggregator,
+            IAutoFetchHandler autoFetchHandler)
 		{
-			_repositoryReader = repositoryReader;
-			_repositoryDetectorFactory = repositoryDetectorFactory;
-			_repositoryObserverFactory = repositoryObserverFactory;
-			_pathCrawlerFactory = pathCrawlerFactory;
-			_pathProvider = pathProvider;
-			_repositoryStore = repositoryStore;
-			_repositoryInformationAggregator = repositoryInformationAggregator;
+			_repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
+			_repositoryDetectorFactory = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
+			_repositoryObserverFactory = repositoryObserverFactory ?? throw new ArgumentNullException(nameof(repositoryObserverFactory));
+			_pathCrawlerFactory = pathCrawlerFactory ?? throw new ArgumentNullException(nameof(pathCrawlerFactory));
+			_pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
+			_repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
+			_repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
+            _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
 
-			_repositoryObservers = new Dictionary<string, IRepositoryObserver>();
+            _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 
-			_storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+            AutoFetchHandler = autoFetchHandler ?? throw new ArgumentNullException(nameof(autoFetchHandler));
 		}
 
 		public Task ScanForLocalRepositoriesAsync()
@@ -135,6 +138,7 @@ namespace RepoZ.Api.Common.Git
 
 		public void Observe()
 		{
+
 			if (_detectors == null)
 			{
 				// see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
@@ -146,7 +150,9 @@ namespace RepoZ.Api.Common.Git
 			}
 
 			_detectors.ForEach(w => w.Start());
-		}
+
+            AutoFetchHandler.Active = true;
+        }
 
         public void Reset()
         {
@@ -167,7 +173,8 @@ namespace RepoZ.Api.Common.Git
 
 		public void Stop()
 		{
-			_detectors?.ForEach(w => w.Stop());
+            AutoFetchHandler.Active = false;
+            _detectors?.ForEach(w => w.Stop());
 		}
 
 		private void OnRepositoryChangeDetected(Repository repo)
@@ -233,7 +240,9 @@ namespace RepoZ.Api.Common.Git
 
 		public int DelayGitStatusAfterFileOperationMilliseconds { get; set; } = 500;
 
-		private enum KnownRepositoryNotification
+        public IAutoFetchHandler AutoFetchHandler { get; }
+
+        private enum KnownRepositoryNotification
 		{
 			WhenFound = 1,
 			WhenNotFound = 2

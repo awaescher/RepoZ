@@ -61,6 +61,7 @@
     <Compile Include="Git\IRepositoryDetector.cs" />
     <Compile Include="Git\IRepositoryMonitor.cs" />
     <Compile Include="Git\RepositoryAction.cs" />
+    <Compile Include="IO\IAppDataPathProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Git\Repository.cs" />
   </ItemGroup>

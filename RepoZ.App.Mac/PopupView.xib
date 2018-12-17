@@ -9,6 +9,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PopupViewController">
             <connections>
+                <outlet property="MenuButton" destination="npx-xu-SqQ" id="8Hh-uv-vgv"/>
                 <outlet property="RepoTab" destination="xKt-lX-EKK" id="iHf-Cf-Fm8"/>
                 <outlet property="RepositoryTable" destination="atb-MD-Rrh" id="xWt-F6-jGC"/>
                 <outlet property="SearchBox" destination="QMD-2c-EhY" id="B5D-pO-JJF"/>
@@ -101,7 +102,7 @@
                         <nil key="backgroundColor"/>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="LDp-bX-6xd">
-                        <rect key="frame" x="0.0" y="333" width="315" height="16"/>
+                        <rect key="frame" x="0.0" y="294" width="315" height="16"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="Bgo-wV-md5">
@@ -110,9 +111,9 @@
                     </scroller>
                 </scrollView>
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
-                    <rect key="frame" x="8" y="318" width="299" height="22"/>
+                    <rect key="frame" x="10" y="317" width="226" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search or command" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
+                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -122,24 +123,35 @@
                     </connections>
                 </searchField>
                 <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="4Ey-0t-T95">
-                    <rect key="frame" x="6" y="0.0" width="303" height="248"/>
+                    <rect key="frame" x="6" y="0.0" width="303" height="235"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" id="kTy-1m-j5Y">
                         <font key="font" metaFont="system"/>
-                        <string key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories by entering the command ":scan" into the text field.  Enter ":help" for a short command reference.</string>
+                        <string key="title">There are no repositories yet 😐  Go ahead and switch a branch in any repository on your Mac to make it appear in here.  Alternatively, you can scan your Mac manually for repositories in the settings menu on the top right.</string>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <button hidden="YES" verticalHuggingPriority="750" id="M6p-5h-EnC">
-                    <rect key="frame" x="277" y="316" width="30" height="25"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <buttonCell key="cell" type="roundTextured" title="⬆" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zRT-OM-19Y">
+                    <rect key="frame" x="278" y="318" width="26" height="19"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="recessed" title="↑" bezelStyle="recessed" alignment="center" state="on" borderStyle="border" inset="2" id="zRT-OM-19Y">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
+                        <font key="font" metaFont="systemBold" size="15"/>
                     </buttonCell>
                     <connections>
                         <action selector="UpdateButton_Click:" target="-2" id="KTA-1g-ngq"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" id="npx-xu-SqQ" userLabel="Menu Button">
+                    <rect key="frame" x="246" y="318" width="28" height="19"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="recessed" title="☰" bezelStyle="recessed" alignment="center" state="on" borderStyle="border" inset="2" id="3PM-LU-pbM">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="systemBold" size="15"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="MenuButton_Click:" target="-2" id="G4F-Md-LAz"/>
                     </connections>
                 </button>
             </subviews>

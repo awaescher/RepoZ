@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using RepoZ.Ipc;
 
 namespace grr.Messages
@@ -15,16 +17,21 @@ namespace grr.Messages
 
 		protected override void ExecuteExistingDirectory(string directory)
 		{
-			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
-			directory = directory.Replace(@"\", "/");
+            var command = $"cd \"{directory}\"";
 
-			var command = $"cd \"{directory}\"";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // type the path into the console which is hosting grr.exe to change to the directory
+                ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command);
+            }
+            else
+            {
+                // TODO
+                Console.WriteLine("Not implemented yet.\n" + command);
+            }
+        }
 
-			// type the path into the console which is hosting grr.exe to change to the directory
-			ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command);
-		}
-
-		protected override void ExecuteRepositoryQuery(Repository[] repositories)
+        protected override void ExecuteRepositoryQuery(Repository[] repositories)
 		{
 			if (repositories?.Length > 1)
 			{

@@ -93,7 +93,9 @@
     </Compile>
     <Compile Include="AutoStart.cs" />
     <Compile Include="Controls\ZTextBox.cs" />
+    <Compile Include="Converters\UtcToLocalDateTimeConverter.cs" />
     <Compile Include="HotKey.cs" />
+    <Compile Include="MainWindowPageModel.cs" />
     <Compile Include="NotifyIconViewModel.cs" />
     <Compile Include="TinySoup.cs" />
     <Compile Include="WpfThreadDispatcher.cs" />

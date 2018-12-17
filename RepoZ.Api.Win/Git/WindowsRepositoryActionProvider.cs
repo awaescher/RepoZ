@@ -137,7 +137,7 @@ namespace RepoZ.Api.Win.IO
 			}
 			catch
 			{
-				// TODO to the UI?;
+				// nothing to see here
 			}
 		}
 

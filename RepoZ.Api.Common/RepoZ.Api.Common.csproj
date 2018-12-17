@@ -37,6 +37,9 @@
     <Reference Include="LibGit2Sharp, Version=0.24.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
       <HintPath>..\packages\LibGit2Sharp.0.24.0\lib\net40\LibGit2Sharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,6 +50,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\AppSettings.cs" />
+    <Compile Include="Common\FileAppSettingsService.cs" />
+    <Compile Include="Common\IAppSettingsService.cs" />
+    <Compile Include="Git\AutoFetch\AutoFetchMode.cs" />
+    <Compile Include="Git\AutoFetch\AutoFetchProfile.cs" />
     <Compile Include="Git\DefaultRepositoryObserver.cs" />
     <Compile Include="Git\DefaultRepositoryMonitor.cs" />
     <Compile Include="Git\DefaultRepositoryDetector.cs" />
@@ -56,11 +64,17 @@
     <Compile Include="Git\DefaultRepositoryReader.cs" />
     <Compile Include="Git\DefaultRepositoryWriter.cs" />
     <Compile Include="Git\IGitCommander.cs" />
+    <Compile Include="Git\DefaultRepositoryStore.cs" />
+    <Compile Include="Git\ProcessExecution\GitCommandException.cs" />
+    <Compile Include="Git\ProcessExecution\ProcessExecutingGitCommander.cs" />
+    <Compile Include="IO\DefaultAppDataPathProvider.cs" />
     <Compile Include="IO\DefaultDriveEnumerator.cs" />
     <Compile Include="IO\DefaultPathCrawler.cs" />
     <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
     <Compile Include="IO\GravellPathCrawler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Git\AutoFetch\DefaultAutoFetchHandler.cs" />
+    <Compile Include="Git\AutoFetch\IAutoFetchHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
@@ -69,7 +83,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

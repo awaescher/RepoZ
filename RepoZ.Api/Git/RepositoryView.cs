@@ -17,16 +17,18 @@ namespace RepoZ.Api.Git
 		private string _cachedRepositoryStatus;
 		private string _cachedRepositoryStatusWithBranch;
 		private bool _isSynchronizing;
+		private DateTime? _updatedUtc;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public RepositoryView(Repository repository)
 		{
 			Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+			UpdateStampUtc = DateTime.UtcNow;
 		}
 
 		public string Name => (Repository.Name ?? "") + (IsSynchronizing ? SyncAppendix : "");
-		
+
 		public string Path => Repository.Path ?? "";
 
 		public string Location => Repository.Location ?? "";
@@ -83,11 +85,13 @@ namespace RepoZ.Api.Git
 			set
 			{
 				_isSynchronizing = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name))); // Name includes the activity icon
 			}
 		}
 
 		private string SyncAppendix => "  \u2191\u2193"; // up and down arrows
+
+		public DateTime UpdateStampUtc { get; private set; }
 
 		public override bool Equals(object obj)
 		{
