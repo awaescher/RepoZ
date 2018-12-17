@@ -5,12 +5,7 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 {
 	public class GitCommandException : Exception
 	{
-		public GitCommandException(string message, Process process) : base(message)
-		{
-			Process = process;
-		}
-
-		public GitCommandException() : base()
+        public GitCommandException() : base()
 		{
 		}
 
@@ -25,7 +20,5 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 		protected GitCommandException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
 		{
 		}
-
-		public Process Process { get; set; }
 	}
 }

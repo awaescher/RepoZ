@@ -113,7 +113,7 @@
                 <searchField wantsLayer="YES" verticalHuggingPriority="750" textCompletion="NO" id="QMD-2c-EhY" customClass="ZSearchField">
                     <rect key="frame" x="10" y="317" width="226" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search or command" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
+                    <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="Search" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="7Y2-SK-OV2">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

@@ -10,6 +10,5 @@ namespace RepoZ.Api.Common.Git
 		string CommandOneline(Api.Git.Repository repository, params string[] command);
 		void CommandNoisy(Api.Git.Repository repository, params string[] command);
 		void CommandOutputPipe(Api.Git.Repository repository, Action<string> func, params string[] command);
-		void WrapGitCommandErrors(string exceptionMessage, Action action);
 	}
 }

@@ -127,10 +127,10 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 			var output = new StringBuilder();
 			var error = new StringBuilder();
 
-			using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
-			using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+			using (var outputWaitHandle = new AutoResetEvent(initialState: false))
+            using (var errorWaitHandle = new AutoResetEvent(initialState: false))
+            using (var process = new Process())
 			{
-				var process = new Process();
 				process.StartInfo = psi;
 
 				process.OutputDataReceived += (sender, e) =>
@@ -162,20 +162,16 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 						// Process completed. Check process.ExitCode here.
 						return output.ToString();
 					}
-					else
-					{
-						// Timed out.
-						return error?.ToString() ?? "Unknown error";
-					}
+
+					// Timed out.
+					return error?.ToString() ?? "Unknown error";
 				}
 				finally
 				{
 					if (!process.WaitForExit((int)TimeSpan.FromSeconds(10).TotalMilliseconds))
-						throw new GitCommandException("Command did not terminate.", process);
+						throw new GitCommandException("Command did not terminate.");
 					if (process.ExitCode != 0)
-						throw new GitCommandException(string.Format("Command exited with error code: {0}\n{1}", process.ExitCode, error?.ToString() ?? "Unknown error"), process);
-
-					process?.Dispose();
+						throw new GitCommandException(string.Format("Command exited with error code: {0}\n{1}", process.ExitCode, error?.ToString() ?? "Unknown error"));
 				}
 			}
 		}
@@ -188,23 +184,6 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 		private static string QuoteProcessArgument(string arg)
 		{
 			return arg.Contains(" ") ? ("\"" + arg + "\"") : arg;
-		}
-
-		/// <summary>
-		/// WrapGitCommandErrors the actions, and if there are any git exceptions, rethrow a new exception with the given message.
-		/// </summary>
-		/// <param name="exceptionMessage">A friendlier message to wrap the GitCommandException with. {0} is replaced with the command line and {1} is replaced with the exit code.</param>
-		/// <param name="action"></param>
-		public void WrapGitCommandErrors(string exceptionMessage, Action action)
-		{
-			try
-			{
-				action();
-			}
-			catch (GitCommandException e)
-			{
-				throw new Exception(string.Format(exceptionMessage, e.Process.StartInfo.FileName + " " + e.Process.StartInfo.Arguments, e.Process.ExitCode), e);
-			}
 		}
 
 		private static readonly Regex ValidCommandName = new Regex("^[a-z0-9A-Z_-]+$");

@@ -19,21 +19,28 @@ namespace grr.Messages
 		public void Execute(Repository[] repositories)
 		{
 			if (_argumentIsExistingDirectory)
-				ExecuteExistingDirectory(Filter.RepositoryFilter);
+                ExecuteExistingDirectoryWithSafetyCheck(Filter.RepositoryFilter);
 			else
 				ExecuteRepositoryQuery(repositories);
 		}
 
-		protected abstract void ExecuteExistingDirectory(string directory);
+        private void ExecuteExistingDirectoryWithSafetyCheck(string directory)
+        {
+            // use '/' for linux systems and bash command line (will work on cmd and powershell as well)
+            directory = directory.Replace(@"\", "/");
+            ExecuteExistingDirectory(directory);
+        }
 
-		protected virtual void ExecuteRepositoryQuery(Repository[] repositories)
+        protected abstract void ExecuteExistingDirectory(string directory);
+
+        protected virtual void ExecuteRepositoryQuery(Repository[] repositories)
 		{
 			if (repositories == null || repositories.Length <= 0)
 				return;
 
 			foreach (var repository in repositories)
 			{
-				var directory = repository.Path;
+				var directory = repository.SafePath;
 
 				if (string.IsNullOrWhiteSpace(directory))
 				{
@@ -42,7 +49,7 @@ namespace grr.Messages
 				}
 
 				if (Directory.Exists(directory))
-					ExecuteExistingDirectory(directory);
+                    ExecuteExistingDirectoryWithSafetyCheck(directory);
 				else
 					System.Console.WriteLine("Repository path does not exist:\n" + directory);
 			}
