@@ -24,3 +24,6 @@ using System.Runtime.CompilerServices;
 
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
+
+[assembly: AssemblyInformationalVersion("4.0.0-alpha+Branch.master.Sha.3b18e09d3b38ed75b305e29e5aef5f0b36a6bfee")]
+[assembly: AssemblyFileVersion("4.0.0.0")]

@@ -28,3 +28,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyFileVersion("4.0.0.0")]
+
+[assembly: AssemblyInformationalVersion("4.0.0-alpha+Branch.master.Sha.3b18e09d3b38ed75b305e29e5aef5f0b36a6bfee")]
