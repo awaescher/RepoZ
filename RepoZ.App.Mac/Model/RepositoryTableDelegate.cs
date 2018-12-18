@@ -55,6 +55,7 @@ namespace RepoZ.App.Mac.Model
             RepositoryLabel.ToolTip = repositoryView.Path;
             CurrentBranchLabel.StringValue = repositoryView.CurrentBranch;
             StatusLabel.StringValue = repositoryView.Status;
+            StatusLabel.ToolTip = repositoryView.UpdateStampUtc.ToLocalTime().ToShortTimeString();
 
             return cell;
         }

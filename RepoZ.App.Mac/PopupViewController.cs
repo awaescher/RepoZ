@@ -17,6 +17,8 @@ namespace RepoZ.App.Mac
 {
     public partial class PopupViewController : AppKit.NSViewController
     {
+        private const int MENU_AUTOFETCH = 4711;
+
         private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _monitor;
         private IAppSettingsService _appSettingsService;
@@ -166,40 +168,43 @@ namespace RepoZ.App.Mac
 
         private void CreateMenu()
         {
+            if (MenuButton.Menu != null)
+                return;
 
-            // TODO -> Items require macOS 10.14?
-            MenuButton.Menu = new NSMenu("Pop up")
-            {
-                Items = new NSMenuItem[]
-                    {
-                        new NSMenuItem("Help", (s, e) => ShowHelp()),
-                        new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
-                        new NSMenuItem("Auto fetch")
-                        {
-                            Identifier = "autofetch",
-                            Submenu = new NSMenu
-                            {
-                                Items = new NSMenuItem[]
-                                {
-                                    new NSMenuItem(nameof(AutoFetchMode.Off), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
-                                    new NSMenuItem(nameof(AutoFetchMode.Discretely), HandleAutoFetchChange) { Identifier = AutoFetchMode.Discretely.ToString() },
-                                    new NSMenuItem(nameof(AutoFetchMode.Adequate), HandleAutoFetchChange) { Identifier = AutoFetchMode.Adequate.ToString() },
-                                    new NSMenuItem(nameof(AutoFetchMode.Aggresive), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
-                                }
-                            }
-                        },
-                        new NSMenuItem("Quit", (s, e) => Quit()),
-                    }
+            MenuButton.Menu = new NSMenu();
+
+            var topLevelItems = new NSMenuItem[] {
+                new NSMenuItem("Help", (s, e) => ShowHelp()),
+                new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
+                new NSMenuItem("Auto fetch") { Tag = MENU_AUTOFETCH },
+                new NSMenuItem("Quit", (s, e) => Quit())
             };
+
+            var autoFetchItems = new NSMenuItem[] {
+                new NSMenuItem(nameof(AutoFetchMode.Off), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
+                new NSMenuItem(nameof(AutoFetchMode.Discretely), HandleAutoFetchChange) { Identifier = AutoFetchMode.Discretely.ToString() },
+                new NSMenuItem(nameof(AutoFetchMode.Adequate), HandleAutoFetchChange) { Identifier = AutoFetchMode.Adequate.ToString() },
+                new NSMenuItem(nameof(AutoFetchMode.Aggresive), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
+            };
+
+            foreach (var item in topLevelItems)
+                MenuButton.Menu.AddItem(item);
+
+            var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
+            autoFetchItem.Submenu = new NSMenu();
+
+            foreach (var item in autoFetchItems)
+                autoFetchItem.Submenu.AddItem(item);
         }
 
         partial void MenuButton_Click(NSObject sender)
         {
             var currentMode = _appSettingsService.AutoFetchMode;
-            var autoFetchItem = MenuButton.Menu.Items.First(i => i.Identifier?.Equals("autofetch") ?? false);
+            var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
 
-            foreach (var item in autoFetchItem.Submenu.Items)
+            for (int i = 0; i < autoFetchItem.Submenu.Count; i++)
             {
+                var item = autoFetchItem.Submenu.ItemAt(i);
                 var itemMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), item.Identifier);
                 item.State = itemMode == currentMode ? NSCellStateValue.On : NSCellStateValue.Off;
             }
@@ -211,7 +216,6 @@ namespace RepoZ.App.Mac
         {
             var newMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), (sender as NSMenuItem).Title);
             _appSettingsService.AutoFetchMode = newMode;
-
         }
 
         void Datasource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
