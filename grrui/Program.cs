@@ -16,8 +16,9 @@ namespace grrui
 		private static RepoZIpcClient _client;
 		private static ListView _repositoryList;
 		private static RepositoriesView _repositoriesView;
+        private static TextField _filterField;
 
-		static void Main(string[] args)
+        static void Main(string[] args)
 		{
 			_client = new RepoZIpcClient();
 			var answer = _client.GetRepositories();
@@ -39,13 +40,13 @@ namespace grrui
 			Application.Init();
 
 			var filterLabel = new Label(1, 1, "Filter: ");
-			var filterField = new TextField("")
+			_filterField = new TextField("")
 			{
 				X = Pos.Right(filterLabel) + 2,
 				Y = Pos.Top(filterLabel),
 				Width = Dim.Fill(margin: 1),
 			};
-			filterField.Changed += FilterField_Changed;
+			_filterField.Changed += FilterField_Changed;
 
 			_repositoryList = new ListView(_repositoriesView.Repositories)
 			{
@@ -57,7 +58,7 @@ namespace grrui
 
 			var win = new KeyPreviewWindow("grr: Git repositories of RepoZ");
 			win.Add(filterLabel);
-			win.Add(filterField);
+			win.Add(_filterField);
 			win.Add(_repositoryList);
 
             var buttonX = Pos.Left(filterLabel);
@@ -90,7 +91,7 @@ namespace grrui
 			var quitButton = new Button("Quit")
 			{
 				Clicked = Application.RequestStop,
-				X = Pos.AnchorEnd(8 + 1),
+				X = Pos.AnchorEnd("Quit".Length + BUTTON_BORDER + BUTTON_DISTANCE),
 				Y = Pos.AnchorEnd(1),
 				CanFocus = false
 			};
@@ -100,22 +101,27 @@ namespace grrui
 			win.DefineKeyAction(Key.Enter, () => win.SetFocus(_repositoryList));
 			win.DefineKeyAction(Key.Esc, () =>
 			{
-				if (filterField.HasFocus)
-				{
-					filterField.Text = "";
-					FilterField_Changed(filterField, EventArgs.Empty);
-				}
+				if (_filterField.HasFocus)
+                    SetFilterText("");
 				else
-				{
-					win.SetFocus(filterField);
-				}
+					win.SetFocus(_filterField);
 			});
 
-			Application.Top.Add(win);
-			Application.Run();
+            if (args?.Length > 0)
+                SetFilterText(String.Join(" ", args));
+
+            Application.Top.Add(win);
+            Application.Run();
 		}
 
-		private static void Navigate()
+        private static void SetFilterText(string filter)
+        {
+            _filterField.Text = filter;
+            _filterField.PositionCursor();
+            FilterField_Changed(_filterField, EventArgs.Empty);
+        }
+
+        private static void Navigate()
 		{
 			ExecuteOnSelectedRepository(r =>
 			{
