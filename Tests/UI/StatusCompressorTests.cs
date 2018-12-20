@@ -114,7 +114,7 @@ namespace Tests.UI
 					.WithBehindBy(7)
 					.Build();
 
-				Compress(repo).Should().Be($"{Up}15 {Down}7");
+				Compress(repo).Should().Be($"{Down}7 {Up}15");
 			}
 
 			[Test]
@@ -292,7 +292,7 @@ namespace Tests.UI
 					.WithLocalMissing(6)
 					.Build();
 
-				Compress(repo).Should().Be($"{Up}15 {Down}7 +1 ~2 -3 | +4 ~5 -6");
+				Compress(repo).Should().Be($"{Down}7 {Up}15 +1 ~2 -3 | +4 ~5 -6");
 			}
 		}
 

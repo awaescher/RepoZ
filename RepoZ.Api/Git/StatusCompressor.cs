@@ -43,14 +43,15 @@ namespace RepoZ.Api.Git
 				}
 				else
 				{
-					if (isAhead)
-						builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy.Value}");
-
 					if (isBehind)
-					{
-						if (isAhead)
-							builder.Append(" ");
-						builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy.Value}");
+                        builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy.Value}");
+
+                    if (isAhead)
+                    {
+                        if (isBehind)
+                            builder.Append(" ");
+
+                        builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy.Value}");
 					}
 				}
 			}
