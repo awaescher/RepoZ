@@ -1,8 +1,8 @@
-[![BuitlWithDot.Net shield](https://builtwithdot.net/project/53/repoz/badge)](https://builtwithdot.net/project/53/repoz)
 
-![windows][windows] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4)
 
-![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)
+[![GitHub releases](https://img.shields.io/github/downloads/awaescher/RepoZ/total.svg?style=flat-square)](https://github.com/awaescher/RepoZ/releases) [![BuitlWithDot.Net shield](https://builtwithdot.net/project/53/repoz/badge)](https://builtwithdot.net/project/53/repoz)
+
+![windows][windows] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4) ![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)
 
 # RepoZ
 
