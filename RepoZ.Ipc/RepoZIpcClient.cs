@@ -40,10 +40,18 @@ namespace RepoZ.Ipc
 
 			return new Result()
 			{
-				Answer = _answer ?? "RepoZ seems not to be running :(",
+				Answer = _answer ?? GetErrorMessage(),
 				DurationMilliseconds = watch.ElapsedMilliseconds,
 				Repositories = _repositories ?? new Repository[0]
 			};
+		}
+
+		private string GetErrorMessage()
+		{
+			var isRepoZRunning = Process.GetProcessesByName("RepoZ").Any();
+			return isRepoZRunning
+				? $"RepoZ is running but does not answer.\nIt seems that it could not listen on {RepoZIpcEndpoint.Address}.\nI don't know anything better than recommending a reboot. Sorry."
+				: "RepoZ seems not to be running :(";
 		}
 
         private void ClientOnReceiveReady(object sender, NetMQSocketEventArgs e)
