@@ -68,11 +68,10 @@
 							FontSize="17"
 							Background="#00FFF0F0"
 							Margin="10,0,0,0"
-							Foreground="White"
+							Foreground="{DynamicResource MaterialDesignBody}"
 							Style="{DynamicResource MaterialDesignFlatButton}">
 							<Button.ContextMenu>
-								<ContextMenu x:Name="SettingsMenu" FontSize="13">
-									<MenuItem Header="❓ Help" Click="HelpButton_Click"/>
+								<ContextMenu x:Name="SettingsMenu" FontSize="14">
 									<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
 									<MenuItem Header="🕒 Auto fetch">
 										<MenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
@@ -80,6 +79,15 @@
 										<MenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
 										<MenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
 									</MenuItem>
+									<Separator/>
+									<MenuItem Header="💙 Ping back" Foreground="#FFED8888">
+										<MenuItem Header="🌟 Star RepoZ on GitHub" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
+										<MenuItem Header="🐤 Follow @Waescher" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+										<Separator/>
+										<MenuItem Header="☕ Buy me a coffee" Click="CoffeeButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+									</MenuItem>
+									<Separator/>
+									<MenuItem Header="✋ Help" Click="HelpButton_Click"/>
 								</ContextMenu>
 							</Button.ContextMenu>
 						</Button>
