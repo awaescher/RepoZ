@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "/Users/daw/Source/RepoZ/_output/mac/Assemblies/grrui" "$@"
