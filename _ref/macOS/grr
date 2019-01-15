@@ -1,2 +1,2 @@
 #!/bin/sh
-exec "/Users/daw/Source/RepoZ/_output/mac/Assemblies/grr" "$@"
+exec dotnet exec "/Library/Application Support/RepoZ-Tools/grr.dll" "$@"

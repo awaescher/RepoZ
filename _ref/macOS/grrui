@@ -1,2 +1,2 @@
 #!/bin/sh
-exec "/Users/daw/Source/RepoZ/_output/mac/Assemblies/grrui" "$@"
+exec dotnet exec "/Library/Application Support/RepoZ-Tools/grrui.dll" "$@"

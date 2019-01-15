@@ -114,13 +114,20 @@ Task("Publish")
 	EnsureDirectoryExists(assemblyDir);
 		
 	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*.*", assemblyDir, true);
+
+	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
+	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
+	if (system == "mac")
+	{
+		assemblyDir = Directory($"{assemblyDir}/RepoZ-Tools");
+		EnsureDirectoryExists(assemblyDir);
+	}
+
 	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
-	
-	Zip(assemblyDir, outputDir.Path + "/v" + _appVersion + $"-{system}-portable.zip");
 });
 
 Task("CompileSetup")
@@ -136,6 +143,10 @@ Task("CompileSetup")
 				{ "PRODUCT_VERSION", _appVersion }
 			}
 		});
+	}
+	else
+	{
+		// TODO set version number and run Packages (tools name) build
 	}
 });
 
