@@ -91,6 +91,7 @@ Task("Test")
 });
 
 Task("Publish")
+	.IsDependentOn("Build")
 	.IsDependentOn("Test")
 	.Does(() => 
 {
