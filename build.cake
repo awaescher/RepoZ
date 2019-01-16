@@ -146,7 +146,9 @@ Task("CompileSetup")
 	}
 	else
 	{
-		// TODO set version number and run Packages (tools name) build
+		// update the pkgproj file and run packagesbuild
+		ReplaceRegexInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
+		StartProcess("packagesbuild", "--verbose _setup/RepoZ.pkgproj");
 	}
 });
 

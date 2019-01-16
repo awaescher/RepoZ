@@ -4011,7 +4011,7 @@
 				<key>USE_HFS+_COMPRESSION</key>
 				<false/>
 				<key>VERSION</key>
-				<string>4.0</string>
+				<string>{PRODUCT_VERSION}</string>
 			</dict>
 			<key>TYPE</key>
 			<integer>0</integer>
