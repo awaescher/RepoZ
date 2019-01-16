@@ -18,6 +18,7 @@ namespace RepoZ.App.Mac
     public partial class PopupViewController : AppKit.NSViewController
     {
         private const int MENU_AUTOFETCH = 4711;
+        private const int MENU_PINGBACK = 4712;
 
         private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _monitor;
@@ -163,7 +164,12 @@ namespace RepoZ.App.Mac
             if (string.IsNullOrEmpty(AppDelegate.AvailableUpdate?.Url))
                 return;
 
-            Process.Start(AppDelegate.AvailableUpdate.Url);
+            Navigate(AppDelegate.AvailableUpdate.Url);
+        }
+
+        private void Navigate(string url)
+        {
+            Process.Start(url);
         }
 
         private void CreateMenu()
@@ -174,11 +180,17 @@ namespace RepoZ.App.Mac
             MenuButton.Menu = new NSMenu();
 
             var topLevelItems = new NSMenuItem[] {
-                new NSMenuItem("Help", (s, e) => ShowHelp()),
                 new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
                 new NSMenuItem("Auto fetch") { Tag = MENU_AUTOFETCH },
+                NSMenuItem.SeparatorItem,
+                new NSMenuItem("Ping back") { Tag = MENU_PINGBACK },
+                NSMenuItem.SeparatorItem,
+                new NSMenuItem("Help", (s, e) => ShowHelp()),
                 new NSMenuItem("Quit", (s, e) => Quit())
             };
+
+            foreach (var item in topLevelItems)
+                MenuButton.Menu.AddItem(item);
 
             var autoFetchItems = new NSMenuItem[] {
                 new NSMenuItem(nameof(AutoFetchMode.Off), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
@@ -187,14 +199,24 @@ namespace RepoZ.App.Mac
                 new NSMenuItem(nameof(AutoFetchMode.Aggresive), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
             };
 
-            foreach (var item in topLevelItems)
-                MenuButton.Menu.AddItem(item);
-
             var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
             autoFetchItem.Submenu = new NSMenu();
 
             foreach (var item in autoFetchItems)
                 autoFetchItem.Submenu.AddItem(item);
+
+            var pingbackItems = new NSMenuItem[] {
+                new NSMenuItem("Star RepoZ on GitHub", (s, e) => Navigate("https://github.com/awaescher/RepoZ")),
+                new NSMenuItem("Follow @Waescher", (s, e) => Navigate("https://twitter.com/Waescher")),
+                NSMenuItem.SeparatorItem,
+                new NSMenuItem("Buy me a coffee", (s, e) => Navigate("https://www.buymeacoffee.com/awaescher"))
+            };
+
+            var pingbackItem = MenuButton.Menu.ItemWithTag(MENU_PINGBACK);
+            pingbackItem.Submenu = new NSMenu();
+
+            foreach (var item in pingbackItems)
+                pingbackItem.Submenu.AddItem(item);
         }
 
         partial void MenuButton_Click(NSObject sender)

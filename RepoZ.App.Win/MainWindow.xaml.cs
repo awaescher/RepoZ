@@ -185,7 +185,27 @@ namespace RepoZ.App.Win
 		{
 			bool hasLink = !string.IsNullOrWhiteSpace(App.AvailableUpdate?.Url);
 			if (hasLink)
-				Process.Start(App.AvailableUpdate.Url);
+				Navigate(App.AvailableUpdate.Url);
+		}
+
+		private void StarButton_Click(object sender, RoutedEventArgs e)
+		{
+			Navigate("https://github.com/awaescher/RepoZ");
+		}
+
+		private void FollowButton_Click(object sender, RoutedEventArgs e)
+		{
+			Navigate("https://twitter.com/Waescher");
+		}
+
+		private void CoffeeButton_Click(object sender, RoutedEventArgs e)
+		{
+			Navigate("https://www.buymeacoffee.com/awaescher");
+		}
+
+		private void Navigate(string url)
+		{
+			Process.Start(url);
 		}
 
 		private void PlaceFormToLowerRight()
