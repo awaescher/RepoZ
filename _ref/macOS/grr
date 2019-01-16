@@ -1,2 +1,2 @@
 #!/bin/sh
-exec dotnet exec "/Library/Application Support/RepoZ-Tools/grr.dll" "$@"
+exec "/Library/Application Support/RepoZ-CLI/grr" "$@"

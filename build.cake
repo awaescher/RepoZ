@@ -119,7 +119,7 @@ Task("Publish")
 	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
 	if (system == "mac")
 	{
-		assemblyDir = Directory($"{assemblyDir}/RepoZ-Tools");
+		assemblyDir = Directory($"{assemblyDir}/RepoZ-CLI");
 		EnsureDirectoryExists(assemblyDir);
 	}
 

@@ -104,9 +104,9 @@
 											<key>CHILDREN</key>
 											<array/>
 											<key>GID</key>
-											<integer>80</integer>
+											<integer>0</integer>
 											<key>PATH</key>
-											<string>../_output/mac/Assemblies/RepoZ-Tools</string>
+											<string>../_output/mac/Assemblies/RepoZ-CLI</string>
 											<key>PATH_TYPE</key>
 											<integer>1</integer>
 											<key>PERMISSIONS</key>
