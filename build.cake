@@ -114,7 +114,7 @@ Task("Publish")
 	CleanDirectory(outputDir);
 	EnsureDirectoryExists(assemblyDir);
 		
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*.*", assemblyDir, true);
+	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", assemblyDir, true);
 
 	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
 	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
