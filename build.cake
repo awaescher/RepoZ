@@ -91,6 +91,7 @@ Task("Test")
 });
 
 Task("Publish")
+	.IsDependentOn("Build")
 	.IsDependentOn("Test")
 	.Does(() => 
 {
@@ -113,14 +114,21 @@ Task("Publish")
 	CleanDirectory(outputDir);
 	EnsureDirectoryExists(assemblyDir);
 		
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*.*", assemblyDir, true);
+	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", assemblyDir, true);
+
+	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
+	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
+	if (system == "mac")
+	{
+		assemblyDir = Directory($"{assemblyDir}/RepoZ-CLI");
+		EnsureDirectoryExists(assemblyDir);
+	}
+
 	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(assemblyDir.Path + "/*." + extension);
-	
-	Zip(assemblyDir, outputDir.Path + "/v" + _appVersion + $"-{system}-portable.zip");
 });
 
 Task("CompileSetup")
@@ -136,6 +144,12 @@ Task("CompileSetup")
 				{ "PRODUCT_VERSION", _appVersion }
 			}
 		});
+	}
+	else
+	{
+		// update the pkgproj file and run packagesbuild
+		ReplaceRegexInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
+		StartProcess("packagesbuild", "--verbose _setup/RepoZ.pkgproj");
 	}
 });
 
