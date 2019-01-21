@@ -5,7 +5,7 @@
 	<key>Disabled</key>
 	<false/>
 	<key>KeepAlive</key>
-	<true/>
+	<false/>
 	<key>Label</key>
 	<string>net.sodacore.RepoZ</string>
 	<key>LimitLoadToSessionType</key>
