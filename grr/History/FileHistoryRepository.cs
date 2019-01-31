@@ -11,8 +11,6 @@ namespace grr.History
 {
 	public class FileHistoryRepository : IHistoryRepository
 	{
-		public static string RegistryPath { get; } = @"Software\RepoZ\grr\";
-
 		public void Save(State state)
 		{
 			// if multiple repositories were found the last time we ran grr,
@@ -58,7 +56,7 @@ namespace grr.History
 			};
 		}
 
-		private string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ\\state.grr");
+		private string GetFileName() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ", "state.grr");
 
 		private string Serialize(IEnumerable<Repository> repositories)
 		{
