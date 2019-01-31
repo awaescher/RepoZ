@@ -62,7 +62,6 @@ namespace RepoZ.App.Win
 		{
 			// use the list's itemsource directly, this one is not filtered (otherwise searching in the UI without matches could lead to the "no repositories yet"-screen)
 			var hasRepositories = lstRepositories.ItemsSource.OfType<RepositoryView>().Any();
-			dockMain.Visibility = hasRepositories ? Visibility.Visible : Visibility.Hidden;
 			tbNoRepositories.Visibility = hasRepositories ? Visibility.Hidden : Visibility.Visible;
 		}
 
