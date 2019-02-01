@@ -27,6 +27,6 @@ namespace RepoZ.App.Win.Converters
 			throw new NotImplementedException();
 		}
 
-		public HardcodededMiniHumanizer Humanizer { get; }
+		public IHumanizer Humanizer { get; }
 	}
 }

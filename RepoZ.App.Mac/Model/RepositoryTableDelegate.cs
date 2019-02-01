@@ -2,6 +2,7 @@
 using System.Linq;
 using AppKit;
 using Foundation;
+using RepoZ.Api.Common;
 using RepoZ.Api.Git;
 using RepoZ.App.Mac.Controls;
 
@@ -20,6 +21,8 @@ namespace RepoZ.App.Mac.Model
 
             TableView.RepositoryActionRequested += TableView_RepositoryActionRequested;
             DataSource.CollectionChanged += ReloadTableView;
+
+            Humanizer = new HardcodededMiniHumanizer();
         }
 
 		protected override void Dispose(bool disposing)
@@ -56,6 +59,7 @@ namespace RepoZ.App.Mac.Model
             CurrentBranchLabel.StringValue = repositoryView.CurrentBranch;
             StatusLabel.StringValue = repositoryView.Status;
             StatusLabel.ToolTip = repositoryView.UpdateStampUtc.ToLocalTime().ToShortTimeString();
+            // would be nice, but does not update: Humanizer.HumanizeTimestamp(repositoryView.UpdateStampUtc.ToLocalTime());
 
             return cell;
         }
@@ -89,5 +93,7 @@ namespace RepoZ.App.Mac.Model
         public RepositoryTableDataSource DataSource { get; }
 
         public IRepositoryActionProvider RepositoryActionProvider { get; }
+
+        public IHumanizer Humanizer { get; }
     }
 }
