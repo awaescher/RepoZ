@@ -38,9 +38,13 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\HardcodededMiniHumanizer.cs" />
+    <Compile Include="Common\IClock.cs" />
     <Compile Include="Common\IErrorHandler.cs" />
+    <Compile Include="Common\IHumanizer.cs" />
     <Compile Include="Common\IThreadDispatcher.cs" />
     <Compile Include="Common\SingularityQueue.cs" />
+    <Compile Include="Common\SystemClock.cs" />
     <Compile Include="Git\DefaultRepositoryInformationAggregator.cs" />
     <Compile Include="Git\IRepositoryObserverFactory.cs" />
     <Compile Include="Git\IRepositoryObserver.cs" />

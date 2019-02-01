@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\FakeClock.cs" />
+    <Compile Include="Common\HardcodedMiniHumanizerTests.cs" />
     <Compile Include="Common\SingularityQueueTests.cs" />
     <Compile Include="Git\RepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

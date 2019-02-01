@@ -93,6 +93,7 @@
     </Compile>
     <Compile Include="AutoStart.cs" />
     <Compile Include="Controls\ZTextBox.cs" />
+    <Compile Include="Converters\UtcToHumanizedLocalDateTimeConverter.cs" />
     <Compile Include="Converters\UtcToLocalDateTimeConverter.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="MainWindowPageModel.cs" />
