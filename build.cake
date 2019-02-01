@@ -49,10 +49,15 @@ Task("SetVersion")
 			UpdateAssemblyInfo = true
 		});
 
-		_appVersion = gitVersion.MajorMinorPatch;
-		Information($"GitVersion:\t{_appVersion}");
+		_appVersion = $"{gitVersion.Major}.{gitVersion.Minor}";
+		var fullVersion = gitVersion.AssemblySemVer;
+		
+		Information($"AppVersion:\t{_appVersion}");
+		Information($"FullVersion:\t{fullVersion}");
 
 		ReplaceRegexInFiles("./**/AssemblyInfo.*", "(?<=AssemblyBuildDate\\(\")([0-9\\-\\:T]+)(?=\"\\))", DateTime.Now.ToString("s"));
+		ReplaceRegexInFiles("./**/*.csproj", "(?<=<ReleaseVersion>).*?(?=</ReleaseVersion>)", _appVersion);
+		ReplaceRegexInFiles("./**/*.csproj", "(?<=<Version>).*?(?=</Version>)", fullVersion);
 	});
 
 Task("Build")
