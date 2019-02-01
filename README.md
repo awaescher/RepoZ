@@ -6,7 +6,7 @@
 
 # RepoZ
 
-RepoZ is a lightweight git repository hub with Windows Explorer- & CLI-enhancements. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never loose track of your work along the way.
+RepoZ is a zero-conf git repository hub with Windows Explorer- & CLI-enhancements. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never loose track of your work along the way.
 
 **Keep your favorite git clients, RepoZ will not compete with them.** It's not about working within a repository to commit stuff or analyse logs: It's a new way to use all of your repositories to make your daily work easier.
 

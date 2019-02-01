@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Foundation;
 using AppKit;
 using RepoZ.App.Mac.Model;
 using RepoZ.Api.Git;
-using TinySoup.Model;
-using TinySoup.Identifier;
-using TinySoup;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
@@ -183,7 +177,7 @@ namespace RepoZ.App.Mac
                 new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
                 new NSMenuItem("Auto fetch") { Tag = MENU_AUTOFETCH },
                 NSMenuItem.SeparatorItem,
-                new NSMenuItem("Ping back") { Tag = MENU_PINGBACK },
+                new NSMenuItem("Ping back ♥︎") { Tag = MENU_PINGBACK },
                 NSMenuItem.SeparatorItem,
                 new NSMenuItem("Help", (s, e) => ShowHelp()),
                 new NSMenuItem("Quit", (s, e) => Quit())
