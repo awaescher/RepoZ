@@ -38,7 +38,7 @@ To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you 
 
 <sup>*</sup> On Mac you need to give RepoZ access to the [keyboard events in the system privacy settings](http://mizage.com/help/accessibility.html). Once you have done this, you might need to restart the app.
 
-## Command Line Sidekick ![windows][windows]
+## Command Line Sidekick ![windows][windows] ![macos][macOS]
 RepoZ is a UI-centered tool but comes with a sidekick app called **grr** to empower the command line hackers. 
 With **grr**, the information from RepoZ can be brought to any command line tool.
 
