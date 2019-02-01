@@ -2,7 +2,7 @@
   "profiles": {
     "grr": {
       "commandName": "Project",
-      "commandLineArgs": "list *"
+      "commandLineArgs": "cd -"
     }
   }
 }

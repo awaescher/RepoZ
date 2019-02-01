@@ -66,8 +66,23 @@ namespace grr
 			try
 			{
 				var parseResult = CommandLine.Parser.Default.ParseArguments(args, typeof(ListOptions), typeof(ChangeDirectoryOptions), typeof(OpenDirectoryOptions));
-				var options = parseResult.GetType().GetProperty("Value").GetValue(parseResult);
-				return GetMessage(options as RepositoryFilterOptions);
+
+				var options = parseResult.GetType().GetProperty("Value").GetValue(parseResult) as RepositoryFilterOptions;
+
+				// yes, that's a hack. I feel not good about it. The CommandLineParser seems not to be able to parse "cd -" since version 2.3.0 anymore
+				// and here we are, hacking our way around it ...
+				if (options != null)
+				{
+					if (options.RepositoryFilter == null
+						&& args.Length == 2
+						&& "cd".Equals(args[0], StringComparison.OrdinalIgnoreCase)
+						&& args[1] == "-")
+					{
+						options.RepositoryFilter = "-";
+					}
+				}
+
+				return GetMessage(options );
 			}
 			catch
 			{

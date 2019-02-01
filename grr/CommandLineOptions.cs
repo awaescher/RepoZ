@@ -118,7 +118,7 @@ namespace grr
 			help.AddPostOptionsLine("⁞  grr cd - \t\tNavigates back to the last path grr was called from");
 			help.AddPostOptionsLine("  ");
 			help.AddPostOptionsLine("Noteworthy:");
-			help.AddPostOptionsLine("⁞  The parameter \"list\" can be omitted, \"grr .*_.*\" has the same effect.");
+			help.AddPostOptionsLine("⁞  The parameter \"list\" can be omitted, \"grr [.*_.*]\" has the same effect.");
 			help.AddPostOptionsLine("⁞  Put your filter in quotes if it contains spaces.");
 			help.AddPostOptionsLine("⁞  RepoZ has to be running on this system to use grr.");
 			help.AddPostOptionsLine("");
