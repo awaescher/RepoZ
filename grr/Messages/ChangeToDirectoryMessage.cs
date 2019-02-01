@@ -27,7 +27,9 @@ namespace grr.Messages
             else
             {
                 TextCopy.Clipboard.SetText(command);
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("Not supported on macOS, sorry.\nThe command was copied to the clipboard, paste and run it manually now.");
+                Console.ResetColor();
             }
         }
 

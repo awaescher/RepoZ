@@ -15,7 +15,12 @@ namespace grr.Messages
 
 		protected override void ExecuteExistingDirectory(string directory)
 		{
-			Process.Start(new ProcessStartInfo($"\"{directory}\"") { UseShellExecute = true });
-		}
-	}
+            var directoryInQuotes = $"\"{directory}\"";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true });
+            else
+                Process.Start(new ProcessStartInfo("open", directoryInQuotes));
+        }
+    }
 }

@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace grr.Messages
 {
@@ -31,10 +33,20 @@ namespace grr.Messages
 
 		private ProcessStartInfo CreateStartInfo(string file)
 		{
-			if (!Filter.RequestElevation)
-				return new ProcessStartInfo(file);
+            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-			var isExecutable = IsExecutable(file);
+            if (!Filter.RequestElevation)
+            {
+                if (isWindows)
+                    return new ProcessStartInfo(file);
+                else
+                    return new ProcessStartInfo("open", file);
+            }
+
+            if (!isWindows)
+                throw new AccessViolationException("Elevation is not supported on this platform.");
+
+            var isExecutable = IsExecutable(file);
 
 			// executables can be used directly, whereas files such as *.sln, for example,
 			// have to been opened with (a hidden) cmd.exe to request elevation.
