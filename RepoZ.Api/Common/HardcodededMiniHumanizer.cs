@@ -22,34 +22,51 @@ namespace RepoZ.Api.Common
 		{
 			var diff = Clock.Now - value;
 
-			if (Math.Abs(diff.TotalSeconds) < 25)
+			var absoluteSeconds = Math.Abs(diff.TotalSeconds);
+			var absoluteMinutes = Math.Abs(diff.TotalMinutes);
+			var absoluteHours = Math.Abs(diff.TotalHours);
+			var absoluteDays = Math.Abs(diff.TotalDays);
+
+			// specials
+			if (absoluteSeconds < 25)
 				return "Just now";
 
-			if (diff.TotalMinutes >= -0.8)
-				return $"{Math.Abs(Math.Round(diff.TotalSeconds))} seconds ago";
+			if (absoluteSeconds >= 55 && absoluteSeconds <= 80)
+				return PastOrFuture("a minute", diff);
 
-			if (diff.TotalMinutes < -0.8 && diff.TotalMinutes > -1.5)
-				return "A minute ago";
+			if (absoluteSeconds > 80 && absoluteSeconds <= 100)
+				return PastOrFuture("nearly two minutes", diff);
 
-			if (diff.TotalHours > -0.8)
-				return $"{Math.Abs(Math.Round(diff.TotalMinutes))} minutes ago";
+			if (absoluteMinutes >= 55 && absoluteMinutes <= 75)
+				return PastOrFuture("an hour", diff);
 
-			if (diff.TotalHours < -0.8 && diff.TotalHours > -1.2)
-				return "An hour ago";
+			if (absoluteMinutes > 75 && absoluteMinutes <= 100)
+				return PastOrFuture("one and a half hour", diff);
 
-			if (diff.TotalHours <= -1.2 && diff.TotalHours > -1.8)
-				return $"{Math.Abs(Math.Round(diff.TotalMinutes))} minutes ago";
+			if (absoluteHours >= 23 && absoluteHours <= 30)
+				return PastOrFuture("a day", diff);
 
-			if (diff.TotalHours <= -1.8 && diff.TotalDays > -0.95)
-				return $"{Math.Abs(Math.Round(diff.TotalHours))} hours ago";
+			// generic
+			if (absoluteSeconds < 60)
+				return PastOrFuture($"{Math.Round(absoluteSeconds)} seconds", diff);
 
-			if (diff.TotalDays < -0.95 && diff.TotalDays > -1.5)
-				return "A day ago";
+			if (absoluteMinutes < 60)
+				return PastOrFuture($"{Math.Round(absoluteMinutes)} minutes", diff);
 
-			if (diff.TotalDays <= -1.5 && diff.TotalDays > -5)
-				return $"{Math.Abs(Math.Round(diff.TotalDays))} days ago";
+			if (absoluteHours < 24)
+				return PastOrFuture($"{Math.Round(absoluteHours)} hours", diff);
 
+			if (absoluteDays >= 1.5 && absoluteDays < 5)
+				return PastOrFuture($"{Math.Round(absoluteDays)} days", diff);
+
+			// fallback
 			return value.ToString("g");
+		}
+
+		private string PastOrFuture(string result, TimeSpan diff)
+		{
+			var value = diff.TotalMilliseconds > 0 ? result + " ago" : "in " + result;
+			return value.Substring(0, 1).ToUpper() + value.Substring(1);
 		}
 
 		public IClock Clock { get; }
