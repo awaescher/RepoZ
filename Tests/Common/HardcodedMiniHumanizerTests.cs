@@ -108,12 +108,20 @@ namespace Tests.Common
 			[TestCase(60, "In 2 days")]
 			[TestCase(-62, "3 days ago")]
 			[TestCase(62, "In 3 days")]
-			[TestCase(-300, "19.12.2019 22:00")]
-			[TestCase(300, "13.01.2020 22:00")]
 			public void Hours(double hours, string expected)
 			{
 				var value = _humanizer.HumanizeTimestamp(_clock.Now.AddHours(hours));
 				value.Should().Be(expected);
+			}
+
+			[Test]
+			public void Date_Fallback()
+			{
+				var value = _humanizer.HumanizeTimestamp(_clock.Now.AddHours(-300));
+				value.Should().Be(new DateTime(2019, 12, 19, 22, 00, 00).ToString("g"));
+
+				value = _humanizer.HumanizeTimestamp(_clock.Now.AddHours(300));
+				value.Should().Be(new DateTime(2020, 01, 13, 22, 00, 00).ToString("g"));
 			}
 		}
 	}
