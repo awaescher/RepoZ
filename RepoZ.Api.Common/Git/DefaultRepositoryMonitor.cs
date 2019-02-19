@@ -242,6 +242,7 @@ namespace RepoZ.Api.Common.Git
 
         public IAutoFetchHandler AutoFetchHandler { get; }
 
+		[Flags]
         private enum KnownRepositoryNotification
 		{
 			WhenFound = 1,

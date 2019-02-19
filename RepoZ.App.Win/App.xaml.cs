@@ -66,7 +66,7 @@ namespace RepoZ.App.Win
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
 
-			_updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
+			_updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
 			// We noticed that the hotkey registration causes a high CPU utilization if the window was not shown before.
 			// To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
@@ -136,7 +136,7 @@ namespace RepoZ.App.Win
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
 		}
 
-		private async void CheckForUpdatesAsync(object state)
+		private async Task CheckForUpdatesAsync()
 		{
 			var request = new UpdateRequest()
 				.WithNameAndVersionFromEntryAssembly()
@@ -186,8 +186,7 @@ namespace RepoZ.App.Win
 			
 			while (true)
 			{
-				bool hasMore;
-				var load = _socketServer.ReceiveFrameBytes(out hasMore);
+				var load = _socketServer.ReceiveFrameBytes(out bool hasMore);
 
 				string message = Encoding.UTF8.GetString(load);
 

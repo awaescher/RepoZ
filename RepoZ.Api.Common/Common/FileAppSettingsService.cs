@@ -28,7 +28,7 @@ namespace RepoZ.Api.Common.Common
 					var json = File.ReadAllText(file);
 					return JsonConvert.DeserializeObject<AppSettings>(json);
 				}
-				catch { }
+				catch { /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */ }
 			}
 
 			return AppSettings.Default;
@@ -46,7 +46,7 @@ namespace RepoZ.Api.Common.Common
 			{
 				File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(_settings));
 			}
-			catch { }
+			catch { /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */ }
 		}
 
 		private string GetFileName() =>  Path.Combine(AppDataPathProvider.GetAppDataPath(), "appsettings.json");

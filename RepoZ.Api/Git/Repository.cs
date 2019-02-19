@@ -33,13 +33,7 @@ namespace RepoZ.Api.Git
 			return System.IO.Path.GetDirectoryName(path);
 		}
 
-		public override int GetHashCode()
-		{
-			if (string.IsNullOrEmpty(Path))
-				return base.GetHashCode();
-
-			return Path.GetHashCode();
-		}
+		public override int GetHashCode() => (Path ?? "").GetHashCode();
 
 		public string Name { get; set; }
 

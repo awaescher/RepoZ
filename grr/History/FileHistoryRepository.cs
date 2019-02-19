@@ -32,8 +32,7 @@ namespace grr.History
 			{
 				File.WriteAllLines(GetFileName(), lines, Encoding.Default);
 			}
-			catch (Exception)
-			{ /* safely ignore this, saving the state is optional */ }
+			catch (Exception) { /* safely ignore this, saving the state is optional */ }
 		}
 
 		public State Load()

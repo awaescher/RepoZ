@@ -23,12 +23,14 @@ namespace grrui
             _client = new RepoZIpcClient();
             var answer = _client.GetRepositories();
 
-            if (answer?.Repositories?.Length == 0)
+			var repositoryCount = answer?.Repositories?.Length ?? 0;
+            if (repositoryCount == 0)
             {
                 if (!string.IsNullOrEmpty(answer?.Answer))
                     Console.WriteLine(answer.Answer);
                 else
                     Console.WriteLine("No repositories yet");
+
                 return;
             }
 
@@ -53,12 +55,14 @@ namespace grrui
                 Height = Dim.Fill() - 2
             };
 
-            var win = new KeyPreviewWindow("grr: Git repositories of RepoZ");
-            win.Add(filterLabel);
-            win.Add(_filterField);
-            win.Add(_repositoryList);
+			var win = new KeyPreviewWindow("grr: Git repositories of RepoZ")
+			{
+				filterLabel,
+				_filterField,
+				_repositoryList
+			};
 
-            var buttonX = Pos.Left(filterLabel);
+			var buttonX = Pos.Left(filterLabel);
 
             var navigationButton = new Button("Navigate")
             {
