@@ -1,8 +1,12 @@
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=security_rating)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=bugs)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
 
+![windows][windows] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4)
 
-[![BuitlWithDot.Net shield](https://builtwithdot.net/project/53/repoz/badge)](https://builtwithdot.net/project/53/repoz)
-
-![windows][windows] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4) ![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)
+![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)
 
 # RepoZ
 
