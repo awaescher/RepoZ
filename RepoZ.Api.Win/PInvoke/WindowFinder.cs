@@ -11,7 +11,7 @@ namespace RepoZ.Api.Win.PInvoke
 {
 	public class WindowFinder
 	{
-		private IEnumerable<IPathFinder> _pathFinders;
+		private readonly IEnumerable<IPathFinder> _pathFinders;
 
 		public WindowFinder(IEnumerable<IPathFinder> pathFinders)
 		{

@@ -12,7 +12,7 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 {
 	public class WindowsExplorerHandler
 	{
-		private IRepositoryInformationAggregator _repositoryInfoAggregator;
+		private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
 
 		public WindowsExplorerHandler(IRepositoryInformationAggregator repositoryInfoAggregator)
 		{

@@ -10,8 +10,8 @@ namespace RepoZ.Api.Git
 {
 	public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
 	{
-		private ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
-		private IThreadDispatcher _dispatcher;
+		private readonly ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
+		private readonly IThreadDispatcher _dispatcher;
 
 		public DefaultRepositoryInformationAggregator(StatusCompressor compressor, IThreadDispatcher dispatcher)
 		{

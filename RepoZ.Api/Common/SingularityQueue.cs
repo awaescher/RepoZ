@@ -12,7 +12,7 @@ namespace RepoZ.Api.Common
 	/// <typeparam name="T">The type of the items to hold.</typeparam>
 	public class SingularityQueue<T>
 	{
-		private List<T> _list = new List<T>();
+		private readonly List<T> _list = new List<T>();
 
 		/// <summary>
 		/// Enqueues the specified item at the end of the queue.

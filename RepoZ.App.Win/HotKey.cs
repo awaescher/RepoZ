@@ -29,7 +29,7 @@ namespace RepoZ.App.Win
 		private IntPtr _handle;
 		private Action _hotKeyActionToCall;
 		private HwndSource _source;
-		private int _id;
+		private readonly int _id;
 
 		public HotKey(int id)
 		{

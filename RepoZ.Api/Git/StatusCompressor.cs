@@ -11,7 +11,7 @@ namespace RepoZ.Api.Git
 	{
 		private const int COMMIT_SHA_DISPLAY_CHARS = 7;
 
-		private StatusCharacterMap _statusCharacterMap;
+		private readonly StatusCharacterMap _statusCharacterMap;
 
 		public StatusCompressor(StatusCharacterMap statusCharacterMap)
 		{

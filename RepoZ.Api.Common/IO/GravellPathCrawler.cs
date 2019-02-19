@@ -12,7 +12,7 @@ namespace RepoZ.Api.Common.IO
 
 	public class GravellPathCrawler : IPathCrawler
 	{
-		private IPathSkipper _pathSkipper;
+		private readonly IPathSkipper _pathSkipper;
 
 		public GravellPathCrawler(IPathSkipper pathSkipper)
 		{

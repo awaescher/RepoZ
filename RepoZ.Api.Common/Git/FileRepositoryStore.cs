@@ -11,7 +11,7 @@ namespace RepoZ.Api.Common.Git
 {
 	public abstract class FileRepositoryStore : IRepositoryStore
 	{
-		private IErrorHandler _errorHandler;
+		private readonly IErrorHandler _errorHandler;
 
 		public FileRepositoryStore(IErrorHandler errorHandler)
 		{

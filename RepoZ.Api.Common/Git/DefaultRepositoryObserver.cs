@@ -99,6 +99,12 @@ namespace RepoZ.Api.Common.Git
 
 		public void Dispose()
 		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		public virtual void Dispose(bool disposing)
+		{
 			if (_watcher != null)
 			{
 				_watcher.Created -= _watcher_Created;

@@ -11,8 +11,8 @@ namespace RepoZ.Api.Common.Git.AutoFetch
     {
         private bool _active;
         private AutoFetchMode? _mode = null;
-		private Timer _timer;
-		private Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
+		private readonly Timer _timer;
+		private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
 		private int _lastFetchRepository = -1;
 
         public DefaultAutoFetchHandler(IAppSettingsService appSettingsService,

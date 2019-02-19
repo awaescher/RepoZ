@@ -10,7 +10,7 @@ namespace RepoZ.Api.Common.Common
 	public class FileAppSettingsService : IAppSettingsService
 	{
         private AppSettings _settings;
-        private List<Action> _invalidationHandlers = new List<Action>();
+        private readonly List<Action> _invalidationHandlers = new List<Action>();
 
         public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
 		{

@@ -15,15 +15,14 @@ namespace RepoZ.Api.Win.IO
 {
 	public class WindowsRepositoryActionProvider : IRepositoryActionProvider
 	{
-		private IRepositoryWriter _repositoryWriter;
-		private IErrorHandler _errorHandler;
+		private readonly IRepositoryWriter _repositoryWriter;
+		private readonly IErrorHandler _errorHandler;
 
 		public WindowsRepositoryActionProvider(IRepositoryWriter repositoryWriter, IErrorHandler errorHandler)
 		{
 			_repositoryWriter = repositoryWriter;
 			_errorHandler = errorHandler;
 		}
-
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
 		{

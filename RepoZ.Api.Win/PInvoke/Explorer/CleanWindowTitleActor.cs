@@ -13,19 +13,6 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 			Console.WriteLine("Clean " + explorerLocationUrl);
 			string separator = "  [";
 			WindowHelper.RemoveAppendedWindowText(hwnd, separator);
-
-			//if (!string.IsNullOrEmpty(explorerLocationUrl))
-			//{
-			//	string path = new Uri(explorerLocationUrl).LocalPath;
-
-			//	string info = _repositoryInfoAggregator.Get(path);
-
-			//	if (!string.IsNullOrEmpty(info))
-			//	{
-			//		string separator = "  [";
-			//		WindowHelper.AppendWindowText(hwnd, separator, info + "]");
-			//	}
-			//}
 		}
 	}
 }

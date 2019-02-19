@@ -8,9 +8,9 @@ namespace RepoZ.Api.Common.Git
 	public class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
 	{
 		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
-		
+
 		private FileSystemWatcher _watcher;
-		private IRepositoryReader _repositoryReader;
+		private readonly IRepositoryReader _repositoryReader;
 
 		public DefaultRepositoryDetector(IRepositoryReader repositoryReader)
 		{
@@ -92,7 +92,7 @@ namespace RepoZ.Api.Common.Git
 		}
 
 		private int GetGitPathEndFromHeadFile(string path) => path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
-		
+
 		private void EatRepo(string path)
 		{
 			var repo = _repositoryReader.ReadRepository(path);
@@ -109,6 +109,12 @@ namespace RepoZ.Api.Common.Git
 		}
 
 		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
 		{
 			if (_watcher != null)
 			{

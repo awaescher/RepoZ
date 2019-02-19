@@ -9,7 +9,7 @@ namespace RepoZ.Api.Win.IO
 {
 	public class WindowsPathSkipper : IPathSkipper
 	{
-		private List<string> _exclusions;
+		private readonly List<string> _exclusions;
 
 		public WindowsPathSkipper()
 		{

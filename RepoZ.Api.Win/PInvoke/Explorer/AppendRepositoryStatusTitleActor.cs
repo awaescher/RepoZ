@@ -9,7 +9,7 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
 {
 	public class AppendRepositoryStatusTitleActor : ExplorerWindowActor
 	{
-		private IRepositoryInformationAggregator _repositoryInfoAggregator;
+		private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
 
 		public AppendRepositoryStatusTitleActor(IRepositoryInformationAggregator repositoryInfoAggregator)
 		{

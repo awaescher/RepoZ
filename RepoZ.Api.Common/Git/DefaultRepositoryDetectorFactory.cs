@@ -9,7 +9,7 @@ namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryDetectorFactory : IRepositoryDetectorFactory
 	{
-		private IRepositoryReader _repositoryReader;
+		private readonly IRepositoryReader _repositoryReader;
 
 		public DefaultRepositoryDetectorFactory(IRepositoryReader repositoryReader)
 		{

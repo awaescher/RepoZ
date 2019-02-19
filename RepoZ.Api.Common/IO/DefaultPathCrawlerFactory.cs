@@ -9,7 +9,7 @@ namespace RepoZ.Api.Common.IO
 {
 	public class DefaultPathCrawlerFactory : IPathCrawlerFactory
 	{
-		private IPathSkipper _pathSkipper;
+		private readonly IPathSkipper _pathSkipper;
 
 		public DefaultPathCrawlerFactory(IPathSkipper pathSkipper)
 		{

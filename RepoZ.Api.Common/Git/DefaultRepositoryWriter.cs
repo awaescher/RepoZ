@@ -8,7 +8,7 @@ namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryWriter : IRepositoryWriter
 	{
-		private IGitCommander _gitCommander;
+		private readonly IGitCommander _gitCommander;
 
 		public DefaultRepositoryWriter(IGitCommander gitCommander)
 		{
