@@ -20,10 +20,20 @@ var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", system=="win
 
 var _solution = $"./RepoZ.{system}.sln";
 var _appVersion = "";
-
+var _outputDir = Directory($"_output");
+var _assemblyDir = Directory($"_output/{system}/Assemblies");
+	
 ///////////////////////////////////////////////////////////////////////////////
 // TASK DEFINITIONS
 ///////////////////////////////////////////////////////////////////////////////
+
+Setup(context =>
+{
+	EnsureDirectoryExists(_outputDir);
+	CleanDirectory(_outputDir);
+	EnsureDirectoryExists(_assemblyDir);
+	CleanDirectory(_assemblyDir);
+});
 
 Task("Clean")
     .Description("Cleans all directories that are used during the build process.")
@@ -104,14 +114,14 @@ Task("Test")
 	{
 		Results = new[]
 		{
-			new NUnit3Result { FileName = "_output/TestResults.xml"/*, Format = "nunit2"*/ }
+			new NUnit3Result { FileName = $"{_outputDir}/TestResults.xml"/*, Format = "nunit2"*/ }
 		},
 		NoHeader = true,
 		Configuration = "Default"             
 	};
 	
 	OpenCover(tool => tool.NUnit3(assemblies, nunitSettings),
-		new FilePath("_output/TestCoverage.xml"),
+		new FilePath($"{_outputDir}/TestCoverage.xml"),
 		openCoverSettings
 	);
 });
@@ -131,30 +141,22 @@ Task("Publish")
 	};
 	DotNetCorePublish("./grr/grr.csproj", settings);
 	DotNetCorePublish("./grrui/grrui.csproj", settings);
-	
-	// copy file to a single folder
-	var outputDir = Directory($"_output/{system}");
-	var assemblyDir = Directory($"_output/{system}/Assemblies");
-	
-	EnsureDirectoryExists(outputDir);
-	CleanDirectory(outputDir);
-	EnsureDirectoryExists(assemblyDir);
 		
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", assemblyDir, true);
+	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
 
 	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
 	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
 	if (system == "mac")
 	{
-		assemblyDir = Directory($"{assemblyDir}/RepoZ-CLI");
-		EnsureDirectoryExists(assemblyDir);
+		_assemblyDir = Directory($"{_assemblyDir}/RepoZ-CLI");
+		EnsureDirectoryExists(_assemblyDir);
 	}
 
-	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
-	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", assemblyDir, true);
+	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
-		DeleteFiles(assemblyDir.Path + "/*." + extension);
+		DeleteFiles(_assemblyDir.Path + "/*." + extension);
 });
 
 Task("CompileSetup")
