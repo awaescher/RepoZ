@@ -56,6 +56,7 @@
     <Compile Include="Common\HardcodedMiniHumanizerTests.cs" />
     <Compile Include="Common\SingularityQueueTests.cs" />
     <Compile Include="Git\RepositoryTests.cs" />
+    <Compile Include="Ipc\RepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helper\RepositoryBuilder.cs" />
     <Compile Include="UI\RepositoryViewTests.cs" />
@@ -68,6 +69,10 @@
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
       <Project>{8f74519b-b72d-4a5e-b20b-723543676e5e}</Project>
       <Name>RepoZ.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj">
+      <Project>{B38E49E8-4691-4D3B-982E-41F8E8B527E3}</Project>
+      <Name>RepoZ.Ipc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
