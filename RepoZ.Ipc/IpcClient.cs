@@ -8,10 +8,15 @@ using NetMQ.Sockets;
 
 namespace RepoZ.Ipc
 {
-	public class RepoZIpcClient
+	public partial class IpcClient
 	{
         private string _answer;
         private Repository[] _repositories;
+
+		public IpcClient(IIpcEndpoint endpointProvider)
+		{
+			EndpointProvider = endpointProvider ?? throw new ArgumentNullException(nameof(endpointProvider));
+		}
 
         public Result GetRepositories() => GetRepositories("list:.*");
 
@@ -22,9 +27,9 @@ namespace RepoZ.Ipc
             _answer = null;
             _repositories = null;
 
-            using (var client = new RequestSocket())  // connect
+            using (var client = new RequestSocket())
             {
-                client.Connect(RepoZIpcEndpoint.Address);
+                client.Connect(EndpointProvider.Address);
 
                 byte[] load = Encoding.UTF8.GetBytes(query);
                 client.SendFrame(load);
@@ -33,7 +38,7 @@ namespace RepoZ.Ipc
                 client.Poll(TimeSpan.FromMilliseconds(3000));
 
                 client.ReceiveReady -= ClientOnReceiveReady;
-                client.Disconnect(RepoZIpcEndpoint.Address);
+                client.Disconnect(EndpointProvider.Address);
             }
 
 			watch.Stop();
@@ -50,7 +55,7 @@ namespace RepoZ.Ipc
 		{
 			var isRepoZRunning = Process.GetProcessesByName("RepoZ").Any();
 			return isRepoZRunning
-				? $"RepoZ is running but does not answer.\nIt seems that it could not listen on {RepoZIpcEndpoint.Address}.\nI don't know anything better than recommending a reboot. Sorry."
+				? $"RepoZ seems to be running but does not answer.\nIt seems that it could not listen on {EndpointProvider.Address}.\nI don't know anything better than recommending a reboot. Sorry."
 				: "RepoZ seems not to be running :(";
 		}
 
@@ -65,7 +70,9 @@ namespace RepoZ.Ipc
                 .ToArray();
         }
 
-        public class Result
+		public IIpcEndpoint EndpointProvider { get; }
+
+		public class Result
 		{
 			public string Answer { get; set; }
 			public long DurationMilliseconds { get; set; }

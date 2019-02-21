@@ -9,7 +9,7 @@ namespace Tests.Ipc
 		public class FromStringMethod : RepositoryTests
 		{
 			[Test]
-			public void Splits()
+			public void Deserializes_With_Three_Arguments()
 			{
 				var r = Repository.FromString("Name::Branch::Path");
 				r.Name.Should().Be("Name");
@@ -29,6 +29,23 @@ namespace Tests.Ipc
 			{
 				var r = Repository.FromString("Name::Branch::Path::Mode");
 				r.Should().BeNull();
+			}
+		}
+
+		public class ToStringMethod : RepositoryTests
+		{
+			[Test]
+			public void Serializes_With_Three_Arguments()
+			{
+				var r = new Repository { Name = "N", BranchWithStatus = "B", Path = "P" };
+				r.ToString().Should().Be("N::B::P");
+			}
+
+			[Test]
+			public void Returns_Null_For_Less_Than_Three_Arguments()
+			{
+				var r = new Repository { Name = "N", BranchWithStatus = "B" };
+				r.ToString().Should().Be("");
 			}
 		}
 

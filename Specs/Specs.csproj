@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncIO.0.1.26.0\lib\net40\AsyncIO.dll</HintPath>
+    </Reference>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
@@ -49,6 +52,9 @@
     <Reference Include="Moq, Version=4.10.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.10.1\lib\net45\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="NetMQ, Version=4.0.0.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\NetMQ.4.0.0.1\lib\net40\NetMQ.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -58,6 +64,7 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -71,6 +78,8 @@
   <ItemGroup>
     <Compile Include="AssertionHelper.cs" />
     <Compile Include="DefaultRepositoryMonitorTests.cs" />
+    <Compile Include="Ipc\RepoZIpcClientTests.cs" />
+    <Compile Include="Ipc\TestIpcEndpoint.cs" />
     <Compile Include="Mocks\DirectThreadDispatcher.cs" />
     <Compile Include="Mocks\NeverSkippingPathSkipper.cs" />
     <Compile Include="Mocks\GivenPathProvider.cs" />
@@ -94,6 +103,10 @@
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
       <Project>{8F74519B-B72D-4A5E-B20B-723543676E5E}</Project>
       <Name>RepoZ.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj">
+      <Project>{b38e49e8-4691-4d3b-982e-41f8e8b527e3}</Project>
+      <Name>RepoZ.Ipc</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

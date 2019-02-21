@@ -100,6 +100,12 @@ Task("Test")
 		$"./Specs/bin/{configuration}/Specs.dll"
 	};
 	
+	var testResultsFile = MakeAbsolute(File($"{_outputDir}/TestResults.xml")).FullPath;
+	var testCoverageFile = MakeAbsolute(File($"{_outputDir}/TestCoverage.xml")).FullPath;
+	
+	Information("Test results xml:  " + testResultsFile);
+	Information("Test coverage xml: " + testCoverageFile);
+	
 	var openCoverSettings = new OpenCoverSettings()
 		.WithFilter("+[*]*")
 		.WithFilter("-[Specs]*")
@@ -114,14 +120,14 @@ Task("Test")
 	{
 		Results = new[]
 		{
-			new NUnit3Result { FileName = $"{_outputDir}/TestResults.xml"/*, Format = "nunit2"*/ }
+			new NUnit3Result { FileName = testResultsFile }
 		},
 		NoHeader = true,
 		Configuration = "Default"             
 	};
 	
 	OpenCover(tool => tool.NUnit3(assemblies, nunitSettings),
-		new FilePath($"{_outputDir}/TestCoverage.xml"),
+		new FilePath(testCoverageFile),
 		openCoverSettings
 	);
 });

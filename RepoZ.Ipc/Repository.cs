@@ -17,7 +17,15 @@
             };
         }
 
-        public string Name { get; set; }
+		public override string ToString()
+		{
+			if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(BranchWithStatus) || string.IsNullOrEmpty(Path))
+				return "";
+
+			return $"{Name}::{BranchWithStatus}::{Path}";
+		}
+
+		public string Name { get; set; }
 
         public string BranchWithStatus { get; set; }
 
