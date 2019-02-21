@@ -203,7 +203,7 @@ namespace RepoZ.App.Win
 						var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
 						var repos = aggregator.Repositories
 							.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-							.Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
+							.Select(r => $"{r.Name}::{r.BranchWithStatus}::{r.Path}")
 							.ToArray();
 
 						if (repos.Any())

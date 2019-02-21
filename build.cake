@@ -1,5 +1,6 @@
 #addin "Cake.FileHelpers"
 #tool "nsis"
+#tool "nuget:?package=OpenCover"
 #tool "nuget:?package=NUnit.ConsoleRunner"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 
@@ -89,10 +90,30 @@ Task("Test")
 		$"./Specs/bin/{configuration}/Specs.dll"
 	};
 	
-	NUnit3(assemblies, new NUnit3Settings
+	var openCoverSettings = new OpenCoverSettings()
+		.WithFilter("+[*]*")
+		.WithFilter("-[Specs]*")
+		.WithFilter("-[Tests]*")
+		.WithFilter("-[FluentAssertions*]*")
+		.WithFilter("-[Moq*]*")
+		.WithFilter("-[LibGit2Sharp*]*");
+		
+	openCoverSettings.ReturnTargetCodeOffset = 0;
+
+	var nunitSettings = new NUnit3Settings
 	{
-		NoResults = true
-    });
+		Results = new[]
+		{
+			new NUnit3Result { FileName = "_output/TestResults.xml"/*, Format = "nunit2"*/ }
+		},
+		NoHeader = true,
+		Configuration = "Default"             
+	};
+	
+	OpenCover(tool => tool.NUnit3(assemblies, nunitSettings),
+		new FilePath("_output/TestCoverage.xml"),
+		openCoverSettings
+	);
 });
 
 Task("Publish")
