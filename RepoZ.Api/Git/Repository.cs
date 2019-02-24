@@ -12,8 +12,7 @@ namespace RepoZ.Api.Git
 	{
 		public override bool Equals(object obj)
 		{
-			var other = obj as Repository;
-			if (other == null)
+			if (!(obj is Repository other))
 				return false;
 
 			if (string.IsNullOrEmpty(other.Path))

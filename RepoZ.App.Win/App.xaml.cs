@@ -17,18 +17,17 @@ using System.Text.RegularExpressions;
 using Hardcodet.Wpf.TaskbarNotification;
 using TinySoup.Model;
 using TinySoup;
-using NetMQ.Sockets;
-using NetMQ;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.Git.ProcessExecution;
+using RepoZ.Ipc;
 
 namespace RepoZ.App.Win
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
-	public partial class App : Application
+	public partial class App : Application, IRepositorySource
 	{
 		private static Timer _explorerUpdateTimer;
 		private static Timer _updateTimer;
@@ -36,7 +35,7 @@ namespace RepoZ.App.Win
 		private static WindowsExplorerHandler _explorerHandler;
 		private static IRepositoryMonitor _repositoryMonitor;
 		private TaskbarIcon _notifyIcon;
-		private static ResponseSocket _socketServer;
+		private IpcServer _ipcServer;
 
 		[STAThread]
 		public static void Main()
@@ -76,13 +75,14 @@ namespace RepoZ.App.Win
 			_hotkey = new HotKey(47110815);
 			_hotkey.Register(window, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
 
-			Task.Run(() => ListenForSocketRequests());
+			_ipcServer = new IpcServer(new DefaultIpcEndpoint(), this);
+			_ipcServer.Start();
 		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
-			_socketServer?.Disconnect(Ipc.RepoZIpcEndpoint.Address);
-			_socketServer?.Dispose();
+			_ipcServer?.Stop();
+			_ipcServer?.Dispose();
 
 			_hotkey.Unregister();
 
@@ -180,45 +180,18 @@ namespace RepoZ.App.Win
 			(Application.Current.MainWindow as MainWindow)?.ShowAndActivate();
 		}
 
-		private static void ListenForSocketRequests()
+		public Ipc.Repository[] GetMatchingRepositories(string repositoryNamePattern)
 		{
-			_socketServer = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address);
-			
-			while (true)
-			{
-				var load = _socketServer.ReceiveFrameBytes(out bool hasMore);
-
-				string message = Encoding.UTF8.GetString(load);
-
-				if (string.IsNullOrEmpty(message))
-					return;
-
-				if (message.StartsWith("list:", StringComparison.Ordinal))
-				{
-					string repositoryNamePattern = message.Substring("list:".Length);
-
-					string answer = "(no repositories found)";
-					try
+			var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+			return aggregator.Repositories
+				.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+				.Select(r => new Ipc.Repository
 					{
-						var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-						var repos = aggregator.Repositories
-							.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-							.Select(r => $"{r.Name}::{r.BranchWithStatus}::{r.Path}")
-							.ToArray();
-
-						if (repos.Any())
-							answer = string.Join(Environment.NewLine, repos);
-					}
-					catch (Exception ex)
-					{
-						answer = ex.Message;
-					}
-
-					_socketServer.SendFrame(Encoding.UTF8.GetBytes(answer));
-				}
-
-				Thread.Sleep(100);
-			}
+						Name = r.Name,
+						BranchWithStatus = r.BranchWithStatus,
+						Path = r.Path
+					})
+				.ToArray();
 		}
 
 		public static AvailableVersion AvailableUpdate { get; private set; }

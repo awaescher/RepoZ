@@ -13,14 +13,14 @@ namespace grrui
         private const int BUTTON_BORDER = 4; // 2 chars to the left, 2 to the right
         private const int BUTTON_DISTANCE = 1;
 
-        private static RepoZIpcClient _client;
+        private static IpcClient _client;
         private static ListView _repositoryList;
         private static RepositoriesView _repositoriesView;
         private static TextField _filterField;
 
         static void Main(string[] args)
         {
-            _client = new RepoZIpcClient();
+            _client = new IpcClient(new DefaultIpcEndpoint());
             var answer = _client.GetRepositories();
 
 			var repositoryCount = answer?.Repositories?.Length ?? 0;

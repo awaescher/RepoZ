@@ -34,11 +34,11 @@ namespace grr
 
 				if (message != null)
 				{
-                    RepoZIpcClient.Result result = null;
+                    IpcClient.Result result = null;
 
                     if (message.HasRemoteCommand)
                     {
-                        var client = new RepoZIpcClient();
+                        var client = new IpcClient(new DefaultIpcEndpoint());
                         result = client.GetRepositories(message.GetRemoteCommand());
 
 						if (result.Repositories?.Length > 0)

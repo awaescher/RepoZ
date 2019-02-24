@@ -6,8 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppKit;
 using Foundation;
-using NetMQ;
-using NetMQ.Sockets;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
@@ -20,6 +18,7 @@ using RepoZ.Api.Mac;
 using RepoZ.Api.Mac.IO;
 using RepoZ.App.Mac.NativeSupport;
 using RepoZ.App.Mac.NativeSupport.Git;
+using RepoZ.Ipc;
 using TinyIoC;
 using TinySoup;
 using TinySoup.Model;
@@ -27,7 +26,7 @@ using TinySoup.Model;
 namespace RepoZ.App.Mac
 {
     [Register("AppDelegate")]
-    public partial class AppDelegate : NSApplicationDelegate, INSPopoverDelegate
+    public partial class AppDelegate : NSApplicationDelegate, INSPopoverDelegate, IRepositorySource
     {
         NSStatusItem _statusItem;
         NSPopover _pop;
@@ -36,7 +35,7 @@ namespace RepoZ.App.Mac
         private IRepositoryMonitor _repositoryMonitor;
         private NSObject _eventMonitor;
         private Timer _updateTimer;
-        private ResponseSocket _socketServer;
+        private IpcServer _ipcServer;
 
         public override void DidFinishLaunching(NSNotification notification)
         {
@@ -61,13 +60,14 @@ namespace RepoZ.App.Mac
 
             _updateTimer = new Timer(CheckForUpdatesAsync, null, 5000, Timeout.Infinite);
 
-            Task.Run(() => ListenForSocketRequests());
+            _ipcServer = new IpcServer(new DefaultIpcEndpoint(), this);
+            _ipcServer.Start();
         }
 
         public override void WillTerminate(NSNotification notification)
         {
-            _socketServer?.Disconnect(Ipc.RepoZIpcEndpoint.Address);
-            _socketServer?.Dispose();
+            _ipcServer?.Stop();
+            _ipcServer?.Dispose();
 
             // Insert code here to tear down your application
             NSEvent.RemoveMonitor(_eventMonitor);
@@ -146,46 +146,18 @@ namespace RepoZ.App.Mac
             }
         }
 
-        private void ListenForSocketRequests()
+        public Ipc.Repository[] GetMatchingRepositories(string repositoryNamePattern)
         {
-            _socketServer = new ResponseSocket(Ipc.RepoZIpcEndpoint.Address);
-
-            while (true)
-            {
-                bool hasMore;
-                var load = _socketServer.ReceiveFrameBytes(out hasMore);
-
-                string message = Encoding.UTF8.GetString(load);
-
-                if (string.IsNullOrEmpty(message))
-                    return;
-
-                if (message.StartsWith("list:", StringComparison.Ordinal))
+            var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+            return aggregator.Repositories
+                .Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+                .Select(r => new Ipc.Repository
                 {
-                    string repositoryNamePattern = message.Substring("list:".Length);
-
-                    string answer = "(no repositories found)";
-                    try
-                    {
-                        var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
-                        var repos = aggregator.Repositories
-                            .Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
-                            .Select(r => $"{r.Name}|{r.BranchWithStatus}|{r.Path}")
-                            .ToArray();
-
-                        if (repos.Any())
-                            answer = string.Join(Environment.NewLine, repos);
-                    }
-                    catch (Exception ex)
-                    {
-                        answer = ex.Message;
-                    }
-
-                    _socketServer.SendFrame(Encoding.UTF8.GetBytes(answer));
-                }
-
-                Thread.Sleep(100);
-            }
+                    Name = r.Name,
+                    BranchWithStatus = r.BranchWithStatus,
+                    Path = r.Path
+                })
+                .ToArray();
         }
 
         public static AvailableVersion AvailableUpdate { get; private set; }
