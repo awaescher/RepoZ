@@ -18,7 +18,7 @@ namespace RepoZ.App.Win
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : MetroWindow
+	public partial class MainWindow : Window
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
 
@@ -209,8 +209,8 @@ namespace RepoZ.App.Win
 
 		private void PlaceFormToLowerRight()
 		{
-			Top = SystemParameters.WorkArea.Height - Height - 1;
-			Left = SystemParameters.WorkArea.Width - Width - 1;
+			Top = SystemParameters.WorkArea.Height - Height;
+			Left = SystemParameters.WorkArea.Width - Width;
 		}
 
 		private void ShowUpdateIfAvailable()
@@ -218,6 +218,9 @@ namespace RepoZ.App.Win
 			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
 			UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : $"Version {App.AvailableUpdate.VersionString} is available.";
 			UpdateButton.Tag = App.AvailableUpdate;
+
+			// TODO beautify
+			(UpdateButton.Parent as Grid).ColumnDefinitions[2].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
 		}
 
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
