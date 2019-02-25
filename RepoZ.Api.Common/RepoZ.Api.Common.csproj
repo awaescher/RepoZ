@@ -1,97 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\LibGit2Sharp.NativeBinaries.1.0.185\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.185\build\LibGit2Sharp.NativeBinaries.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8104948C-EB24-496B-B15B-D769535B7DAB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RepoZ.Api.Common</RootNamespace>
-    <AssemblyName>RepoZ.Api.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <ReleaseVersion>4.0</ReleaseVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<ReleaseVersion>4.0</ReleaseVersion>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="LibGit2Sharp, Version=0.24.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibGit2Sharp.0.24.0\lib\net40\LibGit2Sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="LibGit2Sharp" Version="0.25.4" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Common\AppSettings.cs" />
-    <Compile Include="Common\FileAppSettingsService.cs" />
-    <Compile Include="Common\IAppSettingsService.cs" />
-    <Compile Include="Git\AutoFetch\AutoFetchMode.cs" />
-    <Compile Include="Git\AutoFetch\AutoFetchProfile.cs" />
-    <Compile Include="Git\DefaultRepositoryObserver.cs" />
-    <Compile Include="Git\DefaultRepositoryMonitor.cs" />
-    <Compile Include="Git\DefaultRepositoryDetector.cs" />
-    <Compile Include="Git\DefaultRepositoryObserverFactory.cs" />
-    <Compile Include="Git\DefaultRepositoryDetectorFactory.cs" />
-    <Compile Include="Git\FileRepositoryStore.cs" />
-    <Compile Include="Git\DefaultRepositoryReader.cs" />
-    <Compile Include="Git\DefaultRepositoryWriter.cs" />
-    <Compile Include="Git\IGitCommander.cs" />
-    <Compile Include="Git\DefaultRepositoryStore.cs" />
-    <Compile Include="Git\ProcessExecution\GitCommandException.cs" />
-    <Compile Include="Git\ProcessExecution\ProcessExecutingGitCommander.cs" />
-    <Compile Include="IO\DefaultAppDataPathProvider.cs" />
-    <Compile Include="IO\DefaultDriveEnumerator.cs" />
-    <Compile Include="IO\DefaultPathCrawler.cs" />
-    <Compile Include="IO\DefaultPathCrawlerFactory.cs" />
-    <Compile Include="IO\GravellPathCrawler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Git\AutoFetch\DefaultAutoFetchHandler.cs" />
-    <Compile Include="Git\AutoFetch\IAutoFetchHandler.cs" />
+    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj">
-      <Project>{8f74519b-b72d-4a5e-b20b-723543676e5e}</Project>
-      <Name>RepoZ.Api</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.185\build\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibGit2Sharp.NativeBinaries.1.0.185\build\LibGit2Sharp.NativeBinaries.props'))" />
-  </Target>
+
 </Project>

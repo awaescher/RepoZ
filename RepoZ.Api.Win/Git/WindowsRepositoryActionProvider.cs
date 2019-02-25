@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RepoZ.Api.IO;
-using GongSolutions.Shell;
 using System.Drawing;
 using RepoZ.Api.Git;
 using RepoZ.Api.Common;
@@ -77,20 +76,6 @@ namespace RepoZ.Api.Win.IO
 						Action = (s, e) => _repositoryWriter.Checkout(singleRepository, branch),
 						CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
 					}).ToArray()
-				};
-
-				yield return new RepositoryAction()
-				{
-					Name = "Shell",
-					Action = (sender, args) =>
-					{
-						var coords = args as float[];
-
-						var i = new ShellItem(singleRepository.Path);
-						var m = new ShellContextMenu(i);
-						m.ShowContextMenu(new System.Windows.Forms.Button(), new Point((int)coords[0], (int)coords[1]));
-					},
-					BeginGroup = true
 				};
 			}
 		}
