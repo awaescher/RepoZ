@@ -134,13 +134,13 @@
       <Project>{8104948C-EB24-496B-B15B-D769535B7DAB}</Project>
       <Name>RepoZ.Api.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RepoZ.Api.Mac\RepoZ.Api.Mac.csproj">
-      <Project>{A314F9CB-5108-4065-AFB6-42799099B188}</Project>
-      <Name>RepoZ.Api.Mac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj">
       <Project>{49AD5E2A-E0E6-40CC-84A6-34DA81D93311}</Project>
       <Name>RepoZ.Ipc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RepoZ.Api.Mac\RepoZ.Api.Mac.csproj">
+      <Project>{87194AC0-C529-4848-9690-DC8CBF157E5E}</Project>
+      <Name>RepoZ.Api.Mac</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

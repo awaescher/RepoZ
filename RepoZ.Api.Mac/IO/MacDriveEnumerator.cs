@@ -1,6 +1,5 @@
 ﻿using RepoZ.Api.IO;
 using System;
-using System.Linq;
 
 namespace RepoZ.Api.Mac.IO
 {
