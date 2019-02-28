@@ -221,8 +221,8 @@ namespace RepoZ.App.Win
 			UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : $"Version {App.AvailableUpdate.VersionString} is available.";
 			UpdateButton.Tag = App.AvailableUpdate;
 
-			// TODO beautify
-			(UpdateButton.Parent as Grid).ColumnDefinitions[2].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
+			var parent = (Grid)UpdateButton.Parent;
+			parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
 		}
 
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
