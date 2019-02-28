@@ -21,7 +21,7 @@ namespace RepoZ.App.Win
 	public partial class MainWindow : Window
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
-
+		private bool _closeOnDeactivate = true;
 		private DefaultRepositoryMonitor _monitor;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
@@ -75,7 +75,9 @@ namespace RepoZ.App.Win
 		protected override void OnDeactivated(EventArgs e)
 		{
 			base.OnDeactivated(e);
-			Hide();
+
+			if (_closeOnDeactivate)
+				Hide();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -288,6 +290,20 @@ namespace RepoZ.App.Win
 
 			if (e.Key == Key.Down && txtFilter.IsFocused)
 				lstRepositories.Focus();
+
+			if (Debugger.IsAttached)
+			{
+				// show/hide the titlebar to move the window for screenshots, for example
+				if (e.Key == Key.F11)
+				{
+					var titlebarVisible = SourceChord.FluentWPF.AcrylicWindow.GetShowTitleBar(this);
+					SourceChord.FluentWPF.AcrylicWindow.SetShowTitleBar(this, !titlebarVisible);
+				}
+
+				// keep window open on deactivate to make screeshots, for example
+				if (e.Key == Key.F12)
+					_closeOnDeactivate = !_closeOnDeactivate;
+			}
 		}
 
 		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)

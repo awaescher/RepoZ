@@ -4,7 +4,6 @@
 						xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-						xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
 						mc:Ignorable="d"
 						xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 						xmlns:controls="clr-namespace:RepoZ.App.Win.Controls"
@@ -158,6 +157,7 @@
 							 VerticalContentAlignment="Top"
 							 SelectionMode="Extended"
 							 Margin="0,10,0,0"
+							 ScrollViewer.CanContentScroll="False"
 							 >
 						<ListBox.ItemTemplate>
 							<DataTemplate>
