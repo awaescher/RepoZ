@@ -92,6 +92,10 @@
 			<Style TargetType="{x:Type controls:ZTextBox}"
 				   BasedOn="{StaticResource {x:Type TextBox}}" />
 
+			<Style TargetType="{x:Type controls:AcrylicContextMenu}"
+				   BasedOn="{StaticResource {x:Type ContextMenu}}" />
+
+
 		</ResourceDictionary>
 
 	</Application.Resources>

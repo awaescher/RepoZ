@@ -26,7 +26,7 @@
 	<Window.Resources>
 		<converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
 	</Window.Resources>
-	<Grid Margin="10" 
+	<Grid Margin="12" 
 		  Focusable="False">
 
 		<materialDesign:Transitioner Name="transitionerMain"
@@ -109,9 +109,10 @@
 							Foreground="{DynamicResource MaterialDesignBody}"
 							Style="{DynamicResource MaterialDesignFlatButton}">
 							<Button.ContextMenu>
-								<ContextMenu x:Name="SettingsMenu" FontSize="14">
+								<controls:AcrylicContextMenu x:Name="SettingsMenu" FontSize="14">
 									<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
-									<MenuItem Header="🕒 Auto fetch">
+									<MenuItem Header="🕒 Auto fetch" x:Name="AutoFetchMenuItem" >
+										
 										<MenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
 										<MenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
 										<MenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
@@ -126,7 +127,7 @@
 									</MenuItem>
 									<Separator/>
 									<MenuItem Header="✋ Help" Click="HelpButton_Click"/>
-								</ContextMenu>
+								</controls:AcrylicContextMenu>
 							</Button.ContextMenu>
 						</Button>
 						<Button
@@ -179,9 +180,9 @@
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
-							<ContextMenu Name="mnuRepositoryContext"
+							<controls:AcrylicContextMenu x:Name="mnuRepositoryContext"
 										 FontSize="12">
-							</ContextMenu>
+							</controls:AcrylicContextMenu>
 						</ListBox.ContextMenu>
 					</ListBox>
 				</DockPanel>
