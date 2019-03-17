@@ -110,23 +110,23 @@
 							Style="{DynamicResource MaterialDesignFlatButton}">
 							<Button.ContextMenu>
 								<controls:AcrylicContextMenu x:Name="SettingsMenu" FontSize="14">
-									<MenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
-									<MenuItem Header="🕒 Auto fetch" x:Name="AutoFetchMenuItem" >
+									<controls:AcrylicMenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
+									<controls:AcrylicMenuItem Header="🕒 Auto fetch" x:Name="AutoFetchMenuItem" >
 										
-										<MenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
-										<MenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
-										<MenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
-										<MenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
-									</MenuItem>
+										<controls:AcrylicMenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
+										<controls:AcrylicMenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
+										<controls:AcrylicMenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
+										<controls:AcrylicMenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
+									</controls:AcrylicMenuItem>
 									<Separator/>
-									<MenuItem Header="💙 Ping back" Foreground="#FFED8888">
-										<MenuItem Header="🌟 Star RepoZ on GitHub" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
-										<MenuItem Header="🐤 Follow @Waescher" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+									<controls:AcrylicMenuItem Header="💙 Ping back" Foreground="#FFED8888">
+										<controls:AcrylicMenuItem Header="🌟 Star RepoZ on GitHub" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
+										<controls:AcrylicMenuItem Header="🐤 Follow @Waescher" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
 										<Separator/>
-										<MenuItem Header="☕ Buy me a coffee" Click="CoffeeButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
-									</MenuItem>
+										<controls:AcrylicMenuItem Header="☕ Buy me a coffee" Click="CoffeeButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+									</controls:AcrylicMenuItem>
 									<Separator/>
-									<MenuItem Header="✋ Help" Click="HelpButton_Click"/>
+									<controls:AcrylicMenuItem Header="✋ Help" Click="HelpButton_Click"/>
 								</controls:AcrylicContextMenu>
 							</Button.ContextMenu>
 						</Button>

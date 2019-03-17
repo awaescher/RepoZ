@@ -12,6 +12,7 @@ using MahApps.Metro.Controls;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
+using RepoZ.App.Win.Controls;
 
 namespace RepoZ.App.Win
 {
@@ -247,7 +248,7 @@ namespace RepoZ.App.Win
 				}
 			};
 
-			var item = new MenuItem()
+			var item = new AcrylicMenuItem()
 			{
 				Header = action.Name,
 				IsEnabled = action.CanExecute

@@ -104,6 +104,7 @@
     <Compile Include="AcrylicHelper.cs" />
     <Compile Include="AutoStart.cs" />
     <Compile Include="Controls\AcrylicContextMenu.cs" />
+    <Compile Include="Controls\AcrylicMenuItem.cs" />
     <Compile Include="Controls\ZTextBox.cs" />
     <Compile Include="Converters\UtcToHumanizedLocalDateTimeConverter.cs" />
     <Compile Include="Converters\UtcToLocalDateTimeConverter.cs" />

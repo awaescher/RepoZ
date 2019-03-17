@@ -95,6 +95,8 @@
 			<Style TargetType="{x:Type controls:AcrylicContextMenu}"
 				   BasedOn="{StaticResource {x:Type ContextMenu}}" />
 
+			<Style TargetType="{x:Type controls:AcrylicMenuItem}"
+				   BasedOn="{StaticResource {x:Type MenuItem}}" />
 
 		</ResourceDictionary>
 
