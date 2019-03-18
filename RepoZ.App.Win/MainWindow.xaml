@@ -109,7 +109,7 @@
 							Foreground="{DynamicResource MaterialDesignBody}"
 							Style="{DynamicResource MaterialDesignFlatButton}">
 							<Button.ContextMenu>
-								<controls:AcrylicContextMenu x:Name="SettingsMenu" FontSize="14">
+								<controls:AcrylicContextMenu x:Name="SettingsMenu" >
 									<controls:AcrylicMenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
 									<controls:AcrylicMenuItem Header="🕒 Auto fetch" x:Name="AutoFetchMenuItem" >
 										
@@ -180,8 +180,7 @@
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>
-							<controls:AcrylicContextMenu x:Name="mnuRepositoryContext"
-										 FontSize="12">
+							<controls:AcrylicContextMenu x:Name="mnuRepositoryContext" >
 							</controls:AcrylicContextMenu>
 						</ListBox.ContextMenu>
 					</ListBox>

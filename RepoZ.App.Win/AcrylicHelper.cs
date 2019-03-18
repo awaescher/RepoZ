@@ -23,11 +23,5 @@ namespace RepoZ.App.Win
 		{
 			WindowsCompositionHelper.EnableBlur(hwnd);
 		}
-
-		public static void EnableBlurForMenu(Control menu)
-		{
-			menu.Background = new SolidColorBrush(Color.FromArgb(60, 0, 0, 0));
-			EnableBlur(menu);
-		}
 	}
 }

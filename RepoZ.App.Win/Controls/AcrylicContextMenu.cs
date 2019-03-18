@@ -14,7 +14,7 @@ namespace RepoZ.App.Win.Controls
 		{
 			base.OnOpened(e);
 
-			AcrylicHelper.EnableBlurForMenu(this);
+			AcrylicHelper.EnableBlur(this);
 		}
 
 	}

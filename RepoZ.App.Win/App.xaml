@@ -89,14 +89,18 @@
 							 Color="{DynamicResource Primary500}"
 							 Opacity="0.4" />
 
-			<Style TargetType="{x:Type controls:ZTextBox}"
-				   BasedOn="{StaticResource {x:Type TextBox}}" />
+			<Style TargetType="{x:Type controls:ZTextBox}" BasedOn="{StaticResource {x:Type TextBox}}" />
 
-			<Style TargetType="{x:Type controls:AcrylicContextMenu}"
-				   BasedOn="{StaticResource {x:Type ContextMenu}}" />
+			<Style TargetType="{x:Type controls:AcrylicContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}" >
+				<Setter Property="Background" Value="#50000000" />
+				<Setter Property="FontSize" Value="13.5" />
 
-			<Style TargetType="{x:Type controls:AcrylicMenuItem}"
-				   BasedOn="{StaticResource {x:Type MenuItem}}" />
+			</Style>
+
+
+			<Style TargetType="{x:Type controls:AcrylicMenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}" >
+				<Setter Property="Background" Value="Transparent"/>
+			</Style>
 
 		</ResourceDictionary>
 
