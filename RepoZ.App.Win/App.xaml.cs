@@ -121,6 +121,7 @@ namespace RepoZ.App.Win
 			container.Register<IGitCommander, ProcessExecutingGitCommander>();
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>();
+			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

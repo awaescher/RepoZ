@@ -28,6 +28,7 @@ namespace RepoZ.Api.Common.Git
 		private readonly IPathProvider _pathProvider;
 		private readonly IRepositoryStore _repositoryStore;
 		private readonly IRepositoryInformationAggregator _repositoryInformationAggregator;
+		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private readonly Dictionary<string, IRepositoryObserver> _repositoryObservers;
 
 		public DefaultRepositoryMonitor(
@@ -38,7 +39,9 @@ namespace RepoZ.Api.Common.Git
 			IPathCrawlerFactory pathCrawlerFactory,
 			IRepositoryStore repositoryStore,
 			IRepositoryInformationAggregator repositoryInformationAggregator,
-			IAutoFetchHandler autoFetchHandler)
+			IAutoFetchHandler autoFetchHandler,
+			IRepositoryIgnoreStore repositoryIgnoreStore
+			)
 		{
 			_repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
 			_repositoryDetectorFactory = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
@@ -48,6 +51,7 @@ namespace RepoZ.Api.Common.Git
 			_repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
 			_repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
 			_repositoryObservers = new Dictionary<string, IRepositoryObserver>();
+			_repositoryIgnoreStore = repositoryIgnoreStore;
 
 			_storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -177,11 +181,30 @@ namespace RepoZ.Api.Common.Git
 			_detectors?.ForEach(w => w.Stop());
 		}
 
+		public void IgnoreByPath(string path)
+		{
+			_repositoryIgnoreStore.IgnoreByPath(path);
+			_repositoryInformationAggregator.RemoveByPath(path);
+		}
+
+		private void CreateRepositoryObserver(Repository repo, string path)
+		{
+			var observer = _repositoryObserverFactory.Create();
+			observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
+			_repositoryObservers.Add(path, observer);
+
+			observer.OnChange += OnRepositoryObserverChange;
+			observer.Start();
+		}
+
 		private void OnRepositoryChangeDetected(Repository repo)
 		{
 			string path = repo?.Path;
 
 			if (string.IsNullOrEmpty(path))
+				return;
+
+			if (_repositoryIgnoreStore.IsIgnored(repo.Path))
 				return;
 
 			if (!_repositoryInformationAggregator.HasRepository(path))
@@ -196,16 +219,6 @@ namespace RepoZ.Api.Common.Git
 			OnChangeDetected?.Invoke(this, repo);
 
 			_repositoryInformationAggregator.Add(repo);
-		}
-
-		private void CreateRepositoryObserver(Repository repo, string path)
-		{
-			var observer = _repositoryObserverFactory.Create();
-			observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
-			_repositoryObservers.Add(path, observer);
-
-			observer.OnChange += OnRepositoryObserverChange;
-			observer.Start();
 		}
 
 		private void OnRepositoryObserverChange(Repository repository)
@@ -225,6 +238,9 @@ namespace RepoZ.Api.Common.Git
 		private void OnRepositoryDeletionDetected(string repoPath)
 		{
 			if (string.IsNullOrEmpty(repoPath))
+				return;
+
+			if (_repositoryIgnoreStore.IsIgnored(repoPath))
 				return;
 
 			DestroyRepositoryObserver(repoPath);

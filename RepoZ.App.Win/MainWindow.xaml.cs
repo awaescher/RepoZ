@@ -21,14 +21,16 @@ namespace RepoZ.App.Win
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private IRepositoryActionProvider _repositoryActionProvider;
+		private readonly IRepositoryActionProvider _repositoryActionProvider;
+		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
+		private readonly DefaultRepositoryMonitor _monitor;
 		private bool _closeOnDeactivate = true;
-		private DefaultRepositoryMonitor _monitor;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
 			IRepositoryMonitor repositoryMonitor,
 			IRepositoryActionProvider repositoryActionProvider,
+			IRepositoryIgnoreStore repositoryIgnoreStore,
 			IAppSettingsService appSettingsService)
 		{
 			InitializeComponent();
@@ -43,8 +45,8 @@ namespace RepoZ.App.Win
 				ShowScanningState(_monitor.Scanning);
 			}
 
-			_repositoryActionProvider = repositoryActionProvider;
-
+			_repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
+			_repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
 			lstRepositories.ItemsSource = aggregator.Repositories;
 			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
 			view.CollectionChanged += View_CollectionChanged;
@@ -181,6 +183,16 @@ namespace RepoZ.App.Win
 		private void ScanButton_Click(object sender, RoutedEventArgs e)
 		{
 			_monitor.ScanForLocalRepositoriesAsync();
+		}
+
+		private void ClearButton_Click(object sender, RoutedEventArgs e)
+		{
+			_monitor.Reset();
+		}
+
+		private void ResetIgnoreRulesButton_Click(object sender, RoutedEventArgs e)
+		{
+			_repositoryIgnoreStore.Reset();
 		}
 
 		private void UpdateButton_Click(object sender, RoutedEventArgs e)

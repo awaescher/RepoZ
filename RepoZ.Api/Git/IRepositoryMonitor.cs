@@ -18,5 +18,7 @@ namespace RepoZ.Api.Git
         void Reset();
 
 		Task ScanForLocalRepositoriesAsync();
+
+		void IgnoreByPath(string path);
 	}
 }
