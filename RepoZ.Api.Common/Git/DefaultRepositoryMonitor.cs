@@ -189,12 +189,16 @@ namespace RepoZ.Api.Common.Git
 
 		private void CreateRepositoryObserver(Repository repo, string path)
 		{
-			var observer = _repositoryObserverFactory.Create();
-			observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
-			_repositoryObservers.Add(path, observer);
+			if (!_repositoryObservers.ContainsKey(path))
+			{
+				var observer = _repositoryObserverFactory.Create();
+				observer.Setup(repo, DelayGitStatusAfterFileOperationMilliseconds);
+				_repositoryObservers.Add(path, observer);
 
-			observer.OnChange += OnRepositoryObserverChange;
-			observer.Start();
+				observer.OnChange += OnRepositoryObserverChange;
+			}
+
+			_repositoryObservers[path].Start();
 		}
 
 		private void OnRepositoryChangeDetected(Repository repo)
