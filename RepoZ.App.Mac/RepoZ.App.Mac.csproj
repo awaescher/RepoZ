@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\LibGit2Sharp.NativeBinaries.1.0.165\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.165\build\LibGit2Sharp.NativeBinaries.props')" />
+  <Import Project="..\packages\LibGit2Sharp.NativeBinaries.1.0.252\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.252\build\LibGit2Sharp.NativeBinaries.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,10 +10,10 @@
     <RootNamespace>RepoZ.App.Mac</RootNamespace>
     <AssemblyName>RepoZ</AssemblyName>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
-    <UseXamMacFullFramework>true</UseXamMacFullFramework>
     <ReleaseVersion>4.0</ReleaseVersion>
     <ApplicationIcon>..\_res\App.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,13 +61,26 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Mac" />
-    <Reference Include="LibGit2Sharp">
-      <HintPath>..\packages\LibGit2Sharp.Portable.0.24.10\lib\net40\LibGit2Sharp.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="LibGit2Sharp">
+      <HintPath>..\packages\LibGit2Sharp.0.25.4\lib\netstandard2.0\LibGit2Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Loader">
+      <HintPath>..\packages\System.Runtime.Loader.4.0.0\lib\netstandard1.5\System.Runtime.Loader.dll</HintPath>
+    </Reference>
+    <Reference Include="AsyncIO">
+      <HintPath>..\packages\AsyncIO.0.1.26.0\lib\netstandard1.3\AsyncIO.dll</HintPath>
+    </Reference>
+    <Reference Include="NetMQ">
+      <HintPath>..\packages\NetMQ.4.0.0.1\lib\netstandard1.3\NetMQ.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -134,24 +147,24 @@
       <Project>{8104948C-EB24-496B-B15B-D769535B7DAB}</Project>
       <Name>RepoZ.Api.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RepoZ.Api.Mac\RepoZ.Api.Mac.csproj">
-      <Project>{A314F9CB-5108-4065-AFB6-42799099B188}</Project>
-      <Name>RepoZ.Api.Mac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj">
       <Project>{49AD5E2A-E0E6-40CC-84A6-34DA81D93311}</Project>
       <Name>RepoZ.Ipc</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <NativeReference Include="..\_ref\libgit2-1196807.dylib">
-      <Kind>Dynamic</Kind>
-      <SmartLink>False</SmartLink>
-    </NativeReference>
+    <ProjectReference Include="..\RepoZ.Api.Mac\RepoZ.Api.Mac.csproj">
+      <Project>{87194AC0-C529-4848-9690-DC8CBF157E5E}</Project>
+      <Name>RepoZ.Api.Mac</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\StatusBarImage.png" />
     <BundleResource Include="Resources\StatusBarImage%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <NativeReference Include="..\_ref\libgit2-4aecb64.dylib">
+      <Kind>Dynamic</Kind>
+      <SmartLink>False</SmartLink>
+    </NativeReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
