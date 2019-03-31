@@ -292,19 +292,16 @@ namespace RepoZ.App.Win
 			if (e.Key == Key.Down && txtFilter.IsFocused)
 				lstRepositories.Focus();
 
-			if (Debugger.IsAttached)
+			// show/hide the titlebar to move the window for screenshots, for example
+			if (e.Key == Key.F11)
 			{
-				// show/hide the titlebar to move the window for screenshots, for example
-				if (e.Key == Key.F11)
-				{
-					var titlebarVisible = SourceChord.FluentWPF.AcrylicWindow.GetShowTitleBar(this);
-					SourceChord.FluentWPF.AcrylicWindow.SetShowTitleBar(this, !titlebarVisible);
-				}
-
-				// keep window open on deactivate to make screeshots, for example
-				if (e.Key == Key.F12)
-					_closeOnDeactivate = !_closeOnDeactivate;
+				var titlebarVisible = SourceChord.FluentWPF.AcrylicWindow.GetShowTitleBar(this);
+				SourceChord.FluentWPF.AcrylicWindow.SetShowTitleBar(this, !titlebarVisible);
 			}
+
+			// keep window open on deactivate to make screeshots, for example
+			if (e.Key == Key.F12)
+				_closeOnDeactivate = !_closeOnDeactivate;
 		}
 
 		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
