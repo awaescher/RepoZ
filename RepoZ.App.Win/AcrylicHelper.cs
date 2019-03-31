@@ -16,7 +16,7 @@ namespace RepoZ.App.Win
 		public static void EnableBlur(Visual visual)
 		{
 			var hwnd = (HwndSource)PresentationSource.FromVisual(visual);
-			WindowsCompositionHelper.EnableBlur(hwnd.Handle);
+			EnableBlur(hwnd.Handle);
 		}
 
 		public static void EnableBlur(IntPtr hwnd)
