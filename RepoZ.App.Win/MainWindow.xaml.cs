@@ -12,16 +12,17 @@ using MahApps.Metro.Controls;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
+using RepoZ.App.Win.Controls;
 
 namespace RepoZ.App.Win
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : MetroWindow
+	public partial class MainWindow : Window
 	{
 		private IRepositoryActionProvider _repositoryActionProvider;
-
+		private bool _closeOnDeactivate = true;
 		private DefaultRepositoryMonitor _monitor;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
@@ -75,7 +76,9 @@ namespace RepoZ.App.Win
 		protected override void OnDeactivated(EventArgs e)
 		{
 			base.OnDeactivated(e);
-			Hide();
+
+			if (_closeOnDeactivate)
+				Hide();
 		}
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -209,8 +212,8 @@ namespace RepoZ.App.Win
 
 		private void PlaceFormToLowerRight()
 		{
-			Top = SystemParameters.WorkArea.Height - Height - 1;
-			Left = SystemParameters.WorkArea.Width - Width - 1;
+			Top = SystemParameters.WorkArea.Height - Height;
+			Left = SystemParameters.WorkArea.Width - Width;
 		}
 
 		private void ShowUpdateIfAvailable()
@@ -218,6 +221,9 @@ namespace RepoZ.App.Win
 			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
 			UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : $"Version {App.AvailableUpdate.VersionString} is available.";
 			UpdateButton.Tag = App.AvailableUpdate;
+
+			var parent = (Grid)UpdateButton.Parent;
+			parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
 		}
 
 		private MenuItem CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
@@ -242,7 +248,7 @@ namespace RepoZ.App.Win
 				}
 			};
 
-			var item = new MenuItem()
+			var item = new AcrylicMenuItem()
 			{
 				Header = action.Name,
 				IsEnabled = action.CanExecute
@@ -285,6 +291,17 @@ namespace RepoZ.App.Win
 
 			if (e.Key == Key.Down && txtFilter.IsFocused)
 				lstRepositories.Focus();
+
+			// show/hide the titlebar to move the window for screenshots, for example
+			if (e.Key == Key.F11)
+			{
+				var titlebarVisible = SourceChord.FluentWPF.AcrylicWindow.GetShowTitleBar(this);
+				SourceChord.FluentWPF.AcrylicWindow.SetShowTitleBar(this, !titlebarVisible);
+			}
+
+			// keep window open on deactivate to make screeshots, for example
+			if (e.Key == Key.F12)
+				_closeOnDeactivate = !_closeOnDeactivate;
 		}
 
 		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)

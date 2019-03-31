@@ -41,7 +41,7 @@ namespace RepoZ.Api.Win.IO
 			{
 				yield return GetPrimaryAction(singleRepository);
 				yield return GetSecondaryAction(singleRepository);
-				yield return CreateProcessRunnerAction("Open in Windows Command Prompt (cmd.exe)", "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
+				yield return CreateProcessRunnerAction("Open in Windows Command Prompt", "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
 
 				string bashSubpath = @"Git\git-bash.exe";
 				string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
