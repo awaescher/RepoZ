@@ -252,6 +252,68 @@ namespace Tests.UI
 			}
 		}
 
+		public class MatchesFilterMethod : RepositoryViewTests
+		{
+			[Test]
+			public void Returns_True_If_Filter_Is_Empty()
+			{
+				_view.MatchesFilter("").Should().Be(true);
+			}
+
+			[Test]
+			public void Can_Filter_By_Name_Implicit()
+			{
+				_repo.Name = "Hello World";
+				_view.MatchesFilter("lo wo").Should().Be(true);
+			}
+
+			[Test]
+			public void Can_Filter_By_Name_Explicit()
+			{
+				_repo.Name = "Hello World";
+				_view.MatchesFilter("n lo wo").Should().Be(true);
+			}
+
+			[Test]
+			public void Can_Filter_By_Branch()
+			{
+				_repo.Name = "No Match Here";
+				_repo.CurrentBranch = "feature/Test";
+				_view.MatchesFilter("b feat").Should().Be(true);
+			}
+
+			[Test]
+			public void Can_Filter_By_Path()
+			{
+				_repo.Name = "No Match Here";
+				_repo.Path = @"C:\Test\Path";
+				_view.MatchesFilter(@"p C:\").Should().Be(true);
+			}
+
+			[Test]
+			public void Returns_True_If_Filter_Is_Empty_Except_Prefix()
+			{
+				// "n ", "b ", "p " can be used to filter for name, branch and path
+				_view.MatchesFilter("b ").Should().Be(true);
+			}
+
+			[Test]
+			public void Returns_False_If_Prefix_Misses_Space()
+			{
+				// should be interpreted as "b" search term without prefix
+				_repo.Name = "xyz";
+				_view.MatchesFilter("b").Should().Be(false);
+			}
+
+			[Test]
+			public void Returns_False_If_Prefix_Comes_With_Two_Spaces()
+			{
+				// trimming "b " leads to " master" which is not trimmed by design
+				_repo.CurrentBranch = "master";
+				_view.MatchesFilter("b  master").Should().Be(false);
+			}
+		}
+
 		public class WasFoundProperty : RepositoryViewTests
 		{
 			[Test]

@@ -7,6 +7,7 @@ using RepoZ.Api.Git;
 using System.Diagnostics;
 using System.Globalization;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace RepoZ.Api.Git
 {
@@ -24,6 +25,65 @@ namespace RepoZ.Api.Git
 		{
 			Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 			UpdateStampUtc = DateTime.UtcNow;
+		}
+
+		public bool MatchesRegexFilter(string pattern) => MatchesFilter(pattern, useRegex: true);
+
+		public bool MatchesFilter(string filter) => MatchesFilter(filter, useRegex: false);
+
+		private bool MatchesFilter(string filter, bool useRegex)
+		{
+			if (string.IsNullOrEmpty(filter))
+				return true;
+
+			string filterProperty = null;
+
+			if (filter.StartsWith("n ", StringComparison.OrdinalIgnoreCase))
+				filterProperty = Name;
+			else if (filter.StartsWith("b ", StringComparison.OrdinalIgnoreCase))
+				filterProperty = CurrentBranch;
+			else if (filter.StartsWith("p ", StringComparison.OrdinalIgnoreCase))
+				filterProperty = Path;
+
+			if (filterProperty == null)
+				filterProperty = Name;
+			else
+				filter = filter.Substring(2);
+
+			if (string.IsNullOrEmpty(filter))
+				return true;
+
+			if (useRegex)
+				return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
+
+			return filterProperty.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
+		}
+
+		public override bool Equals(object obj)
+		{
+			var other = obj as RepositoryView;
+
+			if (other != null)
+				return other.Repository.Equals(this.Repository);
+
+			return object.ReferenceEquals(this, obj);
+		}
+
+		private void EnsureStatusCache()
+		{
+			var repositoryStatusCode = Repository.GetStatusCode();
+
+			// compare the status code and not the full status string because the latter one is heavier to calculate
+			bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
+
+			if (!canTakeFromCache)
+			{
+				var compressor = new StatusCompressor(new StatusCharacterMap());
+				_cachedRepositoryStatus = compressor.Compress(Repository);
+				_cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
+
+				_cachedRepositoryStatusCode = repositoryStatusCode;
+			}
 		}
 
 		public string Name => (Repository.Name ?? "") + (IsSynchronizing ? SyncAppendix : "");
@@ -92,31 +152,5 @@ namespace RepoZ.Api.Git
 
 		public DateTime UpdateStampUtc { get; private set; }
 
-		public override bool Equals(object obj)
-		{
-			var other = obj as RepositoryView;
-
-			if (other != null)
-				return other.Repository.Equals(this.Repository);
-
-			return object.ReferenceEquals(this, obj);
-		}
-
-		private void EnsureStatusCache()
-		{
-			var repositoryStatusCode = Repository.GetStatusCode();
-
-			// compare the status code and not the full status string because the latter one is heavier to calculate
-			bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
-
-			if (!canTakeFromCache)
-			{
-				var compressor = new StatusCompressor(new StatusCharacterMap());
-				_cachedRepositoryStatus = compressor.Compress(Repository);
-				_cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
-
-				_cachedRepositoryStatusCode = repositoryStatusCode;
-			}
-		}
 	}
 }

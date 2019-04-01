@@ -311,10 +311,7 @@ namespace RepoZ.App.Win
 
 		private bool FilterRepositories(object item)
 		{
-			if (String.IsNullOrEmpty(txtFilter.Text))
-				return true;
-			else
-				return (item as RepositoryView).Name.IndexOf(txtFilter.Text, StringComparison.OrdinalIgnoreCase) > -1;
+			return (item as RepositoryView)?.MatchesFilter(txtFilter.Text) ?? false;
 		}
 
 		private void txtFilter_Finish(object sender, EventArgs e)
