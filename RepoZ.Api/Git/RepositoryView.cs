@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RepoZ.Api.Git;
 using System.Diagnostics;
-using System.Globalization;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 
 namespace RepoZ.Api.Git
 {
 	[DebuggerDisplay("{Name} @{Path}")]
-	public class RepositoryView : INotifyPropertyChanged
+	public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 	{
 		private string _cachedRepositoryStatusCode;
 		private string _cachedRepositoryStatus;
@@ -27,43 +20,9 @@ namespace RepoZ.Api.Git
 			UpdateStampUtc = DateTime.UtcNow;
 		}
 
-		public bool MatchesRegexFilter(string pattern) => MatchesFilter(pattern, useRegex: true);
-
-		public bool MatchesFilter(string filter) => MatchesFilter(filter, useRegex: false);
-
-		private bool MatchesFilter(string filter, bool useRegex)
-		{
-			if (string.IsNullOrEmpty(filter))
-				return true;
-
-			string filterProperty = null;
-
-			if (filter.StartsWith("n ", StringComparison.OrdinalIgnoreCase))
-				filterProperty = Name;
-			else if (filter.StartsWith("b ", StringComparison.OrdinalIgnoreCase))
-				filterProperty = CurrentBranch;
-			else if (filter.StartsWith("p ", StringComparison.OrdinalIgnoreCase))
-				filterProperty = Path;
-
-			if (filterProperty == null)
-				filterProperty = Name;
-			else
-				filter = filter.Substring(2);
-
-			if (string.IsNullOrEmpty(filter))
-				return true;
-
-			if (useRegex)
-				return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
-
-			return filterProperty.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
-		}
-
 		public override bool Equals(object obj)
 		{
-			var other = obj as RepositoryView;
-
-			if (other != null)
+			if (obj is RepositoryView other)
 				return other.Repository.Equals(this.Repository);
 
 			return object.ReferenceEquals(this, obj);

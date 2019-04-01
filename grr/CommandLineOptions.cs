@@ -99,6 +99,12 @@ namespace grr
 			help.AddPostOptionsLine("⁞  grr cd Repo\t\tNavigates to the main directory of a given repository");
 			help.AddPostOptionsLine("⁞  grr open Repo\tOpens the main directory of a given repository (in Windows Explorer)");
 			help.AddPostOptionsLine("");
+			help.AddPostOptionsLine("Filter targets:");
+			help.AddPostOptionsLine("⁞  grr Repo\t\tBy default, filters are applied to the repository name");
+			help.AddPostOptionsLine("⁞  grr \"n Repo\"\t\tThe prefix \"n \" forces RepoZ to filter for repository names (optional)");
+			help.AddPostOptionsLine("⁞  grr \"b master\"\tThe prefix \"b \" forces RepoZ to filter for repository branches");
+			help.AddPostOptionsLine("⁞  grr \"p C:\\\"\t\tThe prefix \"p \" forces RepoZ to filter for repository paths");
+			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("File operations in given repositories:");
 			help.AddPostOptionsLine("⁞  grr list Repo *.txt\tLists all text files in the given repository matching the filter *.txt");
 			help.AddPostOptionsLine("⁞  grr open Repo *.sln\tOpens the Visual Studio solutions in the given repository");
