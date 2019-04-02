@@ -120,8 +120,8 @@ namespace RepoZ.App.Win
 			container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
 			container.Register<IGitCommander, ProcessExecutingGitCommander>();
 			container.Register<IAppSettingsService, FileAppSettingsService>();
-			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>();
-			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>();
+			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
+			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

@@ -105,6 +105,7 @@ namespace RepoZ.App.Mac
             container.Register<IGitCommander, ProcessExecutingGitCommander>();
             container.Register<IAppSettingsService, FileAppSettingsService>();
             container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
+            container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
         }
 
         private void UseRepositoryMonitor(TinyIoCContainer container)

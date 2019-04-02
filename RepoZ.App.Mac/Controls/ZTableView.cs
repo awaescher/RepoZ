@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using AppKit;
 using CoreGraphics;
 using Foundation;
@@ -12,6 +13,7 @@ namespace RepoZ.App.Mac.Controls
     public class ZTableView : NSTableView
     {
         public event EventHandler<nint> RepositoryActionRequested;
+        public event EventHandler<ContextMenuArguments> PrepareContextMenu;
 
         public ZTableView(NSCoder coder) : base(coder)
         {
@@ -33,10 +35,35 @@ namespace RepoZ.App.Mac.Controls
         {
             base.MouseDown(theEvent);
 
-            var locationInView = this.ConvertPointToView(theEvent.LocationInWindow, null);
-            var row = GetRow(locationInView);
+            var isDoubleClick = theEvent.ClickCount > 1;
+
+            if (isDoubleClick)
+            {
+                var row = GetRowByMouseEventArgs(theEvent);
+                if (row > -1)
+                    RepositoryActionRequested?.Invoke(this, row);
+            }
+        }
+
+        public override void RightMouseDown(NSEvent theEvent)
+        {
+            base.RightMouseDown(theEvent);
+
+            var row = GetRowByMouseEventArgs(theEvent);
             if (row > -1)
-                RepositoryActionRequested?.Invoke(this, row);
+            {
+                var menu = new NSMenu();
+                PrepareContextMenu?.Invoke(this, new ContextMenuArguments(menu, row));
+                if (menu.Items.Any())
+                {
+                    SelectRow(row, byExtendingSelection: false);
+
+                    // TODO location and synchronization state
+                    var locationInView = this.ConvertPointToView(theEvent.LocationInWindow, null);
+                    locationInView.X -= 27;
+                    menu.PopUpMenu(null, locationInView, this);
+                }
+            }
         }
 
         public override void KeyDown(NSEvent theEvent)
@@ -50,6 +77,25 @@ namespace RepoZ.App.Mac.Controls
             base.KeyDown(theEvent);
         }
 
+        private nint GetRowByMouseEventArgs(NSEvent args)
+        {
+            var locationInView = this.ConvertPointToView(args.LocationInWindow, null);
+            return GetRow(locationInView);
+        }
+
         protected List<ushort> SelectorKeys { get; } = new List<ushort> { (ushort)NSKey.Space, (ushort)NSKey.Return, (ushort)NSKey.KeypadEnter };
+    }
+
+    public class ContextMenuArguments
+    {
+        public ContextMenuArguments(NSMenu menu, nint row)
+        {
+            Menu = menu ?? throw new ArgumentNullException(nameof(menu));
+            Row = row;
+        }
+
+        public nint Row { get; }
+
+        public NSMenu Menu { get; }
     }
 }
