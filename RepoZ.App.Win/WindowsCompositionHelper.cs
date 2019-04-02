@@ -39,7 +39,7 @@ namespace RepoZ.App.Win
 			}
 			catch (Exception)
 			{
-
+				// don't do anything in case this did not work. We won't have blur then ...
 			}
 		}
 
