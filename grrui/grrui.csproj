@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Compile Include="..\grr\ConsoleExtensions.cs" Link="ConsoleExtensions.cs" />
-    <Compile Include="..\RepoZ.Api\Git\StatusCharacterMap.cs" Link="StatusCharacterMap.cs" />
   </ItemGroup>
 
   <ItemGroup>
