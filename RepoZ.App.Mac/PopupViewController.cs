@@ -11,12 +11,14 @@ namespace RepoZ.App.Mac
 {
     public partial class PopupViewController : AppKit.NSViewController
     {
-        private const int MENU_AUTOFETCH = 4711;
-        private const int MENU_PINGBACK = 4712;
+        private const int MENU_MANAGE = 4711;
+        private const int MENU_AUTOFETCH = 4712;
+        private const int MENU_PINGBACK = 4713;
 
         private IRepositoryInformationAggregator _aggregator;
         private IRepositoryMonitor _monitor;
         private IAppSettingsService _appSettingsService;
+        private IRepositoryIgnoreStore _repositoryIgnoreStore;
 
         #region Constructors
 
@@ -65,6 +67,7 @@ namespace RepoZ.App.Mac
 
             _monitor = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryMonitor>();
             _appSettingsService = TinyIoC.TinyIoCContainer.Current.Resolve<IAppSettingsService>();
+            _repositoryIgnoreStore = TinyIoC.TinyIoCContainer.Current.Resolve<IRepositoryIgnoreStore>();
 
             // Do any additional setup after loading the view.
             var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
@@ -174,7 +177,8 @@ namespace RepoZ.App.Mac
             MenuButton.Menu = new NSMenu();
 
             var topLevelItems = new NSMenuItem[] {
-                new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
+
+                new NSMenuItem("Manage repositories") { Tag = MENU_MANAGE},
                 new NSMenuItem("Auto fetch") { Tag = MENU_AUTOFETCH },
                 NSMenuItem.SeparatorItem,
                 new NSMenuItem("Ping back ♥︎") { Tag = MENU_PINGBACK },
@@ -186,12 +190,25 @@ namespace RepoZ.App.Mac
             foreach (var item in topLevelItems)
                 MenuButton.Menu.AddItem(item);
 
+            var manageItems = new NSMenuItem[] {
+                new NSMenuItem("Scan mac", async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
+                new NSMenuItem("Clear", (s, e) => _monitor.Reset()),
+                NSMenuItem.SeparatorItem,
+                new NSMenuItem("Reset ignore rules", (s, e) => _repositoryIgnoreStore.Reset())
+            };
+
             var autoFetchItems = new NSMenuItem[] {
                 new NSMenuItem(nameof(AutoFetchMode.Off), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
                 new NSMenuItem(nameof(AutoFetchMode.Discretely), HandleAutoFetchChange) { Identifier = AutoFetchMode.Discretely.ToString() },
                 new NSMenuItem(nameof(AutoFetchMode.Adequate), HandleAutoFetchChange) { Identifier = AutoFetchMode.Adequate.ToString() },
                 new NSMenuItem(nameof(AutoFetchMode.Aggresive), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
             };
+
+            var manageRepositoriesItem = MenuButton.Menu.ItemWithTag(MENU_MANAGE);
+            manageRepositoriesItem.Submenu = new NSMenu();
+
+            foreach (var item in manageItems)
+                manageRepositoriesItem.Submenu.AddItem(item);
 
             var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
             autoFetchItem.Submenu = new NSMenu();

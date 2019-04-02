@@ -9,13 +9,18 @@ namespace RepoZ.Api.Mac
 {
 	public class MacRepositoryActionProvider : IRepositoryActionProvider
 	{
-        private IRepositoryWriter _repositoryWriter;
-        private IErrorHandler _errorHandler;
+        private readonly IRepositoryWriter _repositoryWriter;
+        private readonly IRepositoryMonitor _repositoryMonitor;
+        private readonly IErrorHandler _errorHandler;
 
-        public MacRepositoryActionProvider(IRepositoryWriter repositoryWriter, IErrorHandler errorHandler)
+        public MacRepositoryActionProvider(
+            IRepositoryWriter repositoryWriter,
+            IRepositoryMonitor repositoryMonitor,
+            IErrorHandler errorHandler)
         {
-            _repositoryWriter = repositoryWriter;
-            _errorHandler = errorHandler;
+            _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
+            _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
+            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
         }
 
         public RepositoryAction GetPrimaryAction(Repository repository)
@@ -39,6 +44,7 @@ namespace RepoZ.Api.Mac
             yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
+            yield return CreateActionForMultipleRepositories("Ignore", repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
         }
 
         private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AppKit;
 using Foundation;
@@ -20,6 +21,7 @@ namespace RepoZ.App.Mac.Model
             DataSource = datasource;
 
             TableView.RepositoryActionRequested += TableView_RepositoryActionRequested;
+            TableView.PrepareContextMenu += TableView_PrepareContextMenu;
             DataSource.CollectionChanged += ReloadTableView;
 
             Humanizer = new HardcodededMiniHumanizer();
@@ -28,6 +30,7 @@ namespace RepoZ.App.Mac.Model
 		protected override void Dispose(bool disposing)
 		{
             TableView.RepositoryActionRequested -= TableView_RepositoryActionRequested;
+            TableView.PrepareContextMenu -= TableView_PrepareContextMenu;
             DataSource.CollectionChanged -= ReloadTableView;
 
             base.Dispose(disposing);
@@ -69,14 +72,18 @@ namespace RepoZ.App.Mac.Model
             InvokeRepositoryAction(rowIndex);
         }
 
+
+        void TableView_PrepareContextMenu(object sender, ContextMenuArguments arguments)
+        {
+            PrepareContextMenu(arguments);
+        }
+
         public void InvokeRepositoryAction(nint rowIndex)
         {
             var repositoryView = DataSource.GetRepositoryViewByIndex((int)rowIndex);
 
             if (repositoryView == null)
                 return;
-
-            System.Diagnostics.Debug.WriteLine($"Clicked row {rowIndex} which was: {repositoryView.Name}");
 
             RepositoryAction action;
 
@@ -86,6 +93,28 @@ namespace RepoZ.App.Mac.Model
                 action = RepositoryActionProvider.GetPrimaryAction(repositoryView.Repository);
 
             action?.Action?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void PrepareContextMenu(ContextMenuArguments arguments)
+        {
+            if (arguments.Row < 0)
+                return;
+
+            var repositoryView = DataSource.GetRepositoryViewByIndex((int)arguments.Row);
+
+            if (repositoryView == null)
+                return;
+
+            // TODO multiselection?
+            var repositories = new List<Repository>() { repositoryView.Repository };
+
+            foreach (var actionProvider in RepositoryActionProvider.GetContextMenuActions(repositories))
+            {
+                if (actionProvider.BeginGroup)
+                    arguments.Menu.AddItem(NSMenuItem.SeparatorItem);
+
+                arguments.Menu.AddItem(new NSMenuItem(actionProvider.Name, (s, e) => actionProvider.Action(null, null)));
+            }
         }
 
         public ZTableView TableView { get; }

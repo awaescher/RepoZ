@@ -110,9 +110,13 @@
 							Style="{DynamicResource MaterialDesignFlatButton}">
 							<Button.ContextMenu>
 								<controls:AcrylicContextMenu x:Name="SettingsMenu" >
-									<controls:AcrylicMenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
+									<controls:AcrylicMenuItem Header="🛠️ Manage repositories"  >
+										<controls:AcrylicMenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
+										<controls:AcrylicMenuItem Header="🧽 Clear" Click="ClearButton_Click"/>
+										<Separator/>
+										<controls:AcrylicMenuItem Header="⛔ Reset ignore rules" Click="ResetIgnoreRulesButton_Click" />
+									</controls:AcrylicMenuItem>
 									<controls:AcrylicMenuItem Header="🕒 Auto fetch" x:Name="AutoFetchMenuItem" >
-										
 										<controls:AcrylicMenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
 										<controls:AcrylicMenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
 										<controls:AcrylicMenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
