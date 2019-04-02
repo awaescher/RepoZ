@@ -43,7 +43,8 @@ namespace Specs
 				new DefaultRepositoryInformationAggregator(
 					new StatusCompressor(new StatusCharacterMap()),
 					new DirectThreadDispatcher()),
-				new Mock<IAutoFetchHandler>().Object
+				new Mock<IAutoFetchHandler>().Object,
+				new Mock<IRepositoryIgnoreStore>().Object
 				);
 
 			_monitor.DelayGitRepositoryStatusAfterCreationMilliseconds = 100;
