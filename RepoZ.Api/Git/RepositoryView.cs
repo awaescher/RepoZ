@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RepoZ.Api.Git;
 using System.Diagnostics;
-using System.Globalization;
 using System.ComponentModel;
 
 namespace RepoZ.Api.Git
 {
 	[DebuggerDisplay("{Name} @{Path}")]
-	public class RepositoryView : INotifyPropertyChanged
+	public class RepositoryView : IRepositoryView, INotifyPropertyChanged
 	{
 		private string _cachedRepositoryStatusCode;
 		private string _cachedRepositoryStatus;
@@ -24,6 +18,31 @@ namespace RepoZ.Api.Git
 		{
 			Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 			UpdateStampUtc = DateTime.UtcNow;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is RepositoryView other)
+				return other.Repository.Equals(this.Repository);
+
+			return object.ReferenceEquals(this, obj);
+		}
+
+		private void EnsureStatusCache()
+		{
+			var repositoryStatusCode = Repository.GetStatusCode();
+
+			// compare the status code and not the full status string because the latter one is heavier to calculate
+			bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
+
+			if (!canTakeFromCache)
+			{
+				var compressor = new StatusCompressor(new StatusCharacterMap());
+				_cachedRepositoryStatus = compressor.Compress(Repository);
+				_cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
+
+				_cachedRepositoryStatusCode = repositoryStatusCode;
+			}
 		}
 
 		public string Name => (Repository.Name ?? "") + (IsSynchronizing ? SyncAppendix : "");
@@ -92,31 +111,5 @@ namespace RepoZ.Api.Git
 
 		public DateTime UpdateStampUtc { get; private set; }
 
-		public override bool Equals(object obj)
-		{
-			var other = obj as RepositoryView;
-
-			if (other != null)
-				return other.Repository.Equals(this.Repository);
-
-			return object.ReferenceEquals(this, obj);
-		}
-
-		private void EnsureStatusCache()
-		{
-			var repositoryStatusCode = Repository.GetStatusCode();
-
-			// compare the status code and not the full status string because the latter one is heavier to calculate
-			bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
-
-			if (!canTakeFromCache)
-			{
-				var compressor = new StatusCompressor(new StatusCharacterMap());
-				_cachedRepositoryStatus = compressor.Compress(Repository);
-				_cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
-
-				_cachedRepositoryStatusCode = repositoryStatusCode;
-			}
-		}
 	}
 }

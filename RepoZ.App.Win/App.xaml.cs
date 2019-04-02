@@ -185,13 +185,13 @@ namespace RepoZ.App.Win
 		{
 			var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
 			return aggregator.Repositories
-				.Where(r => string.IsNullOrEmpty(repositoryNamePattern) || Regex.IsMatch(r.Name, repositoryNamePattern, RegexOptions.IgnoreCase))
+				.Where(r => r.MatchesRegexFilter(repositoryNamePattern))
 				.Select(r => new Ipc.Repository
-					{
-						Name = r.Name,
-						BranchWithStatus = r.BranchWithStatus,
-						Path = r.Path
-					})
+				{
+					Name = r.Name,
+					BranchWithStatus = r.BranchWithStatus,
+					Path = r.Path
+				})
 				.ToArray();
 		}
 

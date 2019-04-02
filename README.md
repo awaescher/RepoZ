@@ -48,7 +48,7 @@ With **grr**, the information from RepoZ can be brought to any command line tool
 
 It supports ...
  - listing all repositories found in RepoZ including their branch and status information
- - filtering for repository names (to list or jump) by RegEx patterns, like `grr [M.*]`
+ - filtering for repository [names, branches or paths](https://github.com/awaescher/RepoZ/issues/68#issuecomment-478764341) (to list or jump) by RegEx patterns, like `grr [M.*]`
  - jumping directly to a repository path by adding the `cd` command, like `grr cd MyRepo`
  - opening a file browser in a repository from anywhere in your command prompt with `grr open MyRepo`
  - list files in a repository following a pattern with `grr list MyRepo *.sln` (add `-r` for recursive search)

@@ -12,7 +12,7 @@ namespace grrui.Model
 		private static StatusCharacterMap _map;
 		private RepositoryView[] _repositoryViews;
 
-		public RepositoriesView(IEnumerable<Repository> repositories)
+		public RepositoriesView(IEnumerable<RepoZ.Ipc.Repository> repositories)
 		{
 			var repositoryCount = repositories.Count();
 			_repositoryViews = new RepositoryView[repositoryCount];
@@ -59,7 +59,7 @@ namespace grrui.Model
 		}
 
 		public RepositoryView[] Repositories => _repositoryViews
-			.Where(r => r.DisplayText.IndexOf(Filter ?? "", 0, StringComparison.OrdinalIgnoreCase) >= 0)
+			.Where(r => r.MatchesFilter(Filter ?? ""))
 			.ToArray();
 
 		public string Filter { get; set; }
