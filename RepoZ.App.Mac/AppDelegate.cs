@@ -110,8 +110,6 @@ namespace RepoZ.App.Mac
 
         private void UseRepositoryMonitor(TinyIoCContainer container)
         {
-            var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
-
             _repositoryMonitor = container.Resolve<IRepositoryMonitor>();
             _repositoryMonitor.Observe();
         }

@@ -112,9 +112,9 @@ namespace RepoZ.App.Mac.Model
             foreach (var actionProvider in RepositoryActionProvider.GetContextMenuActions(repositories))
             {
                 if (actionProvider.BeginGroup)
-                    arguments.Menu.AddItem(NSMenuItem.SeparatorItem);
+                    arguments.MenuItems.Add(NSMenuItem.SeparatorItem);
 
-                arguments.Menu.AddItem(new NSMenuItem(actionProvider.Name, (s, e) => actionProvider.Action(s, e)));
+                arguments.MenuItems.Add(new NSMenuItem(actionProvider.Name, (s, e) => actionProvider.Action(s, e)));
             }
         }
 

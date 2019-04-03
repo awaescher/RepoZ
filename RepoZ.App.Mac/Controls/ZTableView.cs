@@ -61,13 +61,20 @@ namespace RepoZ.App.Mac.Controls
                     selectedRowIndexes = SelectedRows.AsEnumerable().ToList();
                 }
 
-                var menu = new NSMenu();
-                PrepareContextMenu?.Invoke(this, new ContextMenuArguments(menu, selectedRowIndexes));
-                if (menu.Items.Any())
+                var menuItems = new List<NSMenuItem>();
+                PrepareContextMenu?.Invoke(this, new ContextMenuArguments(menuItems, selectedRowIndexes));
+
+                if (menuItems.Any())
                 {
+                    var menu = new NSMenu();
+
+                    foreach (var item in menuItems)
+                        menu.AddItem(item);
+
                     // TODO location and synchronization state
                     var locationInView = this.ConvertPointToView(theEvent.LocationInWindow, null);
-                    locationInView.X -= 27;
+                    locationInView.X -= 26;
+
                     menu.PopUpMenu(null, locationInView, this);
                 }
             }
@@ -95,14 +102,14 @@ namespace RepoZ.App.Mac.Controls
 
     public class ContextMenuArguments
     {
-        public ContextMenuArguments(NSMenu menu, List<nuint> rows)
+        public ContextMenuArguments(List<NSMenuItem> menuItems, List<nuint> rows)
         {
-            Menu = menu ?? throw new ArgumentNullException(nameof(menu));
+            MenuItems = menuItems ?? throw new ArgumentNullException(nameof(menuItems));
             Rows = rows;
         }
 
         public List<nuint> Rows { get; }
 
-        public NSMenu Menu { get; }
+        public List<NSMenuItem> MenuItems { get; }
     }
 }
