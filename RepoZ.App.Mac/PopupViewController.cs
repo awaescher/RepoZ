@@ -217,7 +217,7 @@ namespace RepoZ.App.Mac
                 autoFetchItem.Submenu.AddItem(item);
 
             var pingbackItems = new NSMenuItem[] {
-                new NSMenuItem("Star RepoZ on GitHub", (s, e) => Navigate("https://github.com/awaescher/RepoZ")),
+                new NSMenuItem("Star RepoZ on GitHub", (s, e) => Navigate("https://github.com/awaescher/RepoZ")) { },
                 new NSMenuItem("Follow @Waescher", (s, e) => Navigate("https://twitter.com/Waescher")),
                 NSMenuItem.SeparatorItem,
                 new NSMenuItem("Buy me a coffee", (s, e) => Navigate("https://www.buymeacoffee.com/awaescher"))

@@ -31,7 +31,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="315" height="310"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="78" rowSizeStyle="automatic" viewBased="YES" id="xKt-lX-EKK" customClass="ZTableView">
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" autosaveColumns="NO" rowHeight="78" rowSizeStyle="automatic" viewBased="YES" id="xKt-lX-EKK" customClass="ZTableView">
                                 <rect key="frame" x="0.0" y="0.0" width="315" height="310"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>

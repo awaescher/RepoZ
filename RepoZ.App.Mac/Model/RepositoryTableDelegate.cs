@@ -97,23 +97,24 @@ namespace RepoZ.App.Mac.Model
 
         public void PrepareContextMenu(ContextMenuArguments arguments)
         {
-            if (arguments.Row < 0)
+            if (!arguments.Rows.Any())
                 return;
 
-            var repositoryView = DataSource.GetRepositoryViewByIndex((int)arguments.Row);
+            var repositories = arguments.Rows
+                .Select(i => DataSource.GetRepositoryViewByIndex((int)i))
+                .Where(view => view.Repository != null)
+                .Select(view => view.Repository)
+                .ToList();
 
-            if (repositoryView == null)
+            if (!repositories.Any())
                 return;
-
-            // TODO multiselection?
-            var repositories = new List<Repository>() { repositoryView.Repository };
 
             foreach (var actionProvider in RepositoryActionProvider.GetContextMenuActions(repositories))
             {
                 if (actionProvider.BeginGroup)
                     arguments.Menu.AddItem(NSMenuItem.SeparatorItem);
 
-                arguments.Menu.AddItem(new NSMenuItem(actionProvider.Name, (s, e) => actionProvider.Action(null, null)));
+                arguments.Menu.AddItem(new NSMenuItem(actionProvider.Name, (s, e) => actionProvider.Action(s, e)));
             }
         }
 

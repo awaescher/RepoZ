@@ -38,7 +38,10 @@ namespace RepoZ.Api.Mac
             var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
             if (singleRepository != null)
+            {
                 yield return GetPrimaryAction(singleRepository);
+                yield return GetSecondaryAction(singleRepository);
+            }
             
             yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);

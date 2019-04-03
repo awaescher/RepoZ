@@ -52,12 +52,19 @@ namespace RepoZ.App.Mac.Controls
             var row = GetRowByMouseEventArgs(theEvent);
             if (row > -1)
             {
+                var selectedRowIndexes = SelectedRows.AsEnumerable().ToList();
+
+                if (!selectedRowIndexes.Contains((nuint)row))
+                {
+                    var extendSelection = UiStateHelper.CommandKeyDown;
+                    SelectRow(row, extendSelection);
+                    selectedRowIndexes = SelectedRows.AsEnumerable().ToList();
+                }
+
                 var menu = new NSMenu();
-                PrepareContextMenu?.Invoke(this, new ContextMenuArguments(menu, row));
+                PrepareContextMenu?.Invoke(this, new ContextMenuArguments(menu, selectedRowIndexes));
                 if (menu.Items.Any())
                 {
-                    SelectRow(row, byExtendingSelection: false);
-
                     // TODO location and synchronization state
                     var locationInView = this.ConvertPointToView(theEvent.LocationInWindow, null);
                     locationInView.X -= 27;
@@ -88,13 +95,13 @@ namespace RepoZ.App.Mac.Controls
 
     public class ContextMenuArguments
     {
-        public ContextMenuArguments(NSMenu menu, nint row)
+        public ContextMenuArguments(NSMenu menu, List<nuint> rows)
         {
             Menu = menu ?? throw new ArgumentNullException(nameof(menu));
-            Row = row;
+            Rows = rows;
         }
 
-        public nint Row { get; }
+        public List<nuint> Rows { get; }
 
         public NSMenu Menu { get; }
     }

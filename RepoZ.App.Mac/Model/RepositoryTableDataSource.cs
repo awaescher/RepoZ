@@ -53,7 +53,7 @@ namespace RepoZ.App.Mac.Model
             Func<RepositoryView, bool> filterFunc = r => true;
 
             if (!string.IsNullOrEmpty(CurrentFilter))
-                filterFunc = r => r.Name.IndexOf(CurrentFilter, StringComparison.OrdinalIgnoreCase) > -1;
+                filterFunc = r => r.MatchesFilter(CurrentFilter);
 
             _sortedRepositories = _repositories
                 .OrderBy(r => r.Name)
