@@ -3438,7 +3438,7 @@
 											<key>GID</key>
 											<integer>0</integer>
 											<key>PATH</key>
-											<string>/Users/daw/Source/RepoZ/_ref/macOS/net.sodacore.RepoZ.plist</string>
+											<string>../_ref/macOS/net.sodacore.RepoZ.plist</string>
 											<key>PATH_TYPE</key>
 											<integer>0</integer>
 											<key>PERMISSIONS</key>
