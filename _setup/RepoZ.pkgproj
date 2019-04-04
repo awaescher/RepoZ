@@ -3440,7 +3440,7 @@
 											<key>PATH</key>
 											<string>../_ref/macOS/net.sodacore.RepoZ.plist</string>
 											<key>PATH_TYPE</key>
-											<integer>0</integer>
+											<integer>1</integer>
 											<key>PERMISSIONS</key>
 											<integer>493</integer>
 											<key>TYPE</key>

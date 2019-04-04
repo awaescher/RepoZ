@@ -7,7 +7,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>net.sodacore.repoz</string>
 	<key>CFBundleVersion</key>
-	<string>103</string>
+	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.12</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -33,6 +33,6 @@
 	<key>LSMultipleInstancesProhibited</key>
 	<true/>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0</string>
+	<string>1.0</string>
 </dict>
 </plist>

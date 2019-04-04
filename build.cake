@@ -1,4 +1,5 @@
 #addin "Cake.FileHelpers"
+#addin "Cake.Git"
 #tool "nsis"
 #tool "nuget:?package=OpenCover"
 #tool "nuget:?package=NUnit.ConsoleRunner"
@@ -60,15 +61,24 @@ Task("SetVersion")
 			UpdateAssemblyInfo = true
 		});
 
+		var commits = GitLog(".", int.MaxValue);
+
 		_appVersion = $"{gitVersion.Major}.{gitVersion.Minor}";
+		var buildNumber = commits.Count.ToString();
 		var fullVersion = gitVersion.AssemblySemVer;
 		
 		Information($"AppVersion:\t{_appVersion}");
 		Information($"FullVersion:\t{fullVersion}");
+		Information($"Build {buildNumber} (= number of commits in git history)");
 
 		ReplaceRegexInFiles("./**/AssemblyInfo.*", "(?<=AssemblyBuildDate\\(\")([0-9\\-\\:T]+)(?=\"\\))", DateTime.Now.ToString("s"));
 		ReplaceRegexInFiles("./**/*.csproj", "(?<=<ReleaseVersion>).*?(?=</ReleaseVersion>)", _appVersion);
 		ReplaceRegexInFiles("./**/*.csproj", "(?<=<Version>).*?(?=</Version>)", fullVersion);
+
+        // update Apple versions
+        ReplaceRegexInFiles("**/Info.plist", "(?<=<key>CFBundleShortVersionString</key>\\n*\\s*<string>).*?(?=</string>)", _appVersion);
+        ReplaceRegexInFiles("**/Info.plist", "(?<=<key>CFBundleVersion</key>\\n*\\s*<string>).*?(?=</string>)", buildNumber);
+
 	});
 
 Task("Build")
