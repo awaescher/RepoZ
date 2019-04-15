@@ -5,6 +5,7 @@
 #tool "nuget:?package=NUnit.ConsoleRunner"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,6 +182,7 @@ Task("CompileSetup")
 {	
 	if (system == "win")
 	{
+		// NSIS Windows Setup
 		MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
 		{
 			Defines = new Dictionary<string, string>
@@ -188,6 +190,18 @@ Task("CompileSetup")
 				{ "PRODUCT_VERSION", _appVersion }
 			}
 		});
+
+		// Chocolatey
+		ReplaceRegexInFiles("_setup/choco/RepoZ.nuspec", "{PRODUCT_VERSION}", _appVersion);
+		ReplaceRegexInFiles("_setup/choco/tools/chocolateyinstall.ps1", "{PRODUCT_VERSION}", _appVersion);
+		
+		var settings = new ChocolateyPackSettings()
+		{
+			OutputDirectory = Directory($"_output/{system}"),
+			Version = _appVersion
+		};
+
+		ChocolateyPack("_setup/choco/RepoZ.nuspec", settings);
 	}
 	else
 	{

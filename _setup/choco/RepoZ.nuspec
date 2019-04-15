@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata>
+    <id>repoz</id>
+    <title>RepoZ</title>
+    <version>{PRODUCT_VERSION}</version>
+    <authors>Andreas Wäscher</authors>
+    <owners>Andreas Wäscher</owners>
+    <summary>A zero-conf git repository hub with Windows Explorer- &amp; CLI-enhancements</summary>
+    <description>
+RepoZ provides a quick overview of the repositories on your development machine including their current branch and a short status information. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never loose track of your work along the way.
+RepoZ will not compete with your favorite git clients: It's not about working within a repository, it's a new way to use all of your repositories to make your daily work easier.
+	</description>
+    <projectUrl>https://github.com/awaescher/RepoZ</projectUrl>
+    <packageSourceUrl>https://github.com/awaescher/RepoZ</packageSourceUrl>
+    <tags>repoz grr grrui git repository</tags>
+  </metadata>
+  <files>
+	<file src="tools\**" target="tools" />
+    <file src="..\..\_output\win\RepoZ.{PRODUCT_VERSION}.Setup.exe" target="tools" />
+  </files>
+</package>
