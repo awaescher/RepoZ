@@ -200,6 +200,7 @@ Task("CompileSetup")
 		{
 			OutputDirectory = _outputDir,
 			Authors = { "Andreas Wäscher" },
+			Tags = { "repoz", "git", "repository", "development", "foss", "utilities", "productivity" },
 			Version = _appVersion
 		};
 

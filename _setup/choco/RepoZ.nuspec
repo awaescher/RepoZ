@@ -7,7 +7,6 @@
     <authors>Andreas Wäscher</authors>
     <owners>Andreas Wäscher</owners>
     <summary>A zero-conf git repository hub with Windows Explorer- &amp; CLI-enhancements</summary>
-	<tags>repoz grr grrui git repository</tags>
     <projectUrl>https://github.com/awaescher/RepoZ</projectUrl>
     <packageSourceUrl>https://github.com/awaescher/RepoZ</packageSourceUrl>
 	<iconUrl>https://raw.githubusercontent.com/awaescher/RepoZ/master/_res/Icon.png</iconUrl>
