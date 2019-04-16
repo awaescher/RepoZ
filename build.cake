@@ -192,12 +192,13 @@ Task("CompileSetup")
 		});
 
 		// Chocolatey
-		ReplaceRegexInFiles("_setup/choco/RepoZ.nuspec", "{PRODUCT_VERSION}", _appVersion);
-		ReplaceRegexInFiles("_setup/choco/tools/chocolateyinstall.ps1", "{PRODUCT_VERSION}", _appVersion);
+		ReplaceTextInFiles("_setup/choco/RepoZ.nuspec", "{PRODUCT_VERSION}", _appVersion);
+		ReplaceTextInFiles("_setup/choco/tools/chocolateyinstall.ps1", "{PRODUCT_VERSION}", _appVersion);
 		
 		var settings = new ChocolateyPackSettings()
 		{
 			OutputDirectory = Directory($"_output/{system}"),
+			Authors = { "Andreas Wäscher" },
 			Version = _appVersion
 		};
 
@@ -206,7 +207,7 @@ Task("CompileSetup")
 	else
 	{
 		// update the pkgproj file and run packagesbuild
-		ReplaceRegexInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
+		ReplaceTextInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
 		StartProcess("packagesbuild", "--verbose _setup/RepoZ.pkgproj");
 	}
 });
