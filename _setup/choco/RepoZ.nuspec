@@ -13,7 +13,7 @@ RepoZ will not compete with your favorite git clients: It's not about working wi
 	</description>
     <projectUrl>https://github.com/awaescher/RepoZ</projectUrl>
     <packageSourceUrl>https://github.com/awaescher/RepoZ</packageSourceUrl>
-	<iconUrl>https://raw.githubusercontent.com/awaescher/RepoZ/master/_res/App.ico</iconUrl>
+	<iconUrl>https://raw.githubusercontent.com/awaescher/RepoZ/master/_res/Icon.png</iconUrl>
 	<releaseNotes>https://github.com/awaescher/RepoZ/releases</releaseNotes>
 	<licenseUrl>https://raw.githubusercontent.com/awaescher/RepoZ/master/LICENSE</licenseUrl>
     <tags>repoz grr grrui git repository</tags>
