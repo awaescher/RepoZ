@@ -1,11 +1,11 @@
-﻿$ErrorActionPreference = 'Stop';
+$ErrorActionPreference = 'Stop';
 $toolsDir = Split-Path -parent $MyInvocation.MyCommand.Definition
 
 $packageArgs = @{
   packageName   = $env:ChocolateyPackageName
   unzipLocation = $toolsDir
   fileType      = 'EXE'
-  file			= Join-Path $toolsDir 'RepoZ.{PRODUCT_VERSION}.Setup.exe'
+  file			= Join-Path $toolsDir 'RepoZ {PRODUCT_VERSION} Setup.exe'
 
   softwareName  = 'RepoZ*'
 

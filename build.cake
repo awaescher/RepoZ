@@ -148,6 +148,9 @@ Task("Publish")
 	.IsDependentOn("Test")
 	.Does(() => 
 {
+	// copy RepoZ main app files
+	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
+	
 	// publish netcore apps
 	var settings = new DotNetCorePublishSettings
 	{
@@ -158,9 +161,7 @@ Task("Publish")
 	};
 	DotNetCorePublish("./grr/grr.csproj", settings);
 	DotNetCorePublish("./grrui/grrui.csproj", settings);
-		
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
-
+	
 	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
 	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
 	if (system == "mac")
@@ -197,7 +198,7 @@ Task("CompileSetup")
 		
 		var settings = new ChocolateyPackSettings()
 		{
-			OutputDirectory = Directory($"_output/{system}"),
+			OutputDirectory = _outputDir,
 			Authors = { "Andreas Wäscher" },
 			Version = _appVersion
 		};
