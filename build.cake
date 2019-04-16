@@ -5,6 +5,7 @@
 #tool "nuget:?package=NUnit.ConsoleRunner"
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,6 +148,9 @@ Task("Publish")
 	.IsDependentOn("Test")
 	.Does(() => 
 {
+	// copy RepoZ main app files
+	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
+	
 	// publish netcore apps
 	var settings = new DotNetCorePublishSettings
 	{
@@ -157,9 +161,7 @@ Task("Publish")
 	};
 	DotNetCorePublish("./grr/grr.csproj", settings);
 	DotNetCorePublish("./grrui/grrui.csproj", settings);
-		
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
-
+	
 	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
 	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
 	if (system == "mac")
@@ -181,6 +183,7 @@ Task("CompileSetup")
 {	
 	if (system == "win")
 	{
+		// NSIS Windows Setup
 		MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
 		{
 			Defines = new Dictionary<string, string>
@@ -188,11 +191,25 @@ Task("CompileSetup")
 				{ "PRODUCT_VERSION", _appVersion }
 			}
 		});
+
+		// Chocolatey
+		ReplaceTextInFiles("_setup/choco/RepoZ.nuspec", "{PRODUCT_VERSION}", _appVersion);
+		ReplaceTextInFiles("_setup/choco/tools/chocolateyinstall.ps1", "{PRODUCT_VERSION}", _appVersion);
+		
+		var settings = new ChocolateyPackSettings()
+		{
+			OutputDirectory = _outputDir,
+			Authors = { "Andreas Wäscher" },
+			Tags = { "repoz", "git", "repository", "development", "foss", "utilities", "productivity" },
+			Version = _appVersion
+		};
+
+		ChocolateyPack("_setup/choco/RepoZ.nuspec", settings);
 	}
 	else
 	{
 		// update the pkgproj file and run packagesbuild
-		ReplaceRegexInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
+		ReplaceTextInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
 		StartProcess("packagesbuild", "--verbose _setup/RepoZ.pkgproj");
 	}
 });

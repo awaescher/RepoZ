@@ -1,3 +1,7 @@
+﻿From: https://github.com/awaescher/RepoZ/blob/master/LICENSE
+
+LICENSE
+
 MIT License
 
 Copyright (c) 2019 Andreas Wäscher
