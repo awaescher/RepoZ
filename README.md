@@ -18,6 +18,8 @@ RepoZ will not compete with your favorite git clients, so keep them. It's not ab
 
 📦  [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest version!
 
+🍫  Available on [chocolatey](https://chocolatey.org/packages/repoz) as well, just use `choco install repoz`.
+
 ## The Hub ![windows][windows] ![macos][macOS]
 The hub provides a quick overview of your repositories including their current branch and a short status information. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer or macOS Finder, opening a command line tool in a given repository and checking out git branches.
 
