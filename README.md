@@ -16,7 +16,7 @@ It's populating itself as you work with git. It does not get in the way and does
 
 RepoZ will not compete with your favorite git clients, so keep them. It's not about working within a repository: It's a new way to use all of your repositories to make your daily work easier.
 
-📦  [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to download the latest version!
+📦  [Check the Releases page](https://github.com/awaescher/RepoZ/releases) to **download** the latest version and see **what's new**!
 
 🍫  Available on [chocolatey](https://chocolatey.org/packages/repoz) as well, just use `choco install repoz`.
 
