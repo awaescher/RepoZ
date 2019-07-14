@@ -136,17 +136,41 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 				process.OutputDataReceived += (sender, e) =>
 				{
 					if (e.Data == null)
-						outputWaitHandle.Set();
+					{
+						try
+						{
+							outputWaitHandle.Set();
+						}
+						catch (ObjectDisposedException)
+						{
+							// if the wait handle was disposed,
+							// we can ignore the call to .Set()
+						}
+					}
 					else
+					{
 						output.AppendLine(e.Data);
+					}
 				};
 
 				process.ErrorDataReceived += (sender, e) =>
 				{
 					if (e.Data == null)
-						errorWaitHandle.Set();
+					{
+						try
+						{
+							errorWaitHandle.Set();
+						}
+						catch (ObjectDisposedException)
+						{
+							// if the wait handle was disposed,
+							// we can ignore the call to .Set()
+						}
+					}
 					else
+					{
 						error.AppendLine(e.Data);
+					}
 				};
 
 				try
