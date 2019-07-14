@@ -121,6 +121,13 @@ namespace Tests.Helper
 			return this;
 		}
 
+		public RepositoryBuilder WithStashCount(int stashCount)
+		{
+			_repository.StashCount = stashCount;
+			return this;
+		}
+
+
 		public Repository Build() => _repository;
 
 		public Repository BuildFullFeatured()

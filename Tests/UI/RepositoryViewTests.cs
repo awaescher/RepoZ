@@ -130,6 +130,22 @@ namespace Tests.UI
 			}
 		}
 
+		public class StashCountProperty : RepositoryViewTests
+		{
+			[Test]
+			public void Returns_The_Repository_Value_As_String()
+			{
+				_view.StashCount.Should().Be(_repo.StashCount.ToString());
+			}
+
+			[Test]
+			public void Returns_An_Empty_String_For_Null()
+			{
+				_repo.StashCount = null;
+				_view.StashCount.Should().BeEmpty();
+			}
+		}
+
 		public class LocalMissingProperty : RepositoryViewTests
 		{
 			[Test]

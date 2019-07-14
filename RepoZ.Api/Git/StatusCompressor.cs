@@ -28,6 +28,7 @@ namespace RepoZ.Api.Git
 
 			var printASR = (repository.LocalAdded ?? 0) + (repository.LocalStaged ?? 0) + (repository.LocalRemoved ?? 0) > 0;
 			var printUMM = (repository.LocalUntracked ?? 0) + (repository.LocalModified ?? 0) + (repository.LocalMissing ?? 0) > 0;
+			var printStashCount = (repository.StashCount ?? 0) > 0;
 
 			var builder = new StringBuilder();
 
@@ -77,6 +78,14 @@ namespace RepoZ.Api.Git
 					builder.Append("| ");
 
 				builder.AppendFormat("+{0} ~{1} -{2}", repository.LocalUntracked ?? 0, repository.LocalModified ?? 0, repository.LocalMissing ?? 0);
+			}
+
+			if (printStashCount)
+			{
+				if (builder.Length > 0)
+					builder.Append(" ");
+
+				builder.Append(_statusCharacterMap.StashSign + repository.StashCount.ToString());
 			}
 
 			return builder.ToString();

@@ -79,6 +79,8 @@ namespace RepoZ.Api.Git
 
 		public int? LocalIgnored { get; set; }
 
+		public int? StashCount{ get; set; }
+
 		public string GetStatusCode()
 		{
 			return string.Join("-", new object[]{
@@ -91,7 +93,8 @@ namespace RepoZ.Api.Git
 				LocalAdded ?? 0,
 				LocalStaged ?? 0,
 				LocalRemoved ?? 0,
-				LocalIgnored ?? 0
+				LocalIgnored ?? 0,
+				StashCount ?? 0
 			});
 		}
 	}

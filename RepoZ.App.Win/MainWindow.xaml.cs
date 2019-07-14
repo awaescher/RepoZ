@@ -338,7 +338,7 @@ namespace RepoZ.App.Win
 			return $@"
 RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
-    master  {statusCharacterMap.IdenticalSign}   +1   ~2   -3   |   +4   ~5   -6
+    master  {statusCharacterMap.IdenticalSign}   +1   ~2   -3   |   +4   ~5   -6   {statusCharacterMap.StashSign}7
 
 
 master
@@ -358,9 +358,12 @@ In this case, the local branch is at the same commit level as the remote branch.
 ... indicates that the local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
 
 
-
 The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
 The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
+
+{statusCharacterMap.StashSign}<num>
+... indicates that there are stashed changes available.
+
 
 Please note:
 This information reflects the state of the remote tracked branch after the last ""git fetch"".
