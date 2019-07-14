@@ -77,6 +77,8 @@ namespace RepoZ.Api.Git
 
 		public bool WasFound => Repository.WasFound;
 
+		public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
+
 		public override int GetHashCode() => Repository.GetHashCode();
 
 		public Repository Repository { get; }

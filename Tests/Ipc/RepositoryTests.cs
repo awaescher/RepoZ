@@ -15,6 +15,17 @@ namespace Tests.Ipc
 				r.Name.Should().Be("Name");
 				r.BranchWithStatus.Should().Be("Branch");
 				r.Path.Should().Be("Path");
+				r.HasUnpushedChanges.Should().BeFalse();
+			}
+
+			[Test]
+			public void Deserializes_With_Four_Arguments()
+			{
+				var r = Repository.FromString("Name::Branch::Path::1");
+				r.Name.Should().Be("Name");
+				r.BranchWithStatus.Should().Be("Branch");
+				r.Path.Should().Be("Path");
+				r.HasUnpushedChanges.Should().BeTrue();
 			}
 
 			[Test]
@@ -25,9 +36,9 @@ namespace Tests.Ipc
 			}
 
 			[Test]
-			public void Returns_Null_For_More_Than_Three_Arguments()
+			public void Returns_Null_For_Too_Much_Arguments()
 			{
-				var r = Repository.FromString("Name::Branch::Path::Mode");
+				var r = Repository.FromString("Name::Branch::Path::1::Mode");
 				r.Should().BeNull();
 			}
 		}
@@ -35,14 +46,14 @@ namespace Tests.Ipc
 		public class ToStringMethod : RepositoryTests
 		{
 			[Test]
-			public void Serializes_With_Three_Arguments()
+			public void Serializes_With_Four_Arguments()
 			{
 				var r = new Repository { Name = "N", BranchWithStatus = "B", Path = "P" };
-				r.ToString().Should().Be("N::B::P");
+				r.ToString().Should().Be("N::B::P::0"); // 0 is "HasUnpushedChanges"
 			}
 
 			[Test]
-			public void Returns_Null_For_Less_Than_Three_Arguments()
+			public void Returns_Null_For_Less_Than_Mandatory_Arguments()
 			{
 				var r = new Repository { Name = "N", BranchWithStatus = "B" };
 				r.ToString().Should().Be("");

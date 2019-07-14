@@ -328,6 +328,22 @@ namespace Tests.UI
 				_repo.CurrentBranch = "master";
 				_view.MatchesFilter("b  master").Should().Be(false);
 			}
+
+			[Test]
+			public void Returns_True_For_ToDo_Filter_With_UnpushedChanges()
+			{
+				_repo.StashCount = 1;
+				_repo.HasUnpushedChanges.Should().Be(true);
+				_view.MatchesFilter("todo").Should().Be(true);
+			}
+
+			[Test]
+			public void Returns_False_For_ToDo_Filter_Without_UnpushedChanges()
+			{
+				_repo = new Repository();
+				_repo.HasUnpushedChanges.Should().Be(false);
+				new RepositoryView(_repo).MatchesFilter("todo").Should().Be(false);
+			}
 		}
 
 		public class WasFoundProperty : RepositoryViewTests
