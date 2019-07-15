@@ -162,17 +162,19 @@ namespace RepoZ.App.Win
 		private void EnsureWindowHandle(Window window)
 		{
 			// We noticed that the hotkey registration at app start causes a high CPU utilization if the main window was not shown before.
-			// To fix this, we need to make the window visible. However, to prevent flickering we set the opacity to 0.0 for a short time.
+			// To fix this, we need to make the window visible. However, to prevent flickering we move the window out of the screen bounds to show and hide it.
+
+			var originalLeft = window.Left;
 
 			try
 			{
-				window.Opacity = 0.0;
+				window.Left = -9999;
 				window.Show();
 				window.Hide();
 			}
 			finally
 			{
-				window.Opacity = 1.0;
+				Task.Delay(50).ContinueWith(t => Dispatcher.BeginInvoke((Action)(() => window.Left = originalLeft)));
 			}
 		}
 
