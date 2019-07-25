@@ -19,6 +19,7 @@ namespace RepoZ.App.Mac
         private IRepositoryMonitor _monitor;
         private IAppSettingsService _appSettingsService;
         private IRepositoryIgnoreStore _repositoryIgnoreStore;
+        private HeaderMetrics _initialHeaderMetrics;
 
         #region Constructors
 
@@ -106,6 +107,16 @@ namespace RepoZ.App.Mac
 
         private void ShowUpdateIfAvailable()
         {
+            if (_initialHeaderMetrics == null)
+            {
+                _initialHeaderMetrics = new HeaderMetrics()
+                {
+                    MenuButtonLeft = MenuButton.Frame.Left,
+                    UpdateButtonLeft = UpdateButton.Frame.Left,
+                    SearchBoxWidth = SearchBox.Frame.Width
+                };
+            }
+
             bool hasUpdate = AppDelegate.AvailableUpdate != null;
 
             // to debug
@@ -118,7 +129,13 @@ namespace RepoZ.App.Mac
             {
                 var additionalSpace = UpdateButton.Frame.Left - MenuButton.Frame.Left;
                 MenuButton.Frame = UpdateButton.Frame;
-                SearchBox.Frame = new CoreGraphics.CGRect(SearchBox.Frame.X, SearchBox.Frame.Y, SearchBox.Frame.Width + additionalSpace, SearchBox.Frame.Height);
+                SearchBox.Frame = SearchBox.Frame.WithWidth(SearchBox.Frame.Width + additionalSpace);
+            }
+            else
+            {
+                UpdateButton.Frame = UpdateButton.Frame.WithLeft(_initialHeaderMetrics.UpdateButtonLeft);
+                MenuButton.Frame = MenuButton.Frame.WithLeft(_initialHeaderMetrics.MenuButtonLeft);
+                SearchBox.Frame = SearchBox.Frame.WithWidth(_initialHeaderMetrics.SearchBoxWidth);
             }
         }
 
@@ -217,7 +234,7 @@ namespace RepoZ.App.Mac
                 autoFetchItem.Submenu.AddItem(item);
 
             var pingbackItems = new NSMenuItem[] {
-                new NSMenuItem("Star RepoZ on GitHub", (s, e) => Navigate("https://github.com/awaescher/RepoZ")) { },
+                new NSMenuItem("Star RepoZ on GitHub", (s, e) => Navigate("https://github.com/awaescher/RepoZ")),
                 new NSMenuItem("Follow @Waescher", (s, e) => Navigate("https://twitter.com/Waescher")),
                 NSMenuItem.SeparatorItem,
                 new NSMenuItem("Buy me a coffee", (s, e) => Navigate("https://www.buymeacoffee.com/awaescher"))
@@ -319,5 +336,12 @@ Note that the status might be shorter if possible to improve readablility.
         }
 
         public new PopupView View => (PopupView)base.View;
+
+        private class HeaderMetrics
+        {
+            public nfloat UpdateButtonLeft { get; set; }
+            public nfloat MenuButtonLeft { get; set; }
+            public nfloat SearchBoxWidth { get; set; }
+        }
     }
 }

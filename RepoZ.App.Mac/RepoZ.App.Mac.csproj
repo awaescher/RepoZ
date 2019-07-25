@@ -133,6 +133,7 @@
     <Compile Include="Controls\ZTableView.cs" />
     <Compile Include="StringCommandHandler.cs" />
     <Compile Include="TinyIoC.cs" />
+    <Compile Include="GeometryHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />
