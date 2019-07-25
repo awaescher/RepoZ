@@ -52,16 +52,19 @@ namespace RepoZ.App.Mac.Model
             if (repositoryView == null)
                 return cell;
 
-            var labels = cell.Subviews.OfType<NSTextField>().ToArray();
+            var labels = cell.Subviews.OfType<NSControl>().ToArray();
+            var buttons = cell.Subviews.OfType<NSButton>().ToArray();
             var RepositoryLabel = labels.Single(l => l.Identifier == "RepositoryLabel");
             var CurrentBranchLabel = labels.Single(l => l.Identifier == "CurrentBranchLabel");
-            var StatusLabel = labels.Single(l => l.Identifier == "StatusLabel");
+            var StatusLabel = buttons.Single(l => l.Identifier == "StatusLabel");
 
             RepositoryLabel.StringValue = repositoryView.Name;
             RepositoryLabel.ToolTip = repositoryView.Path;
             CurrentBranchLabel.StringValue = repositoryView.CurrentBranch;
-            StatusLabel.StringValue = repositoryView.Status;
+            StatusLabel.Title = repositoryView.Status;
             StatusLabel.ToolTip = repositoryView.UpdateStampUtc.ToLocalTime().ToShortTimeString();
+            StatusLabel.SizeToFit();
+            StatusLabel.SetBoundsOrigin(new CoreGraphics.CGPoint(CurrentBranchLabel.Bounds.Left, StatusLabel.Bounds.Top));
             // would be nice, but does not update: Humanizer.HumanizeTimestamp(repositoryView.UpdateStampUtc.ToLocalTime());
 
             return cell;
@@ -71,7 +74,6 @@ namespace RepoZ.App.Mac.Model
         {
             InvokeRepositoryAction(rowIndex);
         }
-
 
         void TableView_PrepareContextMenu(object sender, ContextMenuArguments arguments)
         {
