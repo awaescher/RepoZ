@@ -6,8 +6,9 @@
         public static Repository FromString(string value)
         {
             var parts = value?.Split(new string[] { "::" }, System.StringSplitOptions.None);
+			var partsCount = parts?.Length ?? 0;
 
-			var validFormat = parts.Length == 3 || parts.Length == 4;
+			var validFormat = partsCount == 3 || partsCount == 4;
 			if (!validFormat)
                 return null;
 
