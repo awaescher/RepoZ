@@ -16,6 +16,9 @@ namespace RepoZ.Api.Git
 			if (string.IsNullOrEmpty(filter))
 				return true;
 
+			if (filter.Replace(".*", "").Equals("todo", StringComparison.OrdinalIgnoreCase))
+				return repositoryView.HasUnpushedChanges;
+
 			string filterProperty = null;
 
 			// note, these are used in grr.RegexFilter as well

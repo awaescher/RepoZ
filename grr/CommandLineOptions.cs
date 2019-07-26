@@ -99,6 +99,9 @@ namespace grr
 			help.AddPostOptionsLine("⁞  grr cd Repo\t\tNavigates to the main directory of a given repository");
 			help.AddPostOptionsLine("⁞  grr open Repo\tOpens the main directory of a given repository (in Windows Explorer)");
 			help.AddPostOptionsLine("");
+			help.AddPostOptionsLine("Predefined filters:");
+			help.AddPostOptionsLine("⁞  grr todo\t\tLists repositories with unpushed changes (file changes, stashes and more)");
+			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("Filter targets:");
 			help.AddPostOptionsLine("⁞  grr Repo\t\tBy default, filters are applied to the repository name");
 			help.AddPostOptionsLine("⁞  grr \"n Repo\"\t\tThe prefix \"n \" forces RepoZ to filter for repository names (optional)");
