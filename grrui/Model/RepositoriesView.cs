@@ -55,8 +55,8 @@ namespace grrui.Model
 				.Replace(_map.ArrowUpSign, "«")
 				.Replace(_map.EllipsesSign, "~")
 				.Replace(_map.IdenticalSign, "=")
-				.Replace(_map.NoUpstreamSign, "*")
-				.Replace(_map.StashSign, "$");
+        .Replace(_map.NoUpstreamSign, "*")
+				.Replace(_map.StashSign, "|");
 		}
 
 		public RepositoryView[] Repositories => _repositoryViews
