@@ -175,7 +175,7 @@
                                     <TextBlock Text="{Binding CurrentBranch}"
                                                FontSize="13.5"
                                                Margin="8, 3, 8, 3" />
-                                    <Border Margin="2, 3, 8, 3"
+                                    <Border Margin="8, 5, 8, 3"
                                             Padding="6, 2, 6, 2"
                                             BorderThickness="0"
                                             Background="#14FFFFFF"
