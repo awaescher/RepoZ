@@ -36,6 +36,9 @@ namespace RepoZ.App.Mac
 		[Action ("SearchChanged:")]
 		partial void SearchChanged (Foundation.NSObject sender);
 
+		[Action ("StatusLabel:")]
+		partial void StatusLabel (Foundation.NSObject sender);
+
 		[Action ("UpdateButton_Click:")]
 		partial void UpdateButton_Click (Foundation.NSObject sender);
 		
