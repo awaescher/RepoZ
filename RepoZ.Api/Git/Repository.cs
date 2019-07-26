@@ -61,6 +61,15 @@ namespace RepoZ.Api.Git
 
 		public bool WasFound => !string.IsNullOrWhiteSpace(Path);
 
+		public bool HasUnpushedChanges =>	(AheadBy ?? 0) > 0 ||
+											(LocalUntracked ?? 0) > 0 ||
+											(LocalModified ?? 0) > 0 ||
+											(LocalMissing ?? 0) > 0 ||
+											(LocalAdded ?? 0) > 0 ||
+											(LocalStaged ?? 0) > 0 ||
+											(LocalRemoved ?? 0) > 0 ||
+											(StashCount ?? 0) > 0;
+
 		public int? AheadBy { get; set; }
 
 		public int? BehindBy { get; set; }
@@ -79,6 +88,8 @@ namespace RepoZ.Api.Git
 
 		public int? LocalIgnored { get; set; }
 
+		public int? StashCount{ get; set; }
+
 		public string GetStatusCode()
 		{
 			return string.Join("-", new object[]{
@@ -91,7 +102,8 @@ namespace RepoZ.Api.Git
 				LocalAdded ?? 0,
 				LocalStaged ?? 0,
 				LocalRemoved ?? 0,
-				LocalIgnored ?? 0
+				LocalIgnored ?? 0,
+				StashCount ?? 0
 			});
 		}
 	}

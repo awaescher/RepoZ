@@ -73,7 +73,11 @@ namespace RepoZ.Api.Git
 
 		public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? "";
 
+		public string StashCount => Repository.StashCount?.ToString() ?? "";
+
 		public bool WasFound => Repository.WasFound;
+
+		public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
 
 		public override int GetHashCode() => Repository.GetHashCode();
 

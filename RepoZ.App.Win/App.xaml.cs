@@ -190,6 +190,7 @@ namespace RepoZ.App.Win
 				{
 					Name = r.Name,
 					BranchWithStatus = r.BranchWithStatus,
+					HasUnpushedChanges = r.HasUnpushedChanges,
 					Path = r.Path
 				})
 				.ToArray();

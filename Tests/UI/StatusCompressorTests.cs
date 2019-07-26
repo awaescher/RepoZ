@@ -25,13 +25,20 @@ namespace Tests.UI
 		}
 
 		protected string Compress(Repository repo) => _compressor.Compress(repo);
+
 		protected string CompressWithBranch(Repository repo) => _compressor.CompressWithBranch(repo);
 
 		protected string Up => _characterMap.ArrowUpSign;
+
 		protected string Down => _characterMap.ArrowDownSign;
+
 		protected string Eq => _characterMap.IdenticalSign;
+
 		protected string NoUp => _characterMap.NoUpstreamSign;
+
 		protected string Ellipses => _characterMap.EllipsesSign;
+
+		protected string StashCount => _characterMap.StashSign;
 
 		public class CompressMethod : StatusCompressorTests
 		{
@@ -293,6 +300,50 @@ namespace Tests.UI
 					.Build();
 
 				Compress(repo).Should().Be($"{Down}7 {Up}15 +1 ~2 -3 | +4 ~5 -6");
+			}
+
+			[Test]
+			public void Returns_Stashed_Only_If_No_Other_Changes_Are_Present()
+			{
+				var repo = _builder
+					.WithCurrentBranch("master")
+					.WithUpstream()
+					.WithStashCount(7)
+					.Build();
+
+				Compress(repo).Should().Be($"{Eq} {StashCount}7");
+			}
+
+			[Test]
+			public void Returns_Stashed_With_Pipe_Separator_If_Other_Changes_Are_Present()
+			{
+				var repo = _builder
+					.WithCurrentBranch("master")
+					.WithUpstream()
+					.WithAheadBy(15)
+					.WithBehindBy(7)
+					.WithLocalAdded(1)
+					.WithLocalStaged(2)
+					.WithLocalRemoved(3)
+					.WithLocalUntracked(4)
+					.WithLocalModified(5)
+					.WithLocalMissing(6)
+					.WithStashCount(7)
+					.Build();
+
+				Compress(repo).Should().Be($"{Down}7 {Up}15 +1 ~2 -3 | +4 ~5 -6 {StashCount}7");
+			}
+
+			[Test]
+			public void Does_Not_Return_Stashes_If_Stash_Is_Empty()
+			{
+				var repo = _builder
+					.WithCurrentBranch("master")
+					.WithUpstream()
+					.WithStashCount(0)
+					.Build();
+
+				Compress(repo).Should().Be(Eq);
 			}
 		}
 

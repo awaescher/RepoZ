@@ -130,6 +130,22 @@ namespace Tests.UI
 			}
 		}
 
+		public class StashCountProperty : RepositoryViewTests
+		{
+			[Test]
+			public void Returns_The_Repository_Value_As_String()
+			{
+				_view.StashCount.Should().Be(_repo.StashCount.ToString());
+			}
+
+			[Test]
+			public void Returns_An_Empty_String_For_Null()
+			{
+				_repo.StashCount = null;
+				_view.StashCount.Should().BeEmpty();
+			}
+		}
+
 		public class LocalMissingProperty : RepositoryViewTests
 		{
 			[Test]
@@ -311,6 +327,22 @@ namespace Tests.UI
 				// trimming "b " leads to " master" which is not trimmed by design
 				_repo.CurrentBranch = "master";
 				_view.MatchesFilter("b  master").Should().Be(false);
+			}
+
+			[Test]
+			public void Returns_True_For_ToDo_Filter_With_UnpushedChanges()
+			{
+				_repo.StashCount = 1;
+				_repo.HasUnpushedChanges.Should().Be(true);
+				_view.MatchesFilter("todo").Should().Be(true);
+			}
+
+			[Test]
+			public void Returns_False_For_ToDo_Filter_Without_UnpushedChanges()
+			{
+				_repo = new Repository();
+				_repo.HasUnpushedChanges.Should().Be(false);
+				new RepositoryView(_repo).MatchesFilter("todo").Should().Be(false);
 			}
 		}
 

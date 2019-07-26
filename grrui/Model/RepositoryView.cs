@@ -22,5 +22,7 @@ namespace grrui.Model
 		public string CurrentBranch => Repository?.BranchWithStatus ?? "";
 
 		public string Path => Repository.Path ?? "";
+
+		public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
 	}
 }

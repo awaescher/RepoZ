@@ -121,6 +121,13 @@ namespace Tests.Helper
 			return this;
 		}
 
+		public RepositoryBuilder WithStashCount(int stashCount)
+		{
+			_repository.StashCount = stashCount;
+			return this;
+		}
+
+
 		public Repository Build() => _repository;
 
 		public Repository BuildFullFeatured()
@@ -137,6 +144,7 @@ namespace Tests.Helper
 			WithLocalRemoved(7);
 			WithLocalStaged(8);
 			WithLocalUntracked(9);
+			WithStashCount(10);
 			WithName("Repo");
 			WithPath("C:\\Develop\\Repo\\");
 

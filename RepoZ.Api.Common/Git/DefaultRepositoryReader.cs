@@ -77,7 +77,8 @@ namespace RepoZ.Api.Common.Git
 						LocalAdded = status?.Added.Count(),
 						LocalStaged = status?.Staged.Count(),
 						LocalRemoved = status?.Removed.Count(),
-						LocalIgnored = status?.Ignored.Count()
+						LocalIgnored = status?.Ignored.Count(),
+						StashCount = repo.Stashes?.Count() ?? 0
 					};
 				}
 			}
