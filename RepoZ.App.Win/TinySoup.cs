@@ -72,14 +72,13 @@ namespace TinySoup
 
 		internal async Task<IList<AvailableVersion>> CallWebServiceAsync(string method, string parameterString)
 		{
-			HttpClient client;
-
-			var uri = new Uri($"{URL}?method={method}&{parameterString}");
-
-			var serializer = new DataContractJsonSerializer(typeof(List<AvailableVersion>));
-
 			try
 			{
+				HttpClient client;
+
+				var uri = new Uri($"{URL}?method={method}&{parameterString}");
+
+				var serializer = new DataContractJsonSerializer(typeof(List<AvailableVersion>));
 				var proxyUri = new Uri(WebRequest.DefaultWebProxy.GetProxy(uri).AbsoluteUri);
 				var directAccess = proxyUri?.Authority?.Equals(uri.Authority) == true;
 
