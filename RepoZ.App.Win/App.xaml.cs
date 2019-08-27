@@ -45,7 +45,13 @@ namespace RepoZ.App.Win
 			app.Run();
 		}
 
-		protected override void OnStartup(StartupEventArgs e)
+        internal static ResourceDictionary GetLocalResourceDictionary()
+        {
+            ResourceDictionary dictionary = new ResourceDictionary { Source = new Uri($@"i18n\{Thread.CurrentThread.CurrentUICulture}.xaml", UriKind.RelativeOrAbsolute) };
+            return dictionary;
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
@@ -56,7 +62,9 @@ namespace RepoZ.App.Win
 				typeof(FrameworkElement),
 				new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+            Application.Current.Resources.MergedDictionaries[0] = GetLocalResourceDictionary();
+
+            _notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
 			var container = TinyIoCContainer.Current;
 

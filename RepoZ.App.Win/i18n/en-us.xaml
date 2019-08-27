@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="Search">🔍 Search</system:String>
+    <system:String x:Key="MainContent">There are no repositories yet 😐&#xA;&#xA;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#xA;&#xA;Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
+    <system:String x:Key="Help">✋ Help</system:String>
+    <system:String x:Key="Donate">☕ Buy me a coffee</system:String>
+    <system:String x:Key="Follow">🐤 Follow @Waescher</system:String>
+    <system:String x:Key="Star">🌟 Star RepoZ on GitHub</system:String>
+    <system:String x:Key="PingBack">💙 Ping back</system:String>
+    <system:String x:Key="Aggresive">😈 Aggresive</system:String>
+    <system:String x:Key="Adequate">😅 Adequate</system:String>
+    <system:String x:Key="Discretely">😇 Discretely</system:String>
+    <system:String x:Key="Off">💤 Off</system:String>
+    <system:String x:Key="AutoFetch">🕒 Auto fetch</system:String>
+    <system:String x:Key="ResetIgnoreRules">⛔ Reset ignore rules</system:String>
+    <system:String x:Key="Clear">🧽 Clear</system:String>
+    <system:String x:Key="ScanComputer">⚡ Scan computer</system:String>
+    <system:String x:Key="ManageRepos">🛠️ Manage repositories</system:String>
+    <system:String x:Key="GotIt">Got it.</system:String>
+    <system:String x:Key="Open">Open</system:String>
+    <system:String x:Key="StartWithWindows">Start with Windows</system:String>
+    <system:String x:Key="Exit">Exit</system:String>
+    <system:String x:Key="NotStartWithWindows">Do not start with Windows</system:String>
+    <system:String x:Key="Scanning">⚡ Scanning ...</system:String>
+</ResourceDictionary>

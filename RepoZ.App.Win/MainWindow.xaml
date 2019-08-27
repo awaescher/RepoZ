@@ -21,7 +21,6 @@
 						fw:AcrylicWindow.TintColor="#101010"
 						fw:AcrylicWindow.FallbackColor="#303030"
 						fw:AcrylicWindow.TintOpacity="0.7"
-						fw:AcrylicWindow.ShowTitleBar="False"
 						fw:AcrylicWindow.Enabled="True">
     <Window.Resources>
         <converters:UtcToHumanizedLocalDateTimeConverter x:Key="UtcToHumanizedLocalDateTimeConverter" />
@@ -35,7 +34,7 @@
 
             <Grid>
                 <TextBlock x:Name="tbNoRepositories"
-						   Text="There are no repositories yet 😐&#xA;&#xA;Go ahead and switch a branch in any repository on your computer to make it appear in here.&#xA;&#xA;Alternatively, you can scan your computer manually for repositories in the settings menu on the top right."
+						   Text="{DynamicResource MainContent}"
 						   TextWrapping="Wrap"
 						   FontSize="15"
 						   HorizontalAlignment="Center"
@@ -71,7 +70,7 @@
                             </controls:ZTextBox>
 
                             <TextBlock IsHitTestVisible="False"
-								   Text="🔍 Search"
+								   Text="{DynamicResource Search}"
 								   VerticalAlignment="Center"
 								   FontSize="15"
 								   HorizontalAlignment="Left"
@@ -110,27 +109,27 @@
 							Style="{DynamicResource MaterialDesignFlatButton}">
                             <Button.ContextMenu>
                                 <controls:AcrylicContextMenu x:Name="SettingsMenu" >
-                                    <controls:AcrylicMenuItem Header="🛠️ Manage repositories"  >
-                                        <controls:AcrylicMenuItem Header="⚡ Scan computer" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
-                                        <controls:AcrylicMenuItem Header="🧽 Clear" Click="ClearButton_Click"/>
+                                    <controls:AcrylicMenuItem Header="{DynamicResource ManageRepos}"  >
+                                        <controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/>
                                         <Separator/>
-                                        <controls:AcrylicMenuItem Header="⛔ Reset ignore rules" Click="ResetIgnoreRulesButton_Click" />
+                                        <controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" />
                                     </controls:AcrylicMenuItem>
-                                    <controls:AcrylicMenuItem Header="🕒 Auto fetch" x:Name="AutoFetchMenuItem" >
-                                        <controls:AcrylicMenuItem Header="💤 Off" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
-                                        <controls:AcrylicMenuItem Header="😇 Discretely" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
-                                        <controls:AcrylicMenuItem Header="😅 Adequate" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
-                                        <controls:AcrylicMenuItem Header="😈 Aggresive" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
+                                    <controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Off}" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Discretely}" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Adequate}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Aggresive}" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
                                     </controls:AcrylicMenuItem>
                                     <Separator/>
-                                    <controls:AcrylicMenuItem Header="💙 Ping back" Foreground="#FFED8888">
-                                        <controls:AcrylicMenuItem Header="🌟 Star RepoZ on GitHub" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
-                                        <controls:AcrylicMenuItem Header="🐤 Follow @Waescher" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                    <controls:AcrylicMenuItem Header="{DynamicResource PingBack}" Foreground="#FFED8888">
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Star}" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Follow}" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
                                         <Separator/>
-                                        <controls:AcrylicMenuItem Header="☕ Buy me a coffee" Click="CoffeeButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource Donate}" Click="CoffeeButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
                                     </controls:AcrylicMenuItem>
                                     <Separator/>
-                                    <controls:AcrylicMenuItem Header="✋ Help" Click="HelpButton_Click"/>
+                                    <controls:AcrylicMenuItem Header="{DynamicResource Help}" Click="HelpButton_Click"/>
                                 </controls:AcrylicContextMenu>
                             </Button.ContextMenu>
                         </Button>
@@ -206,7 +205,7 @@
 							   TextWrapping="Wrap"
 							   TextElement.FontSize="12" />
                     <Button Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-							Content="Got it."></Button>
+							Content="{DynamicResource GotIt}"></Button>
                 </StackPanel>
             </ScrollViewer>
         </materialDesign:Transitioner>

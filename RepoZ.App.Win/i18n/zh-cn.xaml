@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="Search">🔍 搜索</system:String>
+    <system:String x:Key="MainContent">还没有任何仓库记录😐＆＃xA;＆＃xA;在计算机上的任何仓库中切换分支以使其显示在此处。＆＃xA;＆＃xA;或者，您可以手动扫描计算机中的仓库（右上角菜单）。</system:String>
+    <system:String x:Key="Help">✋ 帮助</system:String>
+    <system:String x:Key="Donate">☕ 捐赠</system:String>
+    <system:String x:Key="Follow">🐤 关注 @Waescher</system:String>
+    <system:String x:Key="Star">🌟 在 GitHub 上 为RepoZ 点赞</system:String>
+    <system:String x:Key="PingBack">💙  反馈</system:String>
+    <system:String x:Key="Aggresive">😈  积极</system:String>
+    <system:String x:Key="Adequate">😅  适中</system:String>
+    <system:String x:Key="Discretely">😇  松散</system:String>
+    <system:String x:Key="Off">💤 禁用</system:String>
+    <system:String x:Key="AutoFetch">🕒 自动拉取</system:String>
+    <system:String x:Key="ResetIgnoreRules">⛔ 重设忽略规则</system:String>
+    <system:String x:Key="Clear">🧽 清理</system:String>
+    <system:String x:Key="ScanComputer">⚡ 扫描计算机</system:String>
+    <system:String x:Key="ManageRepos">🛠️ 管理仓库</system:String>
+    <system:String x:Key="GotIt">了解</system:String>
+    <system:String x:Key="Open">打开</system:String>
+    <system:String x:Key="StartWithWindows">随 Windows 启动</system:String>
+    <system:String x:Key="Exit">退出</system:String>
+    <system:String x:Key="NotStartWithWindows">不要随 Windows 启动</system:String>
+    <system:String x:Key="Scanning">⚡ 扫描中 ...</system:String>
+</ResourceDictionary>

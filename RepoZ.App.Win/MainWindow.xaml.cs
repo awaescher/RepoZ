@@ -288,7 +288,8 @@ namespace RepoZ.App.Win
 		private void ShowScanningState(bool isScanning)
 		{
 			ScanMenuItem.IsEnabled = !isScanning;
-			ScanMenuItem.Header = isScanning ? "⚡ Scanning ..." : "⚡ Scan computer";
+            var dict = App.GetLocalResourceDictionary();
+            ScanMenuItem.Header = isScanning ? dict["Scanning"] : dict["ScanComputer"];
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -306,10 +307,11 @@ namespace RepoZ.App.Win
 
 			// show/hide the titlebar to move the window for screenshots, for example
 			if (e.Key == Key.F11)
-			{
-				var titlebarVisible = SourceChord.FluentWPF.AcrylicWindow.GetShowTitleBar(this);
-				SourceChord.FluentWPF.AcrylicWindow.SetShowTitleBar(this, !titlebarVisible);
-			}
+            {
+                var titlebar = SourceChord.FluentWPF.AcrylicWindow.GetTitleBar(this);
+                if (titlebar.IsVisible) titlebar.Visibility = Visibility.Hidden;
+                else titlebar.Visibility = Visibility.Visible;
+            }
 
 			// keep window open on deactivate to make screeshots, for example
 			if (e.Key == Key.F12)
