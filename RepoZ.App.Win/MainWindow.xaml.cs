@@ -13,6 +13,7 @@ using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 using RepoZ.App.Win.Controls;
+using SourceChord.FluentWPF;
 
 namespace RepoZ.App.Win
 {
@@ -34,6 +35,8 @@ namespace RepoZ.App.Win
 			IAppSettingsService appSettingsService)
 		{
 			InitializeComponent();
+
+			AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
 			DataContext = new MainWindowPageModel(appSettingsService);
 			SettingsMenu.DataContext = DataContext; // this is out of the visual tree
@@ -308,9 +311,9 @@ namespace RepoZ.App.Win
 			// show/hide the titlebar to move the window for screenshots, for example
 			if (e.Key == Key.F11)
             {
-                var titlebar = SourceChord.FluentWPF.AcrylicWindow.GetTitleBar(this);
-                if (titlebar.IsVisible) titlebar.Visibility = Visibility.Hidden;
-                else titlebar.Visibility = Visibility.Visible;
+				var currentStyle = AcrylicWindow.GetAcrylicWindowStyle(this);
+				var newStyle = currentStyle == AcrylicWindowStyle.None ? AcrylicWindowStyle.Normal : AcrylicWindowStyle.None;
+				AcrylicWindow.SetAcrylicWindowStyle(this, newStyle);
             }
 
 			// keep window open on deactivate to make screeshots, for example
