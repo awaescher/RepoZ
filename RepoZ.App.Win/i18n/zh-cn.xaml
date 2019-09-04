@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Search">🔍 搜索</system:String>
-    <system:String x:Key="MainContent">还没有任何仓库记录😐＆＃xA;＆＃xA;在计算机上的任何仓库中切换分支以使其显示在此处。＆＃xA;＆＃xA;或者，您可以手动扫描计算机中的仓库（右上角菜单）。</system:String>
+    <system:String x:Key="EmptyHint">还没有任何仓库记录😐＆＃xA;＆＃xA;在计算机上的任何仓库中切换分支以使其显示在此处。＆＃xA;＆＃xA;或者，您可以手动扫描计算机中的仓库（右上角菜单）。</system:String>
     <system:String x:Key="Help">✋ 帮助</system:String>
     <system:String x:Key="Donate">☕ 捐赠</system:String>
     <system:String x:Key="Follow">🐤 关注 @Waescher</system:String>

@@ -34,7 +34,7 @@
 
             <Grid>
                 <TextBlock x:Name="tbNoRepositories"
-						   Text="{DynamicResource MainContent}"
+						   Text="{DynamicResource EmptyHint}"
 						   TextWrapping="Wrap"
 						   FontSize="15"
 						   HorizontalAlignment="Center"

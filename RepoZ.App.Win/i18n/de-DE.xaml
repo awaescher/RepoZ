@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="Search">🔍 Suche</system:String>
+    <system:String x:Key="EmptyHint">Hier gibt es noch keine Repositories 😐&#xA;&#xA;Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei, um es hier erscheinen zu lassen.&#xA;&#xA;Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
+    <system:String x:Key="Help">✋ Hilfe</system:String>
+    <system:String x:Key="Donate">☕ Einen Kaffee spendieren</system:String>
+    <system:String x:Key="Follow">🐤 @Waescher auf Twitter folgen</system:String>
+    <system:String x:Key="Star">🌟⭐ RepoZ auf GitHub folgen</system:String>
+    <system:String x:Key="PingBack">💙 Etwas zurückgeben</system:String>
+    <system:String x:Key="Aggresive">😈 Aggresiv</system:String>
+    <system:String x:Key="Adequate">😅 Adäquat</system:String>
+    <system:String x:Key="Discretely">😇 Diskret</system:String>
+    <system:String x:Key="Off">💤 Aus</system:String>
+    <system:String x:Key="AutoFetch">🕒 Auto-Fetch</system:String>
+    <system:String x:Key="ResetIgnoreRules">⛔ Ignore-Regeln zurücksetzen</system:String>
+    <system:String x:Key="Clear">🗑️ Liste leeren</system:String>
+    <system:String x:Key="ScanComputer">⚡ Computer durchsuchen</system:String>
+    <system:String x:Key="ManageRepos">🛠️ Repositories verwalten</system:String>
+    <system:String x:Key="GotIt">Verstanden.</system:String>
+    <system:String x:Key="Open">Öffnen</system:String>
+    <system:String x:Key="StartWithWindows">Mit Windows starten</system:String>
+    <system:String x:Key="Exit">Beenden</system:String>
+    <system:String x:Key="NotStartWithWindows">Nicht mehr mit Windows starten</system:String>
+    <system:String x:Key="Scanning">⚡ Suche nach Repositories ...</system:String>
+</ResourceDictionary>

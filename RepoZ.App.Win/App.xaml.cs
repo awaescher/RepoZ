@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,7 +12,6 @@ using RepoZ.Api.IO;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
 using TinyIoC;
-using System.Text.RegularExpressions;
 using Hardcodet.Wpf.TaskbarNotification;
 using TinySoup.Model;
 using TinySoup;
@@ -21,6 +19,7 @@ using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.Git.ProcessExecution;
 using RepoZ.Ipc;
+using System.IO;
 
 namespace RepoZ.App.Win
 {
@@ -47,8 +46,15 @@ namespace RepoZ.App.Win
 
         internal static ResourceDictionary GetLocalResourceDictionary()
         {
-            ResourceDictionary dictionary = new ResourceDictionary { Source = new Uri($@"i18n\{Thread.CurrentThread.CurrentUICulture}.xaml", UriKind.RelativeOrAbsolute) };
-            return dictionary;
+			try
+			{
+				var dictionaryLocation = $"i18n\\{Thread.CurrentThread.CurrentUICulture}.xaml";
+				return new ResourceDictionary { Source = new Uri(dictionaryLocation, UriKind.RelativeOrAbsolute) };
+			}
+			catch (IOException)
+			{
+				return new ResourceDictionary { Source = new Uri("i18n\\en-US.xaml", UriKind.RelativeOrAbsolute) };
+			}
         }
 
         protected override void OnStartup(StartupEventArgs e)

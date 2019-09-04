@@ -123,6 +123,10 @@
     </Page>
     <Compile Include="TinyIoC.cs" />
     <Compile Include="UIErrorHandler.cs" />
+    <Page Include="i18n\de-DE.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="i18n\en-US.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
