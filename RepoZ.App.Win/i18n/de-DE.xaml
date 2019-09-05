@@ -3,11 +3,15 @@
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Search">🔍 Suche</system:String>
-    <system:String x:Key="EmptyHint">Hier gibt es noch keine Repositories 😐&#xA;&#xA;Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei, um es hier erscheinen zu lassen.&#xA;&#xA;Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
+    <system:String x:Key="EmptyHint">Hier gibt es noch keine Repositories 😐
+        
+        Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei, um es hier erscheinen zu lassen.
+        
+        Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
     <system:String x:Key="Help">✋ Hilfe</system:String>
     <system:String x:Key="Donate">☕ Einen Kaffee spendieren</system:String>
     <system:String x:Key="Follow">🐤 @Waescher auf Twitter folgen</system:String>
-    <system:String x:Key="Star">🌟⭐ RepoZ auf GitHub folgen</system:String>
+    <system:String x:Key="Star">🌟 RepoZ auf GitHub folgen</system:String>
     <system:String x:Key="PingBack">💙 Etwas zurückgeben</system:String>
     <system:String x:Key="Aggresive">😈 Aggresiv</system:String>
     <system:String x:Key="Adequate">😅 Adäquat</system:String>
@@ -24,4 +28,13 @@
     <system:String x:Key="Exit">Beenden</system:String>
     <system:String x:Key="NotStartWithWindows">Nicht mehr mit Windows starten</system:String>
     <system:String x:Key="Scanning">⚡ Suche nach Repositories ...</system:String>
+    <system:String x:Key="Open in Windows File Explorer">In Windows Explorer öffnen</system:String>
+    <system:String x:Key="Open in Windows PowerShell">In Windows Powershell öffnen</system:String>
+    <system:String x:Key="Open in Windows Command Prompt">In Windows Eingabeaufforderung öffnen</system:String>
+    <system:String x:Key="Open in Git Bash">In Git Bash öffnen</system:String>
+    <system:String x:Key="Fetch">Git Fetch</system:String>
+    <system:String x:Key="Pull">Git Pull</system:String>
+    <system:String x:Key="Push">Git Push</system:String>
+    <system:String x:Key="Checkout">Branch wechseln</system:String>
+    <system:String x:Key="Ignore">Ignorieren</system:String>
 </ResourceDictionary>

@@ -13,6 +13,7 @@ using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 using RepoZ.App.Win.Controls;
+using RepoZ.App.Win.i18n;
 using SourceChord.FluentWPF;
 
 namespace RepoZ.App.Win
@@ -291,7 +292,7 @@ namespace RepoZ.App.Win
 		private void ShowScanningState(bool isScanning)
 		{
 			ScanMenuItem.IsEnabled = !isScanning;
-            var dict = App.GetLocalResourceDictionary();
+            var dict = ResourceDictionaryTranslationService.ResourceDictionary;
             ScanMenuItem.Header = isScanning ? dict["Scanning"] : dict["ScanComputer"];
 		}
 

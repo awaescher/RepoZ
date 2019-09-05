@@ -19,7 +19,7 @@ using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.Git.ProcessExecution;
 using RepoZ.Ipc;
-using System.IO;
+using RepoZ.App.Win.i18n;
 
 namespace RepoZ.App.Win
 {
@@ -44,19 +44,6 @@ namespace RepoZ.App.Win
 			app.Run();
 		}
 
-        internal static ResourceDictionary GetLocalResourceDictionary()
-        {
-			try
-			{
-				var dictionaryLocation = $"i18n\\{Thread.CurrentThread.CurrentUICulture}.xaml";
-				return new ResourceDictionary { Source = new Uri(dictionaryLocation, UriKind.RelativeOrAbsolute) };
-			}
-			catch (IOException)
-			{
-				return new ResourceDictionary { Source = new Uri("i18n\\en-US.xaml", UriKind.RelativeOrAbsolute) };
-			}
-        }
-
         protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
@@ -68,7 +55,7 @@ namespace RepoZ.App.Win
 				typeof(FrameworkElement),
 				new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-            Application.Current.Resources.MergedDictionaries[0] = GetLocalResourceDictionary();
+            Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
 
             _notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
@@ -136,6 +123,7 @@ namespace RepoZ.App.Win
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
 		}
 
 		protected static void UseRepositoryMonitor(TinyIoCContainer container)

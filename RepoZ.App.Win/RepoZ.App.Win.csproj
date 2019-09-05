@@ -112,6 +112,7 @@
     <Compile Include="Converters\UtcToHumanizedLocalDateTimeConverter.cs" />
     <Compile Include="Converters\UtcToLocalDateTimeConverter.cs" />
     <Compile Include="HotKey.cs" />
+    <Compile Include="i18n\ResourceDictionaryTranslationService.cs" />
     <Compile Include="MainWindowPageModel.cs" />
     <Compile Include="NotifyIconViewModel.cs" />
     <Compile Include="TinySoup.cs" />

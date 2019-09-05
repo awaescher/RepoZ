@@ -3,8 +3,12 @@
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Search">🔍 Search</system:String>
-    <system:String x:Key="EmptyHint">There are no repositories yet 😐&#xA;&#xA;Go ahead and switch a branch or change a file in any repository on your computer to make it appear in here.&#xA;&#xA;Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
-    <system:String x:Key="Help">✋ Help</system:String>
+    <system:String x:Key="EmptyHint">There are no repositories yet 😐
+        
+        Go ahead and switch a branch or change a file in any repository on your computer to make it appear in here.
+        
+        Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
+    <system:String x:Key="✋ Help">✋ Help</system:String>
     <system:String x:Key="Donate">☕ Buy me a coffee</system:String>
     <system:String x:Key="Follow">🐤 Follow @Waescher</system:String>
     <system:String x:Key="Star">🌟 Star RepoZ on GitHub</system:String>

@@ -9,6 +9,7 @@ using RepoZ.Api.IO;
 using System.Drawing;
 using RepoZ.Api.Git;
 using RepoZ.Api.Common;
+using RepoZ.Api.Common.Common;
 
 namespace RepoZ.Api.Win.IO
 {
@@ -17,25 +18,28 @@ namespace RepoZ.Api.Win.IO
 		private readonly IRepositoryWriter _repositoryWriter;
 		private readonly IRepositoryMonitor _repositoryMonitor;
 		private readonly IErrorHandler _errorHandler;
+		private readonly ITranslationService _translationService;
 
 		public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
 			IRepositoryMonitor repositoryMonitor,
-			IErrorHandler errorHandler)
+			IErrorHandler errorHandler,
+			ITranslationService translationService)
 		{
 			_repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
 			_repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
 			_errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
 		}
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction("Open in Windows File Explorer", repository.Path);
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows File Explorer"), repository.Path);
 		}
 
 		public RepositoryAction GetSecondaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction("Open in Windows PowerShell", "powershell.exe ", $"-noexit -command \"cd '{repository.Path}'\"");
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-noexit -command \"cd '{repository.Path}'\"");
 		}
 
 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
@@ -46,7 +50,7 @@ namespace RepoZ.Api.Win.IO
 			{
 				yield return GetPrimaryAction(singleRepository);
 				yield return GetSecondaryAction(singleRepository);
-				yield return CreateProcessRunnerAction("Open in Windows Command Prompt", "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
+				yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Command Prompt"), "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
 
 				string bashSubpath = @"Git\git-bash.exe";
 				string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
@@ -63,18 +67,18 @@ namespace RepoZ.Api.Win.IO
 					string path = singleRepository.Path;
 					if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
 						path = path.Substring(0, path.Length - 1);
-					yield return CreateProcessRunnerAction("Open in Git Bash", gitbash, $"\"--cd={path}\"");
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Git Bash"), gitbash, $"\"--cd={path}\"");
 				}
 			}
-			yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup:true, executionCausesSynchronizing: true);
-			yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing:true);
-			yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup:true, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing:true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
 			if (singleRepository != null)
 			{
 				yield return new RepositoryAction()
 				{
-					Name = "Checkout",
+					Name = _translationService.Translate("Checkout"),
 					SubActions = singleRepository.LocalBranches.Select(branch => new RepositoryAction()
 					{
 						Name = branch,
@@ -84,7 +88,7 @@ namespace RepoZ.Api.Win.IO
 				};
 			}
 
-			yield return CreateActionForMultipleRepositories("Ignore", repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
 
 		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
