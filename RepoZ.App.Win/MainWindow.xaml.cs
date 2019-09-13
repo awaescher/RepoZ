@@ -26,21 +26,20 @@ namespace RepoZ.App.Win
 		private readonly IRepositoryActionProvider _repositoryActionProvider;
 		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private readonly DefaultRepositoryMonitor _monitor;
-        private readonly ITranslationService _translationService;
-
-        private bool _closeOnDeactivate = true;
+		private readonly ITranslationService _translationService;
+		private bool _closeOnDeactivate = true;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
 			IRepositoryMonitor repositoryMonitor,
 			IRepositoryActionProvider repositoryActionProvider,
 			IRepositoryIgnoreStore repositoryIgnoreStore,
-			IAppSettingsService appSettingsService, 
-            ITranslationService translationService)
-        {
-            _translationService = translationService;
+			IAppSettingsService appSettingsService,
+			ITranslationService translationService)
+		{
+			_translationService = translationService;
 
-            InitializeComponent();
+			InitializeComponent();
 
 			AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
@@ -297,10 +296,10 @@ namespace RepoZ.App.Win
 		private void ShowScanningState(bool isScanning)
 		{
 			ScanMenuItem.IsEnabled = !isScanning;
-            ScanMenuItem.Header = isScanning
-                ? _translationService.Translate("Scanning")
-                : _translationService.Translate("ScanComputer");
-        }
+			ScanMenuItem.Header = isScanning
+				? _translationService.Translate("Scanning")
+				: _translationService.Translate("ScanComputer");
+		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
@@ -317,11 +316,11 @@ namespace RepoZ.App.Win
 
 			// show/hide the titlebar to move the window for screenshots, for example
 			if (e.Key == Key.F11)
-            {
+			{
 				var currentStyle = AcrylicWindow.GetAcrylicWindowStyle(this);
 				var newStyle = currentStyle == AcrylicWindowStyle.None ? AcrylicWindowStyle.Normal : AcrylicWindowStyle.None;
 				AcrylicWindow.SetAcrylicWindowStyle(this, newStyle);
-            }
+			}
 
 			// keep window open on deactivate to make screeshots, for example
 			if (e.Key == Key.F12)
@@ -345,19 +344,19 @@ namespace RepoZ.App.Win
 				lstRepositories.SelectedIndex = 0;
 		}
 
-        private string GetHelp(StatusCharacterMap statusCharacterMap)
-        {
-            return _translationService.Translate("Help Detail",
-                statusCharacterMap.IdenticalSign,
-                statusCharacterMap.StashSign,
-                statusCharacterMap.IdenticalSign,
-                statusCharacterMap.ArrowUpSign,
-                statusCharacterMap.ArrowDownSign,
-                statusCharacterMap.NoUpstreamSign,
-                statusCharacterMap.StashSign
-                );
-        }
+		private string GetHelp(StatusCharacterMap statusCharacterMap)
+		{
+			return _translationService.Translate("Help Detail",
+				statusCharacterMap.IdenticalSign,
+				statusCharacterMap.StashSign,
+				statusCharacterMap.IdenticalSign,
+				statusCharacterMap.ArrowUpSign,
+				statusCharacterMap.ArrowDownSign,
+				statusCharacterMap.NoUpstreamSign,
+				statusCharacterMap.StashSign
+				);
+		}
 
-        public bool IsShown => Visibility == Visibility.Visible && IsActive;
+		public bool IsShown => Visibility == Visibility.Visible && IsActive;
 	}
 }

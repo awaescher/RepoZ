@@ -2,78 +2,75 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-    <system:String x:Key="Search">🔍 Search</system:String>
-    <system:String x:Key="EmptyHint">There are no repositories yet 😐
-        
-        Go ahead and switch a branch or change a file in any repository on your computer to make it appear in here.
-        
-        Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
-    <system:String x:Key="✋ Help">✋ Help</system:String>
-    <system:String x:Key="Donate">☕ Buy me a coffee</system:String>
-    <system:String x:Key="Follow">🐤 Follow @Waescher</system:String>
-    <system:String x:Key="Star">🌟 Star RepoZ on GitHub</system:String>
-    <system:String x:Key="PingBack">💙 Ping back</system:String>
-    <system:String x:Key="Aggresive">😈 Aggresive</system:String>
-    <system:String x:Key="Adequate">😅 Adequate</system:String>
-    <system:String x:Key="Discretely">😇 Discretely</system:String>
-    <system:String x:Key="Off">💤 Off</system:String>
-    <system:String x:Key="AutoFetch">🕒 Auto fetch</system:String>
-    <system:String x:Key="ResetIgnoreRules">⛔ Reset ignore rules</system:String>
-    <system:String x:Key="Clear">🧽 Clear</system:String>
-    <system:String x:Key="ScanComputer">⚡ Scan computer</system:String>
-    <system:String x:Key="ManageRepos">🛠️ Manage repositories</system:String>
-    <system:String x:Key="GotIt">Got it.</system:String>
-    <system:String x:Key="Open">Open</system:String>
-    <system:String x:Key="StartWithWindows">Start with Windows</system:String>
-    <system:String x:Key="Exit">Exit</system:String>
-    <system:String x:Key="NotStartWithWindows">Do not start with Windows</system:String>
-    <system:String x:Key="Scanning">⚡ Scanning ...</system:String>
-    <system:String x:Key="Open in Windows File Explorer">Open In Windows File Explorer"</system:String>
-    <system:String x:Key="Open in Windows PowerShell">Open In Windows PowerShell</system:String>
-    <system:String x:Key="Open in Windows Command Prompt">Open In Windows Command Prompt</system:String>
-    <system:String x:Key="Open in Git Bash">Open In Git Bash</system:String>
-    <system:String x:Key="Fetch">Fetch</system:String>
-    <system:String x:Key="Pull">Pull</system:String>
-    <system:String x:Key="Push">Push</system:String>
-    <system:String x:Key="Checkout">Checkout</system:String>
-    <system:String x:Key="Ignore">Ignore</system:String>
-    <system:String x:Key="Help Detail" xml:space="preserve">
-        RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
+	<system:String x:Key="Search">🔍 Search</system:String>
+	<system:String x:Key="EmptyHint" xml:space="preserve">There are no repositories yet 😐
+		
+Go ahead and switch a branch or change a file in any repository on your computer to make it appear in here.
+		
+Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
+	<system:String x:Key="Help">✋ Help</system:String>
+	<system:String x:Key="Donate">☕ Buy me a coffee</system:String>
+	<system:String x:Key="Follow">🐤 Follow @Waescher</system:String>
+	<system:String x:Key="Star">🌟 Star RepoZ on GitHub</system:String>
+	<system:String x:Key="PingBack">💙 Ping back</system:String>
+	<system:String x:Key="Aggresive">😈 Aggresive</system:String>
+	<system:String x:Key="Adequate">😅 Adequate</system:String>
+	<system:String x:Key="Discretely">😇 Discretely</system:String>
+	<system:String x:Key="Off">💤 Off</system:String>
+	<system:String x:Key="AutoFetch">🕒 Auto fetch</system:String>
+	<system:String x:Key="ResetIgnoreRules">⛔ Reset ignore rules</system:String>
+	<system:String x:Key="Clear">🧽 Clear</system:String>
+	<system:String x:Key="ScanComputer">⚡ Scan computer</system:String>
+	<system:String x:Key="ManageRepos">🛠️ Manage repositories</system:String>
+	<system:String x:Key="GotIt">Got it.</system:String>
+	<system:String x:Key="Open">Open</system:String>
+	<system:String x:Key="StartWithWindows">Start with Windows</system:String>
+	<system:String x:Key="Exit">Exit</system:String>
+	<system:String x:Key="NotStartWithWindows">Do not start with Windows</system:String>
+	<system:String x:Key="Scanning">⚡ Scanning ...</system:String>
+	<system:String x:Key="Open in Windows File Explorer">Open In Windows File Explorer"</system:String>
+	<system:String x:Key="Open in Windows PowerShell">Open In Windows PowerShell</system:String>
+	<system:String x:Key="Open in Windows Command Prompt">Open In Windows Command Prompt</system:String>
+	<system:String x:Key="Open in Git Bash">Open In Git Bash</system:String>
+	<system:String x:Key="Fetch">Fetch</system:String>
+	<system:String x:Key="Pull">Pull</system:String>
+	<system:String x:Key="Push">Push</system:String>
+	<system:String x:Key="Checkout">Checkout</system:String>
+	<system:String x:Key="Ignore">Ignore</system:String>
+	<system:String x:Key="Help Detail" xml:space="preserve">
+RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 
-        master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
-
-
-        master
-        ... represents the current branch or the SHA of a detached HEAD.
-
-        {2}
-        ... represents the branch status in relation to its remote (tracked origin) branch.
-        In this case, the local branch is at the same commit level as the remote branch.
-
-        {3}
-        &lt;num&gt;
-            ... indicates that the local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
-
-            {4}
-        &lt;num&gt;
-                ... indicates that the local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
-
-                {5}
-                ... indicates that the local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
+master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
 
-                The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
-                The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
+master
+... represents the current branch or the SHA of a detached HEAD.
 
-                {6}
-        &lt;num&gt;
-                    ... indicates that there are stashed changes available.
+{2}
+... represents the branch status in relation to its remote (tracked origin) branch.
+In this case, the local branch is at the same commit level as the remote branch.
+
+{3}&lt;num&gt;
+... indicates that the local branch is ahead of the remote branch by the specified number of commits; a "git push" is required to update the remote branch.
+
+{4}&lt;num&gt;
+... indicates that the local branch is behind the remote branch by the specified number of commits; a "git pull" is required to update the local branch.
+
+{5}
+... indicates that the local branch has no upstream branch. "git push" needs to be called with "--set-upstream" to push changes to a remote branch.
 
 
-                    Please note:
-                    This information reflects the state of the remote tracked branch after the last ""git fetch"".
-                    You can enable Auto fetch in the RepoZ menu to keep the information up to date.
+The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
+The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
 
-                    Note that the status might be shorter if possible to improve readablility.
-    </system:String>
+{6}&lt;num&gt;
+... indicates that there are stashed changes available.
+
+
+Please note:
+This information reflects the state of the remote tracked branch after the last "git fetch".
+You can enable Auto fetch in the RepoZ menu to keep the information up to date.
+
+Note that the status might be shorter if possible to improve readablility.
+</system:String>
 </ResourceDictionary>

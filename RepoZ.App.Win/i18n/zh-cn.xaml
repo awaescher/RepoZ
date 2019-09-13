@@ -2,73 +2,73 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-    <system:String x:Key="Search">🔍 搜索</system:String>
-    <system:String x:Key="EmptyHint" xml:space="preserve">还没有任何仓库记录😐
-        
-        在计算机上的任何仓库中切换分支以使其显示在此处。
-        
-        或者，您可以手动扫描计算机中的仓库（右上角菜单）。</system:String>
-    <system:String x:Key="Help">✋ 帮助</system:String>
-    <system:String x:Key="Donate">☕ 捐赠</system:String>
-    <system:String x:Key="Follow">🐤 关注 @Waescher</system:String>
-    <system:String x:Key="Star">🌟 在 GitHub 上 为RepoZ 点赞</system:String>
-    <system:String x:Key="PingBack">💙  反馈</system:String>
-    <system:String x:Key="Aggresive">😈  积极</system:String>
-    <system:String x:Key="Adequate">😅  适中</system:String>
-    <system:String x:Key="Discretely">😇  松散</system:String>
-    <system:String x:Key="Off">💤 禁用</system:String>
-    <system:String x:Key="AutoFetch">🕒 自动获取</system:String>
-    <system:String x:Key="ResetIgnoreRules">⛔ 重设忽略规则</system:String>
-    <system:String x:Key="Clear">🧽 清理</system:String>
-    <system:String x:Key="ScanComputer">⚡ 扫描计算机</system:String>
-    <system:String x:Key="ManageRepos">🛠️ 管理仓库</system:String>
-    <system:String x:Key="GotIt">了解</system:String>
-    <system:String x:Key="Open">打开</system:String>
-    <system:String x:Key="StartWithWindows">随 Windows 启动</system:String>
-    <system:String x:Key="Exit">退出</system:String>
-    <system:String x:Key="NotStartWithWindows">不要随 Windows 启动</system:String>
-    <system:String x:Key="Scanning">⚡ 扫描中 ...</system:String>
-    <system:String x:Key="Open in Windows File Explorer">在资源管理器中打开</system:String>
-    <system:String x:Key="Open in Windows PowerShell">在PowerShell中打开</system:String>
-    <system:String x:Key="Open in Windows Command Prompt">在命令提示符中打开</system:String>
-    <system:String x:Key="Open in Git Bash">在Git Bash中打开</system:String>
-    <system:String x:Key="Fetch">获取</system:String>
-    <system:String x:Key="Pull">拉取</system:String>
-    <system:String x:Key="Push">推送</system:String>
-    <system:String x:Key="Checkout">检出</system:String>
-    <system:String x:Key="Ignore">忽略</system:String>
-    <system:String x:Key="Help Detail" xml:space="preserve">
-        RepoZ 显示了本地驱动器上的所有Git仓库， 并将按如下格式展示每个仓库的状态：
+	<system:String x:Key="Search">🔍 搜索</system:String>
+	<system:String x:Key="EmptyHint" xml:space="preserve">还没有任何仓库记录😐
+		
+在计算机上的任何仓库中切换分支以使其显示在此处。
+		
+或者，您可以手动扫描计算机中的仓库（右上角菜单）。</system:String>
+	<system:String x:Key="Help">✋ 帮助</system:String>
+	<system:String x:Key="Donate">☕ 捐赠</system:String>
+	<system:String x:Key="Follow">🐤 关注 @Waescher</system:String>
+	<system:String x:Key="Star">🌟 在 GitHub 上 为RepoZ 点赞</system:String>
+	<system:String x:Key="PingBack">💙  反馈</system:String>
+	<system:String x:Key="Aggresive">😈  积极</system:String>
+	<system:String x:Key="Adequate">😅  适中</system:String>
+	<system:String x:Key="Discretely">😇  松散</system:String>
+	<system:String x:Key="Off">💤 禁用</system:String>
+	<system:String x:Key="AutoFetch">🕒 自动获取</system:String>
+	<system:String x:Key="ResetIgnoreRules">⛔ 重设忽略规则</system:String>
+	<system:String x:Key="Clear">🧽 清理</system:String>
+	<system:String x:Key="ScanComputer">⚡ 扫描计算机</system:String>
+	<system:String x:Key="ManageRepos">🛠️ 管理仓库</system:String>
+	<system:String x:Key="GotIt">了解</system:String>
+	<system:String x:Key="Open">打开</system:String>
+	<system:String x:Key="StartWithWindows">随 Windows 启动</system:String>
+	<system:String x:Key="Exit">退出</system:String>
+	<system:String x:Key="NotStartWithWindows">不要随 Windows 启动</system:String>
+	<system:String x:Key="Scanning">⚡ 扫描中 ...</system:String>
+	<system:String x:Key="Open in Windows File Explorer">在资源管理器中打开</system:String>
+	<system:String x:Key="Open in Windows PowerShell">在PowerShell中打开</system:String>
+	<system:String x:Key="Open in Windows Command Prompt">在命令提示符中打开</system:String>
+	<system:String x:Key="Open in Git Bash">在Git Bash中打开</system:String>
+	<system:String x:Key="Fetch">获取</system:String>
+	<system:String x:Key="Pull">拉取</system:String>
+	<system:String x:Key="Push">推送</system:String>
+	<system:String x:Key="Checkout">检出</system:String>
+	<system:String x:Key="Ignore">忽略</system:String>
+	<system:String x:Key="Help Detail" xml:space="preserve">
+RepoZ 显示了本地驱动器上的所有Git仓库， 并将按如下格式展示每个仓库的状态：
 
-        master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
+master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
 
-        master
-        ... 表示当前分支或最新提交的SHA哈希。
+master
+... 表示当前分支或最新提交的SHA哈希。
 
-        {2}
-        ... 表示与其远程分支相关的分支状态。
-        在这种情况下, 本地分支和远程分支具有相同的提交级别。
+{2}
+... 表示与其远程分支相关的分支状态。
+在这种情况下, 本地分支和远程分支具有相同的提交级别。
 
-        {3}&lt;数字&gt;
-        ... 表示本地分支相比远程分支多出的提交数量；使用 "git push" 命令即可更新远程分支。
+{3}&lt;数字&gt;
+... 表示本地分支相比远程分支多出的提交数量；使用 "git push" 命令即可更新远程分支。
 
-        {4}&lt;数字&gt;
-         ... 表示本地分支相比远程分支缺失的提交数量； 使用 "git pull" 命令 即可更新本地分支。
+{4}&lt;数字&gt;
+... 表示本地分支相比远程分支缺失的提交数量； 使用 "git pull" 命令 即可更新本地分支。
 
-        {5}
-        ... 表示本地分支没有上游分支。使用 "git push --set-upstream" 命令将更改推送到远程分支。
+{5}
+... 表示本地分支没有上游分支。使用 "git push --set-upstream" 命令将更改推送到远程分支。
 
-        以下数字表示与索引相比的变更数量： 已添加 (+1)，已修改 (~2) 和 已删除 (-3) 。
-        "|" 符号之后的数字表示与工作目录相比的变更数量： 已添加 (+4)，已修改 (~5) 和 已删除 (-6)。
+以下数字表示与索引相比的变更数量： 已添加 (+1)，已修改 (~2) 和 已删除 (-3) 。
+"|" 符号之后的数字表示与工作目录相比的变更数量： 已添加 (+4)，已修改 (~5) 和 已删除 (-6)。
 
-        {6}&lt;数字&gt;
-         ... 表示本地暂存的更改数量。
+{6}&lt;数字&gt;
+... 表示本地暂存的更改数量。
 
-        请注意：
-        此信息反映了最后一次 "git fetch" 之后远程跟踪分支的状态。
-        您可以通过 RepoZ 菜单启用 "自动获取" 以使状态保持最新。
+请注意：
+此信息反映了最后一次 "git fetch" 之后远程跟踪分支的状态。
+您可以通过 RepoZ 菜单启用 "自动获取" 以使状态保持最新。
 
-        如果可能，将会使用短状态来提高可读性。
+如果可能，将会使用短状态来提高可读性。
     </system:String>
 </ResourceDictionary>
