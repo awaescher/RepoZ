@@ -26,16 +26,21 @@ namespace RepoZ.App.Win
 		private readonly IRepositoryActionProvider _repositoryActionProvider;
 		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private readonly DefaultRepositoryMonitor _monitor;
-		private bool _closeOnDeactivate = true;
+        private readonly ITranslationService _translationService;
+
+        private bool _closeOnDeactivate = true;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
 			IRepositoryMonitor repositoryMonitor,
 			IRepositoryActionProvider repositoryActionProvider,
 			IRepositoryIgnoreStore repositoryIgnoreStore,
-			IAppSettingsService appSettingsService)
-		{
-			InitializeComponent();
+			IAppSettingsService appSettingsService, 
+            ITranslationService translationService)
+        {
+            _translationService = translationService;
+
+            InitializeComponent();
 
 			AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
 
@@ -292,9 +297,10 @@ namespace RepoZ.App.Win
 		private void ShowScanningState(bool isScanning)
 		{
 			ScanMenuItem.IsEnabled = !isScanning;
-            var dict = ResourceDictionaryTranslationService.ResourceDictionary;
-            ScanMenuItem.Header = isScanning ? dict["Scanning"] : dict["ScanComputer"];
-		}
+            ScanMenuItem.Header = isScanning
+                ? _translationService.Translate("Scanning")
+                : _translationService.Translate("ScanComputer");
+        }
 
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
@@ -339,46 +345,19 @@ namespace RepoZ.App.Win
 				lstRepositories.SelectedIndex = 0;
 		}
 
-		private string GetHelp(StatusCharacterMap statusCharacterMap)
-		{
-			return $@"
-RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
+        private string GetHelp(StatusCharacterMap statusCharacterMap)
+        {
+            return _translationService.Translate("Help Detail",
+                statusCharacterMap.IdenticalSign,
+                statusCharacterMap.StashSign,
+                statusCharacterMap.IdenticalSign,
+                statusCharacterMap.ArrowUpSign,
+                statusCharacterMap.ArrowDownSign,
+                statusCharacterMap.NoUpstreamSign,
+                statusCharacterMap.StashSign
+                );
+        }
 
-    master  {statusCharacterMap.IdenticalSign}   +1   ~2   -3   |   +4   ~5   -6   {statusCharacterMap.StashSign}7
-
-
-master
-... represents the current branch or the SHA of a detached HEAD.
-
-{statusCharacterMap.IdenticalSign}
-... represents the branch status in relation to its remote (tracked origin) branch.
-In this case, the local branch is at the same commit level as the remote branch.
-
-{statusCharacterMap.ArrowUpSign}<num>
-... indicates that the local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
-
-{statusCharacterMap.ArrowDownSign}<num>
-... indicates that the local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
-
-{statusCharacterMap.NoUpstreamSign}
-... indicates that the local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
-
-
-The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
-The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
-
-{statusCharacterMap.StashSign}<num>
-... indicates that there are stashed changes available.
-
-
-Please note:
-This information reflects the state of the remote tracked branch after the last ""git fetch"".
-You can enable Auto fetch in the RepoZ menu to keep the information up to date.
-
-Note that the status might be shorter if possible to improve readablility.
-";
-		}
-
-		public bool IsShown => Visibility == Visibility.Visible && IsActive;
+        public bool IsShown => Visibility == Visibility.Visible && IsActive;
 	}
 }

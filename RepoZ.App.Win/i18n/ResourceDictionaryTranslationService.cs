@@ -31,7 +31,14 @@ namespace RepoZ.App.Win.i18n
 			return translated ?? value;
 		}
 
-		private static ResourceDictionary GetLocalResourceDictionary()
+        public string Translate(string value, params object[] args)
+        {
+            var translated = ResourceDictionary[value]?.ToString();
+            if (string.IsNullOrEmpty(translated)) return string.Empty;
+            else return string.Format(translated, args);
+        }
+
+        private static ResourceDictionary GetLocalResourceDictionary()
 		{
 			try
 			{

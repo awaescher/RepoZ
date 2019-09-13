@@ -28,4 +28,52 @@
     <system:String x:Key="Exit">Exit</system:String>
     <system:String x:Key="NotStartWithWindows">Do not start with Windows</system:String>
     <system:String x:Key="Scanning">⚡ Scanning ...</system:String>
+    <system:String x:Key="Open in Windows File Explorer">Open In Windows File Explorer"</system:String>
+    <system:String x:Key="Open in Windows PowerShell">Open In Windows PowerShell</system:String>
+    <system:String x:Key="Open in Windows Command Prompt">Open In Windows Command Prompt</system:String>
+    <system:String x:Key="Open in Git Bash">Open In Git Bash</system:String>
+    <system:String x:Key="Fetch">Fetch</system:String>
+    <system:String x:Key="Pull">Pull</system:String>
+    <system:String x:Key="Push">Push</system:String>
+    <system:String x:Key="Checkout">Checkout</system:String>
+    <system:String x:Key="Ignore">Ignore</system:String>
+    <system:String x:Key="Help Detail" xml:space="preserve">
+        RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
+
+        master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
+
+
+        master
+        ... represents the current branch or the SHA of a detached HEAD.
+
+        {2}
+        ... represents the branch status in relation to its remote (tracked origin) branch.
+        In this case, the local branch is at the same commit level as the remote branch.
+
+        {3}
+        &lt;num&gt;
+            ... indicates that the local branch is ahead of the remote branch by the specified number of commits; a 'git push' is required to update the remote branch.
+
+            {4}
+        &lt;num&gt;
+                ... indicates that the local branch is behind the remote branch by the specified number of commits; a 'git pull' is required to update the local branch.
+
+                {5}
+                ... indicates that the local branch has no upstream branch. 'git push' needs to be called with '--set-upstream' to push changes to a remote branch.
+
+
+                The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
+                The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
+
+                {6}
+        &lt;num&gt;
+                    ... indicates that there are stashed changes available.
+
+
+                    Please note:
+                    This information reflects the state of the remote tracked branch after the last ""git fetch"".
+                    You can enable Auto fetch in the RepoZ menu to keep the information up to date.
+
+                    Note that the status might be shorter if possible to improve readablility.
+    </system:String>
 </ResourceDictionary>
