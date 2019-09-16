@@ -5,7 +5,7 @@
 	<system:String x:Key="Search">🔍 Search</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">There are no repositories yet 😐
 		
-Go ahead and switch a branch or change a file in any repository on your computer to make it appear in here.
+Go ahead and switch a branch or change a file in any repository on your computer. RepoZ will notice the change and list the repository here.
 		
 Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
 	<system:String x:Key="Help">✋ Help</system:String>
@@ -19,7 +19,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Off">💤 Off</system:String>
 	<system:String x:Key="AutoFetch">🕒 Auto fetch</system:String>
 	<system:String x:Key="ResetIgnoreRules">⛔ Reset ignore rules</system:String>
-	<system:String x:Key="Clear">🧽 Clear</system:String>
+	<system:String x:Key="Clear">🗑️ Clear</system:String>
 	<system:String x:Key="ScanComputer">⚡ Scan computer</system:String>
 	<system:String x:Key="ManageRepos">🛠️ Manage repositories</system:String>
 	<system:String x:Key="GotIt">Got it.</system:String>

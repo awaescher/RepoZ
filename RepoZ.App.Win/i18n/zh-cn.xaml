@@ -19,7 +19,7 @@
 	<system:String x:Key="Off">💤 禁用</system:String>
 	<system:String x:Key="AutoFetch">🕒 自动获取</system:String>
 	<system:String x:Key="ResetIgnoreRules">⛔ 重设忽略规则</system:String>
-	<system:String x:Key="Clear">🧽 清理</system:String>
+	<system:String x:Key="Clear">🗑️ 清理</system:String>
 	<system:String x:Key="ScanComputer">⚡ 扫描计算机</system:String>
 	<system:String x:Key="ManageRepos">🛠️ 管理仓库</system:String>
 	<system:String x:Key="GotIt">了解</system:String>

@@ -70,8 +70,8 @@ namespace RepoZ.Api.Common.Git
 			var tasks = paths.Select(path =>
 			{
 				return Task.Run(() => _pathCrawlerFactory.Create().Find(path, "HEAD", OnFoundNewRepository, null))
-					.ContinueWith(t => scannedPaths++)
-					.ContinueWith(t =>
+					.ContinueWith(_ => scannedPaths++)
+					.ContinueWith(_ =>
 					{
 						bool newScanningState = (scannedPaths < paths.Length);
 						bool didChange = newScanningState != Scanning;

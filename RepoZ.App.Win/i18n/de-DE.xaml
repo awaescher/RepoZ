@@ -5,7 +5,7 @@
 	<system:String x:Key="Search">🔍 Suche</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">Hier gibt es noch keine Repositories 😐
 
-Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei, um es hier erscheinen zu lassen.
+Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei. RepoZ wird die Änderung erkennen und das Repository hier aufführen.
 
 Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
 	<system:String x:Key="Help">✋ Hilfe</system:String>
@@ -38,18 +38,16 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Checkout">Branch wechseln</system:String>
 	<system:String x:Key="Ignore">Ignorieren</system:String>
 	<system:String x:Key="Help Detail" xml:space="preserve">
-RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 RepoZ zeigt alle Repositories an, die auf lokalen Laufwerken gefunden wurden. Jedes Repository wird mit einem Status aufgeführt, der z.B. so aussehen kann:
 
 master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
 
 master
-... represents the current branch or the SHA of a detached HEAD.
 ... steht für den aktuellen Branch oder den Hash-Wert eines sogenannten "detached HEAD".
 
 {2}
-... steht für den aktuellen Branch-Status im Vergleich zu seinem Remote-Branch
+... steht für den aktuellen Branch-Status im Vergleich zu seinem Remote-Branch.
 In diesem Beispiel ist der lokale Branch gleichauf mit seinem Remote-Branch.
 
 {3}&lt;num&gt;
@@ -70,7 +68,7 @@ Die Nummern nach dem Pipe-Symbol stehen für hinzugefügte (+4), geänderte (~5)
 
 
 Hinweis:
-Diese Informationen zeigen den Zustand des Remote-Branches seit dem letzten "git fetch" an.
+Diese Informationen beziehen sich auf den Zustand des Remote-Branches seit dem letzten "git fetch".
 Durch Aktivieren von Auto-Fetch, kann RepoZ diese Information selbstständig automatisch aktualisieren.
 
 Wenn möglich wird der Status kürzer dargestellt, um die Lesbarkeit zu verbessern.
