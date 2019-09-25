@@ -12,13 +12,13 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Donate">☕ Einen Kaffee spendieren</system:String>
 	<system:String x:Key="Follow">🐤 @Waescher auf Twitter folgen</system:String>
 	<system:String x:Key="Star">🌟 RepoZ auf GitHub folgen</system:String>
-	<system:String x:Key="PingBack">💙 Etwas zurückgeben</system:String>
+	<system:String x:Key="PingBack">💙 Danke sagen</system:String>
 	<system:String x:Key="Aggresive">😈 Aggresiv</system:String>
 	<system:String x:Key="Adequate">😅 Adäquat</system:String>
 	<system:String x:Key="Discretely">😇 Diskret</system:String>
 	<system:String x:Key="Off">💤 Aus</system:String>
 	<system:String x:Key="AutoFetch">🕒 Auto-Fetch</system:String>
-	<system:String x:Key="ResetIgnoreRules">⛔ Ignore-Regeln zurücksetzen</system:String>
+	<system:String x:Key="ResetIgnoreRules">⛔ Ignorier-Regeln zurücksetzen</system:String>
 	<system:String x:Key="Clear">🗑️ Liste leeren</system:String>
 	<system:String x:Key="ScanComputer">⚡ Computer durchsuchen</system:String>
 	<system:String x:Key="ManageRepos">🛠️ Repositories verwalten</system:String>
@@ -38,7 +38,7 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Checkout">Branch wechseln</system:String>
 	<system:String x:Key="Ignore">Ignorieren</system:String>
 	<system:String x:Key="Help Detail" xml:space="preserve">
-RepoZ zeigt alle Repositories an, die auf lokalen Laufwerken gefunden wurden. Jedes Repository wird mit einem Status aufgeführt, der z.B. so aussehen kann:
+RepoZ zeigt alle Repositories an, die auf lokalen Laufwerken gefunden wurden. Jedes Repository wird mit einem Status aufgeführt, der in etwa so aussehen wird:
 
 master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
