@@ -10,7 +10,7 @@
 
 # RepoZ
 
-RepoZ is a zero-conf git repository hub with Windows Explorer- & CLI-enhancements. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never loose track of your work along the way.
+RepoZ is a zero-conf git repository hub with Windows Explorer- & CLI-enhancements. It uses the git repositories on your machine to create an efficient navigation widget and makes sure you'll never lose track of your work along the way.
 
 It's populating itself as you work with git. It does not get in the way and does not require any user attention to work.
 
