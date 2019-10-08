@@ -33,6 +33,8 @@
 	<system:String x:Key="Open in Windows PowerShell">在PowerShell中打开</system:String>
 	<system:String x:Key="Open in Windows Command Prompt">在命令提示符中打开</system:String>
 	<system:String x:Key="Open in Git Bash">在Git Bash中打开</system:String>
+	<system:String x:Key="Open in Finder">Open in Finder</system:String>
+	<system:String x:Key="Open in Terminal">Open in Terminal</system:String>
 	<system:String x:Key="Fetch">获取</system:String>
 	<system:String x:Key="Pull">拉取</system:String>
 	<system:String x:Key="Push">推送</system:String>

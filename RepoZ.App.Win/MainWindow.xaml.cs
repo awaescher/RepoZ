@@ -238,8 +238,10 @@ namespace RepoZ.App.Win
 
 		private void ShowUpdateIfAvailable()
 		{
+			var updateHint = _translationService.Translate("Update hint", App.AvailableUpdate?.ShortestVersionString ?? "?.?");
+
 			UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
-			UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : TODO $"Version {App.AvailableUpdate.ShortestVersionString} is available.";
+			UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : updateHint;
 			UpdateButton.Tag = App.AvailableUpdate;
 
 			var parent = (Grid)UpdateButton.Parent;

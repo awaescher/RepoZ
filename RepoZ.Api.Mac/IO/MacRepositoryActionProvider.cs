@@ -4,6 +4,7 @@ using RepoZ.Api.Git;
 using System.Linq;
 using System;
 using RepoZ.Api.Common;
+using RepoZ.Api.Common.Common;
 
 namespace RepoZ.Api.Mac
 {
@@ -12,25 +13,28 @@ namespace RepoZ.Api.Mac
         private readonly IRepositoryWriter _repositoryWriter;
         private readonly IRepositoryMonitor _repositoryMonitor;
         private readonly IErrorHandler _errorHandler;
+		private readonly ITranslationService _translationService;
 
-        public MacRepositoryActionProvider(
+		public MacRepositoryActionProvider(
             IRepositoryWriter repositoryWriter,
             IRepositoryMonitor repositoryMonitor,
-            IErrorHandler errorHandler)
+            IErrorHandler errorHandler,
+			ITranslationService translationService)
         {
             _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
             _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
-        }
+			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+		}
 
         public RepositoryAction GetPrimaryAction(Repository repository)
         { 
-            return CreateProcessRunnerAction("Open in Finder", repository.Path);
+            return CreateProcessRunnerAction(_translationService.Translate("Open in Finder"), repository.Path);
         }
 
         public RepositoryAction GetSecondaryAction(Repository repository)
         {
-            return CreateProcessRunnerAction("Open in Terminal", "open", $"-b com.apple.terminal \"{repository.Path}\"");
+            return CreateProcessRunnerAction(_translationService.Translate("Open in Terminal"), "open", $"-b com.apple.terminal \"{repository.Path}\"");
         }
 
         public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
@@ -43,11 +47,11 @@ namespace RepoZ.Api.Mac
                 yield return GetSecondaryAction(singleRepository);
             }
             
-            yield return CreateActionForMultipleRepositories("Fetch", repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories("Pull", repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories("Push", repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+            yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
+            yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
+            yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
-            yield return CreateActionForMultipleRepositories("Ignore", repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
+            yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
         }
 
         private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")

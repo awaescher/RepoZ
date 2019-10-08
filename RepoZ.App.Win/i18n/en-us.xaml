@@ -1,9 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
+					xmlns:system="clr-namespace:System;assembly=mscorlib">
 	<system:String x:Key="Search">Search</system:String>
-	<system:String x:Key="EmptyHint" xml:space="preserve">There are no repositories yet 😐
+	<system:String x:Key="EmptyHint"
+				   xml:space="preserve">There are no repositories yet 😐
 		
 Go ahead and switch a branch or change a file in any repository on your computer. RepoZ will notice the change and list the repository here.
 		
@@ -28,11 +29,13 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="StartWithWindows">Start with Windows</system:String>
 	<system:String x:Key="Exit">Exit</system:String>
 	<system:String x:Key="NotStartWithWindows">Do not start with Windows</system:String>
-	<system:String x:Key="Scanning">⚡ Scanning ...</system:String>
+	<system:String x:Key="Scanning">Scanning ...</system:String>
 	<system:String x:Key="Open in Windows File Explorer">Open In Windows File Explorer"</system:String>
 	<system:String x:Key="Open in Windows PowerShell">Open In Windows PowerShell</system:String>
 	<system:String x:Key="Open in Windows Command Prompt">Open In Windows Command Prompt</system:String>
 	<system:String x:Key="Open in Git Bash">Open In Git Bash</system:String>
+	<system:String x:Key="Open in Finder">Open in Finder</system:String>
+	<system:String x:Key="Open in Terminal">Open in Terminal</system:String>
 	<system:String x:Key="Fetch">Fetch</system:String>
 	<system:String x:Key="Pull">Pull</system:String>
 	<system:String x:Key="Push">Push</system:String>
