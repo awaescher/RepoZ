@@ -30,7 +30,7 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="NotStartWithWindows">Nicht mehr mit Windows starten</system:String>
 	<system:String x:Key="Scanning">Suche nach Repositories ...</system:String>
 	<system:String x:Key="Open in Windows File Explorer">In Windows Explorer öffnen</system:String>
-	<system:String x:Key="Open in Windows PowerShell">In Windows Powershell öffnen</system:String>
+	<system:String x:Key="Open in Windows PowerShell">In Windows PowerShell öffnen</system:String>
 	<system:String x:Key="Open in Windows Command Prompt">In Windows Eingabeaufforderung öffnen</system:String>
 	<system:String x:Key="Open in Git Bash">In Git Bash öffnen</system:String>
 	<system:String x:Key="Open in Finder">In Finder öffnen</system:String>
