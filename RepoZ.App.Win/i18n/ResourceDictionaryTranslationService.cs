@@ -14,31 +14,23 @@ namespace RepoZ.App.Win.i18n
 	{
 		private static ResourceDictionary _dictionary = null;
 
-		public static ResourceDictionary ResourceDictionary
-		{
-			get
-			{
-				if (_dictionary == null)
-					_dictionary = GetLocalResourceDictionary();
-
-				return _dictionary;
-			}
-		}
-
 		public string Translate(string value)
 		{
 			var translated = ResourceDictionary[value]?.ToString();
 			return translated ?? value;
 		}
 
-        public string Translate(string value, params object[] args)
-        {
-            var translated = ResourceDictionary[value]?.ToString();
-            if (string.IsNullOrEmpty(translated)) return string.Empty;
-            else return string.Format(translated, args);
-        }
+		public string Translate(string value, params object[] args)
+		{
+			var translated = ResourceDictionary[value]?.ToString();
 
-        private static ResourceDictionary GetLocalResourceDictionary()
+			if (string.IsNullOrEmpty(translated))
+				return string.Empty;
+
+			else return string.Format(translated, args);
+		}
+
+		private static ResourceDictionary GetLocalResourceDictionary()
 		{
 			try
 			{
@@ -48,6 +40,17 @@ namespace RepoZ.App.Win.i18n
 			catch (IOException)
 			{
 				return new ResourceDictionary { Source = new Uri("i18n\\en-US.xaml", UriKind.RelativeOrAbsolute) };
+			}
+		}
+
+		public static ResourceDictionary ResourceDictionary
+		{
+			get
+			{
+				if (_dictionary == null)
+					_dictionary = GetLocalResourceDictionary();
+
+				return _dictionary;
 			}
 		}
 

@@ -21,6 +21,7 @@
 	<system:String x:Key="ResetIgnoreRules">⛔ 重设忽略规则</system:String>
 	<system:String x:Key="Clear">🗑️ 清理</system:String>
 	<system:String x:Key="ScanComputer">⚡ 扫描计算机</system:String>
+	<system:String x:Key="ScanMac">⚡ Scan mac</system:String>
 	<system:String x:Key="ManageRepos">🛠️ 管理仓库</system:String>
 	<system:String x:Key="GotIt">了解</system:String>
 	<system:String x:Key="Open">打开</system:String>
@@ -37,6 +38,7 @@
 	<system:String x:Key="Push">推送</system:String>
 	<system:String x:Key="Checkout">检出</system:String>
 	<system:String x:Key="Ignore">忽略</system:String>
+	<system:String x:Key="Update hint">Version {0} is available.</system:String>
 	<system:String x:Key="Help Detail" xml:space="preserve">
 RepoZ 显示了本地驱动器上的所有Git仓库， 并将按如下格式展示每个仓库的状态：
 

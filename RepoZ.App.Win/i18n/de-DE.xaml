@@ -2,27 +2,28 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-	<system:String x:Key="Search">🔍 Suche</system:String>
+	<system:String x:Key="Search">Suche</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">Hier gibt es noch keine Repositories 😐
 
 Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei. RepoZ wird die Änderung erkennen und das Repository hier aufführen.
 
 Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
-	<system:String x:Key="Help">✋ Hilfe</system:String>
-	<system:String x:Key="Donate">☕ Einen Kaffee spendieren</system:String>
-	<system:String x:Key="Follow">🐤 @Waescher auf Twitter folgen</system:String>
-	<system:String x:Key="Star">🌟 RepoZ auf GitHub folgen</system:String>
-	<system:String x:Key="PingBack">💙 Danke sagen</system:String>
-	<system:String x:Key="Aggresive">😈 Aggresiv</system:String>
-	<system:String x:Key="Adequate">😅 Adäquat</system:String>
-	<system:String x:Key="Discretely">😇 Diskret</system:String>
-	<system:String x:Key="Off">💤 Aus</system:String>
-	<system:String x:Key="AutoFetch">🕒 Auto-Fetch</system:String>
-	<system:String x:Key="ResetIgnoreRules">⛔ Ignorier-Regeln zurücksetzen</system:String>
-	<system:String x:Key="Clear">🗑️ Liste leeren</system:String>
-	<system:String x:Key="ScanComputer">⚡ Computer durchsuchen</system:String>
-	<system:String x:Key="ManageRepos">🛠️ Repositories verwalten</system:String>
-	<system:String x:Key="GotIt">Verstanden.</system:String>
+	<system:String x:Key="Help">Hilfe</system:String>
+	<system:String x:Key="Donate">Einen Kaffee spendieren</system:String>
+	<system:String x:Key="Follow">@Waescher auf Twitter folgen</system:String>
+	<system:String x:Key="Star">RepoZ auf GitHub folgen</system:String>
+	<system:String x:Key="PingBack">Danke sagen ♥︎</system:String>
+	<system:String x:Key="Aggresive">Aggresiv</system:String>
+	<system:String x:Key="Adequate">Adäquat</system:String>
+	<system:String x:Key="Discretely">Diskret</system:String>
+	<system:String x:Key="Off">Aus</system:String>
+	<system:String x:Key="AutoFetch">Auto-Fetch</system:String>
+	<system:String x:Key="ResetIgnoreRules">Ignorier-Regeln zurücksetzen</system:String>
+	<system:String x:Key="Clear">Liste leeren</system:String>
+	<system:String x:Key="ScanComputer">Computer durchsuchen</system:String>
+	<system:String x:Key="ScanMac">Mac durchsuchen</system:String>
+	<system:String x:Key="ManageRepos">Repositories verwalten</system:String>
+	<system:String x:Key="GotIt">Verstanden</system:String>
 	<system:String x:Key="Open">Öffnen</system:String>
 	<system:String x:Key="StartWithWindows">Mit Windows starten</system:String>
 	<system:String x:Key="Exit">Beenden</system:String>
@@ -37,6 +38,7 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Push">Git Push</system:String>
 	<system:String x:Key="Checkout">Branch wechseln</system:String>
 	<system:String x:Key="Ignore">Ignorieren</system:String>
+	<system:String x:Key="Update hint">Version {0} ist verfügbar.</system:String>
 	<system:String x:Key="Help Detail" xml:space="preserve">
 RepoZ zeigt alle Repositories an, die auf lokalen Laufwerken gefunden wurden. Jedes Repository wird mit einem Status aufgeführt, der in etwa so aussehen wird:
 

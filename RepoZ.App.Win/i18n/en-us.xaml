@@ -2,27 +2,28 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-	<system:String x:Key="Search">🔍 Search</system:String>
+	<system:String x:Key="Search">Search</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">There are no repositories yet 😐
 		
 Go ahead and switch a branch or change a file in any repository on your computer. RepoZ will notice the change and list the repository here.
 		
 Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
-	<system:String x:Key="Help">✋ Help</system:String>
-	<system:String x:Key="Donate">☕ Buy me a coffee</system:String>
-	<system:String x:Key="Follow">🐤 Follow @Waescher</system:String>
-	<system:String x:Key="Star">🌟 Star RepoZ on GitHub</system:String>
-	<system:String x:Key="PingBack">💙 Ping back</system:String>
-	<system:String x:Key="Aggresive">😈 Aggresive</system:String>
-	<system:String x:Key="Adequate">😅 Adequate</system:String>
-	<system:String x:Key="Discretely">😇 Discretely</system:String>
-	<system:String x:Key="Off">💤 Off</system:String>
-	<system:String x:Key="AutoFetch">🕒 Auto fetch</system:String>
-	<system:String x:Key="ResetIgnoreRules">⛔ Reset ignore rules</system:String>
-	<system:String x:Key="Clear">🗑️ Clear</system:String>
+	<system:String x:Key="Help">Help</system:String>
+	<system:String x:Key="Donate">Buy me a coffee</system:String>
+	<system:String x:Key="Follow">Follow @Waescher</system:String>
+	<system:String x:Key="Star">Star RepoZ on GitHub</system:String>
+	<system:String x:Key="PingBack">Ping back</system:String>
+	<system:String x:Key="Aggresive">Aggresive</system:String>
+	<system:String x:Key="Adequate">Adequate</system:String>
+	<system:String x:Key="Discretely">Discretely</system:String>
+	<system:String x:Key="Off">Off</system:String>
+	<system:String x:Key="AutoFetch">Auto fetch</system:String>
+	<system:String x:Key="ResetIgnoreRules">Reset ignore rules</system:String>
+	<system:String x:Key="Clear">Clear</system:String>
 	<system:String x:Key="ScanComputer">⚡ Scan computer</system:String>
-	<system:String x:Key="ManageRepos">🛠️ Manage repositories</system:String>
-	<system:String x:Key="GotIt">Got it.</system:String>
+	<system:String x:Key="ScanMac">⚡ Scan mac</system:String>
+	<system:String x:Key="ManageRepos">Manage repositories</system:String>
+	<system:String x:Key="GotIt">Got it</system:String>
 	<system:String x:Key="Open">Open</system:String>
 	<system:String x:Key="StartWithWindows">Start with Windows</system:String>
 	<system:String x:Key="Exit">Exit</system:String>
@@ -37,6 +38,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Push">Push</system:String>
 	<system:String x:Key="Checkout">Checkout</system:String>
 	<system:String x:Key="Ignore">Ignore</system:String>
+	<system:String x:Key="Update hint">Version {0} is available.</system:String>
 	<system:String x:Key="Help Detail" xml:space="preserve">
 RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
 

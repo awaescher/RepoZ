@@ -81,6 +81,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -134,6 +135,7 @@
     <Compile Include="StringCommandHandler.cs" />
     <Compile Include="TinyIoC.cs" />
     <Compile Include="GeometryHelper.cs" />
+    <Compile Include="i18n\ResourceDictionaryTranslationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />
@@ -160,6 +162,15 @@
   <ItemGroup>
     <BundleResource Include="Resources\StatusBarImage.png" />
     <BundleResource Include="Resources\StatusBarImage%402x.png" />
+    <BundleResource Include="..\RepoZ.App.Win\i18n\zh-cn.xaml">
+      <Link>i18n\zh-cn.xaml</Link>
+    </BundleResource>
+    <BundleResource Include="..\RepoZ.App.Win\i18n\de-DE.xaml">
+      <Link>i18n\de-DE.xaml</Link>
+    </BundleResource>
+    <BundleResource Include="..\RepoZ.App.Win\i18n\en-us.xaml">
+      <Link>i18n\en-us.xaml</Link>
+    </BundleResource>
   </ItemGroup>
   <ItemGroup>
     <NativeReference Include="..\_ref\libgit2-4aecb64.dylib">
