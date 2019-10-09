@@ -30,7 +30,7 @@ namespace Tests.UI
 			public void Throws_If_Null_Is_Passed_As_Argument()
 			{
 				Action act = () => new RepositoryView(null);
-				act.ShouldThrow<ArgumentNullException>();
+				act.Should().Throw<ArgumentNullException>();
 			}
 		}
 

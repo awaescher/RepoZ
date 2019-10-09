@@ -29,7 +29,7 @@ namespace Tests.Common
 			public void Throws_When_Null_Is_Passed()
 			{
 				Action act = () => _queue.Enqueue(null);
-				act.ShouldThrow<ArgumentNullException>();
+				act.Should().Throw<ArgumentNullException>();
 			}
 
 			[Test]
@@ -48,7 +48,7 @@ namespace Tests.Common
 			public void Throws_When_Null_Is_Passed()
 			{
 				Action act = () => _queue.PushIn(null);
-				act.ShouldThrow<ArgumentNullException>();
+				act.Should().Throw<ArgumentNullException>();
 			}
 
 			[Test]
