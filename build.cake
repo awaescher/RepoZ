@@ -3,7 +3,7 @@
 #tool "nsis"
 #tool "nuget:?package=OpenCover"
 #tool "nuget:?package=NUnit.ConsoleRunner"
-#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
 
 
 ///////////////////////////////////////////////////////////////////////////////
