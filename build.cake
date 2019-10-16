@@ -93,6 +93,7 @@ Task("Build")
 	Information("Building {0}", _solution);
 	MSBuild(_solution, settings =>
 		settings.SetPlatformTarget(PlatformTarget.MSIL)
+			.UseToolVersion(MSBuildToolVersion.VS2019)
 			.WithProperty("TreatWarningsAsErrors","true")
 			.WithTarget("Build")
 			.SetConfiguration(configuration));
