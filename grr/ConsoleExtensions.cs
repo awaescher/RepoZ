@@ -72,8 +72,30 @@ namespace grr
 
 		public static void WriteConsoleInput(Process target, string value, int waitMilliseconds = 0)
 		{
+			PrintDebug($"Write to console process {target.ProcessName} ({target.Id})");
+
 			if (target.Id == Process.GetCurrentProcess().Id)
+			{
 				target = ParentProcessUtilities.GetParentProcess(target.Id);
+				PrintDebug($"Process was grr, took parent {target.ProcessName} ({target.Id})");
+			}
+
+			var parentProcess = ParentProcessUtilities.GetParentProcess(target.Id);
+
+			if (parentProcess?.ProcessName.Equals("conhost", StringComparison.OrdinalIgnoreCase) ?? false)
+			{
+				PrintDebug($"Parent process was conhost, checking of next parent is known.");
+				var nextParent = ParentProcessUtilities.GetParentProcess(parentProcess.Id);
+
+				if (nextParent?.ProcessName.Equals("WindowsTerminal", StringComparison.OrdinalIgnoreCase) ?? false)
+				{
+					target = nextParent;
+					PrintDebug($"Parent process was WindowsTerminal, taking this one to send keys: {nextParent?.ProcessName ?? ""} ({nextParent?.Id ?? -1})");
+				}
+			}
+
+			if (target == null)
+				return;
 
 			// append ENTER key
 			var arguments = (value + "{Enter}")
@@ -90,6 +112,11 @@ namespace grr
 				Process.Start(new ProcessStartInfo(command, arguments) { UseShellExecute = true });
 			else
 				Console.WriteLine(command + " does not exist.");
+		}
+
+		private static void PrintDebug(string value)
+		{
+			Debug.WriteLine(value);
 		}
 	}
 }
