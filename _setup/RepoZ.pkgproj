@@ -161,7 +161,7 @@
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
-													<integer>420</integer>
+													<integer>502</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
 													<key>UID</key>
@@ -177,7 +177,7 @@
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
-													<integer>420</integer>
+													<integer>502</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
 													<key>UID</key>
@@ -193,7 +193,7 @@
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
-													<integer>420</integer>
+													<integer>502</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
 													<key>UID</key>
@@ -225,7 +225,7 @@
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
-													<integer>420</integer>
+													<integer>502</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
 													<key>UID</key>
@@ -241,7 +241,7 @@
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
-													<integer>420</integer>
+													<integer>502</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
 													<key>UID</key>
@@ -257,7 +257,7 @@
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
-													<integer>420</integer>
+													<integer>502</integer>
 													<key>TYPE</key>
 													<integer>3</integer>
 													<key>UID</key>
@@ -381,7 +381,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>../_output/mac/Assemblies/RepoZ-CLI/libsos.dylib</string>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/Microsoft.CSharp.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
@@ -397,7 +397,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>../_output/mac/Assemblies/RepoZ-CLI/Microsoft.CSharp.dll</string>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/Microsoft.VisualBasic.Core.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
@@ -525,39 +525,7 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>../_output/mac/Assemblies/RepoZ-CLI/RepoZ.Ipc.dll</string>
-													<key>PATH_TYPE</key>
-													<integer>1</integer>
-													<key>PERMISSIONS</key>
-													<integer>420</integer>
-													<key>TYPE</key>
-													<integer>3</integer>
-													<key>UID</key>
-													<integer>0</integer>
-												</dict>
-												<dict>
-													<key>CHILDREN</key>
-													<array/>
-													<key>GID</key>
-													<integer>0</integer>
-													<key>PATH</key>
-													<string>../_output/mac/Assemblies/RepoZ-CLI/SendKeys.exe</string>
-													<key>PATH_TYPE</key>
-													<integer>1</integer>
-													<key>PERMISSIONS</key>
-													<integer>420</integer>
-													<key>TYPE</key>
-													<integer>3</integer>
-													<key>UID</key>
-													<integer>0</integer>
-												</dict>
-												<dict>
-													<key>CHILDREN</key>
-													<array/>
-													<key>GID</key>
-													<integer>0</integer>
-													<key>PATH</key>
-													<string>../_output/mac/Assemblies/RepoZ-CLI/SOS.NETCore.dll</string>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/RepoZ.Api.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
@@ -573,7 +541,39 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
-													<string>../_output/mac/Assemblies/RepoZ-CLI/sosdocsunix.txt</string>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/RepoZ.Ipc.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/SendKeys.exe</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>511</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/SOS_README.md</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
@@ -846,6 +846,22 @@
 													<integer>0</integer>
 													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Data.Common.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Data.DataSetExtensions.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
@@ -1613,6 +1629,22 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Net.Http.WinHttpHandler.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Net.HttpListener.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
@@ -2221,6 +2253,22 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.CompilerServices.Unsafe.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.CompilerServices.VisualC.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
@@ -2333,6 +2381,22 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.Intrinsics.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.Loader.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
@@ -2430,6 +2494,38 @@
 													<integer>0</integer>
 													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.Serialization.Xml.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.WindowsRuntime.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Runtime.WindowsRuntime.UI.Xaml.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
@@ -2765,6 +2861,22 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Text.Encoding.CodePages.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Text.Encoding.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
@@ -2797,7 +2909,55 @@
 													<key>GID</key>
 													<integer>0</integer>
 													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Text.Encodings.Web.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Text.Json.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
 													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Text.RegularExpressions.dll</string>
+													<key>PATH_TYPE</key>
+													<integer>1</integer>
+													<key>PERMISSIONS</key>
+													<integer>502</integer>
+													<key>TYPE</key>
+													<integer>3</integer>
+													<key>UID</key>
+													<integer>0</integer>
+												</dict>
+												<dict>
+													<key>CHILDREN</key>
+													<array/>
+													<key>GID</key>
+													<integer>0</integer>
+													<key>PATH</key>
+													<string>../_output/mac/Assemblies/RepoZ-CLI/System.Threading.Channels.dll</string>
 													<key>PATH_TYPE</key>
 													<integer>1</integer>
 													<key>PERMISSIONS</key>
