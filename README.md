@@ -18,7 +18,7 @@ RepoZ will not compete with your favorite git clients, so keep them. It's not ab
 
 🍫  Available on [chocolatey](https://chocolatey.org/packages/repoz) as well, just use `choco install repoz`.
 
-## The Hub ![windows][windows] ![macos][macOS]
+## The Hub
 The hub provides a quick overview of your repositories including their current branch and a short status information. Additionally, it offers some shortcuts like revealing a repository in the Windows Explorer or macOS Finder, opening a command line tool in a given repository and checking out git branches.
 
 RepoZ is available for Windows and macOS.
@@ -40,7 +40,7 @@ To open a file browser, simply press <kbd>Return</kbd> on the keyboard once you 
 
 <sup>*</sup> On Mac you need to give RepoZ access to the [keyboard events in the system privacy settings](http://mizage.com/help/accessibility.html). Once you have done this, you might need to restart the app.
 
-## Command Line Sidekick ![windows][windows] ![macos][macOS]
+## Command Line Sidekick
 RepoZ is a UI-centered tool but comes with a sidekick app called **grr** to empower the command line hackers. 
 With **grr**, the information from RepoZ can be brought to any command line tool.
 
@@ -57,7 +57,7 @@ See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell 
 
 #### Don't forget to have a look at `grr help` once you get your hands on.
 
-## Enhanced Windows Explorer Titles ![windows][windows]
+## Enhanced Windows Explorer Titles
 As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
