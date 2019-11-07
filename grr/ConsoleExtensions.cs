@@ -77,6 +77,9 @@ namespace grr
 			if (target.Id == Process.GetCurrentProcess().Id)
 			{
 				target = ParentProcessUtilities.GetParentProcess(target.Id);
+				if (target == null)
+					return;
+
 				PrintDebug($"Process was grr, took parent {target.ProcessName} ({target.Id})");
 			}
 
@@ -93,9 +96,6 @@ namespace grr
 					PrintDebug($"Parent process was WindowsTerminal, taking this one to send keys: {nextParent?.ProcessName ?? ""} ({nextParent?.Id ?? -1})");
 				}
 			}
-
-			if (target == null)
-				return;
 
 			// append ENTER key
 			var arguments = (value + "{Enter}")
