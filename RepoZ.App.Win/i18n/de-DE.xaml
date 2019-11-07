@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-	<system:String x:Key="Search">Suche</system:String>
+    <system:String x:Key="Search">Suche</system:String>
+    <system:String x:Key="SearchWin">🔍 Suche</system:String>
 	<system:String x:Key="EmptyHint" xml:space="preserve">Hier gibt es noch keine Repositories 😐
 
 Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere eine Datei. RepoZ wird die Änderung erkennen und das Repository hier aufführen.

@@ -2,7 +2,8 @@
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
 					xmlns:system="clr-namespace:System;assembly=mscorlib">
-	<system:String x:Key="Search">Search</system:String>
+    <system:String x:Key="Search">Search</system:String>
+    <system:String x:Key="SearchWin">🔍 Search</system:String>
 	<system:String x:Key="EmptyHint"
 				   xml:space="preserve">There are no repositories yet 😐
 		

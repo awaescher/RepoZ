@@ -70,7 +70,7 @@
                             </controls:ZTextBox>
 
                             <TextBlock IsHitTestVisible="False"
-								   Text="{DynamicResource Search}"
+								   Text="{DynamicResource SearchWin}"
 								   VerticalAlignment="Center"
 								   FontSize="15"
 								   HorizontalAlignment="Left"

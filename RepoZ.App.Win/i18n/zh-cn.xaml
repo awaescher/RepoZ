@@ -3,6 +3,7 @@
                     xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="Search">搜索</system:String>
+    <system:String x:Key="SearchWin">🔍 搜索</system:String>
     <system:String x:Key="EmptyHint" xml:space="preserve">还没有任何仓库记录😐
 		
 在计算机上的任何仓库中切换分支以使其显示在此处。
