@@ -4,9 +4,7 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=bugs)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=awaescher_RepoZ&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=awaescher_RepoZ)
 
-![windows][windows] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4)
-
-![macos][macOS] [![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Mac)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=5)
+[![Build Status](https://dev.azure.com/awaescher/osspipeline/_apis/build/status/Cake-Win)](https://dev.azure.com/awaescher/osspipeline/_build/latest?definitionId=4)
 
 # RepoZ
 
@@ -66,7 +64,3 @@ As an extra goodie for Windows users, RepoZ automatically detects open File Expl
 
 ## Credits
 The **grr** app icon was made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> and is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
-
-
-[windows]: https://raw.githubusercontent.com/MarcBruins/awesome-xamarin/master/images/windows.png
-[macos]: https://raw.githubusercontent.com/MarcBruins/awesome-xamarin/master/images/ios.png
