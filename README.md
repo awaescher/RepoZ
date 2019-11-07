@@ -62,5 +62,8 @@ As an extra goodie for Windows users, RepoZ automatically detects open File Expl
 
 ![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
 
+## Dependencies ⚠︎
+Some user [reported crashes at program start](https://github.com/awaescher/RepoZ/issues/83). Please make sure to install the [.NET Framework Runtime v4.7.2](http://go.microsoft.com/fwlink/?LinkId=863262) if you experience similar issues.
+
 ## Credits
 The **grr** app icon was made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> and is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
