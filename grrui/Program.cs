@@ -79,6 +79,15 @@ namespace grrui
             }
 
             buttonX = buttonX + navigationButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
+            var copyPathButton = new Button("Copy")
+            {
+                Clicked = Copy,
+                X = buttonX,
+                Y = Pos.AnchorEnd(1),
+                CanFocus = false
+            };
+
+            buttonX = buttonX + copyPathButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
             var browseButton = new Button("Browse")
             {
                 Clicked = Browse,
@@ -95,7 +104,7 @@ namespace grrui
                 CanFocus = false
             };
 
-            win.Add(navigationButton, browseButton, quitButton);
+            win.Add(navigationButton, copyPathButton, browseButton, quitButton);
 
             win.DefineKeyAction(Key.Enter, () => win.SetFocus(_repositoryList));
             win.DefineKeyAction(Key.Esc, () =>
@@ -141,6 +150,15 @@ namespace grrui
                 TextCopy.Clipboard.SetText(command);
                 TimelyMessage.ShowMessage("Copied to clipboard. Please paste and run the command manually now.", TimeSpan.FromMilliseconds(100));
                 Application.RequestStop();
+            });
+        }
+
+        private static void Copy()
+        {
+            ExecuteOnSelectedRepository(r =>
+            {
+                var command = $"\"{r.SafePath}\"";
+                TextCopy.Clipboard.SetText(command);
             });
         }
 
