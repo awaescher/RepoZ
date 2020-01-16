@@ -84,17 +84,10 @@ namespace grr
 			}
 
 			var parentProcess = ParentProcessUtilities.GetParentProcess(target.Id);
-
-			if (parentProcess?.ProcessName.Equals("conhost", StringComparison.OrdinalIgnoreCase) ?? false)
+			if (parentProcess?.ProcessName.Equals("WindowsTerminal", StringComparison.OrdinalIgnoreCase) ?? false)
 			{
-				PrintDebug($"Parent process was conhost, checking of next parent is known.");
-				var nextParent = ParentProcessUtilities.GetParentProcess(parentProcess.Id);
-
-				if (nextParent?.ProcessName.Equals("WindowsTerminal", StringComparison.OrdinalIgnoreCase) ?? false)
-				{
-					target = nextParent;
-					PrintDebug($"Parent process was WindowsTerminal, taking this one to send keys: {nextParent?.ProcessName ?? ""} ({nextParent?.Id ?? -1})");
-				}
+				target = parentProcess;
+				PrintDebug($"Parent process was WindowsTerminal, taking this one to send keys: {parentProcess?.ProcessName ?? ""} ({parentProcess?.Id ?? -1})");
 			}
 
 			// append ENTER key
