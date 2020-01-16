@@ -39,7 +39,7 @@ namespace grr.Messages
             if (!Filter.RequestElevation)
             {
                 if (isWindows)
-                    return new ProcessStartInfo(file);
+                    return new ProcessStartInfo(file) { UseShellExecute = true };
                 else
                     return new ProcessStartInfo("open", file);
             }
