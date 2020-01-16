@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RepoZ.Ipc;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -71,5 +72,7 @@ namespace grr.Messages
 			var executables = new string[] { ".exe", ".bat", ".cmd", ".com" };
 			return executables.Any(e => file.EndsWith(e, System.StringComparison.OrdinalIgnoreCase));
 		}
+
+		public override bool ShouldWriteRepositories(Repository[] repositories) => false;
 	}
 }

@@ -34,5 +34,6 @@ namespace grr.Messages
 
 		public bool HasRemoteCommand => true;
 
+		public bool ShouldWriteRepositories(Repository[] repositories) => true;
 	}
 }

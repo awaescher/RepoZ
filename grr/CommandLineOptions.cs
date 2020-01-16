@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 
@@ -18,6 +15,11 @@ namespace grr
 	{
 	}
 
+	[Verb("gd", HelpText = "Returns the main directory of a given repository and puts it into the clipboard")]
+	public class GetDirectoryOptions : RepositoryFilterOptions
+	{
+	}
+
 	[Verb("open", HelpText = "Opens the directory or a file of a given repository with the operating system's default application.")]
 	public class OpenDirectoryOptions : RepositoryFilterOptions
 	{
@@ -27,12 +29,13 @@ namespace grr
 	{
 		public const string ListCommand = "list";
 		public const string ChangeDirectoryCommand = "cd";
+		public const string GetDirectoryCommand = "gd";
 		public const string OpenDirectoryCommand = "open";
 
 		public const string HelpCommand = "help";
 		public const char HelpCommandChar = '?';
 
-		public static string[] GetKnownCommands() => new string[] { ListCommand, ChangeDirectoryCommand, OpenDirectoryCommand, HelpCommand, HelpCommandChar.ToString() };
+		public static string[] GetKnownCommands() => new string[] { ListCommand, ChangeDirectoryCommand, GetDirectoryCommand, OpenDirectoryCommand, HelpCommand, HelpCommandChar.ToString() };
 
 		public static bool IsKnownArgument(string arg)
 		{
@@ -97,6 +100,7 @@ namespace grr
 			help.AddPostOptionsLine("⁞  grr \t\t\tLists all repositories found in RepoZ including their status");
 			help.AddPostOptionsLine("⁞  grr list Repo\tShows the status of a given repository (command \"list\" is optional)");
 			help.AddPostOptionsLine("⁞  grr cd Repo\t\tNavigates to the main directory of a given repository");
+			help.AddPostOptionsLine("⁞  grr gd Repo\t\tReturns the main directory of a given repository and puts it into the clipboard");
 			help.AddPostOptionsLine("⁞  grr open Repo\tOpens the main directory of a given repository (in Windows Explorer)");
 			help.AddPostOptionsLine("");
 			help.AddPostOptionsLine("Predefined filters:");

@@ -9,5 +9,7 @@ namespace grr.Messages
 		void Execute(Repository[] repositories);
 
 		bool HasRemoteCommand { get; }
+
+		bool ShouldWriteRepositories(Repository[] repositories);
 	}
 }

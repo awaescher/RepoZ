@@ -76,6 +76,8 @@ namespace grr.Messages
 			}
 		}
 
+		public abstract bool ShouldWriteRepositories(Repository[] repositories);
+
 		public RepositoryFilterOptions Filter { get; }
 	}
 }

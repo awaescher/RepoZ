@@ -42,9 +42,14 @@ namespace grr
                         result = client.GetRepositories(message.GetRemoteCommand());
 
 						if (result.Repositories?.Length > 0)
-							WriteRepositories(result.Repositories);
+						{
+							if (message.ShouldWriteRepositories(result.Repositories))
+								WriteRepositories(result.Repositories);
+						}
 						else
+						{
 							Console.WriteLine(result.Answer);
+						}
 					}
 
 					message?.Execute(result?.Repositories);
@@ -65,7 +70,10 @@ namespace grr
 		{
 			try
 			{
-				var parseResult = CommandLine.Parser.Default.ParseArguments(args, typeof(ListOptions), typeof(ChangeDirectoryOptions), typeof(OpenDirectoryOptions));
+				var parseResult = CommandLine.Parser.Default.ParseArguments(args, typeof(ListOptions), typeof(ChangeDirectoryOptions), typeof(GetDirectoryOptions), typeof(OpenDirectoryOptions));
+
+				if (parseResult.Tag == CommandLine.ParserResultType.NotParsed)
+					return null;
 
 				var options = parseResult.GetType().GetProperty("Value").GetValue(parseResult) as RepositoryFilterOptions;
 
@@ -75,7 +83,7 @@ namespace grr
 				{
 					if (options.RepositoryFilter == null
 						&& args.Length == 2
-						&& "cd".Equals(args[0], StringComparison.OrdinalIgnoreCase)
+						&& ("cd".Equals(args[0], StringComparison.OrdinalIgnoreCase) || "gd".Equals(args[0], StringComparison.OrdinalIgnoreCase))
 						&& args[1] == "-")
 					{
 						options.RepositoryFilter = "-";
@@ -174,6 +182,9 @@ namespace grr
 
 			if (options is ChangeDirectoryOptions)
 				message = new ChangeToDirectoryMessage(options);
+
+			if (options is GetDirectoryOptions)
+				message = new GetDirectoryMessage(options);
 
 			if (options is OpenDirectoryOptions)
 			{
