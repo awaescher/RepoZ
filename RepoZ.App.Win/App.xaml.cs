@@ -44,7 +44,7 @@ namespace RepoZ.App.Win
 			app.Run();
 		}
 
-        protected override void OnStartup(StartupEventArgs e)
+		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
@@ -55,9 +55,9 @@ namespace RepoZ.App.Win
 				typeof(FrameworkElement),
 				new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag)));
 
-            Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
+			Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
 
-            _notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
 			var container = TinyIoCContainer.Current;
 
@@ -166,18 +166,9 @@ namespace RepoZ.App.Win
 			// We noticed that the hotkey registration at app start causes a high CPU utilization if the main window was not shown before.
 			// To fix this, we need to make the window visible. However, to prevent flickering we move the window out of the screen bounds to show and hide it.
 
-			var originalLeft = window.Left;
-
-			try
-			{
-				window.Left = -9999;
-				window.Show();
-				window.Hide();
-			}
-			finally
-			{
-				Task.Delay(50).ContinueWith(t => Dispatcher.BeginInvoke((Action)(() => window.Left = originalLeft)));
-			}
+			window.Left = -9999;
+			window.Show();
+			window.Hide();
 		}
 
 		private void OnHotKeyPressed()

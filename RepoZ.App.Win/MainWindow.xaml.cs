@@ -113,6 +113,8 @@ namespace RepoZ.App.Win
 		{
 			Dispatcher.Invoke(() =>
 			{
+				PlaceFormToLowerRight();
+
 				if (!IsShown)
 					Show();
 
