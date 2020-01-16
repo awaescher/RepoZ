@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using RepoZ.Ipc;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -22,5 +23,7 @@ namespace grr.Messages
             else
                 Process.Start(new ProcessStartInfo("open", directoryInQuotes));
         }
-    }
+
+		public override bool ShouldWriteRepositories(Repository[] repositories) => true;
+	}
 }

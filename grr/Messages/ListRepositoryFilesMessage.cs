@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RepoZ.Ipc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,5 +30,7 @@ namespace grr.Messages
 			return Directory.GetFileSystemEntries(directory, filter.FileFilter, searchOption)
 				.OrderBy(i => i);
 		}
+
+		public override bool ShouldWriteRepositories(Repository[] repositories) => false;
 	}
 }

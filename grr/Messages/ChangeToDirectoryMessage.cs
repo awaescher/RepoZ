@@ -49,5 +49,7 @@ namespace grr.Messages
 				base.ExecuteRepositoryQuery(repositories);
 			}
 		}
+
+		public override bool ShouldWriteRepositories(Repository[] repositories) => true;
 	}
 }
