@@ -73,10 +73,7 @@ namespace grrui
             };
 
             if (!CanNavigate)
-            {
-                navigationButton.Text = "Copy navigation command";
                 navigationButton.Clicked = CopyNavigationCommandAndQuit;
-            }
 
             buttonX = buttonX + navigationButton.Text.Length + BUTTON_BORDER + BUTTON_DISTANCE;
             var copyPathButton = new Button("Copy")
@@ -148,7 +145,7 @@ namespace grrui
             {
                 var command = $"cd \"{r.SafePath}\"";
                 TextCopy.Clipboard.SetText(command);
-                TimelyMessage.ShowMessage("Copied to clipboard. Please paste and run the command manually now.", TimeSpan.FromMilliseconds(100));
+                TimelyMessage.ShowMessage("Copied to clipboard. Please paste and run the command manually now.", TimeSpan.FromMilliseconds(1000));
                 Application.RequestStop();
             });
         }

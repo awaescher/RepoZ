@@ -13,7 +13,7 @@
 var target = Argument<string>("target", "Default");
 var configuration = Argument<string>("configuration", "Release");
 var system = Argument<string>("system", System.Environment.OSVersion.Platform.ToString().StartsWith("Win") ? "win" : "mac");
-var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "netcoreapp3.0");
+var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "netcoreapp3.1");
 var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", system=="win" ? "win-x64" : "osx-x64");
 
 ///////////////////////////////////////////////////////////////////////////////
