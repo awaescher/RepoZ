@@ -23,7 +23,7 @@ The hub provides a quick overview of your repositories including their current b
 
 RepoZ is available for Windows and macOS.
 
-![Screenshot](_doc/RepoZ-ReadMe-UI-Both.png)
+![Screenshot](https://github.com/awaescher/RepoZ/blob/master/_doc/RepoZ-ReadMe-UI-Both.png)
 
 
 > **"Well ok, that's a neat summary ..."** you might say **"... but how does this help?"**.
@@ -32,7 +32,7 @@ If you are working on different git repositories throughout the day, you might f
 
 With RepoZ, you can instantly jump into a given repository with a file browser or command prompt. This is shown in the following gif.
 
-![Navigation](_doc/QuickNavigation.gif)
+![Navigation](https://github.com/awaescher/RepoZ/blob/master/_doc/QuickNavigation.gif)
 
 For Windows, use the hotkeys <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> to show RepoZ. On Mac it's <kbd>Command</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd><sup>*</sup>. 
 
@@ -53,14 +53,14 @@ It supports ...
  - open files in a repository directly with `grr open MyRepo *.sln` (add `-e` for elevated mode, "as Admin")
  
 See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell console:
-![Screenshot](_doc/grr-5fps-compressed.gif)
+![Screenshot](https://github.com/awaescher/RepoZ/blob/master/_doc/grr-5fps-compressed.gif)
 
 #### Don't forget to have a look at `grr help` once you get your hands on.
 
 ## Enhanced Windows Explorer Titles
 As an extra goodie for Windows users, RepoZ automatically detects open File Explorer windows and adds a status appendix to their title if they are in context of a git repository.
 
-![Screenshot](_doc/RepoZ-ReadMe-Explorer.png)
+![Screenshot](https://github.com/awaescher/RepoZ/blob/master/_doc/RepoZ-ReadMe-Explorer.png)
 
 ## Dependencies ⚠︎
 Some user [reported crashes at program start](https://github.com/awaescher/RepoZ/issues/83). Please make sure to install the [.NET Framework Runtime v4.7.2](http://go.microsoft.com/fwlink/?LinkId=863262) if you experience similar issues.
