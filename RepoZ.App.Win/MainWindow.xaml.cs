@@ -343,10 +343,14 @@ namespace RepoZ.App.Win
 
 		private void txtFilter_Finish(object sender, EventArgs e)
 		{
-			lstRepositories.Focus();
-			if (lstRepositories.Items.Count > 0)
-				lstRepositories.SelectedIndex = 0;
-		}
+            lstRepositories.Focus();
+            if (lstRepositories.Items.Count > 0)
+            {
+                lstRepositories.SelectedIndex = 0;
+                var item = (ListBoxItem)lstRepositories.ItemContainerGenerator.ContainerFromIndex(0);
+                item?.Focus();
+            }
+        }
 
 		private string GetHelp(StatusCharacterMap statusCharacterMap)
 		{
