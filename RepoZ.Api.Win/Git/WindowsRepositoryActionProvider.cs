@@ -20,6 +20,9 @@ namespace RepoZ.Api.Win.IO
 		private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
 
+		private string _windowsTerminalLocation;
+		private string _bashLocation;
+
 		public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
 			IRepositoryMonitor repositoryMonitor,
@@ -34,12 +37,15 @@ namespace RepoZ.Api.Win.IO
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows File Explorer"), repository.Path);
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows File Explorer"), repository.SafePath);
 		}
 
 		public RepositoryAction GetSecondaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-noexit -command \"cd '{repository.Path}'\"");
+			if (HasWindowsTerminal())
+				return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Terminal"), "wt.exe ", $"-d \"{repository.SafePath}\"");
+
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-noexit -command \"cd '{repository.SafePath}'\"");
 		}
 
 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
@@ -50,28 +56,27 @@ namespace RepoZ.Api.Win.IO
 			{
 				yield return GetPrimaryAction(singleRepository);
 				yield return GetSecondaryAction(singleRepository);
-				yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Command Prompt"), "cmd.exe", $"/K \"cd /d {singleRepository.Path}\"");
 
-				string bashSubpath = @"Git\git-bash.exe";
-				string folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-				string gitbash = Path.Combine(folder, bashSubpath);
+				// if Windows Terminal is installed, provider PowerShell as additional option here (otherwise PowerShell is the secondary action)
+				if (HasWindowsTerminal())
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-noexit -command \"cd '{singleRepository.SafePath}'\"");
+				
+				yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Command Prompt"), "cmd.exe", $"/K \"cd /d {singleRepository.SafePath}\"");
 
-				if (!File.Exists(gitbash))
+				var bashExecutable = TryFindBash();
+				var hasBash = !string.IsNullOrEmpty(bashExecutable);
+				if (hasBash)
 				{
-					folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
-					gitbash = Path.Combine(folder, bashSubpath);
-				}
-
-				if (File.Exists(gitbash))
-				{
-					string path = singleRepository.Path;
+					string path = singleRepository.SafePath;
 					if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
 						path = path.Substring(0, path.Length - 1);
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Git Bash"), gitbash, $"\"--cd={path}\"");
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Git Bash"), bashExecutable, $"\"--cd={path}\"");
+
 				}
+
 			}
-			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup:true, executionCausesSynchronizing: true);
-			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing:true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
 			if (singleRepository != null)
@@ -101,8 +106,8 @@ namespace RepoZ.Api.Win.IO
 		}
 
 		private RepositoryAction CreateActionForMultipleRepositories(string name,
-			IEnumerable<Repository> repositories, 
-			Action<Repository> action, 
+			IEnumerable<Repository> repositories,
+			Action<Repository> action,
 			bool beginGroup = false,
 			bool executionCausesSynchronizing = false)
 		{
@@ -146,6 +151,41 @@ namespace RepoZ.Api.Win.IO
 			{
 				_errorHandler.Handle(ex.Message);
 			}
+		}
+
+		private bool HasWindowsTerminal() => !string.IsNullOrEmpty(TryFindWindowsTerminal());
+
+		private string TryFindWindowsTerminal()
+		{
+			if (_windowsTerminalLocation == null)
+			{
+				var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WindowsApps", "wt.exe");
+				_windowsTerminalLocation = File.Exists(executable) ? executable : "";
+			}
+
+			return _windowsTerminalLocation;
+		}
+
+		private string TryFindBash()
+		{
+			if (_bashLocation == null)
+			{
+				var bashSubpath = @"Git\git-bash.exe";
+				var folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+				var executable = Path.Combine(folder, bashSubpath);
+
+				_bashLocation = File.Exists(executable) ? executable : "";
+
+				if (string.IsNullOrEmpty(_bashLocation))
+				{
+					folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+					executable = Path.Combine(folder, bashSubpath);
+
+					_bashLocation = File.Exists(executable) ? executable : "";
+				}
+			}
+
+			return _bashLocation;
 		}
 	}
 }

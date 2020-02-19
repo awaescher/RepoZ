@@ -90,6 +90,18 @@ namespace RepoZ.Api.Git
 
 		public int? StashCount{ get; set; }
 
+		public string SafePath
+		{
+			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
+			get
+			{
+				var safePath = Path?.Replace(@"\", "/") ?? "";
+				if (safePath.EndsWith("/"))
+					safePath = safePath.Substring(0, safePath.Length - 1);
+				return safePath;
+			}
+		}
+
 		public string GetStatusCode()
 		{
 			return string.Join("-", new object[]{
