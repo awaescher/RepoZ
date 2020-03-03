@@ -45,7 +45,7 @@ namespace RepoZ.Api.Win.IO
 			if (HasWindowsTerminal())
 				return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Terminal"), "wt.exe ", $"-d \"{repository.SafePath}\"");
 
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-noexit -command \"cd '{repository.SafePath}'\"");
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{repository.SafePath}'\"");
 		}
 
 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
@@ -59,8 +59,8 @@ namespace RepoZ.Api.Win.IO
 
 				// if Windows Terminal is installed, provider PowerShell as additional option here (otherwise PowerShell is the secondary action)
 				if (HasWindowsTerminal())
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-noexit -command \"cd '{singleRepository.SafePath}'\"");
-				
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{singleRepository.SafePath}'\"");
+
 				yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Command Prompt"), "cmd.exe", $"/K \"cd /d {singleRepository.SafePath}\"");
 
 				var bashExecutable = TryFindBash();
@@ -145,6 +145,7 @@ namespace RepoZ.Api.Win.IO
 		{
 			try
 			{
+				Debug.WriteLine("Starting: " + process + arguments);
 				Process.Start(process, arguments);
 			}
 			catch (Exception ex)
