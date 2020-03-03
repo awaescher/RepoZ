@@ -124,10 +124,10 @@
                                     </controls:AcrylicMenuItem>
                                     <Separator/>
                                     <controls:AcrylicMenuItem Header="{DynamicResource PingBack}" Foreground="#FFED8888">
-                                        <controls:AcrylicMenuItem Header="{DynamicResource Star}" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
+										<controls:AcrylicMenuItem Header="{DynamicResource Donate}" Click="SponsorButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
+										<Separator/>
+										<controls:AcrylicMenuItem Header="{DynamicResource Star}" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
                                         <controls:AcrylicMenuItem Header="{DynamicResource Follow}" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
-                                        <Separator/>
-                                        <controls:AcrylicMenuItem Header="{DynamicResource Donate}" Click="CoffeeButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
                                     </controls:AcrylicMenuItem>
                                     <Separator/>
                                     <controls:AcrylicMenuItem Header="{DynamicResource Help}" Click="HelpButton_Click"/>

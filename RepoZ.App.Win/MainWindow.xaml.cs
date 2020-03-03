@@ -222,9 +222,9 @@ namespace RepoZ.App.Win
 			Navigate("https://twitter.com/Waescher");
 		}
 
-		private void CoffeeButton_Click(object sender, RoutedEventArgs e)
+		private void SponsorButton_Click(object sender, RoutedEventArgs e)
 		{
-			Navigate("https://www.buymeacoffee.com/awaescher");
+			Navigate("https://github.com/sponsors/awaescher");
 		}
 
 		private void Navigate(string url)

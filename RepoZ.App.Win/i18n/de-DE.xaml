@@ -10,9 +10,9 @@ Navigiere zu einem Git Repository und wechsle den aktuellen Branch oder ändere 
 
 Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories durchsucht werden.</system:String>
 	<system:String x:Key="Help">Hilfe</system:String>
-	<system:String x:Key="Donate">Einen Kaffee spendieren</system:String>
-	<system:String x:Key="Follow">@Waescher auf Twitter folgen</system:String>
-	<system:String x:Key="Star">Einen GitHub-Stern schenken</system:String>
+	<system:String x:Key="Donate">Über GitHub sponsern</system:String>
+	<system:String x:Key="Follow">Auf Twitter folgen</system:String>
+	<system:String x:Key="Star">Einen GitHub-Stern spendieren</system:String>
 	<system:String x:Key="PingBack">Danke sagen ♥︎</system:String>
 	<system:String x:Key="Aggresive">Aggresiv</system:String>
 	<system:String x:Key="Adequate">Adäquat</system:String>
