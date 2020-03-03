@@ -18,17 +18,18 @@ namespace grr.Messages.Filters
 
 		public void Filter(RepositoryFilterOptions filter)
 		{
-			string filterValue = filter?.RepositoryFilter ?? "";
+			if (filter?.RepositoryFilter == null)
+				return;
 
-			if (filterValue.StartsWith(":"))
+			if (filter.RepositoryFilter.StartsWith(":"))
 			{
-				string rest = filterValue.Substring(1);
+				string rest = filter.RepositoryFilter.Substring(1);
 				if (int.TryParse(rest, out int index))
 				{
 					index--; // the index visible to the user are 1-based, not 0-based
 					var state = _historyRepository.Load();
 					if (index >= 0 && state.LastRepositories.Length > index)
-						filter.RepositoryFilter = state.LastRepositories[index]?.Name ?? filterValue;
+						filter.RepositoryFilter = state.LastRepositories[index]?.Name ?? filter.RepositoryFilter;
 				}
 			}
 		}
