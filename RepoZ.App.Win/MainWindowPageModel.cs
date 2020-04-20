@@ -1,11 +1,7 @@
 ﻿using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepoZ.App.Win
 {

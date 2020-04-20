@@ -64,6 +64,8 @@ namespace RepoZ.App.Win
 				new SortDescription(nameof(RepositoryView.Name),
 				ListSortDirection.Ascending));
 
+			var appName = System.Reflection.Assembly.GetEntryAssembly().GetName();
+			txtHelpCaption.Text = appName.Name + " " + appName.Version.ToString(2);
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
 			PlaceFormToLowerRight();
