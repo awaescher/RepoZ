@@ -245,7 +245,7 @@ namespace RepoZ.App.Mac
 				new NSMenuItem(_translationService.Translate("Star"), (s, e) => Navigate("https://github.com/awaescher/RepoZ")),
 				new NSMenuItem(_translationService.Translate("Follow"), (s, e) => Navigate("https://twitter.com/Waescher")),
 				NSMenuItem.SeparatorItem,
-				new NSMenuItem(_translationService.Translate("Donate"), (s, e) => Navigate("https://www.buymeacoffee.com/awaescher"))
+				new NSMenuItem(_translationService.Translate("Donate"), (s, e) => Navigate("https://github.com/sponsors/awaescher"))
 			};
 
 			var pingbackItem = MenuButton.Menu.ItemWithTag(MENU_PINGBACK);
@@ -301,9 +301,12 @@ namespace RepoZ.App.Mac
 
 		private void ShowHelp()
 		{
+			var appName = System.Reflection.Assembly.GetEntryAssembly().GetName();
+			var bundleVersion = NSBundle.MainBundle.ObjectForInfoDictionary("CFBundleShortVersionString").ToString();
+
 			var alert = new NSAlert
 			{
-				MessageText = _translationService.Translate("Help"),
+				MessageText = appName.Name + " " + bundleVersion,
 				AlertStyle = NSAlertStyle.Informational,
 				InformativeText = GetHelp(TinyIoC.TinyIoCContainer.Current.Resolve<StatusCharacterMap>())
 			};
