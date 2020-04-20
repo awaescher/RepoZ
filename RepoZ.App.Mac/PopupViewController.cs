@@ -242,10 +242,10 @@ namespace RepoZ.App.Mac
 				autoFetchItem.Submenu.AddItem(item);
 
 			var pingbackItems = new NSMenuItem[] {
-				new NSMenuItem(_translationService.Translate("Star"), (s, e) => Navigate("https://github.com/awaescher/RepoZ")),
-				new NSMenuItem(_translationService.Translate("Follow"), (s, e) => Navigate("https://twitter.com/Waescher")),
+				new NSMenuItem(_translationService.Translate("Donate"), (s, e) => Navigate("https://github.com/sponsors/awaescher")),
 				NSMenuItem.SeparatorItem,
-				new NSMenuItem(_translationService.Translate("Donate"), (s, e) => Navigate("https://github.com/sponsors/awaescher"))
+				new NSMenuItem(_translationService.Translate("Follow"), (s, e) => Navigate("https://twitter.com/Waescher")),
+				new NSMenuItem(_translationService.Translate("Star"), (s, e) => Navigate("https://github.com/awaescher/RepoZ"))
 			};
 
 			var pingbackItem = MenuButton.Menu.ItemWithTag(MENU_PINGBACK);
