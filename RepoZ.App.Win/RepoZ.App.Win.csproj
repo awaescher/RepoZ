@@ -93,6 +93,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -118,6 +119,7 @@
     <Compile Include="i18n\ResourceDictionaryTranslationService.cs" />
     <Compile Include="MainWindowPageModel.cs" />
     <Compile Include="NotifyIconViewModel.cs" />
+    <Compile Include="TaskbarLocator.cs" />
     <Compile Include="TinySoup.cs" />
     <Compile Include="WindowsCompositionHelper.cs" />
     <Compile Include="WpfThreadDispatcher.cs" />

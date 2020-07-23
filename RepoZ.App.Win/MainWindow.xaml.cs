@@ -68,7 +68,7 @@ namespace RepoZ.App.Win
 			txtHelpCaption.Text = appName.Name + " " + appName.Version.ToString(2);
 			txtHelp.Text = GetHelp(statusCharacterMap);
 
-			PlaceFormToLowerRight();
+			PlaceFormByTaskbarLocation();
 		}
 
 		private void View_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -115,7 +115,7 @@ namespace RepoZ.App.Win
 		{
 			Dispatcher.Invoke(() =>
 			{
-				PlaceFormToLowerRight();
+				PlaceFormByTaskbarLocation();
 
 				if (!IsShown)
 					Show();
@@ -234,10 +234,32 @@ namespace RepoZ.App.Win
 			Process.Start(url);
 		}
 
-		private void PlaceFormToLowerRight()
+		private void PlaceFormByTaskbarLocation()
 		{
-			Top = SystemParameters.WorkArea.Height - Height;
-			Left = SystemParameters.WorkArea.Width - Width;
+			var topY = SystemParameters.WorkArea.Top;
+			var bottomY = SystemParameters.WorkArea.Height - Height;
+			var leftX = SystemParameters.WorkArea.Left;
+			var rightX = SystemParameters.WorkArea.Width - Width;
+
+			switch (TaskbarLocator.GetTaskBarLocation())
+			{
+				case TaskbarLocator.TaskBarLocation.Top:
+					Top = topY;
+					Left = rightX;
+					break;
+				case TaskbarLocator.TaskBarLocation.Bottom:
+					Top = bottomY;
+					Left = rightX;
+					break;
+				case TaskbarLocator.TaskBarLocation.Left:
+					Top = bottomY;
+					Left = leftX;
+					break;
+				case TaskbarLocator.TaskBarLocation.Right:
+					Top = bottomY;
+					Left = rightX;
+					break;
+			}
 		}
 
 		private void ShowUpdateIfAvailable()
