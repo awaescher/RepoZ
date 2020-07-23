@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Terminal.Gui" Version="0.24.0" />
-    <PackageReference Include="TextCopy" Version="1.7.1" />
+    <PackageReference Include="Terminal.Gui" Version="0.81.0" />
+    <PackageReference Include="TextCopy" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
