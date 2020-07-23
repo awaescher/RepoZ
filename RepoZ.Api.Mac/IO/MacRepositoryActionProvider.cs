@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
+using System.IO;
 
 namespace RepoZ.Api.Mac
 {
@@ -14,6 +15,7 @@ namespace RepoZ.Api.Mac
         private readonly IRepositoryMonitor _repositoryMonitor;
         private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
+		private string _codeLocation;
 
 		public MacRepositoryActionProvider(
             IRepositoryWriter repositoryWriter,
@@ -45,6 +47,11 @@ namespace RepoZ.Api.Mac
             {
                 yield return GetPrimaryAction(singleRepository);
                 yield return GetSecondaryAction(singleRepository);
+
+                var codeExecutable = TryFindCode();
+                var hasCode = !string.IsNullOrEmpty(codeExecutable);
+                if (hasCode)
+                    yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
             }
             
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
@@ -110,5 +117,18 @@ namespace RepoZ.Api.Mac
                 _errorHandler.Handle(ex.Message);
             }
         }
-	}
+
+        private string TryFindCode()
+        {
+            if (_codeLocation == null)
+            {
+                var executable =  Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                                                "Visual Studio Code.app", "Contents", "Resources", "app", "bin", "code");
+
+                _codeLocation = File.Exists(executable) ? executable : "";
+            }
+
+            return _codeLocation;
+        }
+    }
 }
