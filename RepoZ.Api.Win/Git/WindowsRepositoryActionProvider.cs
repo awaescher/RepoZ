@@ -22,6 +22,7 @@ namespace RepoZ.Api.Win.IO
 
 		private string _windowsTerminalLocation;
 		private string _bashLocation;
+		private string _codeLocation;
 
 		public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
@@ -71,10 +72,15 @@ namespace RepoZ.Api.Win.IO
 					if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
 						path = path.Substring(0, path.Length - 1);
 					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Git Bash"), bashExecutable, $"\"--cd={path}\"");
-
 				}
 
+				var codeExecutable = TryFindCode();
+				var hasCode = !string.IsNullOrEmpty(codeExecutable);
+				if (hasCode)
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
+
 			}
+
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
@@ -171,22 +177,44 @@ namespace RepoZ.Api.Win.IO
 		{
 			if (_bashLocation == null)
 			{
-				var bashSubpath = @"Git\git-bash.exe";
+				var sub = Path.Combine("Git", "git-bash.exe");
 				var folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-				var executable = Path.Combine(folder, bashSubpath);
+				var executable = Path.Combine(folder, sub);
 
 				_bashLocation = File.Exists(executable) ? executable : "";
 
 				if (string.IsNullOrEmpty(_bashLocation))
 				{
 					folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
-					executable = Path.Combine(folder, bashSubpath);
+					executable = Path.Combine(folder, sub);
 
 					_bashLocation = File.Exists(executable) ? executable : "";
 				}
 			}
 
 			return _bashLocation;
+		}
+
+		private string TryFindCode()
+		{
+			if (_codeLocation == null)
+			{
+				var sub = Path.Combine("Microsoft VS Code", "code.exe");
+				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				var executable = Path.Combine(folder, "Programs", sub);
+
+				_codeLocation = File.Exists(executable) ? executable : "";
+
+				if (string.IsNullOrEmpty(_codeLocation))
+				{
+					folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+					executable = Path.Combine(folder, sub);
+
+					_codeLocation = File.Exists(executable) ? executable : "";
+				}
+			}
+
+			return _codeLocation;
 		}
 	}
 }
