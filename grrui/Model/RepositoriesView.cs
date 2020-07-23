@@ -25,7 +25,7 @@ namespace grrui.Model
 
 			for (int i = 0; i < repositoryCount; i++)
 			{
-				var userIndex = i + 1; // the index visible to the user are 1-based, not 0-based;
+				var userIndex = i + 1; // the index visible to the user is 1-based, not 0-based;
 				var repository = repositories.ElementAt(i);
 
 				string repoName = (repository.Name.Length > MAX_REPO_NAME_LENGTH)
@@ -39,24 +39,10 @@ namespace grrui.Model
 				var name = repoName.PadRight(maxRepoNameLength + 3);
 				var branch = repository.BranchWithStatus;
 
-				var displayText = index + Clean(name) + Clean(branch);
+				var displayText = index + name + branch;
 
 				_repositoryViews[i] = new RepositoryView(repository) { DisplayText = displayText };
 			}
-		}
-
-		private static string Clean(string branch)
-		{
-			// **TODO**
-			// Remove this as soon as gui.cs can handle unicode chars
-			// see: https://github.com/migueldeicaza/gui.cs/issues/146
-
-			return branch.Replace(_map.ArrowDownSign, "»")
-				.Replace(_map.ArrowUpSign, "«")
-				.Replace(_map.EllipsesSign, "~")
-				.Replace(_map.IdenticalSign, "=")
-        .Replace(_map.NoUpstreamSign, "*")
-				.Replace(_map.StashSign, "|");
 		}
 
 		public RepositoryView[] Repositories => _repositoryViews

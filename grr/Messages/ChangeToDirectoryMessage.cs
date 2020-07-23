@@ -26,7 +26,7 @@ namespace grr.Messages
             }
             else
             {
-                TextCopy.Clipboard.SetText(command);
+                TextCopy.ClipboardService.SetText(command);
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("The command was copied to the clipboard, paste and execute it manually now.\nChanging directories is not supported on macOS yet, sorry.");
                 Console.ResetColor();
