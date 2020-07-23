@@ -123,7 +123,7 @@ namespace grrui
         {
             _filterField.Text = filter;
             _filterField.PositionCursor();
-            FilterField_Changed(_filterField, EventArgs.Empty);
+            FilterField_Changed(_filterField, NStack.ustring.Empty);
         }
 
         private static void Navigate()
@@ -144,7 +144,7 @@ namespace grrui
             ExecuteOnSelectedRepository(r =>
             {
                 var command = $"cd \"{r.SafePath}\"";
-                TextCopy.Clipboard.SetText(command);
+                TextCopy.ClipboardService.SetText(command);
                 TimelyMessage.ShowMessage("Copied to clipboard. Please paste and run the command manually now.", TimeSpan.FromMilliseconds(1000));
                 Application.RequestStop();
             });
@@ -155,7 +155,7 @@ namespace grrui
             ExecuteOnSelectedRepository(r =>
             {
                 var command = $"\"{r.SafePath}\"";
-                TextCopy.Clipboard.SetText(command);
+                TextCopy.ClipboardService.SetText(command);
             });
         }
 
@@ -177,7 +177,7 @@ namespace grrui
             }
         }
 
-        private static void FilterField_Changed(object sender, EventArgs e)
+        private static void FilterField_Changed(object sender, NStack.ustring e)
         {
             _repositoriesView.Filter = (sender as TextField)?.Text?.ToString() ?? "";
             _repositoryList.SetSource(_repositoriesView.Repositories);

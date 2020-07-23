@@ -15,7 +15,7 @@ namespace grr.Messages
 		{
 			directory = $"\"{directory}\"";
 
-			TextCopy.Clipboard.SetText(directory);
+			TextCopy.ClipboardService.SetText(directory);
             Console.WriteLine(directory);
         }
 
