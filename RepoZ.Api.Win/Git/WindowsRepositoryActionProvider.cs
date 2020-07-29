@@ -24,7 +24,7 @@ namespace RepoZ.Api.Win.IO
 		private string _bashLocation;
 		private string _codeLocation;
 
-		public WindowsRepositoryActionProvider(
+        public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
 			IRepositoryMonitor repositoryMonitor,
 			IErrorHandler errorHandler,
@@ -79,6 +79,12 @@ namespace RepoZ.Api.Win.IO
 				if (hasCode)
 					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
 
+                var slnFiles = TryFindVisualStudioSlnFiles(singleRepository);
+                foreach (var slnFile in slnFiles)
+                {
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open {0}", slnFile), Path.Combine(singleRepository.Path, slnFile));
+				}
+
 			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
@@ -102,7 +108,7 @@ namespace RepoZ.Api.Win.IO
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
 
-		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+        private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
 		{
 			return new RepositoryAction()
 			{
@@ -111,7 +117,7 @@ namespace RepoZ.Api.Win.IO
 			};
 		}
 
-		private RepositoryAction CreateActionForMultipleRepositories(string name,
+        private RepositoryAction CreateActionForMultipleRepositories(string name,
 			IEnumerable<Repository> repositories,
 			Action<Repository> action,
 			bool beginGroup = false,
@@ -135,7 +141,7 @@ namespace RepoZ.Api.Win.IO
 			};
 		}
 
-		private void SafelyExecute(Action<Repository> action, Repository repository)
+        private void SafelyExecute(Action<Repository> action, Repository repository)
 		{
 			try
 			{
@@ -147,7 +153,7 @@ namespace RepoZ.Api.Win.IO
 			}
 		}
 
-		private void StartProcess(string process, string arguments)
+        private void StartProcess(string process, string arguments)
 		{
 			try
 			{
@@ -160,9 +166,9 @@ namespace RepoZ.Api.Win.IO
 			}
 		}
 
-		private bool HasWindowsTerminal() => !string.IsNullOrEmpty(TryFindWindowsTerminal());
+        private bool HasWindowsTerminal() => !string.IsNullOrEmpty(TryFindWindowsTerminal());
 
-		private string TryFindWindowsTerminal()
+        private string TryFindWindowsTerminal()
 		{
 			if (_windowsTerminalLocation == null)
 			{
@@ -173,7 +179,7 @@ namespace RepoZ.Api.Win.IO
 			return _windowsTerminalLocation;
 		}
 
-		private string TryFindBash()
+        private string TryFindBash()
 		{
 			if (_bashLocation == null)
 			{
@@ -195,7 +201,7 @@ namespace RepoZ.Api.Win.IO
 			return _bashLocation;
 		}
 
-		private string TryFindCode()
+        private string TryFindCode()
 		{
 			if (_codeLocation == null)
 			{
@@ -216,5 +222,13 @@ namespace RepoZ.Api.Win.IO
 
 			return _codeLocation;
 		}
-	}
+
+        private IEnumerable<string> TryFindVisualStudioSlnFiles(Repository repository)
+        {
+            var directoryInfo = new DirectoryInfo(repository.Path);
+
+            var slnFiles = directoryInfo.GetFiles("*.sln");
+            return slnFiles.Select(f => f.Name);
+        }
+    }
 }

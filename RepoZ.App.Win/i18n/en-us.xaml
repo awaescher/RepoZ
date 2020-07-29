@@ -37,7 +37,8 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Open in Visual Studio Code">Open in Visual Studio Code</system:String>
 	<system:String x:Key="Open in Git Bash">Open in Git Bash</system:String>
 	<system:String x:Key="Open in Finder">Open in Finder</system:String>
-	<system:String x:Key="Open in Terminal">Open in Terminal</system:String>
+    <system:String x:Key="Open in Terminal">Open in Terminal</system:String>
+    <system:String x:Key="Open {0}">Open {0}</system:String>
 	<system:String x:Key="Fetch">Fetch</system:String>
 	<system:String x:Key="Pull">Pull</system:String>
 	<system:String x:Key="Push">Push</system:String>
