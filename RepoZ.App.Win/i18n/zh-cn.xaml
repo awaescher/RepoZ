@@ -37,6 +37,7 @@
     <system:String x:Key="Open in Git Bash">在 Git Bash 中打开</system:String>
     <system:String x:Key="Open in Finder">在 Finder 中打开</system:String>
     <system:String x:Key="Open in Terminal">在 Terminal 中打开</system:String>
+    <system:String x:Key="Open {0}">打开 {0}</system:String>
     <system:String x:Key="Fetch">获取</system:String>
     <system:String x:Key="Pull">拉取</system:String>
     <system:String x:Key="Push">推送</system:String>
