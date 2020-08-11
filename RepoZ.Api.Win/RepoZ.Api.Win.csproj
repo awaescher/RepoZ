@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Security.Permissions" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
   </ItemGroup>

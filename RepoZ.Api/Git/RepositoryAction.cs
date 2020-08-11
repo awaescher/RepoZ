@@ -18,6 +18,6 @@ namespace RepoZ.Api.Git
 
 		public bool CanExecute { get; set; } = true;
 
-		public RepositoryAction[] SubActions { get; set; }
+		public Func<RepositoryAction[]> DeferredSubActionsEnumerator { get; set; }
 	}
 }

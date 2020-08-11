@@ -1,15 +1,13 @@
-﻿using System;
-using System.IO;
+﻿using RepoZ.Api.Common;
+using RepoZ.Api.Common.Common;
+using RepoZ.Api.Git;
+using RepoZ.Api.IO;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RepoZ.Api.IO;
-using System.Drawing;
-using RepoZ.Api.Git;
-using RepoZ.Api.Common;
-using RepoZ.Api.Common.Common;
+
 
 namespace RepoZ.Api.Win.IO
 {
@@ -21,7 +19,6 @@ namespace RepoZ.Api.Win.IO
 		private readonly ITranslationService _translationService;
 
 		private string _windowsTerminalLocation;
-		private string _bashLocation;
 		private string _codeLocation;
 
 		public WindowsRepositoryActionProvider(
@@ -49,7 +46,9 @@ namespace RepoZ.Api.Win.IO
 			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{repository.SafePath}'\"");
 		}
 
-		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
+		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories) => GetContextMenuActionsInternal(repositories).Where(a => a != null);
+
+		private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
 		{
 			var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
@@ -58,33 +57,12 @@ namespace RepoZ.Api.Win.IO
 				yield return GetPrimaryAction(singleRepository);
 				yield return GetSecondaryAction(singleRepository);
 
-				// if Windows Terminal is installed, provider PowerShell as additional option here (otherwise PowerShell is the secondary action)
-				if (HasWindowsTerminal())
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{singleRepository.SafePath}'\"");
-
-				yield return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Command Prompt"), "cmd.exe", $"/K \"cd /d {singleRepository.SafePath}\"");
-
-				var bashExecutable = TryFindBash();
-				var hasBash = !string.IsNullOrEmpty(bashExecutable);
-				if (hasBash)
-				{
-					string path = singleRepository.SafePath;
-					if (path.EndsWith("\\", StringComparison.OrdinalIgnoreCase))
-						path = path.Substring(0, path.Length - 1);
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Git Bash"), bashExecutable, $"\"--cd={path}\"");
-				}
-
 				var codeExecutable = TryFindCode();
 				var hasCode = !string.IsNullOrEmpty(codeExecutable);
 				if (hasCode)
 					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
 
-				var slnFiles = TryFindVisualStudioSlnFiles(singleRepository);
-				foreach (var slnFile in slnFiles)
-				{
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open {0}", slnFile), Path.Combine(singleRepository.Path, slnFile));
-				}
-
+				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
 			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
@@ -96,24 +74,28 @@ namespace RepoZ.Api.Win.IO
 				yield return new RepositoryAction()
 				{
 					Name = _translationService.Translate("Checkout"),
-					SubActions = singleRepository.LocalBranches.Select(branch => new RepositoryAction()
-					{
-						Name = branch,
-						Action = (s, e) => _repositoryWriter.Checkout(singleRepository, branch),
-						CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-					}).ToArray()
+					DeferredSubActionsEnumerator =() => singleRepository.LocalBranches
+															.Take(50)
+															.Select(branch => new RepositoryAction()
+															{
+																Name = branch,
+																Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+																CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+															})
+															.ToArray()
 				};
 			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
 
-		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "", bool beginGroup = false)
 		{
 			return new RepositoryAction()
 			{
+				BeginGroup = beginGroup,
 				Name = name,
-				Action = (sender, args) => StartProcess(process, arguments)
+				Action = (_, __) => StartProcess(process, arguments)
 			};
 		}
 
@@ -126,7 +108,7 @@ namespace RepoZ.Api.Win.IO
 			return new RepositoryAction()
 			{
 				Name = name,
-				Action = (sender, args) =>
+				Action = (_, __) =>
 				{
 					// copy over to an array to not get an exception
 					// once the enumerator changes (which can happen when a change
@@ -179,28 +161,6 @@ namespace RepoZ.Api.Win.IO
 			return _windowsTerminalLocation;
 		}
 
-		private string TryFindBash()
-		{
-			if (_bashLocation == null)
-			{
-				var sub = Path.Combine("Git", "git-bash.exe");
-				var folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-				var executable = Path.Combine(folder, sub);
-
-				_bashLocation = File.Exists(executable) ? executable : "";
-
-				if (string.IsNullOrEmpty(_bashLocation))
-				{
-					folder = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
-					executable = Path.Combine(folder, sub);
-
-					_bashLocation = File.Exists(executable) ? executable : "";
-				}
-			}
-
-			return _bashLocation;
-		}
-
 		private string TryFindCode()
 		{
 			if (_codeLocation == null)
@@ -223,10 +183,38 @@ namespace RepoZ.Api.Win.IO
 			return _codeLocation;
 		}
 
-		private IEnumerable<string> TryFindVisualStudioSlnFiles(Repository repository)
+		private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
 		{
-			var directoryInfo = new DirectoryInfo(repository.Path);
-			return directoryInfo.GetFiles("*.sln").Select(f => f.Name);
+			if (HasFiles(repository, filePattern))
+			{
+				return new RepositoryAction()
+				{
+					Name = actionName,
+					DeferredSubActionsEnumerator = () =>
+								GetFiles(repository, filePattern)
+								.Select(sln => CreateProcessRunnerAction(Path.GetFileName(sln), sln))
+								.ToArray()
+				};
+			}
+
+			return null;
 		}
-    }
+
+		private bool HasFiles(Repository repository, string searchPattern)
+		{
+			var directory = new DirectoryInfo(repository.Path);
+			return directory.EnumerateFiles(searchPattern, SearchOption.AllDirectories).Any();
+		}
+
+		private IEnumerable<string> GetFiles(Repository repository, string searchPattern)
+		{
+			var directory = new DirectoryInfo(repository.Path);
+
+			return directory
+				.EnumerateFiles(searchPattern, SearchOption.AllDirectories)
+				.Take(25)
+				.OrderBy(f => f.Name)
+				.Select(f => f.FullName);
+		}
+	}
 }

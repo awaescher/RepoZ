@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepoZ.Api.Common.IO
 {
@@ -34,7 +32,7 @@ namespace RepoZ.Api.Common.IO
 
 				if (_pathSkipper.ShouldSkip(root))
 					continue;
-				
+
 				try
 				{
 					tmp = Directory.GetFiles(root, searchPattern);

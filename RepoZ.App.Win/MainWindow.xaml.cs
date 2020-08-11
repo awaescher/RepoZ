@@ -303,10 +303,25 @@ namespace RepoZ.App.Win
 			};
 			item.Click += new RoutedEventHandler(clickAction);
 
-			if (action.SubActions != null)
+			// this is a deferred submenu. We want to make sure that the context menu can pop up
+			// fast, while submenus are not evaluated yet. We don't want to make the context menu
+			// itself slow because the creation of the submenu items takes some time.
+			if (action.DeferredSubActionsEnumerator != null)
 			{
-				foreach (var subAction in action.SubActions)
-					item.Items.Add(CreateMenuItem(sender, subAction));
+				// this is a template submenu item to enable submenus under the current
+				// menu item. this item gets removed when the real subitems are created
+				item.Items.Add("");
+
+				void SelfDetachingEventHandler(object _, RoutedEventArgs __)
+				{
+					item.SubmenuOpened -= SelfDetachingEventHandler;
+					item.Items.Clear();
+
+					foreach (var subAction in action.DeferredSubActionsEnumerator())
+						item.Items.Add(CreateMenuItem(sender, subAction));
+				}
+
+				item.SubmenuOpened += SelfDetachingEventHandler;
 			}
 
 			return item;
