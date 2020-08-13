@@ -66,7 +66,7 @@ namespace RepoZ.Api.Mac
             return new RepositoryAction()
             {
                 Name = name,
-                Action = (sender, args) => StartProcess(process, arguments)
+                Action = (_, __) => StartProcess(process, arguments)
             };
         }
 
@@ -79,7 +79,7 @@ namespace RepoZ.Api.Mac
             return new RepositoryAction()
             {
                 Name = name,
-                Action = (sender, args) =>
+                Action = (_, __) =>
                 {
                     // copy over to an array to not get an exception
                     // once the enumerator changes (which can happen when a change

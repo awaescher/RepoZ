@@ -66,12 +66,11 @@ namespace RepoZ.App.Mac.Controls
 
                 if (menuItems.Any())
                 {
-                    var menu = new NSMenu();
+                    var menu = new NSMenu { AutoEnablesItems = false };
 
                     foreach (var item in menuItems)
                         menu.AddItem(item);
 
-                    // TODO location and synchronization state
                     var locationInView = this.ConvertPointToView(theEvent.LocationInWindow, null);
                     locationInView.X -= 26;
 

@@ -198,7 +198,7 @@ namespace RepoZ.App.Mac
 			if (MenuButton.Menu != null)
 				return;
 
-			MenuButton.Menu = new NSMenu();
+			MenuButton.Menu = new NSMenu { AutoEnablesItems = false };
 
 			var topLevelItems = new NSMenuItem[] {
 
@@ -230,13 +230,13 @@ namespace RepoZ.App.Mac
 			};
 
 			var manageRepositoriesItem = MenuButton.Menu.ItemWithTag(MENU_MANAGE);
-			manageRepositoriesItem.Submenu = new NSMenu();
+			manageRepositoriesItem.Submenu = new NSMenu { AutoEnablesItems = false };
 
 			foreach (var item in manageItems)
 				manageRepositoriesItem.Submenu.AddItem(item);
 
 			var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
-			autoFetchItem.Submenu = new NSMenu();
+			autoFetchItem.Submenu = new NSMenu { AutoEnablesItems = false };
 
 			foreach (var item in autoFetchItems)
 				autoFetchItem.Submenu.AddItem(item);
@@ -249,7 +249,7 @@ namespace RepoZ.App.Mac
 			};
 
 			var pingbackItem = MenuButton.Menu.ItemWithTag(MENU_PINGBACK);
-			pingbackItem.Submenu = new NSMenu();
+			pingbackItem.Submenu = new NSMenu { AutoEnablesItems = false }; ;
 
 			foreach (var item in pingbackItems)
 				pingbackItem.Submenu.AddItem(item);
