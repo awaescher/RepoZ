@@ -77,7 +77,7 @@ namespace RepoZ.App.Mac.Model
 
         void TableView_PrepareContextMenu(object sender, ContextMenuArguments arguments)
         {
-            PrepareContextMenu(arguments);
+            PrepareContextMenu(sender, arguments);
         }
 
         public void InvokeRepositoryAction(nint rowIndex)
@@ -97,7 +97,7 @@ namespace RepoZ.App.Mac.Model
             action?.Action?.Invoke(this, EventArgs.Empty);
         }
 
-        public void PrepareContextMenu(ContextMenuArguments arguments)
+        public void PrepareContextMenu(object sender, ContextMenuArguments arguments)
         {
             if (!arguments.Rows.Any())
                 return;
@@ -111,13 +111,40 @@ namespace RepoZ.App.Mac.Model
             if (!repositories.Any())
                 return;
 
-            foreach (var actionProvider in RepositoryActionProvider.GetContextMenuActions(repositories))
+            foreach (var action in RepositoryActionProvider.GetContextMenuActions(repositories))
             {
-                if (actionProvider.BeginGroup)
+                if (action.BeginGroup)
                     arguments.MenuItems.Add(NSMenuItem.SeparatorItem);
 
-                arguments.MenuItems.Add(new NSMenuItem(actionProvider.Name, (s, e) => actionProvider.Action(s, e)));
+                var item = CreateMenuItem(sender, action, arguments);
+                arguments.MenuItems.Add(item);
             }
+        }
+
+        private NSMenuItem CreateMenuItem(object sender, RepositoryAction action, ContextMenuArguments arguments)
+        {
+            var item = new NSMenuItem(action.Name, (s, e) => action.Action?.Invoke(s, e));
+            item.Enabled = action.CanExecute;
+
+            // this is a deferred submenu. We want to make sure that the context menu can pop up
+            // fast, while submenus are not evaluated yet. We don't want to make the context menu
+            // itself slow because the creation of the submenu items takes some time.
+            if (action.DeferredSubActionsEnumerator != null)
+            {
+                var submenu = new NSMenu { AutoEnablesItems = false };
+
+                arguments.Initializers.Add(item, () =>
+                {
+                    foreach (var subAction in action.DeferredSubActionsEnumerator())
+                        submenu.AddItem(CreateMenuItem(sender, subAction, arguments));
+
+                    Console.WriteLine($"Added {submenu.Items.Length} deferred sub action(s).");
+                });
+
+                item.Submenu = submenu;
+            }
+
+            return item;
         }
 
         public ZTableView TableView { get; }

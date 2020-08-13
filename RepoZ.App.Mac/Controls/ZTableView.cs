@@ -62,11 +62,13 @@ namespace RepoZ.App.Mac.Controls
                 }
 
                 var menuItems = new List<NSMenuItem>();
-                PrepareContextMenu?.Invoke(this, new ContextMenuArguments(menuItems, selectedRowIndexes));
+                var arguments = new ContextMenuArguments(menuItems, selectedRowIndexes);
+                PrepareContextMenu?.Invoke(this, arguments);
 
                 if (menuItems.Any())
                 {
                     var menu = new NSMenu { AutoEnablesItems = false };
+                    menu.Delegate = new DeferredInitializerDelegate(arguments.Initializers);
 
                     foreach (var item in menuItems)
                         menu.AddItem(item);
@@ -110,5 +112,29 @@ namespace RepoZ.App.Mac.Controls
         public List<nuint> Rows { get; }
 
         public List<NSMenuItem> MenuItems { get; }
+
+        public Dictionary<NSMenuItem, Action> Initializers { get; } = new Dictionary<NSMenuItem, Action>();
+    }
+
+    public class DeferredInitializerDelegate : NSObject, INSMenuDelegate
+    {
+        private readonly Dictionary<NSMenuItem, Action> _menuItemInitializers;
+
+        public DeferredInitializerDelegate(Dictionary<NSMenuItem, Action> menuItemInitializers)
+        {
+            _menuItemInitializers = menuItemInitializers;
+        }
+
+        public void MenuWillHighlightItem(NSMenu menu, NSMenuItem item)
+        {
+            if (item == null)
+                return;
+
+            if (_menuItemInitializers.TryGetValue(item, out var initializer))
+            {
+                _menuItemInitializers.Remove(item);
+                initializer.Invoke();
+            }
+        }
     }
 }

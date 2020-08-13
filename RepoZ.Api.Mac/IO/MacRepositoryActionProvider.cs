@@ -39,7 +39,9 @@ namespace RepoZ.Api.Mac
             return CreateProcessRunnerAction(_translationService.Translate("Open in Terminal"), "open", $"-b com.apple.terminal \"{repository.Path}\"");
         }
 
-        public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
+        public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories) => GetContextMenuActionsInternal(repositories).Where(a => a != null);
+
+        private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
         {
             var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
@@ -52,11 +54,30 @@ namespace RepoZ.Api.Mac
                 var hasCode = !string.IsNullOrEmpty(codeExecutable);
                 if (hasCode)
                     yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
+
+                yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
             }
             
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+
+            if (singleRepository != null)
+            {
+                yield return new RepositoryAction()
+                {
+                    Name = _translationService.Translate("Checkout"),
+                    DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
+                                                             .Take(50)
+                                                             .Select(branch => new RepositoryAction()
+                                                             {
+                                                                 Name = branch,
+                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+                                                             })
+                                                             .ToArray()
+                };
+            }
 
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
         }
@@ -129,6 +150,40 @@ namespace RepoZ.Api.Mac
             }
 
             return _codeLocation;
+        }
+
+        private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
+        {
+            if (HasFiles(repository, filePattern))
+            {
+                return new RepositoryAction()
+                {
+                    Name = actionName,
+                    DeferredSubActionsEnumerator = () =>
+                                GetFiles(repository, filePattern)
+                                .Select(sln => CreateProcessRunnerAction(Path.GetFileName(sln), sln))
+                                .ToArray()
+                };
+            }
+
+            return null;
+        }
+
+        private bool HasFiles(Repository repository, string searchPattern)
+        {
+            var directory = new DirectoryInfo(repository.Path);
+            return directory.EnumerateFiles(searchPattern, SearchOption.AllDirectories).Any();
+        }
+
+        private IEnumerable<string> GetFiles(Repository repository, string searchPattern)
+        {
+            var directory = new DirectoryInfo(repository.Path);
+
+            return directory
+                .EnumerateFiles(searchPattern, SearchOption.AllDirectories)
+                .Take(25)
+                .OrderBy(f => f.Name)
+                .Select(f => f.FullName);
         }
     }
 }
