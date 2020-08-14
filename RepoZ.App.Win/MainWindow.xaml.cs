@@ -319,6 +319,8 @@ namespace RepoZ.App.Win
 
 					foreach (var subAction in action.DeferredSubActionsEnumerator())
 						item.Items.Add(CreateMenuItem(sender, subAction));
+
+					Console.WriteLine($"Added {item.Items.Count} deferred sub action(s).");
 				}
 
 				item.SubmenuOpened += SelfDetachingEventHandler;

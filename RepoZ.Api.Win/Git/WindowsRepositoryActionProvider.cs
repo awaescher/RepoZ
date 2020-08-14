@@ -202,19 +202,23 @@ namespace RepoZ.Api.Win.IO
 
 		private bool HasFiles(Repository repository, string searchPattern)
 		{
-			var directory = new DirectoryInfo(repository.Path);
-			return directory.EnumerateFiles(searchPattern, SearchOption.AllDirectories).Any();
+			return GetFileEnumerator(repository, searchPattern).Any();
 		}
 
 		private IEnumerable<string> GetFiles(Repository repository, string searchPattern)
 		{
-			var directory = new DirectoryInfo(repository.Path);
-
-			return directory
-				.EnumerateFiles(searchPattern, SearchOption.AllDirectories)
+			return GetFileEnumerator(repository, searchPattern)
 				.Take(25)
 				.OrderBy(f => f.Name)
 				.Select(f => f.FullName);
+		}
+
+		private IEnumerable<FileInfo> GetFileEnumerator(Repository repository, string searchPattern)
+		{
+			var directory = new DirectoryInfo(repository.Path);
+			return directory
+				.EnumerateFiles(searchPattern, SearchOption.AllDirectories)
+				.Where(f => !f.Name.StartsWith("."));
 		}
 	}
 }
