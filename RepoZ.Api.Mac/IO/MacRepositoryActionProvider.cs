@@ -9,28 +9,28 @@ using System.IO;
 
 namespace RepoZ.Api.Mac
 {
-	public class MacRepositoryActionProvider : IRepositoryActionProvider
-	{
+    public class MacRepositoryActionProvider : IRepositoryActionProvider
+    {
         private readonly IRepositoryWriter _repositoryWriter;
         private readonly IRepositoryMonitor _repositoryMonitor;
         private readonly IErrorHandler _errorHandler;
-		private readonly ITranslationService _translationService;
-		private string _codeLocation;
+        private readonly ITranslationService _translationService;
+        private string _codeLocation;
 
-		public MacRepositoryActionProvider(
+        public MacRepositoryActionProvider(
             IRepositoryWriter repositoryWriter,
             IRepositoryMonitor repositoryMonitor,
             IErrorHandler errorHandler,
-			ITranslationService translationService)
+            ITranslationService translationService)
         {
             _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
             _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
-			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-		}
+            _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        }
 
         public RepositoryAction GetPrimaryAction(Repository repository)
-        { 
+        {
             return CreateProcessRunnerAction(_translationService.Translate("Open in Finder"), repository.Path);
         }
 
@@ -56,8 +56,10 @@ namespace RepoZ.Api.Mac
                     yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
 
                 yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
+
+                yield return CreateBrowseRemoteAction(singleRepository);
             }
-            
+
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
@@ -143,7 +145,7 @@ namespace RepoZ.Api.Mac
         {
             if (_codeLocation == null)
             {
-                var executable =  Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                                                 "Visual Studio Code.app", "Contents", "Resources", "app", "bin", "code");
 
                 _codeLocation = File.Exists(executable) ? executable : "";
@@ -167,6 +169,27 @@ namespace RepoZ.Api.Mac
             }
 
             return null;
+        }
+
+
+        private RepositoryAction CreateBrowseRemoteAction(Repository repository)
+        {
+            if (repository.RemoteUrls.Length == 0)
+                return null;
+
+            var actionName = _translationService.Translate("Browse remote");
+
+            if (repository.RemoteUrls.Length == 1)
+                return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
+
+            return new RepositoryAction()
+            {
+                Name = actionName,
+                DeferredSubActionsEnumerator = () => repository.RemoteUrls
+                                                         .Take(50)
+                                                         .Select(url => CreateProcessRunnerAction(url, url))
+                                                         .ToArray()
+            };
         }
 
         private bool HasFiles(Repository repository, string searchPattern)
