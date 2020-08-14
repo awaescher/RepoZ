@@ -90,6 +90,8 @@ namespace RepoZ.Api.Git
 
 		public int? StashCount{ get; set; }
 
+		public string[] RemoteUrls { get; set; }
+
 		public string SafePath
 		{
 			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)

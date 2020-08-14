@@ -73,6 +73,8 @@ namespace RepoZ.Api.Git
 
 		public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? "";
 
+		public string[] RemoteUrls => Repository.RemoteUrls ?? new string[0];
+
 		public string StashCount => Repository.StashCount?.ToString() ?? "";
 
 		public bool WasFound => Repository.WasFound;

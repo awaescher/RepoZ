@@ -1,13 +1,11 @@
 ﻿using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Git;
-using RepoZ.Api.IO;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 
 namespace RepoZ.Api.Win.IO
 {
@@ -63,6 +61,8 @@ namespace RepoZ.Api.Win.IO
 					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
 
 				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
+
+				yield return CreateBrowseRemoteAction(singleRepository);
 			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
@@ -198,6 +198,28 @@ namespace RepoZ.Api.Win.IO
 			}
 
 			return null;
+		}
+
+		private RepositoryAction CreateBrowseRemoteAction(Repository repository)
+		{
+			if (repository.RemoteUrls.Length == 0)
+				return null;
+
+			var actionName = _translationService.Translate("Browse remote");
+
+			if (repository.RemoteUrls.Length == 1)
+			{
+				return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
+			}
+
+			return new RepositoryAction()
+			{
+				Name = actionName,
+				DeferredSubActionsEnumerator = () => repository.RemoteUrls
+														 .Take(50)
+														 .Select(url => CreateProcessRunnerAction(url, url))
+														 .ToArray()
+			};
 		}
 
 		private bool HasFiles(Repository repository, string searchPattern)
