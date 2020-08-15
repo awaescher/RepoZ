@@ -133,6 +133,7 @@ namespace grrui
                 var command = $"cd \"{r.SafePath}\"";
 
                 // type the path into the console which is hosting grrui.exe to change to the directory
+				TextCopy.ClipboardService.SetText(command);
                 grr.ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command, waitMilliseconds: 1000);
 
                 Application.RequestStop();

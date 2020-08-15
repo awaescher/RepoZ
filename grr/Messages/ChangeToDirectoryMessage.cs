@@ -21,8 +21,9 @@ namespace grr.Messages
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // type the path into the console which is hosting grr.exe to change to the directory
-                ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command);
+				// type the path into the console which is hosting grr.exe to change to the directory
+				TextCopy.ClipboardService.SetText(command);
+				ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command);
             }
             else
             {

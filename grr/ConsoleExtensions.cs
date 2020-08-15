@@ -90,9 +90,8 @@ namespace grr
 				PrintDebug($"Parent process was WindowsTerminal, taking this one to send keys: {parentProcess?.ProcessName ?? ""} ({parentProcess?.Id ?? -1})");
 			}
 
-			// append ENTER key
-			var arguments = (value + "{Enter}")
-				.Replace("\"", "'"); // escape " with \" so that SendKeys.exe can unescape them again
+			// send CTRL+V with Enter to insert the command
+			var arguments = ("^v{Enter}");
 
 			arguments = $"-pid:{target.Id} \"{arguments}\"";
 
