@@ -47,6 +47,21 @@ namespace grr
 			}
 
 			/// <summary>
+			/// Climbs up the process tree to find the windowed process where SendKey can send the command keys to
+			/// </summary>
+			/// <param name="id">The process id</param>
+			/// <returns>First parent in the process tree with window handle </returns>
+      internal static Process GetWindowedParentProcess(in int id)
+      {
+        var process = Process.GetProcessById(id);
+        while ( process.MainWindowHandle == IntPtr.Zero )
+        {
+          process = GetParentProcess(process.Handle);
+        }
+        return process;
+      }
+
+      /// <summary>
 			/// Gets the parent process of a specified process.
 			/// </summary>
 			/// <param name="handle">The process handle.</param>
@@ -68,27 +83,14 @@ namespace grr
 					return null;
 				}
 			}
-		}
+    }
 
 		public static void WriteConsoleInput(Process target, string value, int waitMilliseconds = 0)
 		{
-			PrintDebug($"Write to console process {target.ProcessName} ({target.Id})");
-
-			if (target.Id == Process.GetCurrentProcess().Id)
-			{
-				target = ParentProcessUtilities.GetParentProcess(target.Id);
-				if (target == null)
-					return;
-
-				PrintDebug($"Process was grr, took parent {target.ProcessName} ({target.Id})");
-			}
-
-			var parentProcess = ParentProcessUtilities.GetParentProcess(target.Id);
-			if (parentProcess?.ProcessName.Equals("WindowsTerminal", StringComparison.OrdinalIgnoreCase) ?? false)
-			{
-				target = parentProcess;
-				PrintDebug($"Parent process was WindowsTerminal, taking this one to send keys: {parentProcess?.ProcessName ?? ""} ({parentProcess?.Id ?? -1})");
-			}
+			// Find the first process in the process tree which has a windows handle
+		  target = ParentProcessUtilities.GetWindowedParentProcess(target.Id);
+			
+      PrintDebug($"Write to console process {target.ProcessName} ({target.Id})");
 
 			// send CTRL+V with Enter to insert the command
 			var arguments = ("^v{Enter}");
