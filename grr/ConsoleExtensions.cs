@@ -56,7 +56,13 @@ namespace grr
         var process = Process.GetProcessById(id);
         while ( process.MainWindowHandle == IntPtr.Zero )
         {
+          var lastProcess = process;
           process = GetParentProcess(process.Handle);
+          if ( lastProcess == process )
+          {
+						// Better a result without window handle than an infinite loop
+            break;
+          }
         }
         return process;
       }
