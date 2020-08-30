@@ -39,7 +39,10 @@ namespace RepoZ.Api.Mac
             return CreateProcessRunnerAction(_translationService.Translate("Open in Terminal"), "open", $"-b com.apple.terminal \"{repository.Path}\"");
         }
 
-        public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories) => GetContextMenuActionsInternal(repositories).Where(a => a != null);
+        public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
+        {
+            return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
+        }
 
         private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
         {

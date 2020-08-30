@@ -44,7 +44,10 @@ namespace RepoZ.Api.Win.IO
 			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{repository.SafePath}'\"");
 		}
 
-		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories) => GetContextMenuActionsInternal(repositories).Where(a => a != null);
+ 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
+        {
+            return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
+        }
 
 		private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
 		{
