@@ -61,7 +61,7 @@ namespace RepoZ.Api.Win.IO
 				var codeExecutable = TryFindCode();
 				var hasCode = !string.IsNullOrEmpty(codeExecutable);
 				if (hasCode)
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, '"' + singleRepository.SafePath + '"');
 
 				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
 
