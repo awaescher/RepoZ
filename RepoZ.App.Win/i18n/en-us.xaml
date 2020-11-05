@@ -39,6 +39,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Open in Git Bash">Open in Git Bash</system:String>
 	<system:String x:Key="Open in Finder">Open in Finder</system:String>
 	<system:String x:Key="Open in Terminal">Open in Terminal</system:String>
+	<system:String x:Key="Open in Sourcetree">Open in Sourcetree</system:String>
 	<system:String x:Key="Open {0}">Open {0}</system:String>
 	<system:String x:Key="Browse remote">Browse remote repository</system:String>
 	<system:String x:Key="Fetch">Fetch</system:String>
