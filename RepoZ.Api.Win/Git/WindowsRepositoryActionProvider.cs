@@ -69,7 +69,7 @@ namespace RepoZ.Api.Win.IO
 				var sourceTreeExecutable = TryFindSourceTree();
 				var hasSourceTree = !string.IsNullOrEmpty(sourceTreeExecutable);
 				if (hasSourceTree)
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in SourceTree"), sourceTreeExecutable, "-f " + '"' + singleRepository.SafePath + '"');
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Sourcetree"), sourceTreeExecutable, "-f " + '"' + singleRepository.SafePath + '"');
 
 
 				yield return CreateBrowseRemoteAction(singleRepository);
