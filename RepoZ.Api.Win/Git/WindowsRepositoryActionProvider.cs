@@ -18,6 +18,7 @@ namespace RepoZ.Api.Win.IO
 
 		private string _windowsTerminalLocation;
 		private string _codeLocation;
+		private string _sourceTreeLocation;
 
 		public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
@@ -64,6 +65,12 @@ namespace RepoZ.Api.Win.IO
 					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, '"' + singleRepository.SafePath + '"');
 
 				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
+
+				var sourceTreeExecutable = TryFindSourceTree();
+				var hasSourceTree = !string.IsNullOrEmpty(sourceTreeExecutable);
+				if (hasSourceTree)
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in SourceTree"), sourceTreeExecutable, "-f " + '"' + singleRepository.SafePath + '"');
+
 
 				yield return CreateBrowseRemoteAction(singleRepository);
 			}
@@ -162,6 +169,19 @@ namespace RepoZ.Api.Win.IO
 			}
 
 			return _windowsTerminalLocation;
+		}
+
+		private string TryFindSourceTree()
+		{
+			if (_sourceTreeLocation == null)
+			{
+				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				var executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
+
+				_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
+			}
+
+			return _sourceTreeLocation;
 		}
 
 		private string TryFindCode()
