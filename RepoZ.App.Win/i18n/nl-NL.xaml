@@ -1,0 +1,87 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:local="clr-namespace:RepoZ.App.Win.i18n"
+					xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <system:String x:Key="Search">Zoeken</system:String>
+    <system:String x:Key="SearchWin">🔍 Zoeken</system:String>
+	<system:String x:Key="EmptyHint"
+				   xml:space="preserve">Er zijn nog geen repositories 😐
+		
+Go ahead and switch a branch or change a file in any repository on your computer. RepoZ will notice the change and list the repository here.
+		
+Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
+	<system:String x:Key="Help">Help</system:String>
+	<system:String x:Key="Donate">Sponsor mij op GitHub</system:String>
+	<system:String x:Key="Follow">Volg mij op Twitter: @Waescher</system:String>
+	<system:String x:Key="Star">Geef RepoZ een ster op GitHub</system:String>
+	<system:String x:Key="PingBack">Ping back ♥︎</system:String>
+    <system:String x:Key="Aggresive">Agressief</system:String>
+    <system:String x:Key="Adequate">Adequaat</system:String>
+	<system:String x:Key="Discretely">Discreet</system:String>
+	<system:String x:Key="Off">Uit</system:String>
+	<system:String x:Key="AutoFetch">Auto fetch</system:String>
+	<system:String x:Key="ResetIgnoreRules">Reset genegeerde repositories</system:String>
+	<system:String x:Key="Clear">Opruimen</system:String>
+	<system:String x:Key="ScanComputer">Doorzoek computer</system:String>
+	<system:String x:Key="ScanMac">Doorzoek mac</system:String>
+	<system:String x:Key="ManageRepos">Beheer repositories</system:String>
+    <system:String x:Key="GotIt">Begrepen</system:String>
+	<system:String x:Key="Open">Open</system:String>
+	<system:String x:Key="StartWithWindows">Automatisch starten met Windows</system:String>
+	<system:String x:Key="Exit">Sluiten</system:String>
+	<system:String x:Key="NotStartWithWindows">Niet automatisch starten met Windows</system:String>
+	<system:String x:Key="Scanning">Zoeken naar Git repositories ...</system:String>
+	<system:String x:Key="Open in Windows File Explorer">Openen in Windows Verkenner</system:String>
+	<system:String x:Key="Open in Windows PowerShell">Openen in Windows PowerShell</system:String>
+	<system:String x:Key="Open in Windows Command Prompt">Openen in Windows Command Prompt</system:String>
+	<system:String x:Key="Open in Visual Studio Code">Openen in Visual Studio Code</system:String>
+	<system:String x:Key="Open Visual Studio solutions">Open Visual Studio solutions</system:String>
+	<system:String x:Key="Open in Git Bash">Openen in Git Bash</system:String>
+	<system:String x:Key="Open in Finder">Openen in Finder</system:String>
+	<system:String x:Key="Open in Terminal">Openen in Terminal</system:String>
+	<system:String x:Key="Open in Sourcetree">Openen in Sourcetree</system:String>
+	<system:String x:Key="Open {0}">Open {0}</system:String>
+	<system:String x:Key="Browse remote">Remote repository openen</system:String>
+	<system:String x:Key="Fetch">Git Fetch</system:String>
+	<system:String x:Key="Pull">Git Pull</system:String>
+	<system:String x:Key="Push">Git Push</system:String>
+	<system:String x:Key="Checkout">Checkout branch</system:String>
+	<system:String x:Key="Ignore">Negeer</system:String>
+	<system:String x:Key="Update hint">Version {0} is beschikbaar.</system:String>
+	<system:String x:Key="Help Detail" xml:space="preserve">
+RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
+
+master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
+
+
+master
+... represents the current branch or the SHA of a detached HEAD.
+
+{2}
+... represents the branch status in relation to its remote (tracked origin) branch.
+In this case, the local branch is at the same commit level as the remote branch.
+
+{3}&lt;num&gt;
+... indicates that the local branch is ahead of the remote branch by the specified number of commits; a "git push" is required to update the remote branch.
+
+{4}&lt;num&gt;
+... indicates that the local branch is behind the remote branch by the specified number of commits; a "git pull" is required to update the local branch.
+
+{5}
+... indicates that the local branch has no upstream branch. "git push" needs to be called with "--set-upstream" to push changes to a remote branch.
+
+
+The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
+The numbers after the pipe sign represent added (+4), modified (~5) and removed files (-6) on the working directory.
+
+{6}&lt;num&gt;
+... indicates that there are stashed changes available.
+
+
+Please note:
+This information reflects the state of the remote tracked branch after the last "git fetch".
+You can enable Auto fetch in the RepoZ menu to keep the information up to date.
+
+Note that the status might be shorter if possible to improve readability.
+</system:String>
+</ResourceDictionary>
