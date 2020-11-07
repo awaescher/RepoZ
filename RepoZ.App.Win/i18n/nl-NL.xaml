@@ -5,11 +5,11 @@
     <system:String x:Key="Search">Zoeken</system:String>
     <system:String x:Key="SearchWin">🔍 Zoeken</system:String>
 	<system:String x:Key="EmptyHint"
-				   xml:space="preserve">Er zijn nog geen repositories 😐
+				   xml:space="preserve">Er zijn nog geen repositories gevonden 😐
 		
-Go ahead and switch a branch or change a file in any repository on your computer. RepoZ will notice the change and list the repository here.
+Verander van Git branch, of pas een bestand aan in een repository op de computer. RepoZ zal dit opmerken en de repository opnemen in de lijst.
 		
-Alternatively, you can scan your computer manually for repositories in the settings menu on the top right.</system:String>
+Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu rechts boven.</system:String>
 	<system:String x:Key="Help">Help</system:String>
 	<system:String x:Key="Donate">Sponsor mij op GitHub</system:String>
 	<system:String x:Key="Follow">Volg mij op Twitter: @Waescher</system:String>
