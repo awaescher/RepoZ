@@ -48,18 +48,18 @@ Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu
 	<system:String x:Key="Checkout">Checkout branch</system:String>
 	<system:String x:Key="Ignore">Negeer</system:String>
 	<system:String x:Key="Update hint">Version {0} is beschikbaar.</system:String>
-	<system:String x:Key="Help Detail" xml:space="preserve">
-RepoZ is showing all git repositories found on local drives. Each repository is listed with a status string which could look like this:
+    <system:String x:Key="Help Detail" xml:space="preserve">
+RepoZ laat alle gevonden git repositories zien. Elke repository bevat een status die er als volgt uit kan zien:
 
 master  {0}   +1   ~2   -3   |   +4   ~5   -6   {1}7
 
 
 master
-... represents the current branch or the SHA of a detached HEAD.
+... is de naam van de huidige branch of de SHA van de "detached HEAD".
 
 {2}
-... represents the branch status in relation to its remote (tracked origin) branch.
-In this case, the local branch is at the same commit level as the remote branch.
+... representeert de branch status ten opzichte van de remote repository (tracked origin) branch.
+In dit geval is de lokale branch op het zelfde als de remote branch.
 
 {3}&lt;num&gt;
 ... indicates that the local branch is ahead of the remote branch by the specified number of commits; a "git push" is required to update the remote branch.
