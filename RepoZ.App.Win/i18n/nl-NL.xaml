@@ -59,16 +59,16 @@ master
 
 {2}
 ... representeert de branch status ten opzichte van de remote repository (tracked origin) branch.
-In dit geval is de lokale branch op het zelfde als de remote branch.
+In dit geval is de lokale branch op het zelfde niveau als de remote branch.
 
 {3}&lt;num&gt;
-... indicates that the local branch is ahead of the remote branch by the specified number of commits; a "git push" is required to update the remote branch.
+... geeft aan dat de lokale branch voor loopt op op de remote branch met het aangegeven aantal commits. Gebruik "git push" om de remote branch te updaten.
 
 {4}&lt;num&gt;
-... indicates that the local branch is behind the remote branch by the specified number of commits; a "git pull" is required to update the local branch.
+... geeft aan dat de lokale branch achter loopt op de remote branch met het aangegeven aantal commits. Gebruik "git pull" om de lokale branch te updaten.
 
 {5}
-... indicates that the local branch has no upstream branch. "git push" needs to be called with "--set-upstream" to push changes to a remote branch.
+... geeft aan dat de lokale branch geen "upstream branch" heeft op de remote repository. Gebruik "git push" met extra argument "--set-upstream" om de branch naar een remote repository te sturen..
 
 
 The following numbers represent added (+1), modified (~2) and removed files (-3) from the index.
