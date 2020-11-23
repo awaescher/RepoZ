@@ -83,6 +83,7 @@ namespace RepoZ.App.Win
 			base.OnActivated(e);
 			ShowUpdateIfAvailable();
 			txtFilter.Focus();
+			txtFilter.SelectAll();
 		}
 
 		protected override void OnDeactivated(EventArgs e)
@@ -122,6 +123,7 @@ namespace RepoZ.App.Win
 
 				Activate();
 				txtFilter.Focus();
+				txtFilter.SelectAll();
 			});
 		}
 
