@@ -171,6 +171,8 @@
     <BundleResource Include="..\RepoZ.App.Win\i18n\en-us.xaml">
       <Link>i18n\en-us.xaml</Link>
     </BundleResource>
+    <BundleResource Include="Resources\StatusBarImageHollow.png" />
+    <BundleResource Include="Resources\StatusBarImageHollow%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <NativeReference Include="..\_ref\libgit2-4aecb64.dylib">
