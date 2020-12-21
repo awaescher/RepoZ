@@ -41,7 +41,9 @@ namespace RepoZ.App.Mac
 		public override void DidFinishLaunching(NSNotification notification)
 		{
 			var isRetina = NSScreen.MainScreen.BackingScaleFactor > 1.0;
-			string statusItemImageName = $"StatusBarImage{(isRetina ? "@2x" : "")}.png";
+			var isBigSurOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(11, 0, 0));
+
+			string statusItemImageName = $"StatusBarImage{(isBigSurOrNewer ? "Hollow" : "")}{(isRetina ? "@2x" : "")}.png";
 
 			_statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
 			_statusItem.Image = new NSImage(statusItemImageName);
