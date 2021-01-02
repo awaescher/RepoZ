@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.ServiceModel.Channels;
 using System.Text;
 using NetMQ;
 using NetMQ.Sockets;
@@ -10,36 +9,36 @@ namespace RepoZ.Ipc
 {
 	public partial class IpcClient
 	{
-        private string _answer;
-        private Repository[] _repositories;
+		private string _answer;
+		private Repository[] _repositories;
 
 		public IpcClient(IIpcEndpoint endpointProvider)
 		{
 			EndpointProvider = endpointProvider ?? throw new ArgumentNullException(nameof(endpointProvider));
 		}
 
-        public Result GetRepositories() => GetRepositories("list:.*");
+		public Result GetRepositories() => GetRepositories("list:.*");
 
 		public Result GetRepositories(string query)
 		{
-            var watch = Stopwatch.StartNew();
+			var watch = Stopwatch.StartNew();
 
-            _answer = null;
-            _repositories = null;
+			_answer = null;
+			_repositories = null;
 
-            using (var client = new RequestSocket())
-            {
-                client.Connect(EndpointProvider.Address);
+			using (var client = new RequestSocket())
+			{
+				client.Connect(EndpointProvider.Address);
 
-                byte[] load = Encoding.UTF8.GetBytes(query);
-                client.SendFrame(load);
-                client.ReceiveReady += ClientOnReceiveReady;
+				byte[] load = Encoding.UTF8.GetBytes(query);
+				client.SendFrame(load);
+				client.ReceiveReady += ClientOnReceiveReady;
 
-                client.Poll(TimeSpan.FromMilliseconds(3000));
+				client.Poll(TimeSpan.FromMilliseconds(3000));
 
-                client.ReceiveReady -= ClientOnReceiveReady;
-                client.Disconnect(EndpointProvider.Address);
-            }
+				client.ReceiveReady -= ClientOnReceiveReady;
+				client.Disconnect(EndpointProvider.Address);
+			}
 
 			watch.Stop();
 
@@ -59,16 +58,16 @@ namespace RepoZ.Ipc
 				: "RepoZ seems not to be running :(";
 		}
 
-        private void ClientOnReceiveReady(object sender, NetMQSocketEventArgs e)
-        {
-            _answer = Encoding.UTF8.GetString(e.Socket.ReceiveFrameBytes());
+		private void ClientOnReceiveReady(object sender, NetMQSocketEventArgs e)
+		{
+			_answer = Encoding.UTF8.GetString(e.Socket.ReceiveFrameBytes());
 
-            _repositories = _answer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
-                .Select(s => Repository.FromString(s))
-                .Where(r => r != null)
-                .OrderBy(r => r.Name)
-                .ToArray();
-        }
+			_repositories = _answer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)
+				.Select(s => Repository.FromString(s))
+				.Where(r => r != null)
+				.OrderBy(r => r.Name)
+				.ToArray();
+		}
 
 		public IIpcEndpoint EndpointProvider { get; }
 

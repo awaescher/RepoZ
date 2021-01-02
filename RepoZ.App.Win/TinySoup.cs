@@ -35,7 +35,7 @@ namespace TinySoup
 				{ "cid", Uri.EscapeDataString(request.ClientIdentifier?.ToString() ?? "") },
 				{ "pid", Uri.EscapeDataString(request.ApplicationIdentifier ?? "") },
 				{ "ver", Uri.EscapeDataString(MakeFourDigitVersionNumber(request.CurrentVersionInUse)) }, // Mono's Version.ToString(4) skips zeros anyway
-                { "vai", Uri.EscapeDataString(request.Channel ?? "") },
+				{ "vai", Uri.EscapeDataString(request.Channel ?? "") },
 				{ "ext", Uri.EscapeDataString(request.PlatformIdentifier?.ToString() ?? "") },
 				{ "vol", Uri.EscapeDataString(request.FreeText ?? "") }
 			};

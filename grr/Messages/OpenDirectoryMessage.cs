@@ -1,7 +1,5 @@
 ﻿using RepoZ.Ipc;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace grr.Messages
@@ -16,13 +14,13 @@ namespace grr.Messages
 
 		protected override void ExecuteExistingDirectory(string directory)
 		{
-            var directoryInQuotes = $"\"{directory}\"";
+			var directoryInQuotes = $"\"{directory}\"";
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true });
-            else
-                Process.Start(new ProcessStartInfo("open", directoryInQuotes));
-        }
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true });
+			else
+				Process.Start(new ProcessStartInfo("open", directoryInQuotes));
+		}
 
 		public override bool ShouldWriteRepositories(Repository[] repositories) => true;
 	}

@@ -74,7 +74,7 @@ namespace RepoZ.Api.Win.PInvoke
 		/// <param name="flags">The binding flags to decide whether to invoke methods or to retrieve property values.</param>
 		/// <returns></returns>
 		protected T GetValueViaReflection<T>(string memberName, BindingFlags flags)
-			=>  (T)_comType.Value.InvokeMember(memberName, flags, null, ComObject, null);
+			=> (T)_comType.Value.InvokeMember(memberName, flags, null, ComObject, null);
 
 		/// <summary>
 		/// Gets the wrapped COM object for native access.

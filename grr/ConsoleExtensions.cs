@@ -58,11 +58,10 @@ namespace grr
 				{
 					var lastProcess = process;
 					process = GetParentProcess(process.Handle);
+
+					// Better a result without window handle than an infinite loop
 					if (lastProcess == process)
-					{
-						// Better a result without window handle than an infinite loop
 						break;
-					}
 				}
 				return process;
 			}
@@ -93,10 +92,12 @@ namespace grr
 
 		public static void WriteConsoleInput(Process target, string value, int waitMilliseconds = 0)
 		{
+			PrintDebug($"Write to console input {target.ProcessName} ({target.Id})");
+
 			// Find the first process in the process tree which has a windows handle
 			target = ParentProcessUtilities.GetWindowedParentProcess(target.Id);
 
-			PrintDebug($"Write to console process {target.ProcessName} ({target.Id})");
+			PrintDebug($"Found a process, writing to process {target.ProcessName} ({target.Id})");
 
 			// send CTRL+V with Enter to insert the command
 			var arguments = ("^v{Enter}");

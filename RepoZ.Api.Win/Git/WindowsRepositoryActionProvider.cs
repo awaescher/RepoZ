@@ -45,10 +45,10 @@ namespace RepoZ.Api.Win.IO
 			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{repository.SafePath}'\"");
 		}
 
- 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
-        {
-            return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
-        }
+		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
+		{
+			return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
+		}
 
 		private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
 		{
@@ -84,15 +84,15 @@ namespace RepoZ.Api.Win.IO
 				yield return new RepositoryAction()
 				{
 					Name = _translationService.Translate("Checkout"),
-					DeferredSubActionsEnumerator =() => singleRepository.LocalBranches
-															.Take(50)
-															.Select(branch => new RepositoryAction()
-															{
-																Name = branch,
-																Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-																CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-															})
-															.ToArray()
+					DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
+															 .Take(50)
+															 .Select(branch => new RepositoryAction()
+															 {
+																 Name = branch,
+																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+															 })
+															 .ToArray()
 				};
 			}
 
