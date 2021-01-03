@@ -75,6 +75,6 @@ I just found out that RepoZ can cause some privacy dialogs to be shown and immed
 
 This happens when a user clicks to scan for repositories manually. RepoZ scans [every folder under the user profile](https://github.com/awaescher/RepoZ/blob/81de8a35d46592ba88de63398fcee9287db8cc20/RepoZ.Api.Mac/IO/MacDriveEnumerator.cs#L10) to find git repositories. On Big Sur, this causes the dialogs to be shown.
 
-> ### Please be assured that I am not intentionally scanning your photos, calendars, reminders or contacts. I am not interested in your data at all.
+> ### Please be assured that I am not intentionally scanning your photos, calendars, reminders, contacts or anything else (except the location of git repositories). I am not interested in your data at all.
 
 Hoping to get that fixes the next days ...
