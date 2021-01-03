@@ -53,6 +53,7 @@ It supports ...
  - open files in a repository directly with `grr open MyRepo *.sln` (add `-e` for elevated mode, "as Admin")
  
 See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell console:
+
 ![Screenshot](https://raw.githubusercontent.com/awaescher/RepoZ/master/_doc/grr-5fps-compressed.gif)
 
 #### Don't forget to have a look at `grr help` once you get your hands on.
@@ -67,3 +68,13 @@ Some user [reported crashes at program start](https://github.com/awaescher/RepoZ
 
 ## Credits
 The **grr** app icon was made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> and is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+
+## Privacy note for macOS Big Sur
+I just found out that RepoZ can cause some privacy dialogs to be shown and immediately [opened an issue to fix this](https://github.com/awaescher/RepoZ/issues/136).
+![RepoZ prompts to access private data unintentionally](https://user-images.githubusercontent.com/3630638/103482151-64da3580-4ddf-11eb-82b4-ee86140185bd.png)
+
+This happens when a user clicks to scan for repositories manually. RepoZ scans [every folder under the user profile](https://github.com/awaescher/RepoZ/blob/81de8a35d46592ba88de63398fcee9287db8cc20/RepoZ.Api.Mac/IO/MacDriveEnumerator.cs#L10) to find git repositories. On Big Sur, this causes the dialogs to be shown.
+
+> ### Please be assured that I am not intentionally scanning your photos, calendars, reminders or contacts. I am not interested in your data at all.
+
+Hoping to get that fixes the next days ...
