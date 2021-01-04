@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace RepoZ.Api.Git
 {
@@ -13,7 +12,7 @@ namespace RepoZ.Api.Git
 
 		ObservableCollection<RepositoryView> Repositories { get; }
 
-        void Reset();
+		void Reset();
 
 		bool HasRepository(string path);
 	}

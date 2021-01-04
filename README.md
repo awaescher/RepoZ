@@ -53,6 +53,7 @@ It supports ...
  - open files in a repository directly with `grr open MyRepo *.sln` (add `-e` for elevated mode, "as Admin")
  
 See it in action in a ([styled](https://github.com/awaescher/PoshX)) powershell console:
+
 ![Screenshot](https://raw.githubusercontent.com/awaescher/RepoZ/master/_doc/grr-5fps-compressed.gif)
 
 #### Don't forget to have a look at `grr help` once you get your hands on.

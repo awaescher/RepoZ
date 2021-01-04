@@ -162,6 +162,8 @@
   <ItemGroup>
     <BundleResource Include="Resources\StatusBarImage.png" />
     <BundleResource Include="Resources\StatusBarImage%402x.png" />
+    <BundleResource Include="Resources\StatusBarImageTemplate.png" />
+    <BundleResource Include="Resources\StatusBarImageTemplate%402x.png" />
     <BundleResource Include="..\RepoZ.App.Win\i18n\zh-cn.xaml">
       <Link>i18n\zh-cn.xaml</Link>
     </BundleResource>

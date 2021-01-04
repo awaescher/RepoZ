@@ -18,15 +18,15 @@ namespace grr
 	{
 		private const int MAX_REPO_NAME_LENGTH = 35;
 
-        static void Main(string[] args)
+		static void Main(string[] args)
 		{
 			Console.OutputEncoding = Encoding.UTF8;
 
-            args = PrepareArguments(args);
+			args = PrepareArguments(args);
 
 			if (IsHelpRequested(args))
 			{
-                ShowHelp();
+				ShowHelp();
 			}
 			else
 			{
@@ -34,12 +34,12 @@ namespace grr
 
 				if (message != null)
 				{
-                    IpcClient.Result result = null;
+					IpcClient.Result result = null;
 
-                    if (message.HasRemoteCommand)
-                    {
-                        var client = new IpcClient(new DefaultIpcEndpoint());
-                        result = client.GetRepositories(message.GetRemoteCommand());
+					if (message.HasRemoteCommand)
+					{
+						var client = new IpcClient(new DefaultIpcEndpoint());
+						result = client.GetRepositories(message.GetRemoteCommand());
 
 						if (result.Repositories?.Length > 0)
 						{
@@ -90,7 +90,7 @@ namespace grr
 					}
 				}
 
-				return GetMessage(options );
+				return GetMessage(options);
 			}
 			catch
 			{

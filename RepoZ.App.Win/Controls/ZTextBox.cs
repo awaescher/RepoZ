@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace RepoZ.App.Win.Controls
 {
-    public class ZTextBox : TextBox
-    {
+	public class ZTextBox : TextBox
+	{
 		public event EventHandler Finish;
 
 		protected override void OnKeyUp(KeyEventArgs e)

@@ -25,7 +25,7 @@ namespace grr.Messages
 				{
 					Process.Start(CreateStartInfo(file));
 				}
-				catch (System.Exception ex)  
+				catch (System.Exception ex)
 				{
 					System.Console.WriteLine("An error occured:\n" + ex.ToString());
 				}
@@ -34,20 +34,20 @@ namespace grr.Messages
 
 		private ProcessStartInfo CreateStartInfo(string file)
 		{
-            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+			bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-            if (!Filter.RequestElevation)
-            {
-                if (isWindows)
-                    return new ProcessStartInfo(file) { UseShellExecute = true };
-                else
-                    return new ProcessStartInfo("open", file);
-            }
+			if (!Filter.RequestElevation)
+			{
+				if (isWindows)
+					return new ProcessStartInfo(file) { UseShellExecute = true };
+				else
+					return new ProcessStartInfo("open", file);
+			}
 
-            if (!isWindows)
-                throw new AccessViolationException("Elevation is not supported on this platform.");
+			if (!isWindows)
+				throw new AccessViolationException("Elevation is not supported on this platform.");
 
-            var isExecutable = IsExecutable(file);
+			var isExecutable = IsExecutable(file);
 
 			// executables can be used directly, whereas files such as *.sln, for example,
 			// have to been opened with (a hidden) cmd.exe to request elevation.
@@ -58,11 +58,11 @@ namespace grr.Messages
 
 			return new ProcessStartInfo
 			{
-				UseShellExecute = true,		// this with Verb=runas forces elevation
+				UseShellExecute = true,     // this with Verb=runas forces elevation
 				CreateNoWindow = true,
 				WindowStyle = windowStyle,
 				FileName = executable,
-				Verb = "runas",				// this with ShellEx=true forces elevation
+				Verb = "runas",             // this with ShellEx=true forces elevation
 				Arguments = arguments
 			};
 		}

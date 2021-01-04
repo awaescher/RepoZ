@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RepoZ.Api.Git;
+﻿using System.Text;
 
 namespace RepoZ.Api.Git
 {
@@ -45,14 +40,14 @@ namespace RepoZ.Api.Git
 				else
 				{
 					if (isBehind)
-                        builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy.Value}");
+						builder.Append($"{_statusCharacterMap.ArrowDownSign}{repository.BehindBy.Value}");
 
-                    if (isAhead)
-                    {
-                        if (isBehind)
-                            builder.Append(" ");
+					if (isAhead)
+					{
+						if (isBehind)
+							builder.Append(" ");
 
-                        builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy.Value}");
+						builder.Append($"{_statusCharacterMap.ArrowUpSign}{repository.AheadBy.Value}");
 					}
 				}
 			}

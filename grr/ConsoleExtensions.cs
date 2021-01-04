@@ -51,23 +51,22 @@ namespace grr
 			/// </summary>
 			/// <param name="id">The process id</param>
 			/// <returns>First parent in the process tree with window handle </returns>
-      internal static Process GetWindowedParentProcess(in int id)
-      {
-        var process = Process.GetProcessById(id);
-        while ( process.MainWindowHandle == IntPtr.Zero )
-        {
-          var lastProcess = process;
-          process = GetParentProcess(process.Handle);
-          if ( lastProcess == process )
-          {
-						// Better a result without window handle than an infinite loop
-            break;
-          }
-        }
-        return process;
-      }
+			internal static Process GetWindowedParentProcess(in int id)
+			{
+				var process = Process.GetProcessById(id);
+				while (process.MainWindowHandle == IntPtr.Zero)
+				{
+					var lastProcess = process;
+					process = GetParentProcess(process.Handle);
 
-      /// <summary>
+					// Better a result without window handle than an infinite loop
+					if (lastProcess == process)
+						break;
+				}
+				return process;
+			}
+
+			/// <summary>
 			/// Gets the parent process of a specified process.
 			/// </summary>
 			/// <param name="handle">The process handle.</param>
@@ -89,14 +88,16 @@ namespace grr
 					return null;
 				}
 			}
-    }
+		}
 
 		public static void WriteConsoleInput(Process target, string value, int waitMilliseconds = 0)
 		{
+			PrintDebug($"Write to console input {target.ProcessName} ({target.Id})");
+
 			// Find the first process in the process tree which has a windows handle
-		  target = ParentProcessUtilities.GetWindowedParentProcess(target.Id);
-			
-      PrintDebug($"Write to console process {target.ProcessName} ({target.Id})");
+			target = ParentProcessUtilities.GetWindowedParentProcess(target.Id);
+
+			PrintDebug($"Found a process, writing to process {target.ProcessName} ({target.Id})");
 
 			// send CTRL+V with Enter to insert the command
 			var arguments = ("^v{Enter}");

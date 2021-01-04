@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepoZ.Api.Git
 {
@@ -79,10 +77,10 @@ namespace RepoZ.Api.Git
 			return GetRepositoryByPath(path) != null;
 		}
 
-        public void Reset()
-        {
-            _dataSource.Clear();  
-        }
+		public void Reset()
+		{
+			_dataSource.Clear();
+		}
 
 		public ObservableCollection<RepositoryView> Repositories => _dataSource;
 	}

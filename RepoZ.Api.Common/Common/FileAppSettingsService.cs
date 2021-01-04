@@ -9,15 +9,15 @@ namespace RepoZ.Api.Common.Common
 {
 	public class FileAppSettingsService : IAppSettingsService
 	{
-        private AppSettings _settings;
-        private readonly List<Action> _invalidationHandlers = new List<Action>();
+		private AppSettings _settings;
+		private readonly List<Action> _invalidationHandlers = new List<Action>();
 
-        public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
+		public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
 		{
 			AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 		}
 
-        private AppSettings Load()
+		private AppSettings Load()
 		{
 			string file = GetFileName();
 
@@ -49,7 +49,7 @@ namespace RepoZ.Api.Common.Common
 			catch { /* Our app settings are not critical. For our purposes, we want to ignore IO exceptions */ }
 		}
 
-		private string GetFileName() =>  Path.Combine(AppDataPathProvider.GetAppDataPath(), "appsettings.json");
+		private string GetFileName() => Path.Combine(AppDataPathProvider.GetAppDataPath(), "appsettings.json");
 
 		public IAppDataPathProvider AppDataPathProvider { get; }
 
@@ -69,25 +69,25 @@ namespace RepoZ.Api.Common.Common
 			get => Settings.AutoFetchMode;
 			set
 			{
-                if (value != Settings.AutoFetchMode)
-                {
-                    Settings.AutoFetchMode = value;
+				if (value != Settings.AutoFetchMode)
+				{
+					Settings.AutoFetchMode = value;
 
-                    NotifyChange();
-                    Save();
-                }
+					NotifyChange();
+					Save();
+				}
 			}
 		}
 
-        public void RegisterInvalidationHandler(Action handler)
-        {
-            _invalidationHandlers.Add(handler);
-        }
+		public void RegisterInvalidationHandler(Action handler)
+		{
+			_invalidationHandlers.Add(handler);
+		}
 
-        public void NotifyChange()
-        {
-            _invalidationHandlers.ForEach(h => h.Invoke());
-        }
+		public void NotifyChange()
+		{
+			_invalidationHandlers.ForEach(h => h.Invoke());
+		}
 
-    }
+	}
 }

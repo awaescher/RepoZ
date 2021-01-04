@@ -7,19 +7,19 @@ using RepoZ.Api.Git;
 
 namespace RepoZ.Api.Common.Git.AutoFetch
 {
-    public class DefaultAutoFetchHandler : IAutoFetchHandler
-    {
-        private bool _active;
-        private AutoFetchMode? _mode = null;
+	public class DefaultAutoFetchHandler : IAutoFetchHandler
+	{
+		private bool _active;
+		private AutoFetchMode? _mode = null;
 		private readonly Timer _timer;
 		private readonly Dictionary<AutoFetchMode, AutoFetchProfile> _profiles;
 		private int _lastFetchRepository = -1;
 
-        public DefaultAutoFetchHandler(IAppSettingsService appSettingsService,
+		public DefaultAutoFetchHandler(IAppSettingsService appSettingsService,
 			IRepositoryInformationAggregator repositoryInformationAggregator,
 			IRepositoryWriter repositoryWriter)
-        {
-            AppSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+		{
+			AppSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
 			RepositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
 			RepositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
 			AppSettingsService.RegisterInvalidationHandler(() => Mode = AppSettingsService.AutoFetchMode);
@@ -99,34 +99,34 @@ namespace RepoZ.Api.Common.Git.AutoFetch
 			}
 		}
 
-        public bool Active
-        {
-            get => _active;
-            set
-            {
-                _active = value;
+		public bool Active
+		{
+			get => _active;
+			set
+			{
+				_active = value;
 
 				if (value && _mode == null)
-                    Mode = AppSettingsService.AutoFetchMode;
+					Mode = AppSettingsService.AutoFetchMode;
 
 				UpdateBehavior();
 			}
-        }
+		}
 
-        public AutoFetchMode Mode
-        {
-            get => _mode ?? AutoFetchMode.Off;
-            set
-            {
-                if (value == _mode)
-                    return;
+		public AutoFetchMode Mode
+		{
+			get => _mode ?? AutoFetchMode.Off;
+			set
+			{
+				if (value == _mode)
+					return;
 
 				_mode = value;
 				Console.WriteLine("Auto fetch is: " + _mode.GetValueOrDefault().ToString());
 
-				UpdateBehavior(); 
-            }
-        }
+				UpdateBehavior();
+			}
+		}
 
 		public IAppSettingsService AppSettingsService { get; }
 

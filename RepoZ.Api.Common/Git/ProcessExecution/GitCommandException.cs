@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace RepoZ.Api.Common.Git.ProcessExecution
 {
 	public class GitCommandException : Exception
 	{
-        public GitCommandException() : base()
+		public GitCommandException() : base()
 		{
 		}
 

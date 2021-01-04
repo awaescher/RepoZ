@@ -41,10 +41,12 @@ namespace RepoZ.App.Mac
 		public override void DidFinishLaunching(NSNotification notification)
 		{
 			var isRetina = NSScreen.MainScreen.BackingScaleFactor > 1.0;
-			string statusItemImageName = $"StatusBarImage{(isRetina ? "@2x" : "")}.png";
+			var isBigSurOrNewer = NSProcessInfo.ProcessInfo.IsOperatingSystemAtLeastVersion(new NSOperatingSystemVersion(11, 0, 0));
+
+			string statusItemImageName = $"StatusBarImage{(isBigSurOrNewer ? "Template" : "")}{(isRetina ? "@2x" : "")}.png";
 
 			_statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
-			_statusItem.Image = new NSImage(statusItemImageName);
+			_statusItem.Image = new NSImage(statusItemImageName) { Template = isBigSurOrNewer }; // defining as template will make the icon work in light/dark mode and reduced transparency (see #137)
 			_statusItem.Target = this;
 			_statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 

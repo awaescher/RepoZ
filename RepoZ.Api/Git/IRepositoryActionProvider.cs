@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RepoZ.Api.Git
 {
 	public interface IRepositoryActionProvider
 	{
-        RepositoryAction GetPrimaryAction(Repository repository);
+		RepositoryAction GetPrimaryAction(Repository repository);
 
-        RepositoryAction GetSecondaryAction(Repository repository);
+		RepositoryAction GetSecondaryAction(Repository repository);
 
-        IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories);
+		IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories);
 	}
 }

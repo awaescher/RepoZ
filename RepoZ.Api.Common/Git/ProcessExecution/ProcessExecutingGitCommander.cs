@@ -128,8 +128,8 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 			var error = new StringBuilder();
 
 			using (var outputWaitHandle = new AutoResetEvent(initialState: false))
-            using (var errorWaitHandle = new AutoResetEvent(initialState: false))
-            using (var process = new Process())
+			using (var errorWaitHandle = new AutoResetEvent(initialState: false))
+			using (var process = new Process())
 			{
 				process.StartInfo = psi;
 

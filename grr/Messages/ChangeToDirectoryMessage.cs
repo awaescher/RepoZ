@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using RepoZ.Ipc;
 
 namespace grr.Messages
 {
-	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
+	[DebuggerDisplay("{GetRemoteCommand()}")]
 	public class ChangeToDirectoryMessage : DirectoryMessage
 	{
 		public ChangeToDirectoryMessage(RepositoryFilterOptions filter)
@@ -17,24 +15,24 @@ namespace grr.Messages
 
 		protected override void ExecuteExistingDirectory(string directory)
 		{
-            var command = $"cd \"{directory}\"";
+			var command = $"cd \"{directory}\"";
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
 				// type the path into the console which is hosting grr.exe to change to the directory
 				TextCopy.ClipboardService.SetText(command);
 				ConsoleExtensions.WriteConsoleInput(Process.GetCurrentProcess(), command);
-            }
-            else
-            {
-                TextCopy.ClipboardService.SetText(command);
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("The command was copied to the clipboard, paste and execute it manually now.\nChanging directories is not supported on macOS yet, sorry.");
-                Console.ResetColor();
-            }
-        }
+			}
+			else
+			{
+				TextCopy.ClipboardService.SetText(command);
+				Console.ForegroundColor = ConsoleColor.Cyan;
+				Console.WriteLine("The command was copied to the clipboard, paste and execute it manually now.\nChanging directories is not supported on macOS yet, sorry.");
+				Console.ResetColor();
+			}
+		}
 
-        protected override void ExecuteRepositoryQuery(Repository[] repositories)
+		protected override void ExecuteRepositoryQuery(Repository[] repositories)
 		{
 			if (repositories?.Length > 1)
 			{
