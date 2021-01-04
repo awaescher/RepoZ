@@ -44,9 +44,11 @@ namespace RepoZ.Api.Git
 
 		public string[] Branches { get; set; }
 
-		public string[] LocalBranches { get; set; }
+        public string[] LocalBranches { get; set; }
 
-		public static Repository Empty => new Repository()
+        public string[] AllBranches { get; set; }
+
+        public static Repository Empty => new Repository()
 		{
 			Name = "",
 			CurrentBranch = "",

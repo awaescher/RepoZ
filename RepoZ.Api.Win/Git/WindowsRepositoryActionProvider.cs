@@ -79,22 +79,23 @@ namespace RepoZ.Api.Win.IO
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
-			if (singleRepository != null)
-			{
-				yield return new RepositoryAction()
-				{
-					Name = _translationService.Translate("Checkout"),
-					DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
-															 .Take(50)
-															 .Select(branch => new RepositoryAction()
-															 {
-																 Name = branch,
-																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-															 })
-															 .ToArray()
-				};
-			}
+            if (singleRepository != null)
+            {
+				// Strip label of "(r)" and "(l)" indicators
+                yield return new RepositoryAction()
+                {
+                    Name = _translationService.Translate("Checkout"),
+                    DeferredSubActionsEnumerator = () => singleRepository.AllBranches
+                                                             .Take(50)
+                                                             .Select(branch => new RepositoryAction()
+                                                             {
+                                                                 Name = branch,
+                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
+                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+                                                             })
+                                                             .ToArray()
+                };
+            }
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}

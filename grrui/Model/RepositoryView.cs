@@ -4,25 +4,27 @@ using System;
 
 namespace grrui.Model
 {
-	public class RepositoryView : IRepositoryView
-	{
-		public RepositoryView(RepoZ.Ipc.Repository repository)
-		{
-			Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-		}
+    public class RepositoryView : IRepositoryView
+    {
+        public RepositoryView(RepoZ.Ipc.Repository repository)
+        {
+            Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        }
 
-		public override string ToString() => DisplayText ?? "";
+        public override string ToString() => DisplayText ?? "";
 
-		public RepoZ.Ipc.Repository Repository { get; }
+        public RepoZ.Ipc.Repository Repository { get; }
 
-		public string DisplayText { get; set; }
+        public string DisplayText { get; set; }
 
-		public string Name => Repository?.Name ?? "";
+        public string Name => Repository?.Name ?? "";
 
-		public string CurrentBranch => Repository?.BranchWithStatus ?? "";
+        public string CurrentBranch => Repository?.BranchWithStatus ?? "";
 
-		public string Path => Repository.Path ?? "";
+        public string[] AllBranches => Repository.AllBranches ?? new string[0];
 
-		public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
-	}
+        public string Path => Repository.Path ?? "";
+
+        public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
+    }
 }

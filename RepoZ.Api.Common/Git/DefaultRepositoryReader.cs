@@ -3,6 +3,7 @@ using LibGit2Sharp;
 using RepoZ.Api.Git;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace RepoZ.Api.Common.Git
 {
@@ -58,36 +59,56 @@ namespace RepoZ.Api.Common.Git
 
 					var headDetails = GetHeadDetails(repo);
 
-					return new Api.Git.Repository()
-					{
-						Name = workingDirectory.Name,
-						Path = workingDirectory.FullName,
-						Location = workingDirectory.Parent.FullName,
-						Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
-						LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
-						CurrentBranch = headDetails.Name,
-						CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
-						CurrentBranchIsDetached = headDetails.IsDetached,
-						CurrentBranchIsOnTag = headDetails.IsOnTag,
-						AheadBy = repo.Head.TrackingDetails?.AheadBy,
-						BehindBy = repo.Head.TrackingDetails?.BehindBy,
-						LocalUntracked = status?.Untracked.Count(),
-						LocalModified = status?.Modified.Count(),
-						LocalMissing = status?.Missing.Count(),
-						LocalAdded = status?.Added.Count(),
-						LocalStaged = status?.Staged.Count(),
-						LocalRemoved = status?.Removed.Count(),
-						LocalIgnored = status?.Ignored.Count(),
+                    return new Api.Git.Repository()
+                    {
+                        Name = workingDirectory.Name,
+                        Path = workingDirectory.FullName,
+                        Location = workingDirectory.Parent.FullName,
+                        Branches = repo.Branches.Select(b => b.FriendlyName).ToArray(),
+                        LocalBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToArray(),
+                        AllBranches = this.GetAllBranches(repo),
+                        CurrentBranch = headDetails.Name,
+                        CurrentBranchHasUpstream = !string.IsNullOrEmpty(repo.Head.UpstreamBranchCanonicalName),
+                        CurrentBranchIsDetached = headDetails.IsDetached,
+                        CurrentBranchIsOnTag = headDetails.IsOnTag,
+                        AheadBy = repo.Head.TrackingDetails?.AheadBy,
+                        BehindBy = repo.Head.TrackingDetails?.BehindBy,
+                        LocalUntracked = status?.Untracked.Count(),
+                        LocalModified = status?.Modified.Count(),
+                        LocalMissing = status?.Missing.Count(),
+                        LocalAdded = status?.Added.Count(),
+                        LocalStaged = status?.Staged.Count(),
+                        LocalRemoved = status?.Removed.Count(),
+                        LocalIgnored = status?.Ignored.Count(),
 						RemoteUrls = repo.Network?.Remotes?.Select(r => r.Url).Where(url => !string.IsNullOrEmpty(url)).ToArray() ?? new string[0],
 						StashCount = repo.Stashes?.Count() ?? 0
-					};
-				}
-			}
-			catch (Exception)
-			{
-				return Api.Git.Repository.Empty;
-			}
-		}
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                return Api.Git.Repository.Empty;
+            }
+        }
+
+        private string[] GetAllBranches(LibGit2Sharp.Repository repo)
+        {
+            var localBranches = repo.Branches.Where(b => !b.IsRemote).Select(b => b.FriendlyName).ToList();
+            // "origin/" is removed from remote branches name and HEAD branch is ignored
+            var strippedRemoteBranches = repo.Branches.Where(b => b.IsRemote && b.FriendlyName.IndexOf("HEAD") == -1).Select(b => b.FriendlyName.Replace("origin/", "")).ToList();
+                        
+            var remoteOnlyBranches = strippedRemoteBranches.Except(localBranches);
+            var localOnlyBranches = localBranches.Except(strippedRemoteBranches);
+            var otherBranches = localBranches.Intersect(strippedRemoteBranches);
+			
+			// Merge branch lists and sort by name
+            var allBranches = otherBranches
+                              .Union(remoteOnlyBranches.Select(n => string.Concat(n, " (r)")))
+                              .Union(localOnlyBranches.Select(n => string.Concat(n, " (l)")))                
+                              .OrderBy(n => n).ToArray();
+
+            return allBranches;
+        }
 
 		private HeadDetails GetHeadDetails(LibGit2Sharp.Repository repo)
 		{
