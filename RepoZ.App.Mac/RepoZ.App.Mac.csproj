@@ -162,6 +162,8 @@
   <ItemGroup>
     <BundleResource Include="Resources\StatusBarImage.png" />
     <BundleResource Include="Resources\StatusBarImage%402x.png" />
+    <BundleResource Include="Resources\StatusBarImageTemplate.png" />
+    <BundleResource Include="Resources\StatusBarImageTemplate%402x.png" />
     <BundleResource Include="..\RepoZ.App.Win\i18n\zh-cn.xaml">
       <Link>i18n\zh-cn.xaml</Link>
     </BundleResource>
@@ -171,8 +173,6 @@
     <BundleResource Include="..\RepoZ.App.Win\i18n\en-us.xaml">
       <Link>i18n\en-us.xaml</Link>
     </BundleResource>
-    <BundleResource Include="Resources\StatusBarImageHollow.png" />
-    <BundleResource Include="Resources\StatusBarImageHollow%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <NativeReference Include="..\_ref\libgit2-4aecb64.dylib">
