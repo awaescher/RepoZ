@@ -20,6 +20,7 @@ namespace RepoZ.Api.Git
 				return repositoryView.HasUnpushedChanges;
 
 			string filterProperty = null;
+			string[] lfilterProperty = null;
 
 			// note, these are used in grr.RegexFilter as well
 			if (filter.StartsWith("n ", StringComparison.OrdinalIgnoreCase))
@@ -28,8 +29,9 @@ namespace RepoZ.Api.Git
 				filterProperty = repositoryView.CurrentBranch;
 			else if (filter.StartsWith("p ", StringComparison.OrdinalIgnoreCase))
 				filterProperty = repositoryView.Path;
-
-			if (filterProperty == null)
+			else if (filter.StartsWith("a ", StringComparison.OrdinalIgnoreCase))
+				lfilterProperty = repositoryView.AllBranches;
+			if (filterProperty == null && lfilterProperty == null)
 				filterProperty = repositoryView.Name;
 			else
 				filter = filter.Substring(2);
@@ -37,10 +39,26 @@ namespace RepoZ.Api.Git
 			if (string.IsNullOrEmpty(filter))
 				return true;
 
-			if (useRegex)
-				return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
+			if (lfilterProperty is string[])
+			{
+				bool matchFound = false;
+				foreach (string branchName in lfilterProperty)
+				{
+					if (useRegex)
+						matchFound = Regex.IsMatch(branchName, filter, RegexOptions.IgnoreCase);
+					else
+						matchFound = branchName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
 
-			return filterProperty.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
+					if (matchFound) return true;
+				}
+				return false;
+			}
+			else
+			{
+				if (useRegex)
+					return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
+				return filterProperty.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
+			}
 		}
 	}
 }
