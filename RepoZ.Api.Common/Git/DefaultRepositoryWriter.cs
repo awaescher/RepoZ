@@ -48,6 +48,10 @@ namespace RepoZ.Api.Common.Git
 		{
 			_gitCommander.Command(repository, "fetch");
 		}
+        public void FetchAll(Api.Git.Repository repository)
+        {
+            _gitCommander.Command(repository, "fetch", "--all");
+        }
 
 		public void Pull(Api.Git.Repository repository)
 		{

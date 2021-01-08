@@ -9,5 +9,7 @@
 		void Pull(Repository repository);
 
 		void Push(Repository repository);
+
+		void FetchAll(Repository repository);
 	}
 }
