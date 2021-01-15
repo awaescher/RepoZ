@@ -192,11 +192,9 @@ namespace RepoZ.Api.Win.IO
 					default:
 						return false;
 				}
-
-				return !string.IsNullOrEmpty(_apps[app]);
 			}
 
-			return false;
+			return !string.IsNullOrEmpty(_apps[app]);
 		}
 
 		private string TryFindExe(string[] ExePathParts)
