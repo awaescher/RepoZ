@@ -24,7 +24,7 @@ namespace RepoZ.Api.Win.IO
 			GitBash
 		}
 
-		private Dictionary<Applications, string> _apps = new Dictionary<Applications, string>();
+		private readonly Dictionary<Applications, string> _apps = new Dictionary<Applications, string>();
 
 		public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
@@ -87,7 +87,6 @@ namespace RepoZ.Api.Win.IO
 			if (singleRepository != null)
 			{
 				// Strip label of "(r)" and "(l)" indicators
-				_repositoryWriter.FetchAll(singleRepository);
 				yield return new RepositoryAction()
 				{
 
