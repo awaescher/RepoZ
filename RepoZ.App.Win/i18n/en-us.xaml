@@ -43,6 +43,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Open {0}">Open {0}</system:String>
 	<system:String x:Key="Browse remote">Browse remote repository</system:String>
 	<system:String x:Key="Fetch">Fetch</system:String>
+	<system:String x:Key="FetchAll">Git Fetch All</system:String>
 	<system:String x:Key="Pull">Pull</system:String>
 	<system:String x:Key="Push">Push</system:String>
 	<system:String x:Key="Checkout">Checkout</system:String>

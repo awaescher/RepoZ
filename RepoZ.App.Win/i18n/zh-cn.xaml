@@ -41,6 +41,7 @@
     <system:String x:Key="Open in Sourcetree">Open in Sourcetree</system:String>
     <system:String x:Key="Open {0}">打开 {0}</system:String>
 	<system:String x:Key="Browse remote">Browse remote repository</system:String>
+	<system:String x:Key="Fetch All">全部获得</system:String>
     <system:String x:Key="Fetch">获取</system:String>
     <system:String x:Key="Pull">拉取</system:String>
     <system:String x:Key="Push">推送</system:String>
