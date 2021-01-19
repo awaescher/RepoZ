@@ -43,6 +43,7 @@ Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu
 	<system:String x:Key="Open {0}">Open {0}</system:String>
 	<system:String x:Key="Browse remote">Remote repository openen</system:String>
 	<system:String x:Key="Fetch">Git Fetch</system:String>
+	<system:String x:Key="FetchAll">Git Fetch All</system:String>
 	<system:String x:Key="Pull">Git Pull</system:String>
 	<system:String x:Key="Push">Git Push</system:String>
 	<system:String x:Key="Checkout">Checkout branch</system:String>
