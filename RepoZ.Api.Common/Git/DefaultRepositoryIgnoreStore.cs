@@ -12,6 +12,7 @@ namespace RepoZ.Api.Common.Git
 	{
 		private List<string> _ignores = null;
 		private IEnumerable<IgnoreRule> _rules;
+		private object _lock = new object();
 
 		public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
 			: base(errorHandler)
@@ -31,6 +32,9 @@ namespace RepoZ.Api.Common.Git
 
 		public bool IsIgnored(string path)
 		{
+			if (_rules is null)
+				UpdateRules();
+
 			return _rules.Any(r => r.IsIgnored(path));
 		}
 
@@ -48,8 +52,11 @@ namespace RepoZ.Api.Common.Git
 			{
 				if (_ignores == null)
 				{
-					_ignores = Get()?.ToList() ?? new List<string>();
-					UpdateRules();
+					lock (_lock)
+					{
+						_ignores = Get()?.ToList() ?? new List<string>();
+						UpdateRules();
+					}
 				}
 
 				return _ignores;
@@ -58,7 +65,7 @@ namespace RepoZ.Api.Common.Git
 
 		private void UpdateRules()
 		{
-			_rules = _ignores.Select(i => new IgnoreRule(i));
+			_rules = Ignores.Select(i => new IgnoreRule(i));
 		}
 
 		public IAppDataPathProvider AppDataPathProvider { get; }
