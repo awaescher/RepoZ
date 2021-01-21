@@ -175,12 +175,22 @@ namespace RepoZ.Api.Win.IO
 		{
 			if (_sourceTreeLocation == null)
 			{
+				//Try : Installed in the user profile
 				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 				var executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
 
 				_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
-			}
 
+				//Try: Installed in Program files x86
+				if (string.IsNullOrEmpty(_sourceTreeLocation))
+				{
+					folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+					folder = Path.Combine(folder, "Atlassian");
+					executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
+
+					_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
+				}
+			}
 			return _sourceTreeLocation;
 		}
 
