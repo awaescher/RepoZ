@@ -11,6 +11,8 @@ namespace RepoZ.Api.Git
 		string CurrentBranch { get; }
 
 		string Path { get; }
+        
+		string[] AllBranches { get; }
 
 		bool HasUnpushedChanges { get; }
 	}
