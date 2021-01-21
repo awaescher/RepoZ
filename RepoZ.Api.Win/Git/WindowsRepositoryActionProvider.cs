@@ -76,7 +76,6 @@ namespace RepoZ.Api.Win.IO
 			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch all"), repositories, _repositoryWriter.FetchAll, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 

@@ -2,17 +2,19 @@
 using System.Linq;
 using LibGit2Sharp;
 using RepoZ.Api.Git;
-using System.Collections.Generic;
+using RepoZ.Api.Common.Common;
 
 namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryWriter : IRepositoryWriter
 	{
 		private readonly IGitCommander _gitCommander;
+		private readonly IAppSettingsService _appSettingsService;
 
-		public DefaultRepositoryWriter(IGitCommander gitCommander)
+		public DefaultRepositoryWriter(IGitCommander gitCommander, IAppSettingsService appSettingsService)
 		{
 			_gitCommander = gitCommander ?? throw new ArgumentNullException(nameof(gitCommander));
+			_appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
 		}
 
 		public bool Checkout(Api.Git.Repository repository, string branchName)
@@ -46,12 +48,12 @@ namespace RepoZ.Api.Common.Git
 
 		public void Fetch(Api.Git.Repository repository)
 		{
-			_gitCommander.Command(repository, "fetch");
+            var arguments = _appSettingsService.PruneOnFetch
+                ? new string[] { "fetch", "--all", "--prune" }
+                : new string[] { "fetch", "--all" };
+
+			_gitCommander.Command(repository, arguments);
 		}
-        public void FetchAll(Api.Git.Repository repository)
-        {
-            _gitCommander.Command(repository, "fetch", "--all", "--prune");
-        }
 
 		public void Pull(Api.Git.Repository repository)
 		{
