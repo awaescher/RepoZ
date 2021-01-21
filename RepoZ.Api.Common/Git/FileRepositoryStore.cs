@@ -22,6 +22,9 @@ namespace RepoZ.Api.Common.Git
 
 		public IEnumerable<string> Get()
 		{
+			if (!UseFilePersistence)
+				return new string[0];
+
 			string file = GetFileName();
 
 			if (File.Exists(file))
@@ -41,6 +44,9 @@ namespace RepoZ.Api.Common.Git
 
 		public void Set(IEnumerable<string> paths)
 		{
+			if (!UseFilePersistence)
+				return;
+
 			string file = GetFileName();
 			string path = Directory.GetParent(file).FullName;
 
@@ -56,5 +62,7 @@ namespace RepoZ.Api.Common.Git
 				_errorHandler.Handle(ex.Message);
 			}
 		}
+
+		public bool UseFilePersistence { get; set; } = true;
 	}
 }
