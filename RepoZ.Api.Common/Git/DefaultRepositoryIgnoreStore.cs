@@ -11,6 +11,8 @@ namespace RepoZ.Api.Common.Git
 	public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
 	{
 		private List<string> _ignores = null;
+		private IEnumerable<IgnoreRule> _rules;
+		private object _lock = new object();
 
 		public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
 			: base(errorHandler)
@@ -23,33 +25,49 @@ namespace RepoZ.Api.Common.Git
 		public void IgnoreByPath(string path)
 		{
 			Ignores.Add(path);
+			UpdateRules();
+
 			Set(Ignores);
 		}
 
 		public bool IsIgnored(string path)
 		{
-			return Ignores.Contains(path, StringComparer.OrdinalIgnoreCase);
+			if (_rules is null)
+				UpdateRules();
+
+			return _rules.Any(r => r.IsIgnored(path));
 		}
 
 		public void Reset()
 		{
 			Ignores.Clear();
+			UpdateRules();
+
 			Set(Ignores);
 		}
 
-		public List<string> Ignores
+		private List<string> Ignores
 		{
 			get
 			{
 				if (_ignores == null)
-					_ignores = Get()?.ToList() ?? new List<string>();
+				{
+					lock (_lock)
+					{
+						_ignores = Get()?.ToList() ?? new List<string>();
+						UpdateRules();
+					}
+				}
 
 				return _ignores;
 			}
 		}
 
-		public IAppDataPathProvider AppDataPathProvider { get; }
+		private void UpdateRules()
+		{
+			_rules = Ignores.Select(i => new IgnoreRule(i));
+		}
 
-		public RegexOptions Options { get; } = RegexOptions.IgnoreCase | RegexOptions.Compiled;
+		public IAppDataPathProvider AppDataPathProvider { get; }
 	}
 }

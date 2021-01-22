@@ -6,6 +6,8 @@ namespace RepoZ.Api.Common.Common
 	{
 		public AutoFetchMode AutoFetchMode { get; set; }
 
-		public static AppSettings Default => new AppSettings() { AutoFetchMode = AutoFetchMode.Off };
+		public bool PruneOnFetch { get; set; }
+
+		public static AppSettings Default => new AppSettings() { AutoFetchMode = AutoFetchMode.Off, PruneOnFetch = false };
 	}
 }

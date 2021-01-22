@@ -16,15 +16,9 @@ namespace RepoZ.Api.Win.IO
 		private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
 
-		private enum Applications
-		{
-			WindowsTerminal,
-			SourceTree,
-			VSCode,
-			GitBash
-		}
-
-		private readonly Dictionary<Applications, string> _apps = new Dictionary<Applications, string>();
+		private string _windowsTerminalLocation;
+		private string _codeLocation;
+		private string _sourceTreeLocation;
 
 		public WindowsRepositoryActionProvider(
 			IRepositoryWriter repositoryWriter,
@@ -65,43 +59,43 @@ namespace RepoZ.Api.Win.IO
 				yield return GetPrimaryAction(singleRepository);
 				yield return GetSecondaryAction(singleRepository);
 
-				if (InitExePath(Applications.VSCode))
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), _apps[Applications.VSCode], '"' + singleRepository.SafePath + '"');
-
-				if (InitExePath(Applications.SourceTree))
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Sourcetree"), _apps[Applications.SourceTree], "-f " + '"' + singleRepository.SafePath + '"');
-
-				if (InitExePath(Applications.GitBash))
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Git Bash"), _apps[Applications.GitBash], $"--cd={singleRepository.SafePath}\".");
+				var codeExecutable = TryFindCode();
+				var hasCode = !string.IsNullOrEmpty(codeExecutable);
+				if (hasCode)
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, '"' + singleRepository.SafePath + '"');
 
 				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
+
+				var sourceTreeExecutable = TryFindSourceTree();
+				var hasSourceTree = !string.IsNullOrEmpty(sourceTreeExecutable);
+				if (hasSourceTree)
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Sourcetree"), sourceTreeExecutable, "-f " + '"' + singleRepository.SafePath + '"');
+
 
 				yield return CreateBrowseRemoteAction(singleRepository);
 			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
-			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch all"), repositories, _repositoryWriter.FetchAll, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
-			if (singleRepository != null)
-			{
+            if (singleRepository != null)
+            {
 				// Strip label of "(r)" and "(l)" indicators
-				yield return new RepositoryAction()
-				{
-
-					Name = _translationService.Translate("Checkout"),
-					DeferredSubActionsEnumerator = () => singleRepository.AllBranches
-															 .Take(50)
-															 .Select(branch => new RepositoryAction()
-															 {
-																 Name = branch,
-																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
-																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-															 })
-															 .ToArray()
-				};
-			}
+                yield return new RepositoryAction()
+                {
+                    Name = _translationService.Translate("Checkout"),
+                    DeferredSubActionsEnumerator = () => singleRepository.AllBranches
+                                                             .Take(50)
+                                                             .Select(branch => new RepositoryAction()
+                                                             {
+                                                                 Name = branch,
+                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
+                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+                                                             })
+                                                             .ToArray()
+                };
+            }
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
@@ -165,55 +159,62 @@ namespace RepoZ.Api.Win.IO
 			}
 		}
 
-		private bool HasWindowsTerminal() => InitExePath(Applications.WindowsTerminal);
+		private bool HasWindowsTerminal() => !string.IsNullOrEmpty(TryFindWindowsTerminal());
 
-		private bool InitExePath(Applications app)
+		private string TryFindWindowsTerminal()
 		{
-			if (!_apps.ContainsKey(app))
+			if (_windowsTerminalLocation == null)
 			{
-				switch (app)
+				var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WindowsApps", "wt.exe");
+				_windowsTerminalLocation = File.Exists(executable) ? executable : "";
+			}
+
+			return _windowsTerminalLocation;
+		}
+
+		private string TryFindSourceTree()
+		{
+			if (_sourceTreeLocation == null)
+			{
+				//Try : Installed in the user profile
+				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				var executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
+
+				_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
+
+				//Try: Installed in Program files x86
+				if (string.IsNullOrEmpty(_sourceTreeLocation))
 				{
-					case Applications.SourceTree:
-						_apps.Add(app, TryFindExe(new string[] { "SourceTree", "SourceTree.exe" }));
-						break;
-					case Applications.VSCode:
-						_apps.Add(Applications.VSCode, TryFindExe(new string[] { "Microsoft VS Code", "code.exe" }));
-						break;
+					folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+					folder = Path.Combine(folder, "Atlassian");
+					executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
 
-					case Applications.GitBash:
-						_apps.Add(Applications.GitBash, TryFindExe(new string[] { "Git", "git-bash.exe" }));
-						break;
+					_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
+				}
+			}
+			return _sourceTreeLocation;
+		}
 
-					case Applications.WindowsTerminal:
-						_apps.Add(Applications.WindowsTerminal, TryFindExe(new string[] { "Microsoft", "WindowsApps", "wt.exe" }));
-						break;
+		private string TryFindCode()
+		{
+			if (_codeLocation == null)
+			{
+				var sub = Path.Combine("Microsoft VS Code", "code.exe");
+				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				var executable = Path.Combine(folder, "Programs", sub);
 
-					default:
-						return false;
+				_codeLocation = File.Exists(executable) ? executable : "";
+
+				if (string.IsNullOrEmpty(_codeLocation))
+				{
+					folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+					executable = Path.Combine(folder, sub);
+
+					_codeLocation = File.Exists(executable) ? executable : "";
 				}
 			}
 
-			return !string.IsNullOrEmpty(_apps[app]);
-		}
-
-		private string TryFindExe(string[] ExePathParts)
-		{
-			var sub = Path.Combine(ExePathParts);
-			var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			var executable = Path.Combine(folder, "Programs", sub);
-			string path;
-
-			path = File.Exists(executable) ? executable : "";
-
-			if (string.IsNullOrEmpty(path))
-			{
-				folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-				executable = Path.Combine(folder, sub);
-
-				path = File.Exists(executable) ? executable : "";
-			}
-
-			return path;
+			return _codeLocation;
 		}
 
 		private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)

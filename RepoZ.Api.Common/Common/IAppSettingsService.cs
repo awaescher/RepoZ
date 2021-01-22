@@ -7,6 +7,8 @@ namespace RepoZ.Api.Common.Common
 	{
 		AutoFetchMode AutoFetchMode { get; set; }
 
+		bool PruneOnFetch { get; set; }
+
 		void RegisterInvalidationHandler(Action handler);
 	}
 }

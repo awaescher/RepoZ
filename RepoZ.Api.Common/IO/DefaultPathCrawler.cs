@@ -9,17 +9,6 @@ namespace RepoZ.Api.Common.IO
 {
 	public class DefaultPathCrawler
 	{
-		public List<string> Find(string root, string searchPattern)
-		{
-			var list = new List<string>();
-
-			var sw = System.Diagnostics.Stopwatch.StartNew();
-			Find(root, searchPattern, list);
-			sw.Stop();
-
-			return list;
-		}
-
 		private void Find(string root, string searchPattern, List<string> result)
 		{
 			if (root.IndexOf("$Recycle.Bin", StringComparison.OrdinalIgnoreCase) > -1)

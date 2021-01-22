@@ -21,6 +21,7 @@ namespace RepoZ.Api.Common.IO
 		{
 			return FindInternal(root, searchPattern, onFoundAction, onQuit).ToList();
 		}
+
 		private IEnumerable<string> FindInternal(string root, string searchPattern, Action<string> onFound, Action onQuit)
 		{
 			var pending = new Queue<string>();
