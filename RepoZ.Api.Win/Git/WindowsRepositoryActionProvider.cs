@@ -199,12 +199,17 @@ namespace RepoZ.Api.Win.IO
 		private string TryFindExe(string[] ExePathParts)
 		{
 			var sub = Path.Combine(ExePathParts);
-			var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			var executable = Path.Combine(folder, "Programs", sub);
+			string folder ;
+			string executable;
 			string path;
+
+			// Search for application in user's profile
+			folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			executable = Path.Combine(folder, "Programs", sub);
 
 			path = File.Exists(executable) ? executable : "";
 
+			// Search for application in program files
 			if (string.IsNullOrEmpty(path))
 			{
 				folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
@@ -212,6 +217,8 @@ namespace RepoZ.Api.Win.IO
 
 				path = File.Exists(executable) ? executable : "";
 			}
+
+			// TODO: search for application path in Registry
 
 			return path;
 		}
