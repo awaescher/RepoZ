@@ -16,6 +16,9 @@ namespace RepoZ.Api.Common.Git
             [JsonProperty("name")]
             public string Name { get; set; }
 
+            [JsonProperty("command")]
+            public string Command { get; set; }
+
             [JsonProperty("executables")]
             public List<string> Executables { get; set; } = new List<string>();
 

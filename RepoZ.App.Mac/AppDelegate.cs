@@ -97,7 +97,7 @@ namespace RepoZ.App.Mac
 
 			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
-			container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
+			container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
 			container.Register<IRepositoryStore, DefaultRepositoryStore>();
@@ -109,6 +109,8 @@ namespace RepoZ.App.Mac
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
 			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
 		}
 
