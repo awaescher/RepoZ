@@ -113,9 +113,6 @@ namespace RepoZ.App.Mac.Model
 
             foreach (var action in RepositoryActionProvider.GetContextMenuActions(repositories))
             {
-                if (action.BeginGroup)
-                    arguments.MenuItems.Add(NSMenuItem.SeparatorItem);
-
                 var item = CreateMenuItem(sender, action, arguments);
                 arguments.MenuItems.Add(item);
             }
@@ -123,6 +120,9 @@ namespace RepoZ.App.Mac.Model
 
         private NSMenuItem CreateMenuItem(object sender, RepositoryAction action, ContextMenuArguments arguments)
         {
+            if (action.BeginGroup)
+                arguments.MenuItems.Add(NSMenuItem.SeparatorItem);
+
             var item = new NSMenuItem(action.Name, (s, e) => action.Action?.Invoke(s, e));
             item.Enabled = action.CanExecute;
 
@@ -132,6 +132,7 @@ namespace RepoZ.App.Mac.Model
             if (action.DeferredSubActionsEnumerator != null)
             {
                 var submenu = new NSMenu { AutoEnablesItems = false };
+                submenu.Delegate = new DeferredInitializerDelegate(arguments.Initializers);
 
                 arguments.Initializers.Add(item, () =>
                 {

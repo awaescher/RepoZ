@@ -19,7 +19,6 @@ namespace RepoZ.Api.Common.Git
 
 		public bool Checkout(Api.Git.Repository repository, string branchName)
 		{
-           
             using (var repo = new LibGit2Sharp.Repository(repository.Path))
             {
                 string realBranchName = branchName;
@@ -33,17 +32,19 @@ namespace RepoZ.Api.Common.Git
                 else
                 {
                     // Create local branch to remote branch tip and set its upstream branch to remote
-                    var upstreamBranch = repo.Branches.FirstOrDefault(b => b.FriendlyName.EndsWith(branchName));
+                    var upstreamBranch = repo.Branches.FirstOrDefault(b => string.Equals(b.UpstreamBranchCanonicalName, "refs/heads/" + branchName, StringComparison.OrdinalIgnoreCase));
+
+                    if (upstreamBranch is null)
+                        return false;
+
                     branch = repo.CreateBranch(branchName, upstreamBranch.Tip);     
                     this.SetUpstream(repository, branchName, upstreamBranch.FriendlyName);
 
                     branch = Commands.Checkout(repo, branchName);
                 }
 
-
                 return branch.FriendlyName == branchName;
             }
-
 		}
 
 		public void Fetch(Api.Git.Repository repository)

@@ -46,7 +46,11 @@ namespace RepoZ.Api.Git
 
         public string[] LocalBranches { get; set; }
 
-        public string[] AllBranches { get; set; }
+		[System.ComponentModel.Browsable(false)]
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public Func<string[]> AllBranchesReader { get; set; }
+
+		public string[] ReadAllBranches() => AllBranchesReader?.Invoke() ?? new string[0];
 
         public static Repository Empty => new Repository()
 		{

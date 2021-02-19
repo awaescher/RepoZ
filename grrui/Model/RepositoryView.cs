@@ -21,7 +21,7 @@ namespace grrui.Model
 
         public string CurrentBranch => Repository?.BranchWithStatus ?? "";
 
-        public string[] AllBranches => Repository.AllBranches ?? new string[0];
+        public string[] ReadAllBranches() => Repository.ReadAllBranches() ?? new string[0];
 
         public string Path => Repository.Path ?? "";
 

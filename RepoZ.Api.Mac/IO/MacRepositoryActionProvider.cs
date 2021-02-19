@@ -9,211 +9,236 @@ using System.IO;
 
 namespace RepoZ.Api.Mac
 {
-    public class MacRepositoryActionProvider : IRepositoryActionProvider
-    {
-        private readonly IRepositoryWriter _repositoryWriter;
-        private readonly IRepositoryMonitor _repositoryMonitor;
-        private readonly IErrorHandler _errorHandler;
-        private readonly ITranslationService _translationService;
-        private string _codeLocation;
+	public class MacRepositoryActionProvider : IRepositoryActionProvider
+	{
+		private readonly IRepositoryWriter _repositoryWriter;
+		private readonly IRepositoryMonitor _repositoryMonitor;
+		private readonly IErrorHandler _errorHandler;
+		private readonly ITranslationService _translationService;
+		private string _codeLocation;
 
-        public MacRepositoryActionProvider(
-            IRepositoryWriter repositoryWriter,
-            IRepositoryMonitor repositoryMonitor,
-            IErrorHandler errorHandler,
-            ITranslationService translationService)
-        {
-            _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
-            _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
-            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
-            _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        }
+		public MacRepositoryActionProvider(
+			IRepositoryWriter repositoryWriter,
+			IRepositoryMonitor repositoryMonitor,
+			IErrorHandler errorHandler,
+			ITranslationService translationService)
+		{
+			_repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
+			_repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
+			_errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+		}
 
-        public RepositoryAction GetPrimaryAction(Repository repository)
-        {
-            return CreateProcessRunnerAction(_translationService.Translate("Open in Finder"), repository.Path);
-        }
+		public RepositoryAction GetPrimaryAction(Repository repository)
+		{
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Finder"), repository.Path);
+		}
 
-        public RepositoryAction GetSecondaryAction(Repository repository)
-        {
-            return CreateProcessRunnerAction(_translationService.Translate("Open in Terminal"), "open", $"-b com.apple.terminal \"{repository.Path}\"");
-        }
+		public RepositoryAction GetSecondaryAction(Repository repository)
+		{
+			return CreateProcessRunnerAction(_translationService.Translate("Open in Terminal"), "open", $"-b com.apple.terminal \"{repository.Path}\"");
+		}
 
-        public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
-        {
-            return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
-        }
+		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
+		{
+			return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
+		}
 
-        private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
-        {
-            var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
+		private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repositories)
+		{
+			var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-            if (singleRepository != null)
-            {
-                yield return GetPrimaryAction(singleRepository);
-                yield return GetSecondaryAction(singleRepository);
+			if (singleRepository != null)
+			{
+				yield return GetPrimaryAction(singleRepository);
+				yield return GetSecondaryAction(singleRepository);
 
-                var codeExecutable = TryFindCode();
-                var hasCode = !string.IsNullOrEmpty(codeExecutable);
-                if (hasCode)
-                    yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
+				var codeExecutable = TryFindCode();
+				var hasCode = !string.IsNullOrEmpty(codeExecutable);
+				if (hasCode)
+					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
 
-                yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
+				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
 
-                yield return CreateBrowseRemoteAction(singleRepository);
-            }
+				yield return CreateBrowseRemoteAction(singleRepository);
+			}
 
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
-            if (singleRepository != null)
-            {
-                yield return new RepositoryAction()
-                {
-                    Name = _translationService.Translate("Checkout"),
-                    DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
-                                                             .Take(50)
-                                                             .Select(branch => new RepositoryAction()
-                                                             {
-                                                                 Name = branch,
-                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-                                                             })
+			if (singleRepository != null)
+			{
+				yield return new RepositoryAction()
+				{
+					Name = _translationService.Translate("Checkout"),
+					DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
+															 .Take(50)
+															 .Select(branch => new RepositoryAction()
+															 {
+																 Name = branch,
+																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+															 })
+															 .Union(new[]
+															 {
+																new RepositoryAction()
+																{
+																	BeginGroup = true,
+																	Name = _translationService.Translate("Remote branches"),
+																	DeferredSubActionsEnumerator = () =>
+																	{
+																		var remoteBranches = singleRepository.ReadAllBranches().Select(branch => new RepositoryAction()
+																		{
+																			 Name = branch,
+																			 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+																			 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+																		 }).ToArray();
+
+																		if (remoteBranches.Any())
+																			return remoteBranches;
+
+																		return new RepositoryAction[]
+																		{
+																			new RepositoryAction() { Name = "No remote branches found", CanExecute = false },
+																			new RepositoryAction() { Name = "Try fetching if you expect one", CanExecute = false }
+																		};
+																	}
+															 } })
                                                              .ToArray()
-                };
-            }
+				};
+			}
 
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
-        }
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
+		}
 
-        private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
-        {
-            return new RepositoryAction()
-            {
-                Name = name,
-                Action = (_, __) => StartProcess(process, arguments)
-            };
-        }
+		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+		{
+			return new RepositoryAction()
+			{
+				Name = name,
+				Action = (_, __) => StartProcess(process, arguments)
+			};
+		}
 
-        private RepositoryAction CreateActionForMultipleRepositories(string name,
-            IEnumerable<Repository> repositories,
-            Action<Repository> action,
-            bool beginGroup = false,
-            bool executionCausesSynchronizing = false)
-        {
-            return new RepositoryAction()
-            {
-                Name = name,
-                Action = (_, __) =>
-                {
-                    // copy over to an array to not get an exception
-                    // once the enumerator changes (which can happen when a change
-                    // is detected and a repository is renewed) while the loop is running
-                    var repositoryArray = repositories.ToArray();
+		private RepositoryAction CreateActionForMultipleRepositories(string name,
+			IEnumerable<Repository> repositories,
+			Action<Repository> action,
+			bool beginGroup = false,
+			bool executionCausesSynchronizing = false)
+		{
+			return new RepositoryAction()
+			{
+				Name = name,
+				Action = (_, __) =>
+				{
+					// copy over to an array to not get an exception
+					// once the enumerator changes (which can happen when a change
+					// is detected and a repository is renewed) while the loop is running
+					var repositoryArray = repositories.ToArray();
 
-                    foreach (var repository in repositoryArray)
-                        SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
-                },
-                BeginGroup = beginGroup,
-                ExecutionCausesSynchronizing = executionCausesSynchronizing
-            };
-        }
+					foreach (var repository in repositoryArray)
+						SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
+				},
+				BeginGroup = beginGroup,
+				ExecutionCausesSynchronizing = executionCausesSynchronizing
+			};
+		}
 
-        private void SafelyExecute(Action<Repository> action, Repository repository)
-        {
-            try
-            {
-                action(repository);
-            }
-            catch (Exception ex)
-            {
-                _errorHandler.Handle(ex.Message);
-            }
-        }
+		private void SafelyExecute(Action<Repository> action, Repository repository)
+		{
+			try
+			{
+				action(repository);
+			}
+			catch (Exception ex)
+			{
+				_errorHandler.Handle(ex.Message);
+			}
+		}
 
-        private void StartProcess(string process, string arguments)
-        {
-            try
-            {
-                Process.Start(process, arguments);
-            }
-            catch (Exception ex)
-            {
-                _errorHandler.Handle(ex.Message);
-            }
-        }
+		private void StartProcess(string process, string arguments)
+		{
+			try
+			{
+				Process.Start(process, arguments);
+			}
+			catch (Exception ex)
+			{
+				_errorHandler.Handle(ex.Message);
+			}
+		}
 
-        private string TryFindCode()
-        {
-            if (_codeLocation == null)
-            {
-                var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                                                "Visual Studio Code.app", "Contents", "Resources", "app", "bin", "code");
+		private string TryFindCode()
+		{
+			if (_codeLocation == null)
+			{
+				var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+												"Visual Studio Code.app", "Contents", "Resources", "app", "bin", "code");
 
-                _codeLocation = File.Exists(executable) ? executable : "";
-            }
+				_codeLocation = File.Exists(executable) ? executable : "";
+			}
 
-            return _codeLocation;
-        }
+			return _codeLocation;
+		}
 
-        private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
-        {
-            if (HasFiles(repository, filePattern))
-            {
-                return new RepositoryAction()
-                {
-                    Name = actionName,
-                    DeferredSubActionsEnumerator = () =>
-                                GetFiles(repository, filePattern)
-                                .Select(sln => CreateProcessRunnerAction(Path.GetFileName(sln), sln))
-                                .ToArray()
-                };
-            }
+		private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
+		{
+			if (HasFiles(repository, filePattern))
+			{
+				return new RepositoryAction()
+				{
+					Name = actionName,
+					DeferredSubActionsEnumerator = () =>
+								GetFiles(repository, filePattern)
+								.Select(sln => CreateProcessRunnerAction(Path.GetFileName(sln), sln))
+								.ToArray()
+				};
+			}
 
-            return null;
-        }
+			return null;
+		}
 
 
-        private RepositoryAction CreateBrowseRemoteAction(Repository repository)
-        {
-            if (repository.RemoteUrls.Length == 0)
-                return null;
+		private RepositoryAction CreateBrowseRemoteAction(Repository repository)
+		{
+			if (repository.RemoteUrls.Length == 0)
+				return null;
 
-            var actionName = _translationService.Translate("Browse remote");
+			var actionName = _translationService.Translate("Browse remote");
 
-            if (repository.RemoteUrls.Length == 1)
-                return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
+			if (repository.RemoteUrls.Length == 1)
+				return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
 
-            return new RepositoryAction()
-            {
-                Name = actionName,
-                DeferredSubActionsEnumerator = () => repository.RemoteUrls
-                                                         .Take(50)
-                                                         .Select(url => CreateProcessRunnerAction(url, url))
-                                                         .ToArray()
-            };
-        }
+			return new RepositoryAction()
+			{
+				Name = actionName,
+				DeferredSubActionsEnumerator = () => repository.RemoteUrls
+														 .Take(50)
+														 .Select(url => CreateProcessRunnerAction(url, url))
+														 .ToArray()
+			};
+		}
 
-        private bool HasFiles(Repository repository, string searchPattern)
-        {
-            return GetFileEnumerator(repository, searchPattern).Any();
-        }
+		private bool HasFiles(Repository repository, string searchPattern)
+		{
+			return GetFileEnumerator(repository, searchPattern).Any();
+		}
 
-        private IEnumerable<string> GetFiles(Repository repository, string searchPattern)
-        {
-            return GetFileEnumerator(repository, searchPattern)
-                .Take(25)
-                .OrderBy(f => f.Name)
-                .Select(f => f.FullName);
-        }
+		private IEnumerable<string> GetFiles(Repository repository, string searchPattern)
+		{
+			return GetFileEnumerator(repository, searchPattern)
+				.Take(25)
+				.OrderBy(f => f.Name)
+				.Select(f => f.FullName);
+		}
 
-        private IEnumerable<FileInfo> GetFileEnumerator(Repository repository, string searchPattern)
-        {
-            var directory = new DirectoryInfo(repository.Path);
-            return directory
-                .EnumerateFiles(searchPattern, SearchOption.AllDirectories)
-                .Where(f => !f.Name.StartsWith("."));
-        }
-    }
+		private IEnumerable<FileInfo> GetFileEnumerator(Repository repository, string searchPattern)
+		{
+			var directory = new DirectoryInfo(repository.Path);
+			return directory
+				.EnumerateFiles(searchPattern, SearchOption.AllDirectories)
+				.Where(f => !f.Name.StartsWith("."));
+		}
+	}
 }
