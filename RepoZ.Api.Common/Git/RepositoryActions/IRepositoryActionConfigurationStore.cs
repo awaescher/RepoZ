@@ -1,0 +1,7 @@
+﻿namespace RepoZ.Api.Common.Git
+{
+	public interface IRepositoryActionConfigurationStore
+	{
+		RepositoryActionConfiguration RepositoryActionConfiguration { get; }
+	}
+}

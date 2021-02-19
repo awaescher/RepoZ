@@ -34,7 +34,7 @@ namespace RepoZ.App.Win.i18n
 		{
 			try
 			{
-				var dictionaryLocation = $"i18n\\{Thread.CurrentThread.CurrentUICulture}.xaml";
+				var dictionaryLocation = $"i18n\\{Thread.CurrentThread.CurrentUICulture}.sxaml";
 				return new ResourceDictionary { Source = new Uri(dictionaryLocation, UriKind.RelativeOrAbsolute) };
 			}
 			catch (IOException)

@@ -123,6 +123,7 @@ namespace RepoZ.App.Win
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
 			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
 		}
 

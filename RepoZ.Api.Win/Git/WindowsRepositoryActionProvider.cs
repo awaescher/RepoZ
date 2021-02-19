@@ -1,5 +1,6 @@
 ﻿using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git;
 using RepoZ.Api.Git;
 using System;
 using System.Collections.Generic;
@@ -11,21 +12,20 @@ namespace RepoZ.Api.Win.IO
 {
 	public class WindowsRepositoryActionProvider : IRepositoryActionProvider
 	{
+		private readonly IRepositoryActionConfigurationStore _repositoryActionConfigurationStore;
 		private readonly IRepositoryWriter _repositoryWriter;
 		private readonly IRepositoryMonitor _repositoryMonitor;
 		private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
 
-		private string _windowsTerminalLocation;
-		private string _codeLocation;
-		private string _sourceTreeLocation;
-
 		public WindowsRepositoryActionProvider(
+			IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
 			IRepositoryWriter repositoryWriter,
 			IRepositoryMonitor repositoryMonitor,
 			IErrorHandler errorHandler,
 			ITranslationService translationService)
 		{
+			_repositoryActionConfigurationStore = repositoryActionConfigurationStore ?? throw new ArgumentNullException(nameof(repositoryActionConfigurationStore));
 			_repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
 			_repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
 			_errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
@@ -34,15 +34,14 @@ namespace RepoZ.Api.Win.IO
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows File Explorer"), repository.SafePath);
+			var actions = GetContextMenuActions(new[] { repository });
+			return actions.FirstOrDefault();
 		}
 
 		public RepositoryAction GetSecondaryAction(Repository repository)
 		{
-			if (HasWindowsTerminal())
-				return CreateProcessRunnerAction(_translationService.Translate("Open in Windows Terminal"), "wt.exe ", $"-d \"{repository.SafePath}\"");
-
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Windows PowerShell"), "powershell.exe ", $"-executionpolicy bypass -noexit -command \"Set-Location '{repository.SafePath}'\"");
+			var actions = GetContextMenuActions(new[] { repository });
+			return actions.Count() > 1 ? actions.ElementAt(1) : null;
 		}
 
 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
@@ -56,21 +55,24 @@ namespace RepoZ.Api.Win.IO
 
 			if (singleRepository != null)
 			{
-				yield return GetPrimaryAction(singleRepository);
-				yield return GetSecondaryAction(singleRepository);
+				var configuration = _repositoryActionConfigurationStore.RepositoryActionConfiguration;
 
-				var codeExecutable = TryFindCode();
-				var hasCode = !string.IsNullOrEmpty(codeExecutable);
-				if (hasCode)
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, '"' + singleRepository.SafePath + '"');
+				foreach (var action in configuration.RepositoryActions.Where(a => a.Active))
+				{
+					yield return CreateProcessRunnerAction(
+						_translationService.Translate(action.Name),
+						action.Executables.Select(e => ReplaceVariables(e, singleRepository)),
+						ReplaceVariables(action.Arguments, singleRepository),
+						beginGroup: false);
+				}
 
-				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
-
-				var sourceTreeExecutable = TryFindSourceTree();
-				var hasSourceTree = !string.IsNullOrEmpty(sourceTreeExecutable);
-				if (hasSourceTree)
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Sourcetree"), sourceTreeExecutable, "-f " + '"' + singleRepository.SafePath + '"');
-
+				foreach (var fileAssociaction in configuration.FileAssociations.Where(a => a.Active))
+				{
+					yield return CreateFileActionSubMenu(
+						singleRepository,
+						_translationService.Translate(fileAssociaction.Name),
+						fileAssociaction.Extension);
+				}
 
 				yield return CreateBrowseRemoteAction(singleRepository);
 			}
@@ -79,35 +81,61 @@ namespace RepoZ.Api.Win.IO
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
-            if (singleRepository != null)
-            {
+			if (singleRepository != null)
+			{
 				// Strip label of "(r)" and "(l)" indicators
-                yield return new RepositoryAction()
-                {
-                    Name = _translationService.Translate("Checkout"),
-                    DeferredSubActionsEnumerator = () => singleRepository.AllBranches
-                                                             .Take(50)
-                                                             .Select(branch => new RepositoryAction()
-                                                             {
-                                                                 Name = branch,
-                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
-                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-                                                             })
-                                                             .ToArray()
-                };
-            }
+				yield return new RepositoryAction()
+				{
+					Name = _translationService.Translate("Checkout"),
+					DeferredSubActionsEnumerator = () => singleRepository.AllBranches
+															 .Take(50)
+															 .Select(branch => new RepositoryAction()
+															 {
+																 Name = branch,
+																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
+																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+															 })
+															 .ToArray()
+				};
+			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
 
-		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "", bool beginGroup = false)
+		private string ReplaceVariables(string value, Repository repository)
 		{
-			return new RepositoryAction()
+			if (value is null)
+				return string.Empty;
+
+			return Environment.ExpandEnvironmentVariables(
+				value
+				.Replace("{Repository.Name}", repository.Name)
+				.Replace("{Repository.Path}", repository.Path)
+				.Replace("{Repository.SafePath}", repository.SafePath)
+				.Replace("{Repository.Location}", repository.Location)
+				.Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
+				.Replace("{Repository.Branches}", string.Join("|", repository.Branches))
+				.Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches))
+				.Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls)));
+		}
+
+		private RepositoryAction CreateProcessRunnerAction(string name, IEnumerable<string> executables, string arguments = "", bool beginGroup = false)
+		{
+			foreach (var executable in executables)
 			{
-				BeginGroup = beginGroup,
-				Name = name,
-				Action = (_, __) => StartProcess(process, arguments)
-			};
+				var normalized = executable.Replace("\"", "");
+				if (File.Exists(normalized) || Directory.Exists(normalized))
+				{
+					return new RepositoryAction()
+					{
+						BeginGroup = beginGroup,
+						Name = name,
+						Action = (_, __) => StartProcess(executable, arguments)
+					};
+				}
+			}
+
+			return null;
 		}
 
 		private RepositoryAction CreateActionForMultipleRepositories(string name,
@@ -159,64 +187,6 @@ namespace RepoZ.Api.Win.IO
 			}
 		}
 
-		private bool HasWindowsTerminal() => !string.IsNullOrEmpty(TryFindWindowsTerminal());
-
-		private string TryFindWindowsTerminal()
-		{
-			if (_windowsTerminalLocation == null)
-			{
-				var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WindowsApps", "wt.exe");
-				_windowsTerminalLocation = File.Exists(executable) ? executable : "";
-			}
-
-			return _windowsTerminalLocation;
-		}
-
-		private string TryFindSourceTree()
-		{
-			if (_sourceTreeLocation == null)
-			{
-				//Try : Installed in the user profile
-				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-				var executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
-
-				_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
-
-				//Try: Installed in Program files x86
-				if (string.IsNullOrEmpty(_sourceTreeLocation))
-				{
-					folder = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-					folder = Path.Combine(folder, "Atlassian");
-					executable = Path.Combine(folder, "SourceTree", "SourceTree.exe");
-
-					_sourceTreeLocation = File.Exists(executable) ? executable : string.Empty;
-				}
-			}
-			return _sourceTreeLocation;
-		}
-
-		private string TryFindCode()
-		{
-			if (_codeLocation == null)
-			{
-				var sub = Path.Combine("Microsoft VS Code", "code.exe");
-				var folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-				var executable = Path.Combine(folder, "Programs", sub);
-
-				_codeLocation = File.Exists(executable) ? executable : "";
-
-				if (string.IsNullOrEmpty(_codeLocation))
-				{
-					folder = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
-					executable = Path.Combine(folder, sub);
-
-					_codeLocation = File.Exists(executable) ? executable : "";
-				}
-			}
-
-			return _codeLocation;
-		}
-
 		private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
 		{
 			if (HasFiles(repository, filePattern))
@@ -226,7 +196,8 @@ namespace RepoZ.Api.Win.IO
 					Name = actionName,
 					DeferredSubActionsEnumerator = () =>
 								GetFiles(repository, filePattern)
-								.Select(sln => CreateProcessRunnerAction(Path.GetFileName(sln), sln))
+								.Select(solutionFile => ReplaceVariables(solutionFile, repository))
+								.Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), new[] { solutionFile }))
 								.ToArray()
 				};
 			}
@@ -243,7 +214,7 @@ namespace RepoZ.Api.Win.IO
 
 			if (repository.RemoteUrls.Length == 1)
 			{
-				return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
+				return CreateProcessRunnerAction(actionName, new[] { repository.RemoteUrls[0] });
 			}
 
 			return new RepositoryAction()
@@ -251,7 +222,7 @@ namespace RepoZ.Api.Win.IO
 				Name = actionName,
 				DeferredSubActionsEnumerator = () => repository.RemoteUrls
 														 .Take(50)
-														 .Select(url => CreateProcessRunnerAction(url, url))
+														 .Select(url => CreateProcessRunnerAction(url, new[] { url }))
 														 .ToArray()
 			};
 		}

@@ -1,0 +1,84 @@
+# Define your context actions for RepoZ.
+# To enable path probing, you can define multiple executables for the application executable to run.
+# Try to avoid absolute executables if possible by using environment variables like %PROGRAMFILES% or %APPDATA%, for example.
+# Use the placeholder {Repository.Path} to build command line arguments. RepoZ will replace it with the given repository path.
+# The first action will automatically get the Shortcut [Return], the second [Ctrl+Return] in addition to the shortcuts defined below.
+
+# Properties
+# string   {Repository.Name}                RepoZ
+# string   {Repository.Path}                C:/Develop/OpenSource/RepoZ/ (Windows) or /users/awaescher/OpenSource/RepoZ (macOS)
+# string   {Repository.SafePath}            C:/Develop/OpenSource/RepoZ
+# string   {Repository.Location}            C:/Develop/OpenSource
+# string   {Repository.CurrentBranch}       feature/CustomizableContextMenu
+# string[] {Repository.Branches}            master|feature/CustomizableContextMenu|origin/HEAD|origin/master|origin/feature/CustomizableContextMenu
+# string[] {Repository.LocalBranches}       master|feature/CustomizableContextMenu
+# string[] {Repository.RemoteUrls}          https://github.com/awaescher/repoz
+
+# Path, Location and SafePath will not be wrapped in quotes
+
+# file-associations don't support repository objects, since they're based on file paths. Use {FilePath} to refer to the files' locations
+
+{
+    "repository-actions":
+    [
+        {
+            "name": "Open in Windows File Explorer",
+            "executables": ["start"],
+            "arguments": "'{Repository.SafePath}'",  
+            "keys": "Ctrl+1",
+            "active": "true"
+        },
+        {
+            "name": "Open in Windows Terminal",
+            "executables": ["%LocalAppData%/Microsoft/WindowsApps/wt.exe"],
+            "arguments": "-d '{Repository.SafePath}'",  
+            "keys": "Ctrl+2",
+            "active": "true"
+        },
+        {
+            "name": "Open in Windows PowerShell",
+            "executables": [ "%WINDIR%/System32/WindowsPowerShell/v1.0/powershell.exe" ],
+            "arguments": "-executionpolicy bypass -noexit -command 'Set-Location '{Repository.SafePath}''",  
+            "keys": "Ctrl+P",
+            "active": "true"
+        },
+        {
+            "name": "Open in Visual Studio Code",
+            "executables":
+            [
+                "%LocalAppData%/Microsoft VS Code/code.exe", 
+                "%ProgramW6432%/Microsoft VS Code/code.exe"
+            ],
+            "arguments": "'{Repository.SafePath}'",  
+            "keys": "Ctrl+1",
+            "active": "true"
+        },
+        {
+            "name": "Open in Sourcetree",
+            "executables":
+            [
+                "%LocalAppData%/SourceTree/SourceTree.exe", 
+                "%PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe"
+            ],
+            "arguments": "-f '{Repository.SafePath}'",  
+            "active": "true"
+        }
+    ],
+    "file-associations":
+    [
+        {
+            "name": "Open Visual Studio solutions",
+            "extension": "*.sln",
+            "executables": [ "start" ],
+            "arguments": "'{FilePath}'",
+            "active": "true"
+        },
+        {
+            "name": "Open Xcode projects",
+            "extension": "*.xcodeproj",
+            "executables": [ "open" ],
+            "arguments": "'{FilePath}'",
+            "active": "true"
+        }
+    ]
+}
