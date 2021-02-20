@@ -111,7 +111,7 @@ namespace RepoZ.App.Win
 
 			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
-			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
+			container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
 			container.Register<IRepositoryStore, DefaultRepositoryStore>();
