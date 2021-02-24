@@ -53,8 +53,10 @@ namespace RepoZ.App.Mac
 			_statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 
 			var container = TinyIoCContainer.Current;
+
 			RegisterServices(container);
 			UseRepositoryMonitor(container);
+			PreloadRepositoryActions(container);
 
 			_pop = new NSPopover();
 			_pop.Behavior = NSPopoverBehavior.Transient;
@@ -114,15 +116,18 @@ namespace RepoZ.App.Mac
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
 			container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
 			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
-
-			var store = container.Resolve<IRepositoryActionConfigurationStore>();
-			store.Preload();
 		}
 
 		private void UseRepositoryMonitor(TinyIoCContainer container)
 		{
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
 			_repositoryMonitor.Observe();
+		}
+
+		private void PreloadRepositoryActions(TinyIoCContainer container)
+		{
+			var store = container.Resolve<IRepositoryActionConfigurationStore>();
+			store.Preload();
 		}
 
 		private async void CheckForUpdatesAsync(object state)
