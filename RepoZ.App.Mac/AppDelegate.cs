@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -112,6 +114,9 @@ namespace RepoZ.App.Mac
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
 			container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
 			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
+
+			var store = container.Resolve<IRepositoryActionConfigurationStore>();
+			store.Preload();
 		}
 
 		private void UseRepositoryMonitor(TinyIoCContainer container)

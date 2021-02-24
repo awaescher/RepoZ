@@ -83,4 +83,10 @@ Durch Aktivieren von Auto-Fetch, kann RepoZ diese Information selbstständig aut
 
 Wenn möglich wird der Status kürzer dargestellt, um die Lesbarkeit zu verbessern.
 </system:String>
+	<system:String x:Key="OK">OK</system:String>
+	<system:String x:Key="Could not read repository actions">Repository-Aktionen konnten nicht gelesen werden</system:String>
+	<system:String x:Key="Fix">Reparieren</system:String>
+	<system:String x:Key="Remote branches">Remote-Branches</system:String>
+	<system:String x:Key="No remote branches found">Keine Remote-Branches vorhanden</system:String>
+	<system:String x:Key="Try to fetch changes if you're expecting remote branches">Führen Sie Git-Fetch aus, wenn Sie Remote-Branches erwarten</system:String>
 </ResourceDictionary>

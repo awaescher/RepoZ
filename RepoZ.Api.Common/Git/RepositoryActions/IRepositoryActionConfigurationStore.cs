@@ -2,6 +2,8 @@
 {
 	public interface IRepositoryActionConfigurationStore
 	{
+		void Preload();
+
 		RepositoryActionConfiguration RepositoryActionConfiguration { get; }
 	}
 }

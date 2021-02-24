@@ -84,4 +84,10 @@ You can enable Auto fetch in the RepoZ menu to keep the information up to date.
 
 Note that the status might be shorter if possible to improve readability.
 </system:String>
+	<system:String x:Key="OK">OK</system:String>
+	<system:String x:Key="Could not read repository actions">Could not read repository actions</system:String>
+	<system:String x:Key="Fix">Fix</system:String>
+	<system:String x:Key="Remote branches">Remote branches</system:String>
+	<system:String x:Key="No remote branches found">No remote branches found</system:String>
+	<system:String x:Key="Try to fetch changes if you're expecting remote branches">Try to fetch changes if you're expecting remote branches</system:String>
 </ResourceDictionary>

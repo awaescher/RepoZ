@@ -17,6 +17,7 @@ namespace RepoZ.Api.Common.IO
 		private readonly IRepositoryMonitor _repositoryMonitor;
 		private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
+		private readonly RepositoryActionConfiguration _configuration;
 
 		public DefaultRepositoryActionProvider(
 			IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
@@ -30,6 +31,8 @@ namespace RepoZ.Api.Common.IO
 			_repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
 			_errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
 			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+
+			_configuration = _repositoryActionConfigurationStore.RepositoryActionConfiguration;
 		}
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
@@ -53,14 +56,20 @@ namespace RepoZ.Api.Common.IO
 		{
 			var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-			if (singleRepository != null)
+			if (_configuration.State == RepositoryActionConfiguration.LoadState.Error)
 			{
-				var configuration = _repositoryActionConfigurationStore.RepositoryActionConfiguration;
+				yield return new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions"), CanExecute = false };
+				yield return new RepositoryAction() { Name = _configuration.LoadError, CanExecute = false };
+				var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
+				yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
+			}
 
-				foreach (var action in configuration.RepositoryActions.Where(a => a.Active))
+			if (singleRepository != null && _configuration.State == RepositoryActionConfiguration.LoadState.Ok)
+			{
+				foreach (var action in _configuration.RepositoryActions.Where(a => a.Active))
 					yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
 
-				foreach (var fileAssociaction in configuration.FileAssociations.Where(a => a.Active))
+				foreach (var fileAssociaction in _configuration.FileAssociations.Where(a => a.Active))
 				{
 					yield return CreateFileActionSubMenu(
 						singleRepository,
@@ -108,8 +117,8 @@ namespace RepoZ.Api.Common.IO
 
 																		return new RepositoryAction[]
 																		{
-																			new RepositoryAction() { Name = "No remote branches found", CanExecute = false },
-																			new RepositoryAction() { Name = "Try fetching if you expect one", CanExecute = false }
+																			new RepositoryAction() { Name = _translationService.Translate("No remote branches found"), CanExecute = false },
+																			new RepositoryAction() { Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"), CanExecute = false }
 																		};
 																	}
 															 } })
@@ -281,16 +290,19 @@ namespace RepoZ.Api.Common.IO
 		{
 			return GetFileEnumerator(repository, searchPattern)
 				.Take(25)
-				.OrderBy(f => f.Name)
-				.Select(f => f.FullName);
+				.OrderBy(f => f);
 		}
 
-		private IEnumerable<FileInfo> GetFileEnumerator(Repository repository, string searchPattern)
+		private IEnumerable<string> GetFileEnumerator(Repository repository, string searchPattern)
 		{
+			// prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
+			// .app or .xcodeproj on macOS
+
 			var directory = new DirectoryInfo(repository.Path);
 			return directory
-				.EnumerateFiles(searchPattern, SearchOption.AllDirectories)
-				.Where(f => !f.Name.StartsWith("."));
+				.EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
+				.Select(f => f.FullName)
+				.Where(f => !f.StartsWith("."));
 		}
 	}
 }

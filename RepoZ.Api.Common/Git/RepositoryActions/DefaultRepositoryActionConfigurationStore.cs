@@ -1,17 +1,14 @@
 ﻿using Newtonsoft.Json;
-using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryActionConfigurationStore : FileRepositoryStore, IRepositoryActionConfigurationStore
 	{
-		private RepositoryActionConfiguration _repositoryActions = null;
 		private object _lock = new object();
 
 		public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
@@ -22,21 +19,30 @@ namespace RepoZ.Api.Common.Git
 
 		public override string GetFileName() => Path.Combine(AppDataPathProvider.GetAppDataPath(), "RepositoryActions.json");
 
-		public RepositoryActionConfiguration RepositoryActionConfiguration
+		public void Preload()
 		{
-			get
+			lock (_lock)
 			{
-				if (_repositoryActions == null)
+				if (!File.Exists(GetFileName()))
 				{
-					lock (_lock)
-					{
-						var lines = Get()?.ToList() ?? new List<string>();
-						var json = string.Join(Environment.NewLine, lines.Select(RemoveComment));
-						_repositoryActions = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json);
-					}
+					RepositoryActionConfiguration = new RepositoryActionConfiguration();
+					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.None;
+					return;
 				}
 
-				return _repositoryActions;
+				try
+				{
+					var lines = Get()?.ToList() ?? new List<string>();
+					var json = string.Join(Environment.NewLine, lines.Select(RemoveComment));
+					RepositoryActionConfiguration = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json);
+					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Ok;
+				}
+				catch (Exception ex)
+				{
+					RepositoryActionConfiguration = new RepositoryActionConfiguration();
+					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Error;
+					RepositoryActionConfiguration.LoadError = ex.Message;
+				}
 			}
 		}
 
@@ -45,6 +51,8 @@ namespace RepoZ.Api.Common.Git
 			var indexOfComment = line.IndexOf('#');
 			return indexOfComment < 0 ? line : line.Substring(0, indexOfComment);
 		}
+
+		public RepositoryActionConfiguration RepositoryActionConfiguration { get; private set; }
 
 		public IAppDataPathProvider AppDataPathProvider { get; }
 	}

@@ -11,6 +11,12 @@ namespace RepoZ.Api.Common.Git
         [JsonProperty("file-associations")]
         public List<FileAssociation> FileAssociations { get; set; } = new List<FileAssociation>();
 
+        [JsonIgnore]
+        public LoadState State { get; set; } = LoadState.None;
+
+        [JsonIgnore]
+        public string LoadError { get; set; }
+
         [System.Diagnostics.DebuggerDisplay("{Name}")]
         public class RepositoryAction
         {
@@ -50,6 +56,13 @@ namespace RepoZ.Api.Common.Git
 
             [JsonProperty("active")]
             public bool Active { get; set; }
+        }
+
+        public enum LoadState
+        {
+            Ok,
+            None,
+            Error
         }
     }
 }
