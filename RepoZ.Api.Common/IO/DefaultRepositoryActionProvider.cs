@@ -71,9 +71,9 @@ namespace RepoZ.Api.Common.IO
 
 				foreach (var fileAssociaction in _configuration.FileAssociations.Where(a => a.Active))
 				{
-					yield return CreateFileActionSubMenu(
+					yield return CreateFileAssociationSubMenu(
 						singleRepository,
-						_translationService.Translate(fileAssociaction.Name),
+						ReplaceTranslatables(fileAssociaction.Name),
 						fileAssociaction.Extension);
 				}
 
@@ -146,9 +146,32 @@ namespace RepoZ.Api.Common.IO
 				.Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls)));
 		}
 
+		private string ReplaceTranslatables(string value)
+		{
+			if (value is null)
+				return string.Empty;
+
+			value = ReplaceTranslatable(value, "Open");
+			value = ReplaceTranslatable(value, "OpenIn");
+			value = ReplaceTranslatable(value, "OpenWith");
+
+			return value;
+		}
+
+		private string ReplaceTranslatable(string value, string translatable)
+		{
+			if (value.StartsWith("{" + translatable + "}"))
+			{
+				var rest = value.Replace("{" + translatable + "}", "").Trim();
+				return _translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
+			}
+
+			return value;
+		}
+
 		private RepositoryAction CreateProcessRunnerAction(RepositoryActionConfiguration.RepositoryAction action, Repository repository, bool beginGroup = false)
 		{
-			var name = ReplaceVariables(_translationService.Translate(action.Name), repository);
+			var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
 			var command = ReplaceVariables(action.Command, repository);
 			var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
 			var arguments = ReplaceVariables(action.Arguments, repository);
@@ -241,7 +264,7 @@ namespace RepoZ.Api.Common.IO
 			}
 		}
 
-		private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
+		private RepositoryAction CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
 		{
 			if (HasFiles(repository, filePattern))
 			{
