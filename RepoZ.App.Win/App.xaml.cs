@@ -65,6 +65,7 @@ namespace RepoZ.App.Win
 
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
+			PreloadRepositoryActions(container);
 
 			_updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
@@ -138,6 +139,12 @@ namespace RepoZ.App.Win
 		{
 			_explorerHandler = container.Resolve<WindowsExplorerHandler>();
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
+		}
+
+		protected static void PreloadRepositoryActions(TinyIoCContainer container)
+		{
+			var store = container.Resolve<IRepositoryActionConfigurationStore>();
+			store.Preload();
 		}
 
 		private async Task CheckForUpdatesAsync()
