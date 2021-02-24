@@ -170,6 +170,9 @@
     <BundleResource Include="..\RepoZ.App.Win\i18n\de-DE.xaml">
       <Link>i18n\de-DE.xaml</Link>
     </BundleResource>
+    <BundleResource Include="..\RepoZ.App.Win\i18n\nl-NL.xaml">
+      <Link>i18n\nl-NL.xaml</Link>
+    </BundleResource>
     <BundleResource Include="..\RepoZ.App.Win\i18n\en-us.xaml">
       <Link>i18n\en-us.xaml</Link>
     </BundleResource>
