@@ -11,6 +11,7 @@ namespace RepoZ.Api.Common.Git
         [JsonProperty("file-associations")]
         public List<FileAssociation> FileAssociations { get; set; } = new List<FileAssociation>();
 
+        [System.Diagnostics.DebuggerDisplay("{Name}")]
         public class RepositoryAction
         {
             [JsonProperty("name")]
@@ -32,6 +33,7 @@ namespace RepoZ.Api.Common.Git
             public bool Active { get; set; }
         }
 
+        [System.Diagnostics.DebuggerDisplay("{Name}")]
         public class FileAssociation
         {
             [JsonProperty("name")]
