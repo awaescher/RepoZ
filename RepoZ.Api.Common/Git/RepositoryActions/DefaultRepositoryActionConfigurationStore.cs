@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace RepoZ.Api.Common.Git
 {
@@ -25,16 +26,19 @@ namespace RepoZ.Api.Common.Git
 			{
 				if (!File.Exists(GetFileName()))
 				{
-					RepositoryActionConfiguration = new RepositoryActionConfiguration();
-					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.None;
-					return;
+					if (!TryCopyDefaultJsonFile())
+					{
+						RepositoryActionConfiguration = new RepositoryActionConfiguration();
+						RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.None;
+						return;
+					}
 				}
 
 				try
 				{
 					var lines = Get()?.ToList() ?? new List<string>();
 					var json = string.Join(Environment.NewLine, lines.Select(RemoveComment));
-					RepositoryActionConfiguration = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json);
+					RepositoryActionConfiguration = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json) ?? new RepositoryActionConfiguration();
 					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Ok;
 				}
 				catch (Exception ex)
@@ -44,6 +48,20 @@ namespace RepoZ.Api.Common.Git
 					RepositoryActionConfiguration.LoadError = ex.Message;
 				}
 			}
+		}
+
+		private bool TryCopyDefaultJsonFile()
+		{
+			var defaultFile = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "RepositoryActions.json");
+			var targetFile = GetFileName();
+
+			try
+			{
+				File.Copy(defaultFile, targetFile);
+			}
+			catch { /* lets ignore errors here, we just want to know if if worked or not by checking the file existence */ }
+
+			return File.Exists(targetFile);
 		}
 
 		private string RemoveComment(string line)
