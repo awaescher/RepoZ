@@ -54,6 +54,12 @@ namespace RepoZ.App.Win
 			set => AutoFetchMode = AutoFetchMode.Aggresive;
 		}
 
+		public bool PruneOnFetch
+		{
+			get => AppSettingsService.PruneOnFetch;
+			set => AppSettingsService.PruneOnFetch = value;
+		}
+
 		public IAppSettingsService AppSettingsService { get; }
 	}
 }

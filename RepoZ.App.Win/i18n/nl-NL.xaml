@@ -77,4 +77,13 @@ Het is mogelijk om "auto fetch" in het menu aan te zetten zodat de informatie ac
 
 Om de leesbaarheid te bevorderen kan het zijn dat de status informatie korter is dan hierbover beschreven.
 </system:String>
+    <system:String x:Key="OK">OK</system:String>
+    <system:String x:Key="CustomizeRepositoryActions">Customize actions ...</system:String>
+    <system:String x:Key="Could not read repository actions">Could not read repository actions</system:String>
+    <system:String x:Key="Fix">Fix</system:String>
+    <system:String x:Key="Remote branches">Remote branches</system:String>
+    <system:String x:Key="No remote branches found">No remote branches found</system:String>
+    <system:String x:Key="Try to fetch changes if you're expecting remote branches">Try to fetch changes if you're expecting remote branches</system:String>
+    <system:String x:Key="Advanced">Advanced</system:String>
+    <system:String x:Key="PruneOnFetch">Clean up stale remote branches on fetch</system:String>
 </ResourceDictionary>

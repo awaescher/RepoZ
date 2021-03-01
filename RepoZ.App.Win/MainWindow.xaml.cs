@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +26,7 @@ namespace RepoZ.App.Win
 		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private readonly DefaultRepositoryMonitor _monitor;
 		private readonly ITranslationService _translationService;
+		private readonly IRepositoryActionConfigurationStore _actionConfigurationStore;
 		private bool _closeOnDeactivate = true;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
@@ -33,10 +35,10 @@ namespace RepoZ.App.Win
 			IRepositoryActionProvider repositoryActionProvider,
 			IRepositoryIgnoreStore repositoryIgnoreStore,
 			IAppSettingsService appSettingsService,
-			ITranslationService translationService)
+			ITranslationService translationService,
+			IRepositoryActionConfigurationStore actionConfigurationStore)
 		{
 			_translationService = translationService;
-
 			InitializeComponent();
 
 			AcrylicWindow.SetAcrylicWindowStyle(this, AcrylicWindowStyle.None);
@@ -53,6 +55,8 @@ namespace RepoZ.App.Win
 
 			_repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
 			_repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
+			_actionConfigurationStore = actionConfigurationStore ?? throw new ArgumentNullException(nameof(actionConfigurationStore));
+
 			lstRepositories.ItemsSource = aggregator.Repositories;
 			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
 			view.CollectionChanged += View_CollectionChanged;
@@ -205,6 +209,17 @@ namespace RepoZ.App.Win
 		private void ResetIgnoreRulesButton_Click(object sender, RoutedEventArgs e)
 		{
 			_repositoryIgnoreStore.Reset();
+		}
+
+		private void CustomizeContextMenu_Click(object sender, RoutedEventArgs e)
+		{
+			var fileName = ((FileRepositoryStore)_actionConfigurationStore).GetFileName();
+			var directoryName = Path.GetDirectoryName(fileName);
+
+			if (Directory.Exists(directoryName))
+				Process.Start(directoryName);
+
+			Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
 		}
 
 		private void UpdateButton_Click(object sender, RoutedEventArgs e)
