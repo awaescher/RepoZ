@@ -52,7 +52,7 @@ namespace RepoZ.Api.Common.Git
 
 		private bool TryCopyDefaultJsonFile()
 		{
-			var defaultFile = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "RepositoryActions.json");
+			var defaultFile = Path.Combine(AppDataPathProvider.GetAppResourcesPath(), "RepositoryActions.json");
 			var targetFile = GetFileName();
 
 			try

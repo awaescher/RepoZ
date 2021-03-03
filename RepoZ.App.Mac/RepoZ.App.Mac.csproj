@@ -176,6 +176,9 @@
     <BundleResource Include="..\RepoZ.App.Win\i18n\en-us.xaml">
       <Link>i18n\en-us.xaml</Link>
     </BundleResource>
+    <BundleResource Include="..\_ref\macOS\RepositoryActions.json">
+      <Link>Resources\RepositoryActions.json</Link>
+    </BundleResource>
   </ItemGroup>
   <ItemGroup>
     <NativeReference Include="..\_ref\libgit2-4aecb64.dylib">

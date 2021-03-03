@@ -98,8 +98,9 @@
     [
         {
             "name": "{OpenIn} Finder",
-            "command": '"{Repository.SafePath}"',
-            "keys": "Command+Shift+E",
+            "command": "open",
+            "arguments": '"{Repository.SafePath}"',
+            "keys": "Command+Shift+F",
             "active": "true"
         },
         {

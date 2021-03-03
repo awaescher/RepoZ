@@ -6,6 +6,8 @@ namespace RepoZ.Api.Common.IO
 {
 	public class DefaultAppDataPathProvider : IAppDataPathProvider
 	{
-		public string GetAppDataPath() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ");
+		public virtual string GetAppDataPath() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ");
+
+		public virtual string GetAppResourcesPath() => Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
 	}
 }

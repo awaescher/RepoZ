@@ -213,13 +213,13 @@ namespace RepoZ.App.Win
 
 		private void CustomizeContextMenu_Click(object sender, RoutedEventArgs e)
 		{
+			Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
+
 			var fileName = ((FileRepositoryStore)_actionConfigurationStore).GetFileName();
 			var directoryName = Path.GetDirectoryName(fileName);
 
 			if (Directory.Exists(directoryName))
 				Process.Start(directoryName);
-
-			Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
 		}
 
 		private void UpdateButton_Click(object sender, RoutedEventArgs e)

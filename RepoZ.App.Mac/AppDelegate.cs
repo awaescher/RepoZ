@@ -99,7 +99,7 @@ namespace RepoZ.App.Mac
 			container.Register<IRepositoryObserverFactory, MacRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
-			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
+			container.Register<IAppDataPathProvider, MacAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
 			container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
