@@ -54,10 +54,10 @@ master
 ... representeert de branch status ten opzichte van de remote repository (tracked origin) branch.
 In dit geval is de lokale branch op het zelfde niveau als de remote branch.
 
-{3}&lt;num&gt;
+{3}4
 ... geeft aan dat de lokale branch voor loopt op op de remote branch met het aangegeven aantal commits. Gebruik "git push" om de remote branch te updaten.
 
-{4}&lt;num&gt;
+{4}8
 ... geeft aan dat de lokale branch achter loopt op de remote branch met het aangegeven aantal commits. Gebruik "git pull" om de lokale branch te updaten.
 
 {5}
@@ -67,9 +67,8 @@ In dit geval is de lokale branch op het zelfde niveau als de remote branch.
 De volgende nummers betekenen toegevoegde (+1), gewijzigde (~2) en verwijderde bestanden (-3) ten opzichte van de index.
 De nummers na het pipe-symbool betekenen toegevoegde (+4), gewijzigde (~5) en verwijderde bestanden (-6) op de werkende directory.
 
-{6}&lt;num&gt;
-... geeft aan dat er items gestashed zijn.
-
+{6}3
+... geeft aan dat er een aangegeven aantal veranderingen gestashed zijn.
 
 Disclaimer:
 De informatie is gebaseerd op de status van de remote branch na de laaste "git fetch".
@@ -85,5 +84,5 @@ Om de leesbaarheid te bevorderen kan het zijn dat de status informatie korter is
     <system:String x:Key="No remote branches found">No remote branches found</system:String>
     <system:String x:Key="Try to fetch changes if you're expecting remote branches">Try to fetch changes if you're expecting remote branches</system:String>
     <system:String x:Key="Advanced">Advanced</system:String>
-    <system:String x:Key="PruneOnFetch">Clean up stale remote branches on fetch</system:String>
+    <system:String x:Key="PruneOnFetch">Prune remote branches on fetch</system:String>
 </ResourceDictionary>

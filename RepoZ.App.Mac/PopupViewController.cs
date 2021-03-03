@@ -8,6 +8,7 @@ using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
 using RepoZ.Api.Common.Git;
 using System.IO;
+using RepoZ.App.Mac.Controls;
 
 namespace RepoZ.App.Mac
 {
@@ -230,11 +231,24 @@ namespace RepoZ.App.Mac
 			};
 
 			var autoFetchItems = new NSMenuItem[] {
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Off)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
+				new CheckableMenuItem(
+					_translationService.Translate(nameof(AutoFetchMode.Off)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Off,
+					_ => _appSettingsService.AutoFetchMode = AutoFetchMode.Off),
+
 				NSMenuItem.SeparatorItem,
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Discretely)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Discretely.ToString() },
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Adequate)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Adequate.ToString() },
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Aggresive)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
+
+				new CheckableMenuItem(_translationService.Translate(nameof(AutoFetchMode.Discretely)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Discretely,
+					_ => _appSettingsService.AutoFetchMode = AutoFetchMode.Discretely),
+
+				new CheckableMenuItem(_translationService.Translate(nameof(AutoFetchMode.Adequate)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Adequate,
+					_ =>	_appSettingsService.AutoFetchMode = AutoFetchMode.Adequate),
+
+				new CheckableMenuItem(_translationService.Translate(nameof(AutoFetchMode.Aggresive)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Aggresive,
+					_ => _appSettingsService.AutoFetchMode = AutoFetchMode.Aggresive)
 			};
 
 			var manageRepositoriesItem = MenuButton.Menu.ItemWithTag(MENU_MANAGE);
@@ -250,7 +264,7 @@ namespace RepoZ.App.Mac
 				autoFetchItem.Submenu.AddItem(item);
 
 			var advancedItems = new NSMenuItem[] {
-				new CheckableMenuItem(_translationService.Translate("PruneOnFetch"), value => _appSettingsService.PruneOnFetch = value, () => _appSettingsService.PruneOnFetch)
+				new CheckableMenuItem(_translationService.Translate("PruneOnFetch"), () => _appSettingsService.PruneOnFetch, value => _appSettingsService.PruneOnFetch = value)
 			};
 
 			var advancedItem = MenuButton.Menu.ItemWithTag(MENU_ADVANCED);
@@ -275,23 +289,8 @@ namespace RepoZ.App.Mac
 
 		partial void MenuButton_Click(NSObject sender)
 		{
-			var currentAutoFetchMode = _appSettingsService.AutoFetchMode;
-			var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
-			var advancedItem = MenuButton.Menu.ItemWithTag(MENU_ADVANCED);
-
-			for (int i = 0; i < autoFetchItem.Submenu.Count; i++)
-			{
-				var item = autoFetchItem.Submenu.ItemAt(i);
-
-				if (string.IsNullOrEmpty(item.Identifier))
-					continue;
-
-				var itemMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), item.Identifier);
-				item.State = itemMode == currentAutoFetchMode ? NSCellStateValue.On : NSCellStateValue.Off;
-			}
-
 			UpdateCheckableItems(MenuButton.Menu);
-			
+
 			MenuButton.Menu.PopUpMenu(null, new CoreGraphics.CGPoint() { X = 0, Y = MenuButton.Frame.Height }, MenuButton);
 		}
 
@@ -305,12 +304,6 @@ namespace RepoZ.App.Mac
 				(item as CheckableMenuItem)?.Update();
 				UpdateCheckableItems(item.Submenu);
 			}
-		}
-
-		void HandleAutoFetchChange(object sender, EventArgs e)
-		{
-			var newMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), (sender as NSMenuItem).Identifier);
-			_appSettingsService.AutoFetchMode = newMode;
 		}
 
 		void HandleCustomizeRepositoryAction(object sender, EventArgs e)
@@ -377,32 +370,6 @@ namespace RepoZ.App.Mac
 			public nfloat UpdateButtonLeft { get; set; }
 			public nfloat MenuButtonLeft { get; set; }
 			public nfloat SearchBoxWidth { get; set; }
-		}
-
-		private class CheckableMenuItem : NSMenuItem
-		{
-			public CheckableMenuItem(string title, Action<bool> onChange, Func<bool> isChecked) : base(title)
-			{
-				OnChange = onChange ?? throw new ArgumentNullException(nameof(onChange));
-				IsChecked = isChecked ?? throw new ArgumentNullException(nameof(isChecked));
-
-				base.Activated += CheckableMenuItem_Activated;
-			}
-
-			private void CheckableMenuItem_Activated(object sender, EventArgs e)
-			{
-				State = (State == NSCellStateValue.On) ? NSCellStateValue.Off : NSCellStateValue.On;
-				OnChange.Invoke(State == NSCellStateValue.On);
-			}
-
-			public void Update()
-			{
-				State = IsChecked.Invoke() ? NSCellStateValue.On : NSCellStateValue.Off;
-			}
-
-			public Action<bool> OnChange { get; }
-
-			public Func<bool> IsChecked { get; }
 		}
 	}
 }

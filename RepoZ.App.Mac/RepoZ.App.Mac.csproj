@@ -136,6 +136,7 @@
     <Compile Include="TinyIoC.cs" />
     <Compile Include="GeometryHelper.cs" />
     <Compile Include="i18n\ResourceDictionaryTranslationService.cs" />
+    <Compile Include="Controls\CheckableMenuItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="PopupView.xib" />

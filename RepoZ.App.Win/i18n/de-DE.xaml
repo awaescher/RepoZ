@@ -53,10 +53,10 @@ master
 ... steht für den aktuellen Branch-Status im Vergleich zu seinem Remote-Branch.
 In diesem Beispiel ist der lokale Branch gleichauf mit seinem Remote-Branch.
 
-{3}&lt;num&gt;
+{3}4
 ... zeigt an, dass der lokale Branch seinem Remote-Branch über die entsprechende Anzahl der Commits voraus ist. Es wird "git push" benötigt, um den Remote-Branch zu aktualisieren.
 
-{4}&lt;num&gt;
+{4}8
 ... zeigt an, dass der lokale Branch um die entsprechende Anzahl der Commits hinter den Remote-Branch zurückgefallen ist. Ein "git pull" wird benötigt, um den lokalen Branch zu aktualisieren.
 
 {5}
@@ -66,8 +66,8 @@ In diesem Beispiel ist der lokale Branch gleichauf mit seinem Remote-Branch.
 Die folgenden Nummern stehen für hinzugefügte (+1), geänderte (~2) und gelöschte Dateien (-3) im Git-Index (Änderungen, die "gestaged" wurden).
 Die Nummern nach dem Pipe-Symbol stehen für hinzugefügte (+4), geänderte (~5) und gelöschte Dateien (-6) im Arbeitsverzeichnis.
 
-{6}&lt;num&gt;
-... zeigt an, dass Änderungen in Stashes vorhanden sind.
+{6}3
+... zeigt an, dass eine entsprechende Anzahl an Änderungen in Stashes vorhanden sind.
 
 
 Hinweis:
@@ -84,6 +84,5 @@ Wenn möglich wird der Status kürzer dargestellt, um die Lesbarkeit zu verbesse
 	<system:String x:Key="No remote branches found">Keine Remote-Branches vorhanden</system:String>
 	<system:String x:Key="Try to fetch changes if you're expecting remote branches">Führen Sie Git-Fetch aus, wenn Sie Remote-Branches erwarten</system:String>
     <system:String x:Key="Advanced">Erweitert</system:String>
-    <system:String x:Key="PruneOnFetch" xml:space="preserve">Veraltete Remote-Branches
-bei Git-Fetch entfernen</system:String>
+    <system:String x:Key="PruneOnFetch" xml:space="preserve">Entbehrliche Remote-Branches bei Git-Fetch entfernen</system:String>
 </ResourceDictionary>

@@ -82,5 +82,5 @@ master
 	<system:String x:Key="No remote branches found">No remote branches found</system:String>
 	<system:String x:Key="Try to fetch changes if you're expecting remote branches">Try to fetch changes if you're expecting remote branches</system:String>
     <system:String x:Key="Advanced">Advanced</system:String>
-    <system:String x:Key="PruneOnFetch">Clean up stale remote branches on fetch</system:String>
+    <system:String x:Key="PruneOnFetch">Prune remote branches on fetch</system:String>
 </ResourceDictionary>
