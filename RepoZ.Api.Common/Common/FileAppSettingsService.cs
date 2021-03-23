@@ -94,6 +94,21 @@ namespace RepoZ.Api.Common.Common
 			}
 		}
 
+		public List<ApplicationPath> ExePaths
+		{
+			get => Settings.ExePaths;
+			set
+			{
+				if (value != Settings.ExePaths)
+				{
+					Settings.ExePaths = value;
+
+					NotifyChange();
+					Save();
+				}
+			}
+		}
+
 		public void RegisterInvalidationHandler(Action handler)
 		{
 			_invalidationHandlers.Add(handler);

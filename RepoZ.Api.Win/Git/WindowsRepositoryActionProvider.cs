@@ -15,6 +15,7 @@ namespace RepoZ.Api.Win.IO
 		private readonly IRepositoryMonitor _repositoryMonitor;
 		private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
+		private readonly IAppSettingsService _appSettingsService;
 
 		private enum Applications
 		{
@@ -30,12 +31,14 @@ namespace RepoZ.Api.Win.IO
 			IRepositoryWriter repositoryWriter,
 			IRepositoryMonitor repositoryMonitor,
 			IErrorHandler errorHandler,
-			ITranslationService translationService)
+			ITranslationService translationService,
+			IAppSettingsService appSettingsService)
 		{
 			_repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
 			_repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
 			_errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
 			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+			_appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
 		}
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
@@ -86,20 +89,20 @@ namespace RepoZ.Api.Win.IO
 			if (singleRepository != null)
 			{
 				// Strip label of "(r)" and "(l)" indicators
-                yield return new RepositoryAction()
-                {
-                    Name = _translationService.Translate("Checkout"),
-                    DeferredSubActionsEnumerator = () => singleRepository.AllBranches
-                                                             .Take(50)
-                                                             .Select(branch => new RepositoryAction()
-                                                             {
-                                                                 Name = branch,
-                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
-                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-                                                             })
-                                                             .ToArray()
-                };
-            }
+				yield return new RepositoryAction()
+				{
+					Name = _translationService.Translate("Checkout"),
+					DeferredSubActionsEnumerator = () => singleRepository.AllBranches
+															 .Take(50)
+															 .Select(branch => new RepositoryAction()
+															 {
+																 Name = branch,
+																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch.Replace(" (r)", "").Replace(" (l)", "")),
+																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+															 })
+															 .ToArray()
+				};
+			}
 
 			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
@@ -172,18 +175,18 @@ namespace RepoZ.Api.Win.IO
 				switch (app)
 				{
 					case Applications.SourceTree:
-						_apps.Add(app, TryFindExe(new string[] { "SourceTree", "SourceTree.exe" }));
+						_apps.Add(app, TryFindExe(Applications.SourceTree, new string[] { "SourceTree", "SourceTree.exe" }));
 						break;
 					case Applications.VSCode:
-						_apps.Add(Applications.VSCode, TryFindExe(new string[] { "Microsoft VS Code", "code.exe" }));
+						_apps.Add(Applications.VSCode, TryFindExe(Applications.VSCode, new string[] { "Microsoft VS Code", "code.exe" }));
 						break;
 
 					case Applications.GitBash:
-						_apps.Add(Applications.GitBash, TryFindExe(new string[] { "Git", "git-bash.exe" }));
+						_apps.Add(Applications.GitBash, TryFindExe(Applications.GitBash, new string[] { "Git", "git-bash.exe" }));
 						break;
 
 					case Applications.WindowsTerminal:
-						_apps.Add(Applications.WindowsTerminal, TryFindExe(new string[] { "Microsoft", "WindowsApps", "wt.exe" }));
+						_apps.Add(Applications.WindowsTerminal, TryFindExe(Applications.WindowsTerminal, new string[] { "Microsoft", "WindowsApps", "wt.exe" }));
 						break;
 
 					default:
@@ -194,18 +197,28 @@ namespace RepoZ.Api.Win.IO
 			return !string.IsNullOrEmpty(_apps[app]);
 		}
 
-		private string TryFindExe(string[] ExePathParts)
+		private string TryFindExe(Applications application, string[] ExePathParts)
 		{
 			var sub = Path.Combine(ExePathParts);
-			string folder ;
+			string folder;
 			string executable;
-			string path;
+			string path = string.Empty;
+
+			// Check application full path if manually configured in appSettings
+			folder = _appSettingsService.ExePaths?.FirstOrDefault(a => a.ApplicationName == application.ToString())?.ApplicationFullPath;
+			if (!string.IsNullOrEmpty(folder))
+			{
+				path = File.Exists(folder) ? folder : "";
+			}
 
 			// Search for application in user's profile
-			folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-			executable = Path.Combine(folder, "Programs", sub);
+			if (string.IsNullOrEmpty(path))
+			{
+				folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				executable = Path.Combine(folder, "Programs", sub);
 
-			path = File.Exists(executable) ? executable : "";
+				path = File.Exists(executable) ? executable : "";
+			}
 
 			// Search for application in program files
 			if (string.IsNullOrEmpty(path))
@@ -215,8 +228,6 @@ namespace RepoZ.Api.Win.IO
 
 				path = File.Exists(executable) ? executable : "";
 			}
-
-			// TODO: search for application path in Registry
 
 			return path;
 		}
