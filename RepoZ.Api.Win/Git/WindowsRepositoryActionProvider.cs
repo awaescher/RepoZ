@@ -85,7 +85,7 @@ namespace RepoZ.Api.Win.IO
                 yield return new RepositoryAction()
                 {
                     Name = _translationService.Translate("Checkout"),
-                    DeferredSubActionsEnumerator = () => singleRepository.AllBranches
+                    DeferredSubActionsEnumerator = () => singleRepository.ReadAllBranches()
                                                              .Take(50)
                                                              .Select(branch => new RepositoryAction()
                                                              {
