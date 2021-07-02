@@ -177,7 +177,12 @@
 							 Margin="0,10,0,0"
 							 ScrollViewer.CanContentScroll="False"
 							 >
-						<ListBox.ItemTemplate>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
 							<DataTemplate>
 								<StackPanel>
 									<TextBlock Text="{Binding Name}"

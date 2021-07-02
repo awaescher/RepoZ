@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -22,12 +23,15 @@ namespace RepoZ.App.Win
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private readonly IRepositoryActionProvider _repositoryActionProvider;
+        private readonly IRepositoryActionProvider _repositoryActionProvider;
 		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private readonly DefaultRepositoryMonitor _monitor;
 		private readonly ITranslationService _translationService;
 		private readonly IRepositoryActionConfigurationStore _actionConfigurationStore;
 		private bool _closeOnDeactivate = true;
+        private bool _refreshDelayed = false;
+		private DateTime timeOfLastRefresh = DateTime.MinValue;
+
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
@@ -58,14 +62,12 @@ namespace RepoZ.App.Win
 			_actionConfigurationStore = actionConfigurationStore ?? throw new ArgumentNullException(nameof(actionConfigurationStore));
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
-			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
-			view.CollectionChanged += View_CollectionChanged;
+			
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
+			((ICollectionView)view).CollectionChanged += View_CollectionChanged;
 			view.Filter = FilterRepositories;
-
-			lstRepositories.Items.SortDescriptions.Add(
-				new SortDescription(nameof(RepositoryView.Name),
-				ListSortDirection.Ascending));
-
+            view.CustomSort = new CustomRepositoryViewSortBehavior();
+			
 			var appName = System.Reflection.Assembly.GetEntryAssembly().GetName();
 			txtHelpCaption.Text = appName.Name + " " + appName.Version.ToString(2);
 			txtHelp.Text = GetHelp(statusCharacterMap);
@@ -382,19 +384,43 @@ namespace RepoZ.App.Win
 				AcrylicWindow.SetAcrylicWindowStyle(this, newStyle);
 			}
 
-			// keep window open on deactivate to make screeshots, for example
+			// keep window open on deactivate to make screenshots, for example
 			if (e.Key == Key.F12)
 				_closeOnDeactivate = !_closeOnDeactivate;
 		}
 
-		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource).Refresh();
+			// Text has changed, capture the timestamp
+            if (sender != null)
+            {
+				timeOfLastRefresh = DateTime.Now;
+            }
+
+			// Spin while updates are in progress
+            if (DateTime.Now - timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
+            {
+                if (!_refreshDelayed)
+                {
+                    this.Dispatcher.InvokeAsync(async () =>
+                    {
+                        _refreshDelayed = true;
+                        await Task.Delay(200);
+                        _refreshDelayed = false;
+                        txtFilter_TextChanged(null, e);
+                    });
+				}
+				return;
+            }
+
+			// Refresh the view
+            var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
+            view.Refresh();
 		}
 
 		private bool FilterRepositories(object item)
 		{
-			return (item as RepositoryView)?.MatchesFilter(txtFilter.Text) ?? false;
+			return !_refreshDelayed && ((item as RepositoryView)?.MatchesFilter(txtFilter.Text) ?? false);
 		}
 
 		private void txtFilter_Finish(object sender, EventArgs e)
@@ -423,4 +449,16 @@ namespace RepoZ.App.Win
 
 		public bool IsShown => Visibility == Visibility.Visible && IsActive;
 	}
+
+    public class CustomRepositoryViewSortBehavior : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            if (x is RepositoryView xView && y is RepositoryView yView)
+            {
+                return String.Compare(xView.Name, yView.Name, StringComparison.Ordinal);
+            }
+            return 0;
+        }
+    }
 }
