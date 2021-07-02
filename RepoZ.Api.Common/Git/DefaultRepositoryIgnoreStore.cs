@@ -12,7 +12,7 @@ namespace RepoZ.Api.Common.Git
 	{
 		private List<string> _ignores = null;
 		private IEnumerable<IgnoreRule> _rules;
-		private object _lock = new object();
+		private readonly object _lock = new object();
 
 		public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
 			: base(errorHandler)

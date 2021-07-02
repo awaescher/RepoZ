@@ -103,12 +103,6 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
 			startInfo.StandardErrorEncoding = _encoding;
 		}
 
-		private void RedirectStdin(ProcessStartInfo startInfo)
-		{
-			startInfo.RedirectStandardInput = true;
-			// there is no StandardInputEncoding property, use extension method StreamWriter.WithEncoding instead
-		}
-
 		protected virtual string Start(Api.Git.Repository repository, string[] command, Action<ProcessStartInfo> initialize)
 		{
 			var timeout = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;

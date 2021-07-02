@@ -39,7 +39,7 @@ namespace RepoZ.Api.Git
 			if (useRegex)
 				return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
 
-			return filterProperty.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
+			return filterProperty?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
 		}
 	}
 }

@@ -4,7 +4,7 @@ namespace RepoZ.Api.Common.Git
 {
 	public class IgnoreRule
 	{
-		private Func<string, bool> _comparer;
+		private readonly Func<string, bool> _comparer;
 
 		public IgnoreRule(string pattern)
 		{

@@ -21,7 +21,6 @@ namespace RepoZ.Api.Common.Git
 		{
             using (var repo = new LibGit2Sharp.Repository(repository.Path))
             {
-                string realBranchName = branchName;
                 Branch branch;
 
                 // Check if local branch exists
@@ -37,7 +36,7 @@ namespace RepoZ.Api.Common.Git
                     if (upstreamBranch is null)
                         return false;
 
-                    branch = repo.CreateBranch(branchName, upstreamBranch.Tip);     
+                    _ = repo.CreateBranch(branchName, upstreamBranch.Tip);     
                     this.SetUpstream(repository, branchName, upstreamBranch.FriendlyName);
 
                     branch = Commands.Checkout(repo, branchName);

@@ -13,7 +13,7 @@ namespace RepoZ.Api.Common.Git
 	{
 		private readonly IErrorHandler _errorHandler;
 
-		public FileRepositoryStore(IErrorHandler errorHandler)
+		protected FileRepositoryStore(IErrorHandler errorHandler)
 		{
 			_errorHandler = errorHandler;
 		}
