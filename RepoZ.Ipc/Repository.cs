@@ -35,7 +35,7 @@
 
 		public string Path { get; set; }
 
-        public string[] AllBranches { get; set; }
+        public string[] ReadAllBranches() => new string[0];
 
 		public bool HasUnpushedChanges { get; set; }
 

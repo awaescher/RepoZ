@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -51,8 +53,10 @@ namespace RepoZ.App.Mac
 			_statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 
 			var container = TinyIoCContainer.Current;
+
 			RegisterServices(container);
 			UseRepositoryMonitor(container);
+			PreloadRepositoryActions(container);
 
 			_pop = new NSPopover();
 			_pop.Behavior = NSPopoverBehavior.Transient;
@@ -95,9 +99,9 @@ namespace RepoZ.App.Mac
 			container.Register<IRepositoryObserverFactory, MacRepositoryObserverFactory>().AsSingleton();
 			container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
 
-			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
+			container.Register<IAppDataPathProvider, MacAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
-			container.Register<IRepositoryActionProvider, MacRepositoryActionProvider>();
+			container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
 			container.Register<IRepositoryStore, DefaultRepositoryStore>();
@@ -109,6 +113,8 @@ namespace RepoZ.App.Mac
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
 			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
 		}
 
@@ -116,6 +122,12 @@ namespace RepoZ.App.Mac
 		{
 			_repositoryMonitor = container.Resolve<IRepositoryMonitor>();
 			_repositoryMonitor.Observe();
+		}
+
+		private void PreloadRepositoryActions(TinyIoCContainer container)
+		{
+			var store = container.Resolve<IRepositoryActionConfigurationStore>();
+			store.Preload();
 		}
 
 		private async void CheckForUpdatesAsync(object state)

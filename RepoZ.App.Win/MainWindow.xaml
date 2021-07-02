@@ -109,28 +109,41 @@
 							Style="{DynamicResource MaterialDesignFlatButton}">
 							<Button.ContextMenu>
 								<controls:AcrylicContextMenu x:Name="SettingsMenu" >
+                                    
 									<controls:AcrylicMenuItem Header="{DynamicResource ManageRepos}"  >
 										<controls:AcrylicMenuItem Header="{DynamicResource ScanComputer}" Click="ScanButton_Click" x:Name="ScanMenuItem"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/>
-										<Separator/>
-										<controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" />
-									</controls:AcrylicMenuItem>
-									<controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
+                                        <Separator/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource CustomizeRepositoryActions}" Click="CustomizeContextMenu_Click" />
+                                        <Separator/>
+                                        <controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" />
+                                    </controls:AcrylicMenuItem>
+
+                                    <controls:AcrylicMenuItem Header="{DynamicResource AutoFetch}" x:Name="AutoFetchMenuItem" >
 										<controls:AcrylicMenuItem Header="{DynamicResource Off}" IsCheckable="True" IsChecked="{Binding AutoFetchOff}"/>
 										<Separator/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Discretely}" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Adequate}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Aggresive}" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
 									</controls:AcrylicMenuItem>
-									<Separator/>
+
+                                    <controls:AcrylicMenuItem Header="{DynamicResource Advanced}" >
+                                        <controls:AcrylicMenuItem Header="{DynamicResource PruneOnFetch}" IsCheckable="True" IsChecked="{Binding PruneOnFetch}" />
+                                    </controls:AcrylicMenuItem>
+
+                                    <Separator/>
+                                    
 									<controls:AcrylicMenuItem Header="{DynamicResource PingBack}" Foreground="#FFED8888">
 										<controls:AcrylicMenuItem Header="{DynamicResource Donate}" Click="SponsorButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
 										<Separator/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Follow}" Click="FollowButton_Click" Foreground="{DynamicResource MaterialDesignBody}"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Star}" Click="StarButton_Click" Foreground="{DynamicResource MaterialDesignBody}" />
 									</controls:AcrylicMenuItem>
+                                    
 									<Separator/>
+                                    
 									<controls:AcrylicMenuItem Header="{DynamicResource Help}" Click="HelpButton_Click"/>
+                                    
 								</controls:AcrylicContextMenu>
 							</Button.ContextMenu>
 						</Button>

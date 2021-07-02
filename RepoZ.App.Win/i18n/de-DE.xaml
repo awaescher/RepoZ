@@ -30,17 +30,10 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Exit">Beenden</system:String>
 	<system:String x:Key="NotStartWithWindows">Nicht mehr mit Windows starten</system:String>
 	<system:String x:Key="Scanning">Suche nach Repositories ...</system:String>
-	<system:String x:Key="Open in Windows File Explorer">In Windows Explorer öffnen</system:String>
-	<system:String x:Key="Open in Windows PowerShell">In Windows PowerShell öffnen</system:String>
-	<system:String x:Key="Open in Windows Command Prompt">In Windows Eingabeaufforderung öffnen</system:String>
-	<system:String x:Key="Open in Visual Studio Code">In Visual Studio Code öffnen</system:String>
-	<system:String x:Key="Open Visual Studio solutions">Visual Studio Solutions öffnen</system:String>
-	<system:String x:Key="Open in Git Bash">In Git Bash öffnen</system:String>
-	<system:String x:Key="Open in Finder">In Finder öffnen</system:String>
-	<system:String x:Key="Open in Terminal">Im Terminal öffnen</system:String>
-	<system:String x:Key="Open in Sourcetree">In Sourcetree öffnen</system:String>	
-    <system:String x:Key="Open {0}">{0} öffnen</system:String>
-	<system:String x:Key="Browse remote">Remote-Repository öffnen</system:String>
+    <system:String x:Key="(Open)">{0} öffnen</system:String>
+    <system:String x:Key="(OpenIn)">In {0} öffnen</system:String>
+    <system:String x:Key="(OpenWith)">Mit {0} öffnen</system:String>
+    <system:String x:Key="Browse remote">Remote-Repository öffnen</system:String>
 	<system:String x:Key="Fetch">Git Fetch</system:String>
 	<system:String x:Key="Pull">Git Pull</system:String>
 	<system:String x:Key="Push">Git Push</system:String>
@@ -60,10 +53,10 @@ master
 ... steht für den aktuellen Branch-Status im Vergleich zu seinem Remote-Branch.
 In diesem Beispiel ist der lokale Branch gleichauf mit seinem Remote-Branch.
 
-{3}&lt;num&gt;
+{3}4
 ... zeigt an, dass der lokale Branch seinem Remote-Branch über die entsprechende Anzahl der Commits voraus ist. Es wird "git push" benötigt, um den Remote-Branch zu aktualisieren.
 
-{4}&lt;num&gt;
+{4}8
 ... zeigt an, dass der lokale Branch um die entsprechende Anzahl der Commits hinter den Remote-Branch zurückgefallen ist. Ein "git pull" wird benötigt, um den lokalen Branch zu aktualisieren.
 
 {5}
@@ -73,8 +66,8 @@ In diesem Beispiel ist der lokale Branch gleichauf mit seinem Remote-Branch.
 Die folgenden Nummern stehen für hinzugefügte (+1), geänderte (~2) und gelöschte Dateien (-3) im Git-Index (Änderungen, die "gestaged" wurden).
 Die Nummern nach dem Pipe-Symbol stehen für hinzugefügte (+4), geänderte (~5) und gelöschte Dateien (-6) im Arbeitsverzeichnis.
 
-{6}&lt;num&gt;
-... zeigt an, dass Änderungen in Stashes vorhanden sind.
+{6}3
+... zeigt an, dass eine entsprechende Anzahl an Änderungen in Stashes vorhanden sind.
 
 
 Hinweis:
@@ -83,4 +76,13 @@ Durch Aktivieren von Auto-Fetch, kann RepoZ diese Information selbstständig aut
 
 Wenn möglich wird der Status kürzer dargestellt, um die Lesbarkeit zu verbessern.
 </system:String>
+	<system:String x:Key="OK">OK</system:String>
+    <system:String x:Key="CustomizeRepositoryActions">Aktionen anpassen ...</system:String>
+    <system:String x:Key="Could not read repository actions">Repository-Aktionen konnten nicht gelesen werden</system:String>
+	<system:String x:Key="Fix">Reparieren</system:String>
+	<system:String x:Key="Remote branches">Remote-Branches</system:String>
+	<system:String x:Key="No remote branches found">Keine Remote-Branches vorhanden</system:String>
+	<system:String x:Key="Try to fetch changes if you're expecting remote branches">Führen Sie Git-Fetch aus, wenn Sie Remote-Branches erwarten</system:String>
+    <system:String x:Key="Advanced">Erweitert</system:String>
+    <system:String x:Key="PruneOnFetch" xml:space="preserve">Entbehrliche Remote-Branches bei Git-Fetch entfernen</system:String>
 </ResourceDictionary>

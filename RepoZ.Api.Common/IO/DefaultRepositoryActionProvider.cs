@@ -6,37 +6,45 @@ using System;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Common;
 using System.IO;
+using RepoZ.Api.Common.Git;
 
-namespace RepoZ.Api.Mac
+namespace RepoZ.Api.Common.IO
 {
-	public class MacRepositoryActionProvider : IRepositoryActionProvider
+	public class DefaultRepositoryActionProvider : IRepositoryActionProvider
 	{
+		private readonly IRepositoryActionConfigurationStore _repositoryActionConfigurationStore;
 		private readonly IRepositoryWriter _repositoryWriter;
 		private readonly IRepositoryMonitor _repositoryMonitor;
 		private readonly IErrorHandler _errorHandler;
 		private readonly ITranslationService _translationService;
-		private string _codeLocation;
+		private readonly RepositoryActionConfiguration _configuration;
 
-		public MacRepositoryActionProvider(
+		public DefaultRepositoryActionProvider(
+			IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
 			IRepositoryWriter repositoryWriter,
 			IRepositoryMonitor repositoryMonitor,
 			IErrorHandler errorHandler,
 			ITranslationService translationService)
 		{
+			_repositoryActionConfigurationStore = repositoryActionConfigurationStore ?? throw new ArgumentNullException(nameof(repositoryActionConfigurationStore));
 			_repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
 			_repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
 			_errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
 			_translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+
+			_configuration = _repositoryActionConfigurationStore.RepositoryActionConfiguration;
 		}
 
 		public RepositoryAction GetPrimaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Finder"), repository.Path);
+			var actions = GetContextMenuActions(new[] { repository });
+			return actions.FirstOrDefault();
 		}
 
 		public RepositoryAction GetSecondaryAction(Repository repository)
 		{
-			return CreateProcessRunnerAction(_translationService.Translate("Open in Terminal"), "open", $"-b com.apple.terminal \"{repository.Path}\"");
+			var actions = GetContextMenuActions(new[] { repository });
+			return actions.Count() > 1 ? actions.ElementAt(1) : null;
 		}
 
 		public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
@@ -48,17 +56,26 @@ namespace RepoZ.Api.Mac
 		{
 			var singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-			if (singleRepository != null)
+			if (_configuration.State == RepositoryActionConfiguration.LoadState.Error)
 			{
-				yield return GetPrimaryAction(singleRepository);
-				yield return GetSecondaryAction(singleRepository);
+				yield return new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions"), CanExecute = false };
+				yield return new RepositoryAction() { Name = _configuration.LoadError, CanExecute = false };
+				var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
+				yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
+			}
 
-				var codeExecutable = TryFindCode();
-				var hasCode = !string.IsNullOrEmpty(codeExecutable);
-				if (hasCode)
-					yield return CreateProcessRunnerAction(_translationService.Translate("Open in Visual Studio Code"), codeExecutable, singleRepository.SafePath);
+			if (singleRepository != null && _configuration.State == RepositoryActionConfiguration.LoadState.Ok)
+			{
+				foreach (var action in _configuration.RepositoryActions.Where(a => a.Active))
+					yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
 
-				yield return CreateFileActionSubMenu(singleRepository, _translationService.Translate("Open Visual Studio solutions"), "*.sln");
+				foreach (var fileAssociaction in _configuration.FileAssociations.Where(a => a.Active))
+				{
+					yield return CreateFileAssociationSubMenu(
+						singleRepository,
+						ReplaceTranslatables(fileAssociaction.Name),
+						fileAssociaction.Extension);
+				}
 
 				yield return CreateBrowseRemoteAction(singleRepository);
 			}
@@ -100,22 +117,99 @@ namespace RepoZ.Api.Mac
 
 																		return new RepositoryAction[]
 																		{
-																			new RepositoryAction() { Name = "No remote branches found", CanExecute = false },
-																			new RepositoryAction() { Name = "Try fetching if you expect one", CanExecute = false }
+																			new RepositoryAction() { Name = _translationService.Translate("No remote branches found"), CanExecute = false },
+																			new RepositoryAction() { Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"), CanExecute = false }
 																		};
 																	}
 															 } })
-                                                             .ToArray()
+															 .ToArray()
 				};
 			}
 
-			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true, executionCausesSynchronizing: true);
+			yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
 		}
 
-		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+		private string ReplaceVariables(string value, Repository repository)
+		{
+			if (value is null)
+				return string.Empty;
+
+			return Environment.ExpandEnvironmentVariables(
+				value
+				.Replace("{Repository.Name}", repository.Name)
+				.Replace("{Repository.Path}", repository.Path)
+				.Replace("{Repository.SafePath}", repository.SafePath)
+				.Replace("{Repository.Location}", repository.Location)
+				.Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
+				.Replace("{Repository.Branches}", string.Join("|", repository.Branches))
+				.Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches))
+				.Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls)));
+		}
+
+		private string ReplaceTranslatables(string value)
+		{
+			if (value is null)
+				return string.Empty;
+
+			value = ReplaceTranslatable(value, "Open");
+			value = ReplaceTranslatable(value, "OpenIn");
+			value = ReplaceTranslatable(value, "OpenWith");
+
+			return value;
+		}
+
+		private string ReplaceTranslatable(string value, string translatable)
+		{
+			if (value.StartsWith("{" + translatable + "}"))
+			{
+				var rest = value.Replace("{" + translatable + "}", "").Trim();
+				return _translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
+			}
+
+			return value;
+		}
+
+		private RepositoryAction CreateProcessRunnerAction(RepositoryActionConfiguration.RepositoryAction action, Repository repository, bool beginGroup = false)
+		{
+			var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
+			var command = ReplaceVariables(action.Command, repository);
+			var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
+			var arguments = ReplaceVariables(action.Arguments, repository);
+
+			if (string.IsNullOrEmpty(action.Command))
+			{
+				foreach (var executable in executables)
+				{
+					var normalized = executable.Replace("\"", "");
+					if (File.Exists(normalized) || Directory.Exists(normalized))
+					{
+						return new RepositoryAction()
+						{
+							BeginGroup = beginGroup,
+							Name = name,
+							Action = (_, __) => StartProcess(executable, arguments)
+						};
+					}
+				}
+			}
+			else
+			{
+				return new RepositoryAction()
+				{
+					BeginGroup = beginGroup,
+					Name = name,
+					Action = (_, __) => StartProcess(command, arguments)
+				};
+			}
+
+			return null;
+		}
+
+		private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "", bool beginGroup = false)
 		{
 			return new RepositoryAction()
 			{
+				BeginGroup = beginGroup,
 				Name = name,
 				Action = (_, __) => StartProcess(process, arguments)
 			};
@@ -151,9 +245,9 @@ namespace RepoZ.Api.Mac
 			{
 				action(repository);
 			}
-			catch (Exception ex)
+			catch
 			{
-				_errorHandler.Handle(ex.Message);
+				// nothing to see here
 			}
 		}
 
@@ -161,6 +255,7 @@ namespace RepoZ.Api.Mac
 		{
 			try
 			{
+				Debug.WriteLine("Starting: " + process + arguments);
 				Process.Start(process, arguments);
 			}
 			catch (Exception ex)
@@ -169,20 +264,7 @@ namespace RepoZ.Api.Mac
 			}
 		}
 
-		private string TryFindCode()
-		{
-			if (_codeLocation == null)
-			{
-				var executable = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-												"Visual Studio Code.app", "Contents", "Resources", "app", "bin", "code");
-
-				_codeLocation = File.Exists(executable) ? executable : "";
-			}
-
-			return _codeLocation;
-		}
-
-		private RepositoryAction CreateFileActionSubMenu(Repository repository, string actionName, string filePattern)
+		private RepositoryAction CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
 		{
 			if (HasFiles(repository, filePattern))
 			{
@@ -191,14 +273,14 @@ namespace RepoZ.Api.Mac
 					Name = actionName,
 					DeferredSubActionsEnumerator = () =>
 								GetFiles(repository, filePattern)
-								.Select(sln => CreateProcessRunnerAction(Path.GetFileName(sln), sln))
+								.Select(solutionFile => ReplaceVariables(solutionFile, repository))
+								.Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
 								.ToArray()
 				};
 			}
 
 			return null;
 		}
-
 
 		private RepositoryAction CreateBrowseRemoteAction(Repository repository)
 		{
@@ -208,7 +290,9 @@ namespace RepoZ.Api.Mac
 			var actionName = _translationService.Translate("Browse remote");
 
 			if (repository.RemoteUrls.Length == 1)
+			{
 				return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
+			}
 
 			return new RepositoryAction()
 			{
@@ -229,16 +313,19 @@ namespace RepoZ.Api.Mac
 		{
 			return GetFileEnumerator(repository, searchPattern)
 				.Take(25)
-				.OrderBy(f => f.Name)
-				.Select(f => f.FullName);
+				.OrderBy(f => f);
 		}
 
-		private IEnumerable<FileInfo> GetFileEnumerator(Repository repository, string searchPattern)
+		private IEnumerable<string> GetFileEnumerator(Repository repository, string searchPattern)
 		{
+			// prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
+			// .app or .xcodeproj on macOS
+
 			var directory = new DirectoryInfo(repository.Path);
 			return directory
-				.EnumerateFiles(searchPattern, SearchOption.AllDirectories)
-				.Where(f => !f.Name.StartsWith("."));
+				.EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
+				.Select(f => f.FullName)
+				.Where(f => !f.StartsWith("."));
 		}
 	}
 }

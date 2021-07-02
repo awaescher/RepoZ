@@ -1,5 +1,5 @@
 #addin "Cake.FileHelpers"
-#addin "Cake.Git"
+#addin "Cake.Git&version=1.0.0"
 #tool "nsis"
 #tool "nuget:?package=OpenCover"
 #tool "nuget:?package=NUnit.ConsoleRunner"

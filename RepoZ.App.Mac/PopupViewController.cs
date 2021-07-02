@@ -6,6 +6,9 @@ using RepoZ.Api.Git;
 using System.Diagnostics;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git.AutoFetch;
+using RepoZ.Api.Common.Git;
+using System.IO;
+using RepoZ.App.Mac.Controls;
 
 namespace RepoZ.App.Mac
 {
@@ -13,13 +16,15 @@ namespace RepoZ.App.Mac
 	{
 		private const int MENU_MANAGE = 4711;
 		private const int MENU_AUTOFETCH = 4712;
-		private const int MENU_PINGBACK = 4713;
+		private const int MENU_ADVANCED = 4713;
+		private const int MENU_PINGBACK = 4714;
 
 		private IRepositoryInformationAggregator _aggregator;
 		private IRepositoryMonitor _monitor;
 		private IAppSettingsService _appSettingsService;
 		private IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private ITranslationService _translationService;
+		private IRepositoryActionConfigurationStore _actionConfigurationStore;
 		private HeaderMetrics _initialHeaderMetrics;
 
 		#region Constructors
@@ -74,6 +79,7 @@ namespace RepoZ.App.Mac
 			_appSettingsService = container.Resolve<IAppSettingsService>();
 			_repositoryIgnoreStore = container.Resolve<IRepositoryIgnoreStore>();
 			_translationService = container.Resolve<ITranslationService>();
+			_actionConfigurationStore = container.Resolve<IRepositoryActionConfigurationStore>();
 
 			// Do any additional setup after loading the view.
 			var datasource = new RepositoryTableDataSource(_aggregator.Repositories);
@@ -204,6 +210,7 @@ namespace RepoZ.App.Mac
 
 				new NSMenuItem(_translationService.Translate("ManageRepos")) { Tag = MENU_MANAGE},
 				new NSMenuItem(_translationService.Translate("AutoFetch")) { Tag = MENU_AUTOFETCH },
+				new NSMenuItem(_translationService.Translate("Advanced")) { Tag = MENU_ADVANCED },
 				NSMenuItem.SeparatorItem,
 				new NSMenuItem(_translationService.Translate("PingBack")) { Tag = MENU_PINGBACK },
 				NSMenuItem.SeparatorItem,
@@ -218,15 +225,30 @@ namespace RepoZ.App.Mac
 				new NSMenuItem(_translationService.Translate("ScanMac"), async (s, e) => await _monitor.ScanForLocalRepositoriesAsync()),
 				new NSMenuItem(_translationService.Translate("Clear"), (s, e) => _monitor.Reset()),
 				NSMenuItem.SeparatorItem,
+				new NSMenuItem(_translationService.Translate("CustomizeRepositoryActions"), HandleCustomizeRepositoryAction),
+				NSMenuItem.SeparatorItem,
 				new NSMenuItem(_translationService.Translate("ResetIgnoreRules"), (s, e) => _repositoryIgnoreStore.Reset())
 			};
 
 			var autoFetchItems = new NSMenuItem[] {
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Off)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Off.ToString() },
+				new CheckableMenuItem(
+					_translationService.Translate(nameof(AutoFetchMode.Off)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Off,
+					_ => _appSettingsService.AutoFetchMode = AutoFetchMode.Off),
+
 				NSMenuItem.SeparatorItem,
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Discretely)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Discretely.ToString() },
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Adequate)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Adequate.ToString() },
-				new NSMenuItem(_translationService.Translate(nameof(AutoFetchMode.Aggresive)), HandleAutoFetchChange) { Identifier = AutoFetchMode.Aggresive.ToString() }
+
+				new CheckableMenuItem(_translationService.Translate(nameof(AutoFetchMode.Discretely)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Discretely,
+					_ => _appSettingsService.AutoFetchMode = AutoFetchMode.Discretely),
+
+				new CheckableMenuItem(_translationService.Translate(nameof(AutoFetchMode.Adequate)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Adequate,
+					_ =>	_appSettingsService.AutoFetchMode = AutoFetchMode.Adequate),
+
+				new CheckableMenuItem(_translationService.Translate(nameof(AutoFetchMode.Aggresive)),
+					() => _appSettingsService.AutoFetchMode == AutoFetchMode.Aggresive,
+					_ => _appSettingsService.AutoFetchMode = AutoFetchMode.Aggresive)
 			};
 
 			var manageRepositoriesItem = MenuButton.Menu.ItemWithTag(MENU_MANAGE);
@@ -240,6 +262,16 @@ namespace RepoZ.App.Mac
 
 			foreach (var item in autoFetchItems)
 				autoFetchItem.Submenu.AddItem(item);
+
+			var advancedItems = new NSMenuItem[] {
+				new CheckableMenuItem(_translationService.Translate("PruneOnFetch"), () => _appSettingsService.PruneOnFetch, value => _appSettingsService.PruneOnFetch = value)
+			};
+
+			var advancedItem = MenuButton.Menu.ItemWithTag(MENU_ADVANCED);
+			advancedItem.Submenu = new NSMenu { AutoEnablesItems = false };
+
+			foreach (var item in advancedItems)
+				advancedItem.Submenu.AddItem(item);
 
 			var pingbackItems = new NSMenuItem[] {
 				new NSMenuItem(_translationService.Translate("Donate"), (s, e) => Navigate("https://github.com/sponsors/awaescher")),
@@ -257,27 +289,32 @@ namespace RepoZ.App.Mac
 
 		partial void MenuButton_Click(NSObject sender)
 		{
-			var currentMode = _appSettingsService.AutoFetchMode;
-			var autoFetchItem = MenuButton.Menu.ItemWithTag(MENU_AUTOFETCH);
-
-			for (int i = 0; i < autoFetchItem.Submenu.Count; i++)
-			{
-				var item = autoFetchItem.Submenu.ItemAt(i);
-
-				if (string.IsNullOrEmpty(item.Identifier))
-					continue;
-
-				var itemMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), item.Identifier);
-				item.State = itemMode == currentMode ? NSCellStateValue.On : NSCellStateValue.Off;
-			}
+			UpdateCheckableItems(MenuButton.Menu);
 
 			MenuButton.Menu.PopUpMenu(null, new CoreGraphics.CGPoint() { X = 0, Y = MenuButton.Frame.Height }, MenuButton);
 		}
 
-		void HandleAutoFetchChange(object sender, EventArgs e)
+		void UpdateCheckableItems(NSMenu menu)
 		{
-			var newMode = (AutoFetchMode)Enum.Parse(typeof(AutoFetchMode), (sender as NSMenuItem).Identifier);
-			_appSettingsService.AutoFetchMode = newMode;
+			if (menu is null)
+				return;
+
+			foreach (var item in menu.Items)
+			{
+				(item as CheckableMenuItem)?.Update();
+				UpdateCheckableItems(item.Submenu);
+			}
+		}
+
+		void HandleCustomizeRepositoryAction(object sender, EventArgs e)
+		{
+			Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
+
+			var fileName = ((FileRepositoryStore)_actionConfigurationStore).GetFileName();
+			var directoryName = Path.GetDirectoryName(fileName);
+
+			if (Directory.Exists(directoryName))
+				Process.Start(directoryName);
 		}
 
 		void Datasource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

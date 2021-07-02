@@ -65,6 +65,7 @@ namespace RepoZ.App.Win
 
 			UseRepositoryMonitor(container);
 			UseExplorerHandler(container);
+			PreloadRepositoryActions(container);
 
 			_updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
@@ -111,7 +112,7 @@ namespace RepoZ.App.Win
 
 			container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
 			container.Register<IErrorHandler, UIErrorHandler>();
-			container.Register<IRepositoryActionProvider, WindowsRepositoryActionProvider>();
+			container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>();
 			container.Register<IRepositoryReader, DefaultRepositoryReader>();
 			container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
 			container.Register<IRepositoryStore, DefaultRepositoryStore>();
@@ -123,6 +124,7 @@ namespace RepoZ.App.Win
 			container.Register<IAppSettingsService, FileAppSettingsService>();
 			container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
 			container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
+			container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
 			container.Register<ITranslationService, ResourceDictionaryTranslationService>();
 		}
 
@@ -137,6 +139,12 @@ namespace RepoZ.App.Win
 		{
 			_explorerHandler = container.Resolve<WindowsExplorerHandler>();
 			_explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
+		}
+
+		protected static void PreloadRepositoryActions(TinyIoCContainer container)
+		{
+			var store = container.Resolve<IRepositoryActionConfigurationStore>();
+			store.Preload();
 		}
 
 		private async Task CheckForUpdatesAsync()

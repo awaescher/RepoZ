@@ -1,0 +1,181 @@
+# Define your repository context actions for RepoZ with this file (changes require an app restart).
+
+
+# COMMUNITY
+# ==========
+#
+# Please visit the following repository to find help, ask questions and browse repository actions
+# for 3rd party apps others might already have posted:
+#
+#   https://github.com/awaescher/RepoZ-RepositoryActions
+#   Don't forget to leave a star ;)
+#
+# If you have created your own repository actions, please consider to share them with the community
+# by submitting a pull-request.
+#
+# Thank you <3
+
+
+# HOW TO USE
+# ===========
+#
+# This file can be used to define repository actions and actions based on the file extensions inside of given repositories,
+# so called file associations.
+# Let's start ...
+#
+# Repository actions
+# ------------------
+#
+# Repository actions are actions for the repository context menu in RepoZ. They always refer to the repository they are invoked with.
+# Each repository action is defined in an own json block defining its name, action on invocation and more.
+# 
+# Example
+# {
+#     "name": "{OpenIn} Visual Studio Code",        // {OpenIn} is a placeholder, see "Noteworthy"
+#     "command": 'code',
+#     "executables":
+#     [
+#         '%LocalAppData%/Programs/Microsoft VS Code/code.exe', 
+#         '%ProgramW6432%/Microsoft VS Code/code.exe'
+#     ],
+#     "arguments": '"{Repository.SafePath}"',
+#     "keys": "Ctrl+Shift+C",
+#     "active": "true"
+# }
+#
+# Use either 'command' or 'executables'. If both are defined, 'command' will always be preferred.
+#
+# - Commands will not be validated, RepoZ is going to execute it blindly with the given arguments.
+#     This is useful for system commands like 'start' on Windows or 'open' on macOS or other global command line tools.
+# - Executables will be validated with File.Exists() and might not be visible in RepoZ if none of the defined executables are available.
+#     This is useful if an application is known to be located in different folders (like Visual Studio Code) and require probing.
+#
+# Try to avoid absolute paths if possible by using environment variables like %PROGRAMFILES% or %APPDATA%, for example.
+# On Windows: Run 'SET' in cmd.exe to see the list of environment variables you can use.
+#
+# Use the placeholders below to build repository actions with information of the corresponding repository.
+# RepoZ will replace the placeholders automatically.
+#
+# PLACEHOLDER                           EXAMPLE
+# {Repository.Name}                     RepoZ
+# {Repository.Path}  (prefer SafePath)  C:\Develop\RepoZ\  (Windows)    or    /Users/awaescher/Developer/RepoZ/  (macOS)
+# {Repository.Location}                 C:\Develop         (Windows)    or    /Users/awaescher/Developer         (macOS)
+# {Repository.SafePath}                 C:/Develop/RepoZ   (Windows)    or    /Users/awaescher/Developer/RepoZ   (macOS)
+# {Repository.CurrentBranch}            feature/CustomizableContextMenu
+# {Repository.Branches}                 master|feature/CustomizableContextMenu|origin/HEAD|origin/master|origin/feature/CustomizableContextMenu
+# {Repository.LocalBranches}            master|feature/CustomizableContextMenu
+# {Repository.RemoteUrls}               https://github.com/awaescher/repoz
+#
+#
+# File associations
+# ------------------
+#
+# File associations are different to repository actions. They are not related to the repository itself but define a file pattern
+# like "*.sln" which RepoZ uses to scan for files recursively. Matching files will be listed in a separate sub menu named after
+# the file association itself.
+# File associations don't support the repository placeholders from above. The only placeholder is the path of the matching files
+# which can be referred to as {FilePath}.
+#
+# Example
+# {
+#     "name": "{Open} Visual Studio solutions",        // {OpenIn} is a placeholder, see "Noteworthy"
+#     "extension": "*.sln",
+#     "command": 'start',
+#     "arguments": '"{FilePath}"',
+#     "active": "true"
+# }
+#
+
+
+# NOTEWORTHY
+# ===========
+#
+# - You might want to use the placeholders {Open}, {OpenIn} & {OpenWith} for the repository action and file association names,
+#   this allows RepoZ to translate "Open ..." to the user's language. The remaining part of the name will be moved at the correct location.
+# - {Repository.Path}, {Repository.SafePath} and {Repository.Location} will NOT be wrapped in quotes by default, because some apps require different escape characters.
+# - The first action will automatically get the Shortcut [Return], the second [Ctrl+Return]/[Command+Return] in addition to the shortcuts defined.
+# - Recursive file scans for the file associations might be time consuming. Therefore, RepoZ will not scan for files unless the sub menu
+#   of the corresponding file association gets expanded. This way, RepoZ makes sure that the context menu won't become sluggish.
+
+{
+    "repository-actions":
+    [
+        {
+            "name": "{OpenIn} Windows File Explorer",
+            "command": '"{Repository.SafePath}"',
+            "keys": "Ctrl+E",
+            "active": "true"
+        },
+        {
+            "name": "{OpenIn} Windows Terminal",
+            "command": 'wt',
+            "arguments": '-d "{Repository.SafePath}"',  
+            "keys": "Ctrl+T",
+            "active": "true"
+        },
+        {
+            "name": "{OpenIn} Windows Command Shell",
+            "command": 'cmd',
+            "arguments": '/K "cd /d {Repository.SafePath}"',  
+            "active": "false"
+        },
+        {
+            "name": "{OpenIn} Windows PowerShell",
+            "executables": ['%WINDIR%/System32/WindowsPowerShell/v1.0/powershell.exe'],
+            "arguments": '-executionpolicy bypass -noexit -command "Set-Location \'{Repository.SafePath}\'"',  
+            "active": "false"
+        },
+        {
+            "name": "{OpenIn} Visual Studio Code",
+            "executables":
+            [
+                '%LocalAppData%/Programs/Microsoft VS Code/code.exe', 
+                '%ProgramW6432%/Microsoft VS Code/code.exe'
+            ],
+            "arguments": '"{Repository.SafePath}"',  
+            "active": "true"
+        },
+        {
+            "name": "{OpenIn} GitHub Desktop",
+            "command": 'github',
+            "arguments": '"{Repository.SafePath}"',  
+            "active": "false"
+        },
+        {
+            # Contributed by Coen van den Munckhof (https://github.com/coenm)
+            "name": "{OpenIn} Sourcetree",
+            "executables":
+            [
+                '%LocalAppData%/SourceTree/SourceTree.exe', 
+                '%PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe'
+            ],
+            "arguments": '-f "{Repository.SafePath}"',  
+            "active": "false"
+        },
+        {
+            # Contributed by Sean Feldman (https://github.com/SeanFeldman)
+            "name": "{OpenWith} Git Extensions",
+            "executables": ['%PROGRAMFILES(X86)%/GitExtensions/GitExtensions.exe'],
+            "arguments": 'browse "{Repository.SafePath}"',  
+            "active": "false"
+        },
+        {
+            # Contributed by jods (https://github.com/jods4)
+            "name": "{OpenIn} Cmder",
+            "command": 'cmder.exe', # make sure Cmder is in PATH (https://github.com/cmderdev/cmder/#installation)
+            "arguments": '/single /start "{Repository.SafePath}"',
+            "keys": "Ctrl+Shift+C",
+            "active": "false"
+          }
+    ],
+    "file-associations":
+    [
+        {
+            "name": "{Open} Visual Studio solutions",
+            "extension": "*.sln",
+            "command": 'start',
+            "arguments": '"{FilePath}"',
+            "active": "true"
+        }
+    ]
+}

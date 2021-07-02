@@ -58,7 +58,11 @@ namespace RepoZ.Api.Common.Git
 
 		public void Pull(Api.Git.Repository repository)
 		{
-			_gitCommander.Command(repository, "pull");
+            var arguments = _appSettingsService.PruneOnFetch
+                ? new string[] { "pull", "--prune" }
+                : new string[] { "pull", };
+
+            _gitCommander.Command(repository, arguments);
 		}
 
 		public void Push(Api.Git.Repository repository)
