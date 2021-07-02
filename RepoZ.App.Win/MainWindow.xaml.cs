@@ -23,15 +23,14 @@ namespace RepoZ.App.Win
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-        private readonly IRepositoryActionProvider _repositoryActionProvider;
+		private readonly IRepositoryActionProvider _repositoryActionProvider;
 		private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
 		private readonly DefaultRepositoryMonitor _monitor;
 		private readonly ITranslationService _translationService;
 		private readonly IRepositoryActionConfigurationStore _actionConfigurationStore;
 		private bool _closeOnDeactivate = true;
-        private bool _refreshDelayed = false;
-		private DateTime timeOfLastRefresh = DateTime.MinValue;
-
+		private bool _refreshDelayed = false;
+		private DateTime _timeOfLastRefresh = DateTime.MinValue;
 
 		public MainWindow(StatusCharacterMap statusCharacterMap,
 			IRepositoryInformationAggregator aggregator,
@@ -62,12 +61,12 @@ namespace RepoZ.App.Win
 			_actionConfigurationStore = actionConfigurationStore ?? throw new ArgumentNullException(nameof(actionConfigurationStore));
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
-			
-            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
+
+			var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
 			((ICollectionView)view).CollectionChanged += View_CollectionChanged;
 			view.Filter = FilterRepositories;
-            view.CustomSort = new CustomRepositoryViewSortBehavior();
-			
+			view.CustomSort = new CustomRepositoryViewSortBehavior();
+
 			var appName = System.Reflection.Assembly.GetEntryAssembly().GetName();
 			txtHelpCaption.Text = appName.Name + " " + appName.Version.ToString(2);
 			txtHelp.Text = GetHelp(statusCharacterMap);
@@ -389,33 +388,32 @@ namespace RepoZ.App.Win
 				_closeOnDeactivate = !_closeOnDeactivate;
 		}
 
-        private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
+		private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			// Text has changed, capture the timestamp
-            if (sender != null)
-            {
-				timeOfLastRefresh = DateTime.Now;
-            }
+			if (sender != null)
+				_timeOfLastRefresh = DateTime.Now;
 
 			// Spin while updates are in progress
-            if (DateTime.Now - timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
-            {
-                if (!_refreshDelayed)
-                {
-                    this.Dispatcher.InvokeAsync(async () =>
-                    {
-                        _refreshDelayed = true;
-                        await Task.Delay(200);
-                        _refreshDelayed = false;
-                        txtFilter_TextChanged(null, e);
-                    });
+			if (DateTime.Now - _timeOfLastRefresh < TimeSpan.FromMilliseconds(100))
+			{
+				if (!_refreshDelayed)
+				{
+					this.Dispatcher.InvokeAsync(async () =>
+					{
+						_refreshDelayed = true;
+						await Task.Delay(200);
+						_refreshDelayed = false;
+						txtFilter_TextChanged(null, e);
+					});
 				}
+
 				return;
-            }
+			}
 
 			// Refresh the view
-            var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
-            view.Refresh();
+			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
+			view.Refresh();
 		}
 
 		private bool FilterRepositories(object item)
@@ -450,15 +448,14 @@ namespace RepoZ.App.Win
 		public bool IsShown => Visibility == Visibility.Visible && IsActive;
 	}
 
-    public class CustomRepositoryViewSortBehavior : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            if (x is RepositoryView xView && y is RepositoryView yView)
-            {
-                return String.Compare(xView.Name, yView.Name, StringComparison.Ordinal);
-            }
-            return 0;
-        }
-    }
+	public class CustomRepositoryViewSortBehavior : IComparer
+	{
+		public int Compare(object x, object y)
+		{
+			if (x is RepositoryView xView && y is RepositoryView yView)
+				return string.CompareOrdinal(xView.Name, yView.Name);
+
+			return 0;
+		}
+	}
 }
