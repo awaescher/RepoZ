@@ -25,10 +25,6 @@ Specifies the amount of information to be displayed.
 Shows description about tasks.
 .PARAMETER DryRun
 Performs a dry run.
-.PARAMETER Experimental
-Uses the nightly builds of the Roslyn script engine.
-.PARAMETER Mono
-Uses the Mono Compiler rather than the Roslyn script engine.
 .PARAMETER SkipToolPackageRestore
 Skips restoring of packages.
 .PARAMETER ScriptArgs
@@ -41,7 +37,7 @@ https://cakebuild.net
 
 [CmdletBinding()]
 Param(
-    [string]$Script = "build.cake",
+    [string]$Script,
     [string]$Target,
     [string]$Configuration,
     [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
@@ -49,12 +45,32 @@ Param(
     [switch]$ShowDescription,
     [Alias("WhatIf", "Noop")]
     [switch]$DryRun,
-    [switch]$Experimental,
-    [switch]$Mono,
     [switch]$SkipToolPackageRestore,
     [Parameter(Position=0,Mandatory=$false,ValueFromRemainingArguments=$true)]
     [string[]]$ScriptArgs
 )
+
+# This is an automatic variable in PowerShell Core, but not in Windows PowerShell 5.x
+if (-not (Test-Path variable:global:IsCoreCLR)) {
+    $IsCoreCLR = $false
+}
+
+# Attempt to set highest encryption available for SecurityProtocol.
+# PowerShell will not set this by default (until maybe .NET 4.6.x). This
+# will typically produce a message for PowerShell v2 (just an info
+# message though)
+try {
+    # Set TLS 1.2 (3072), then TLS 1.1 (768), then TLS 1.0 (192), finally SSL 3.0 (48)
+    # Use integers because the enumeration values for TLS 1.2 and TLS 1.1 won't
+    # exist in .NET 4.0, even though they are addressable if .NET 4.5+ is
+    # installed (.NET 4.5 is an in-place upgrade).
+    # PowerShell Core already has support for TLS 1.2 so we can skip this if running in that.
+    if (-not $IsCoreCLR) {
+        [System.Net.ServicePointManager]::SecurityProtocol = 3072 -bor 768 -bor 192 -bor 48
+    }
+  } catch {
+    Write-Output 'Unable to set PowerShell to use TLS 1.2 and TLS 1.1 due to old .NET Framework installed. If you see underlying connection closed or trust errors, you may need to upgrade to .NET Framework 4.5+ and PowerShell v3'
+  }
 
 [Reflection.Assembly]::LoadWithPartialName("System.Security") | Out-Null
 function MD5HashFile([string] $filePath)
@@ -78,6 +94,11 @@ function MD5HashFile([string] $filePath)
         {
             $file.Dispose()
         }
+        
+        if ($md5 -ne $null)
+        {
+            $md5.Dispose()
+        }
     }
 }
 
@@ -85,7 +106,7 @@ function GetProxyEnabledWebClient
 {
     $wc = New-Object System.Net.WebClient
     $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
-    $proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials        
+    $proxy.Credentials = [System.Net.CredentialCache]::DefaultCredentials
     $wc.Proxy = $proxy
     return $wc
 }
@@ -96,6 +117,9 @@ if(!$PSScriptRoot){
     $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 }
 
+if(!$Script){
+    $Script = Join-Path $PSScriptRoot "build.cake"
+}
 $TOOLS_DIR = Join-Path $PSScriptRoot "tools"
 $ADDINS_DIR = Join-Path $TOOLS_DIR "Addins"
 $MODULES_DIR = Join-Path $TOOLS_DIR "Modules"
@@ -107,18 +131,23 @@ $PACKAGES_CONFIG_MD5 = Join-Path $TOOLS_DIR "packages.config.md5sum"
 $ADDINS_PACKAGES_CONFIG = Join-Path $ADDINS_DIR "packages.config"
 $MODULES_PACKAGES_CONFIG = Join-Path $MODULES_DIR "packages.config"
 
+$env:CAKE_PATHS_TOOLS = $TOOLS_DIR
+$env:CAKE_PATHS_ADDINS = $ADDINS_DIR
+$env:CAKE_PATHS_MODULES = $MODULES_DIR
+
 # Make sure tools folder exists
 if ((Test-Path $PSScriptRoot) -and !(Test-Path $TOOLS_DIR)) {
     Write-Verbose -Message "Creating tools directory..."
-    New-Item -Path $TOOLS_DIR -Type directory | out-null
+    New-Item -Path $TOOLS_DIR -Type Directory | Out-Null
 }
 
 # Make sure that packages.config exist.
 if (!(Test-Path $PACKAGES_CONFIG)) {
-    Write-Verbose -Message "Downloading packages.config..."    
-    try {        
+    Write-Verbose -Message "Downloading packages.config..."
+    try {
         $wc = GetProxyEnabledWebClient
-        $wc.DownloadFile("https://cakebuild.net/download/bootstrapper/packages", $PACKAGES_CONFIG) } catch {
+        $wc.DownloadFile("https://cakebuild.net/download/bootstrapper/packages", $PACKAGES_CONFIG)
+    } catch {
         Throw "Could not download packages.config."
     }
 }
@@ -145,8 +174,19 @@ if (!(Test-Path $NUGET_EXE)) {
     }
 }
 
+# These are automatic variables in PowerShell Core, but not in Windows PowerShell 5.x
+if (-not (Test-Path variable:global:ismacos)) {
+    $IsLinux = $false
+    $IsMacOS = $false
+}
+
 # Save nuget.exe path to environment to be available to child processed
-$ENV:NUGET_EXE = $NUGET_EXE
+$env:NUGET_EXE = $NUGET_EXE
+$env:NUGET_EXE_INVOCATION = if ($IsLinux -or $IsMacOS) {
+    "mono `"$NUGET_EXE`""
+} else {
+    "`"$NUGET_EXE`""
+}
 
 # Restore tools from NuGet?
 if(-Not $SkipToolPackageRestore.IsPresent) {
@@ -154,15 +194,17 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
     Set-Location $TOOLS_DIR
 
     # Check for changes in packages.config and remove installed tools if true.
-    [string] $md5Hash = MD5HashFile($PACKAGES_CONFIG)
+    [string] $md5Hash = MD5HashFile $PACKAGES_CONFIG
     if((!(Test-Path $PACKAGES_CONFIG_MD5)) -Or
-      ($md5Hash -ne (Get-Content $PACKAGES_CONFIG_MD5 ))) {
+    ($md5Hash -ne (Get-Content $PACKAGES_CONFIG_MD5 ))) {
         Write-Verbose -Message "Missing or changed package.config hash..."
-        Remove-Item * -Recurse -Exclude packages.config,nuget.exe
+        Get-ChildItem -Exclude packages.config,nuget.exe,Cake.Bakery |
+        Remove-Item -Recurse -Force
     }
 
     Write-Verbose -Message "Restoring tools from NuGet..."
-    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$TOOLS_DIR`""
+
+    $NuGetOutput = Invoke-Expression "& $env:NUGET_EXE_INVOCATION install -ExcludeVersion -OutputDirectory `"$TOOLS_DIR`""
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occurred while restoring NuGet tools."
@@ -171,7 +213,7 @@ if(-Not $SkipToolPackageRestore.IsPresent) {
     {
         $md5Hash | Out-File $PACKAGES_CONFIG_MD5 -Encoding "ASCII"
     }
-    Write-Verbose -Message ($NuGetOutput | out-string)
+    Write-Verbose -Message ($NuGetOutput | Out-String)
 
     Pop-Location
 }
@@ -182,13 +224,13 @@ if (Test-Path $ADDINS_PACKAGES_CONFIG) {
     Set-Location $ADDINS_DIR
 
     Write-Verbose -Message "Restoring addins from NuGet..."
-    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$ADDINS_DIR`""
+    $NuGetOutput = Invoke-Expression "& $env:NUGET_EXE_INVOCATION install -ExcludeVersion -OutputDirectory `"$ADDINS_DIR`""
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occurred while restoring NuGet addins."
     }
 
-    Write-Verbose -Message ($NuGetOutput | out-string)
+    Write-Verbose -Message ($NuGetOutput | Out-String)
 
     Pop-Location
 }
@@ -199,13 +241,13 @@ if (Test-Path $MODULES_PACKAGES_CONFIG) {
     Set-Location $MODULES_DIR
 
     Write-Verbose -Message "Restoring modules from NuGet..."
-    $NuGetOutput = Invoke-Expression "&`"$NUGET_EXE`" install -ExcludeVersion -OutputDirectory `"$MODULES_DIR`""
+    $NuGetOutput = Invoke-Expression "& $env:NUGET_EXE_INVOCATION install -ExcludeVersion -OutputDirectory `"$MODULES_DIR`""
 
     if ($LASTEXITCODE -ne 0) {
         Throw "An error occurred while restoring NuGet modules."
     }
 
-    Write-Verbose -Message ($NuGetOutput | out-string)
+    Write-Verbose -Message ($NuGetOutput | Out-String)
 
     Pop-Location
 }
@@ -215,20 +257,31 @@ if (!(Test-Path $CAKE_EXE)) {
     Throw "Could not find Cake.exe at $CAKE_EXE"
 }
 
+$CAKE_EXE_INVOCATION = if ($IsLinux -or $IsMacOS) {
+    "mono `"$CAKE_EXE`""
+} else {
+    "`"$CAKE_EXE`""
+}
 
-
-# Build Cake arguments
-$cakeArguments = @("$Script");
-if ($Target) { $cakeArguments += "-target=$Target" }
-if ($Configuration) { $cakeArguments += "-configuration=$Configuration" }
-if ($Verbosity) { $cakeArguments += "-verbosity=$Verbosity" }
-if ($ShowDescription) { $cakeArguments += "-showdescription" }
-if ($DryRun) { $cakeArguments += "-dryrun" }
-if ($Experimental) { $cakeArguments += "-experimental" }
-if ($Mono) { $cakeArguments += "-mono" }
+ # Build an array (not a string) of Cake arguments to be joined later
+$cakeArguments = @()
+if ($Script) { $cakeArguments += "`"$Script`"" }
+if ($Target) { $cakeArguments += "--target=`"$Target`"" }
+if ($Configuration) { $cakeArguments += "--configuration=$Configuration" }
+if ($Verbosity) { $cakeArguments += "--verbosity=$Verbosity" }
+if ($ShowDescription) { $cakeArguments += "--showdescription" }
+if ($DryRun) { $cakeArguments += "--dryrun" }
 $cakeArguments += $ScriptArgs
 
 # Start Cake
 Write-Host "Running build script..."
-&$CAKE_EXE $cakeArguments
-exit $LASTEXITCODE
+Invoke-Expression "& $CAKE_EXE_INVOCATION $($cakeArguments -join " ")"
+$cakeExitCode = $LASTEXITCODE
+
+# Clean up environment variables that were created earlier in this bootstrapper
+$env:CAKE_PATHS_TOOLS = $null
+$env:CAKE_PATHS_ADDINS = $null
+$env:CAKE_PATHS_MODULES = $null
+
+# Return exit code
+exit $cakeExitCode
