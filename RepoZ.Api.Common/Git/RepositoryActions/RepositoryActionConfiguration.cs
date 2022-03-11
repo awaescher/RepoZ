@@ -5,6 +5,9 @@ namespace RepoZ.Api.Common.Git
 {
 	public class RepositoryActionConfiguration
 	{
+        [JsonProperty("redirect")]
+        public string RedirectFile { get; set; }
+
         [JsonProperty("repository-actions")]
         public List<RepositoryAction> RepositoryActions { get; set; } = new List<RepositoryAction>();
 
@@ -37,6 +40,9 @@ namespace RepoZ.Api.Common.Git
 
             [JsonProperty("active")]
             public bool Active { get; set; }
+
+            [JsonProperty("subfolder")] 
+            public List<RepositoryAction> Subfolder { get; set; } = new List<RepositoryAction>();
         }
 
         [System.Diagnostics.DebuggerDisplay("{Name}")]
