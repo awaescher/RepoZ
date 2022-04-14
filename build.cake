@@ -1,10 +1,20 @@
-#addin "Cake.FileHelpers"
+#addin "Cake.FileHelpers&version=4.0.1"
 #addin "Cake.Git&version=1.0.0"
-#tool "nsis"
-#tool "nuget:?package=OpenCover"
-#tool "nuget:?package=NUnit.ConsoleRunner"
+#tool "nsis&version=2.51.0"
+#tool "nuget:?package=OpenCover&version=4.7.1221"
+#tool "nuget:?package=NUnit.ConsoleRunner&version=3.15.0"
 #tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
+#tool nuget:?package=vswhere&version=2.8.4
 
+public FilePath LatestMSBuildPath { get; private set; }
+
+LatestMSBuildPath = GetLatestMSBuildPath();
+
+private FilePath GetLatestMSBuildPath()
+{
+    var latestMSBuildPath = VSWhereLatest(new VSWhereLatestSettings { Products = "*", Requires = "Microsoft.Component.MSBuild"});
+    return new FilePath($"{latestMSBuildPath}\\MSBuild\\Current\\Bin\\MSBuild.exe");
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -91,12 +101,15 @@ Task("Build")
 {
 	// build the solution
 	Information("Building {0}", _solution);
-	MSBuild(_solution, settings =>
-		settings.SetPlatformTarget(PlatformTarget.MSIL)
-			.UseToolVersion(MSBuildToolVersion.VS2019)
-			.WithProperty("TreatWarningsAsErrors","true")
-			.WithTarget("Build")
-			.SetConfiguration(configuration));
+		MSBuild(_solution, settings => 
+		{
+			settings.ToolPath = LatestMSBuildPath;
+			settings.SetPlatformTarget(PlatformTarget.MSIL)
+					// .UseToolVersion(MSBuildToolVersion.VS2022)
+					.WithProperty("TreatWarningsAsErrors","true")
+					.WithTarget("Build")
+					.SetConfiguration(configuration);
+		});
 });
 
 Task("Test")
