@@ -5,20 +5,52 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using RepoZ.Api.Git;
 
 namespace RepoZ.Api.Common.Git
 {
 	public class DefaultRepositoryActionConfigurationStore : FileRepositoryStore, IRepositoryActionConfigurationStore
 	{
+		private const string REPOSITORY_ACTIONS_FILENAME = "RepositoryActions.json";
 		private object _lock = new object();
+		private readonly IAppDataPathProvider _appDataPathProvider;
 
-		public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
+		public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler,
+			IAppDataPathProvider appDataPathProvider)
 			: base(errorHandler)
 		{
-			AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+			_appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 		}
 
-		public override string GetFileName() => Path.Combine(AppDataPathProvider.GetAppDataPath(), "RepositoryActions.json");
+		public override string GetFileName()
+		{
+			return Path.Combine(_appDataPathProvider.GetAppDataPath(), REPOSITORY_ACTIONS_FILENAME);
+		}
+
+		public RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo)
+		{
+			var file = Path.Combine(repo.Path, ".git", REPOSITORY_ACTIONS_FILENAME);
+			if (File.Exists(file))
+			{
+				var result = LoadRepositoryActionConfiguration(file);
+				if (result.State == RepositoryActionConfiguration.LoadState.Ok)
+				{
+					return result;
+				}
+			}
+
+			file = Path.Combine(repo.Path, REPOSITORY_ACTIONS_FILENAME);
+			if (File.Exists(file))
+			{
+				var result = LoadRepositoryActionConfiguration(file);
+				if (result.State == RepositoryActionConfiguration.LoadState.Ok)
+				{
+					return result;
+				}
+			}
+
+			return null;
+		}
 
 		public void Preload()
 		{
@@ -34,32 +66,43 @@ namespace RepoZ.Api.Common.Git
 					}
 				}
 
-				try
+				RepositoryActionConfiguration = LoadRepositoryActionConfiguration(GetFileName());
+			}
+		}
+
+		public RepositoryActionConfiguration LoadRepositoryActionConfiguration(string filename)
+		{
+			try
+			{
+				var lines = Get(filename)?.ToList() ?? new List<string>();
+				var json = string.Join(Environment.NewLine, lines.Select(RemoveComment));
+				var repositoryActionConfiguration = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json) ?? new RepositoryActionConfiguration();
+				repositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Ok;
+				return repositoryActionConfiguration;
+			}
+			catch (Exception ex)
+			{
+				return new RepositoryActionConfiguration
 				{
-					var lines = Get()?.ToList() ?? new List<string>();
-					var json = string.Join(Environment.NewLine, lines.Select(RemoveComment));
-					RepositoryActionConfiguration = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json) ?? new RepositoryActionConfiguration();
-					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Ok;
-				}
-				catch (Exception ex)
-				{
-					RepositoryActionConfiguration = new RepositoryActionConfiguration();
-					RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Error;
-					RepositoryActionConfiguration.LoadError = ex.Message;
-				}
+					State = RepositoryActionConfiguration.LoadState.Error,
+					LoadError = ex.Message
+				};
 			}
 		}
 
 		private bool TryCopyDefaultJsonFile()
 		{
-			var defaultFile = Path.Combine(AppDataPathProvider.GetAppResourcesPath(), "RepositoryActions.json");
+			var defaultFile = Path.Combine(_appDataPathProvider.GetAppResourcesPath(), REPOSITORY_ACTIONS_FILENAME);
 			var targetFile = GetFileName();
 
 			try
 			{
 				File.Copy(defaultFile, targetFile);
 			}
-			catch { /* lets ignore errors here, we just want to know if if worked or not by checking the file existence */ }
+			catch
+			{
+				/* lets ignore errors here, we just want to know if if worked or not by checking the file existence */
+			}
 
 			return File.Exists(targetFile);
 		}
@@ -71,7 +114,5 @@ namespace RepoZ.Api.Common.Git
 		}
 
 		public RepositoryActionConfiguration RepositoryActionConfiguration { get; private set; }
-
-		public IAppDataPathProvider AppDataPathProvider { get; }
 	}
 }
