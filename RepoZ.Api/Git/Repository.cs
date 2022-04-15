@@ -18,7 +18,7 @@ namespace RepoZ.Api.Git
 			if (string.IsNullOrEmpty(other.Path))
 				return string.IsNullOrEmpty(Path);
 
-			return string.Equals(Normalize(other.Path), Normalize(Path), StringComparison.OrdinalIgnoreCase);
+            return string.Equals(Normalize(other.Path), Normalize(Path), StringComparison.OrdinalIgnoreCase);
 		}
 
 		private string Normalize(string path)
