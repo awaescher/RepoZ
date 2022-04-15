@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using RepoZ.Api.Common.Common;
@@ -144,15 +145,27 @@ namespace RepoZ.App.Win
 
 		private void lstRepositories_ContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
+			if (!LstRepositoriesContextMenuOpening(sender, ((FrameworkElement)e.Source).ContextMenu))
+			{
+				e.Handled = true;
+			}
+		}
+
+		private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
+		{
+			if (ctxMenu == null)
+			{
+				return false;
+			}
+
 			var selectedViews = lstRepositories.SelectedItems?.OfType<RepositoryView>();
 
 			if (selectedViews == null || !selectedViews.Any())
 			{
-				e.Handled = true;
-				return;
+				return false;
 			}
 
-			var items = ((FrameworkElement)e.Source).ContextMenu.Items;
+			var items = ctxMenu.Items;
 			items.Clear();
 
 			var innerRepositories = selectedViews.Select(view => view.Repository);
@@ -163,12 +176,25 @@ namespace RepoZ.App.Win
 
 				items.Add(CreateMenuItem(sender, action, selectedViews));
 			}
+
+			return true;
 		}
 
 		private void lstRepositories_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Return || e.Key == Key.Enter)
 				InvokeActionOnCurrentRepository();
+			else if (e.Key == Key.Left || e.Key == Key.Right)
+			{
+				// try open context menu.
+				var ctxMenu = ((FrameworkElement) e.Source).ContextMenu;
+				if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
+				{
+					ctxMenu.Placement = PlacementMode.Left;
+					ctxMenu.PlacementTarget = (UIElement) e.OriginalSource;
+					ctxMenu.IsOpen = true;
+				}
+			}
 		}
 
 		private void InvokeActionOnCurrentRepository()
