@@ -9,6 +9,10 @@ namespace RepoZ.Api.Common.Common
 
 		bool PruneOnFetch { get; set; }
 
+        Double MenuWidth { get; set; }
+
+        Double MenuHeight { get; set; }
+
 		void RegisterInvalidationHandler(Action handler);
 	}
 }

@@ -94,7 +94,37 @@ namespace RepoZ.Api.Common.Common
 			}
 		}
 
-		public void RegisterInvalidationHandler(Action handler)
+        public double MenuWidth
+        {
+            get => Settings.MenuSize.Width;
+            set
+            {
+                if (value != Settings.MenuSize.Width)
+                {
+                    Settings.MenuSize.Width = value;
+
+                    NotifyChange();
+                    Save();
+                }
+            }
+        }
+
+        public double MenuHeight
+        {
+            get => Settings.MenuSize.Height;
+            set
+            {
+                if (value != Settings.MenuSize.Height)
+                {
+                    Settings.MenuSize.Height = value;
+
+                    NotifyChange();
+                    Save();
+                }
+            }
+        }
+
+        public void RegisterInvalidationHandler(Action handler)
 		{
 			_invalidationHandlers.Add(handler);
 		}
