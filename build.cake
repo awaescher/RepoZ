@@ -113,8 +113,8 @@ Task("Test")
 {
 	var assemblies = new[] 
 	{
-		$"./Tests/bin/{configuration}/Tests.dll",
-		$"./Specs/bin/{configuration}/Specs.dll"
+		$"./tests/Tests/bin/{configuration}/Tests.dll",
+		$"./tests/Specs/bin/{configuration}/Specs.dll"
 	};
 	
 	var testResultsFile = MakeAbsolute(File($"{_outputDir}/TestResults.xml")).FullPath;
@@ -155,7 +155,7 @@ Task("Publish")
 	.Does(() => 
 {
 	// copy RepoZ main app files
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
+	CopyFiles($"src/RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
 	
 	// publish netcore apps
 	var settings = new DotNetCorePublishSettings
@@ -165,11 +165,11 @@ Task("Publish")
 		Runtime = netcoreTargetRuntime,
 		SelfContained = true
 	};
-	DotNetCorePublish("./grr/grr.csproj", settings);
-	DotNetCorePublish("./grrui/grrui.csproj", settings);
+	DotNetCorePublish("./src/grr/grr.csproj", settings);
+	DotNetCorePublish("./src/grrui/grrui.csproj", settings);
 	
-	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
-	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+	CopyFiles($"src/grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+	CopyFiles($"src/grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(_assemblyDir.Path + "/*." + extension);

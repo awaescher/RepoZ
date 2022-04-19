@@ -3,23 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A6B79146-761A-40C3-951D-7415297792FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "tests\Tests\Tests.csproj", "{A6B79146-761A-40C3-951D-7415297792FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.App.Win", "RepoZ.App.Win\RepoZ.App.Win.csproj", "{15B095B0-474F-46EE-A880-70EFA4204579}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.App.Win", "src\RepoZ.App.Win\RepoZ.App.Win.csproj", "{15B095B0-474F-46EE-A880-70EFA4204579}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specs", "Specs\Specs.csproj", "{C91C3255-637F-45D4-93C0-6A26B4E99FC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specs", "tests\Specs\Specs.csproj", "{C91C3255-637F-45D4-93C0-6A26B4E99FC1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grrui", "grrui\grrui.csproj", "{350BAB52-335E-4D14-B46A-9A6CF0786519}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grrui", "src\grrui\grrui.csproj", "{350BAB52-335E-4D14-B46A-9A6CF0786519}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Ipc", "RepoZ.Ipc\RepoZ.Ipc.csproj", "{B38E49E8-4691-4D3B-982E-41F8E8B527E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Ipc", "src\RepoZ.Ipc\RepoZ.Ipc.csproj", "{B38E49E8-4691-4D3B-982E-41F8E8B527E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grr", "grr\grr.csproj", "{D5772395-C27C-4BB5-86DA-42DF7388A19B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grr", "src\grr\grr.csproj", "{D5772395-C27C-4BB5-86DA-42DF7388A19B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api", "RepoZ.Api\RepoZ.Api.csproj", "{699FA61D-A44D-4710-A6DD-52016DAC51D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api", "src\RepoZ.Api\RepoZ.Api.csproj", "{699FA61D-A44D-4710-A6DD-52016DAC51D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Win", "RepoZ.Api.Win\RepoZ.Api.Win.csproj", "{8CA82EB1-0240-4744-A40E-BEF454BF11B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Win", "src\RepoZ.Api.Win\RepoZ.Api.Win.csproj", "{8CA82EB1-0240-4744-A40E-BEF454BF11B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Common", "RepoZ.Api.Common\RepoZ.Api.Common.csproj", "{469C750E-7E80-472B-8C16-A7AD221DAE86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Common", "src\RepoZ.Api.Common\RepoZ.Api.Common.csproj", "{469C750E-7E80-472B-8C16-A7AD221DAE86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

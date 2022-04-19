@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Reference Include="SendKeys">
-      <HintPath>..\_ref\SendKeys.exe</HintPath>
+      <HintPath>..\..\_ref\SendKeys.exe</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>

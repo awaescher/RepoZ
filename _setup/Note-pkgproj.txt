@@ -1,7 +1,0 @@
-The pkgproject file needs Whitebox Packages to compile:
- - http://s.sudre.free.fr/Software/Packages/about.html
-
-Check whether the files to deploy on macOS did change because they are all listed in the .pkgproj file by their names.
-The reason is that without listing them explicitly (just the parent folder), it is not possible to grant exec permissions to grr and grrui.
-
-Open Packages, select the project on the left, select tab "Payload" and re-add RepoZ-CLI. Expand the node and grant access to exec grr and grrui.
