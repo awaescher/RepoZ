@@ -23,7 +23,7 @@ private FilePath GetLatestMSBuildPath()
 var target = Argument<string>("target", "Default");
 var configuration = Argument<string>("configuration", "Release");
 var system = Argument<string>("system", System.Environment.OSVersion.Platform.ToString().StartsWith("Win") ? "win" : "mac");
-var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "netcoreapp3.1");
+var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "net6.0");
 var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", system=="win" ? "win-x64" : "osx-x64");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,11 +85,6 @@ Task("SetVersion")
 		ReplaceRegexInFiles("./**/AssemblyInfo.*", "(?<=AssemblyBuildDate\\(\")([0-9\\-\\:T]+)(?=\"\\))", DateTime.Now.ToString("s"));
 		ReplaceRegexInFiles("./**/*.csproj", "(?<=<ReleaseVersion>).*?(?=</ReleaseVersion>)", _appVersion);
 		ReplaceRegexInFiles("./**/*.csproj", "(?<=<Version>).*?(?=</Version>)", fullVersion);
-
-        // update Apple versions
-        ReplaceRegexInFiles("**/Info.plist", "(?<=<key>CFBundleShortVersionString</key>\\n*\\s*<string>).*?(?=</string>)", _appVersion);
-        ReplaceRegexInFiles("**/Info.plist", "(?<=<key>CFBundleVersion</key>\\n*\\s*<string>).*?(?=</string>)", buildNumber);
-
 	});
 
 Task("Build")
@@ -116,9 +111,6 @@ Task("Test")
 	.IsDependentOn("Build")
 	.Does(() => 
 {
-	if (system == "mac")
-		return;
-
 	var assemblies = new[] 
 	{
 		$"./Tests/bin/{configuration}/Tests.dll",
@@ -176,14 +168,6 @@ Task("Publish")
 	DotNetCorePublish("./grr/grr.csproj", settings);
 	DotNetCorePublish("./grrui/grrui.csproj", settings);
 	
-	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
-	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
-	if (system == "mac")
-	{
-		_assemblyDir = Directory($"{_assemblyDir}/RepoZ-CLI");
-		EnsureDirectoryExists(_assemblyDir);
-	}
-
 	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
 	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
 	
@@ -195,37 +179,28 @@ Task("CompileSetup")
 	.IsDependentOn("Publish")
 	.Does(() => 
 {	
-	if (system == "win")
+	// NSIS Windows Setup
+	MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
 	{
-		// NSIS Windows Setup
-		MakeNSIS("_setup/RepoZ.nsi", new MakeNSISSettings
+		Defines = new Dictionary<string, string>
 		{
-			Defines = new Dictionary<string, string>
-			{
-				{ "PRODUCT_VERSION", _appVersion }
-			}
-		});
+			{ "PRODUCT_VERSION", _appVersion }
+		}
+	});
 
-		// Chocolatey
-		ReplaceTextInFiles("_setup/choco/RepoZ.nuspec", "{PRODUCT_VERSION}", _appVersion);
-		ReplaceTextInFiles("_setup/choco/tools/chocolateyinstall.ps1", "{PRODUCT_VERSION}", _appVersion);
-		
-		var settings = new ChocolateyPackSettings()
-		{
-			OutputDirectory = _outputDir,
-			Authors = { "Andreas Wäscher" },
-			Tags = { "repoz", "git", "repository", "development", "foss", "utilities", "productivity" },
-			Version = _appVersion
-		};
-
-		ChocolateyPack("_setup/choco/RepoZ.nuspec", settings);
-	}
-	else
+	// Chocolatey
+	ReplaceTextInFiles("_setup/choco/RepoZ.nuspec", "{PRODUCT_VERSION}", _appVersion);
+	ReplaceTextInFiles("_setup/choco/tools/chocolateyinstall.ps1", "{PRODUCT_VERSION}", _appVersion);
+	
+	var settings = new ChocolateyPackSettings()
 	{
-		// update the pkgproj file and run packagesbuild
-		ReplaceTextInFiles("_setup/RepoZ.pkgproj", "{PRODUCT_VERSION}", _appVersion);
-		StartProcess("packagesbuild", "--verbose _setup/RepoZ.pkgproj");
-	}
+		OutputDirectory = _outputDir,
+		Authors = { "Andreas Wäscher" },
+		Tags = { "repoz", "git", "repository", "development", "foss", "utilities", "productivity" },
+		Version = _appVersion
+	};
+
+	ChocolateyPack("_setup/choco/RepoZ.nuspec", settings);
 });
 
 ///////////////////////////////////////////////////////////////////////////////

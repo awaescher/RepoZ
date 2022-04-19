@@ -267,7 +267,7 @@ namespace RepoZ.Api.Common.IO
 
                 return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
