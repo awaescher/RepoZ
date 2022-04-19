@@ -39,7 +39,7 @@ namespace RepoZ.Api.Common.Git
             public string Keys { get; set; }
 
             [JsonProperty("active")]
-            public bool Active { get; set; }
+            public string Active { get; set; }
 
             [JsonProperty("subfolder")] 
             public List<RepositoryAction> Subfolder { get; set; } = new List<RepositoryAction>();
@@ -61,7 +61,7 @@ namespace RepoZ.Api.Common.Git
             public string Arguments { get; set; }
 
             [JsonProperty("active")]
-            public bool Active { get; set; }
+            public string Active { get; set; }
         }
 
         public enum LoadState
