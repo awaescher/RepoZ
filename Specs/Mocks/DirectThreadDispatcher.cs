@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using RepoZ.Api.Common;
 
 namespace Specs
 {
-	internal class DirectThreadDispatcher : IThreadDispatcher
-	{
-		public void Invoke(Action act) => act();
-	}
+    internal class DirectThreadDispatcher : IThreadDispatcher
+    {
+        public void Invoke(Action act) => act();
+    }
 }

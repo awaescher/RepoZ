@@ -1,9 +1,9 @@
-﻿using RepoZ.Api.Git;
-using RepoZ.Ipc;
-using System;
-
 namespace grrui.Model
 {
+    using RepoZ.Api.Git;
+    using RepoZ.Ipc;
+    using System;
+
     public class RepositoryView : IRepositoryView
     {
         public RepositoryView(RepoZ.Ipc.Repository repository)
@@ -11,7 +11,10 @@ namespace grrui.Model
             Repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public override string ToString() => DisplayText ?? "";
+        public override string ToString()
+        {
+            return DisplayText ?? string.Empty;
+        }
 
         public RepoZ.Ipc.Repository Repository { get; }
 
@@ -19,11 +22,14 @@ namespace grrui.Model
 
         public string Name => Repository?.Name ?? "";
 
-        public string CurrentBranch => Repository?.BranchWithStatus ?? "";
+        public string CurrentBranch => Repository?.BranchWithStatus ?? string.Empty;
 
-        public string[] ReadAllBranches() => Repository.ReadAllBranches() ?? new string[0];
+        public string[] ReadAllBranches()
+        {
+            return Repository.ReadAllBranches() ?? Array.Empty<string>();
+        }
 
-        public string Path => Repository.Path ?? "";
+        public string Path => Repository.Path ?? string.Empty;
 
         public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
     }

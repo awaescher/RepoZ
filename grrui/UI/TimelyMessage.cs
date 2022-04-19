@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Terminal.Gui;
-
 namespace grrui.UI
 {
-	public static class TimelyMessage
-	{
-		public static void ShowMessage(string message, TimeSpan duration)
-		{
-			int width = message.Length + 6;
-			int height = 5;
-			int lines = Label.MeasureLines(message, width);
+    using System;
+    using System.Threading.Tasks;
+    using Terminal.Gui;
 
-			var dialog = new Dialog(null, width, height);
+    public static class TimelyMessage
+    {
+        public static void ShowMessage(string message, TimeSpan duration)
+        {
+            var width = message.Length + 6;
+            var height = 5;
+            var lines = Label.MeasureLines(message, width);
 
-			var label = new Label((width - 4 - message.Length) / 2, 0, message);
-				dialog.Add(label);
+            var dialog = new Dialog(null, width, height);
 
-			Task.Delay(duration).ContinueWith(t => dialog.Running = false);
-			Application.Run(dialog);
-			
-		}
-	}
+            var label = new Label((width - 4 - message.Length) / 2, 0, message);
+            dialog.Add(label);
+
+            Task.Delay(duration).ContinueWith(t => dialog.Running = false);
+            Application.Run(dialog);
+        }
+    }
 }

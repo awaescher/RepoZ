@@ -1,7 +1,7 @@
-﻿namespace RepoZ.Ipc
+namespace RepoZ.Ipc
 {
-	public interface IRepositorySource
-	{
-		Repository[] GetMatchingRepositories(string repositoryNamePattern);
-	}
+    public interface IRepositorySource
+    {
+        Repository[] GetMatchingRepositories(string repositoryNamePattern);
+    }
 }

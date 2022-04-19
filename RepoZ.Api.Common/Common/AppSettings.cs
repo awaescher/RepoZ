@@ -1,8 +1,7 @@
-﻿using RepoZ.Api.Common.Git.AutoFetch;
-using System.Drawing;
-
 namespace RepoZ.Api.Common.Common
 {
+    using RepoZ.Api.Common.Git.AutoFetch;
+
     public class AppSettings
     {
         public AppSettings()
@@ -17,11 +16,11 @@ namespace RepoZ.Api.Common.Common
         public Size MenuSize { get; set; }
 
         public static AppSettings Default => new AppSettings()
-        {
-            AutoFetchMode = AutoFetchMode.Off,
-            PruneOnFetch = false,
-            MenuSize = Size.Default,
-        };
+            {
+                AutoFetchMode = AutoFetchMode.Off,
+                PruneOnFetch = false,
+                MenuSize = Size.Default,
+            };
     }
 
     public class Size
@@ -31,9 +30,9 @@ namespace RepoZ.Api.Common.Common
         public double Width { get; set; }
 
         public static Size Default => new Size()
-        {
-            Width = -1,
-            Height = -1,
-        };
+            {
+                Width = -1,
+                Height = -1,
+            };
     }
 }

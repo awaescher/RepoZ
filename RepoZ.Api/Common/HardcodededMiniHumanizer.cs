@@ -1,74 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RepoZ.Api.Common
 {
-	public class HardcodededMiniHumanizer : IHumanizer
-	{
-		public HardcodededMiniHumanizer()
-			: this(new SystemClock())
-		{
-		}
+    using System;
 
-		public HardcodededMiniHumanizer(IClock clock)
-		{
-			Clock = clock ?? throw new ArgumentNullException(nameof(clock));
-		}
+    public class HardcodededMiniHumanizer : IHumanizer
+    {
+        public HardcodededMiniHumanizer()
+            : this(new SystemClock()) { }
 
-		public string HumanizeTimestamp(DateTime value)
-		{
-			var diff = Clock.Now - value;
+        public HardcodededMiniHumanizer(IClock clock)
+        {
+            Clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        }
 
-			var absoluteSeconds = Math.Abs(diff.TotalSeconds);
-			var absoluteMinutes = Math.Abs(diff.TotalMinutes);
-			var absoluteHours = Math.Abs(diff.TotalHours);
-			var absoluteDays = Math.Abs(diff.TotalDays);
+        public string HumanizeTimestamp(DateTime value)
+        {
+            TimeSpan diff = Clock.Now - value;
 
-			// specials
-			if (absoluteSeconds < 25)
-				return "Just now";
+            var absoluteSeconds = Math.Abs(diff.TotalSeconds);
+            var absoluteMinutes = Math.Abs(diff.TotalMinutes);
+            var absoluteHours = Math.Abs(diff.TotalHours);
+            var absoluteDays = Math.Abs(diff.TotalDays);
 
-			if (absoluteSeconds >= 55 && absoluteSeconds <= 80)
-				return PastOrFuture("a minute", diff);
+            // specials
+            if (absoluteSeconds < 25)
+            {
+                return "Just now";
+            }
 
-			if (absoluteSeconds > 80 && absoluteSeconds <= 100)
-				return PastOrFuture("nearly two minutes", diff);
+            if (absoluteSeconds >= 55 && absoluteSeconds <= 80)
+            {
+                return PastOrFuture("a minute", diff);
+            }
 
-			if (absoluteMinutes >= 55 && absoluteMinutes <= 75)
-				return PastOrFuture("an hour", diff);
+            if (absoluteSeconds > 80 && absoluteSeconds <= 100)
+            {
+                return PastOrFuture("nearly two minutes", diff);
+            }
 
-			if (absoluteMinutes > 75 && absoluteMinutes <= 100)
-				return PastOrFuture("one and a half hour", diff);
+            if (absoluteMinutes >= 55 && absoluteMinutes <= 75)
+            {
+                return PastOrFuture("an hour", diff);
+            }
 
-			if (absoluteHours >= 23 && absoluteHours <= 30)
-				return PastOrFuture("a day", diff);
+            if (absoluteMinutes > 75 && absoluteMinutes <= 100)
+            {
+                return PastOrFuture("one and a half hour", diff);
+            }
 
-			// generic
-			if (absoluteSeconds < 60)
-				return PastOrFuture($"{Math.Round(absoluteSeconds)} seconds", diff);
+            if (absoluteHours >= 23 && absoluteHours <= 30)
+            {
+                return PastOrFuture("a day", diff);
+            }
 
-			if (absoluteMinutes < 60)
-				return PastOrFuture($"{Math.Round(absoluteMinutes)} minutes", diff);
+            // generic
+            if (absoluteSeconds < 60)
+            {
+                return PastOrFuture($"{Math.Round(absoluteSeconds)} seconds", diff);
+            }
 
-			if (absoluteHours < 24)
-				return PastOrFuture($"{Math.Round(absoluteHours)} hours", diff);
+            if (absoluteMinutes < 60)
+            {
+                return PastOrFuture($"{Math.Round(absoluteMinutes)} minutes", diff);
+            }
 
-			if (absoluteDays >= 1.5 && absoluteDays < 5)
-				return PastOrFuture($"{Math.Round(absoluteDays)} days", diff);
+            if (absoluteHours < 24)
+            {
+                return PastOrFuture($"{Math.Round(absoluteHours)} hours", diff);
+            }
 
-			// fallback
-			return value.ToString("g");
-		}
+            if (absoluteDays >= 1.5 && absoluteDays < 5)
+            {
+                return PastOrFuture($"{Math.Round(absoluteDays)} days", diff);
+            }
 
-		private string PastOrFuture(string result, TimeSpan diff)
-		{
-			var value = diff.TotalMilliseconds > 0 ? result + " ago" : "in " + result;
-			return value.Substring(0, 1).ToUpper() + value.Substring(1);
-		}
+            // fallback
+            return value.ToString("g");
+        }
 
-		public IClock Clock { get; }
-	}
+        private static string PastOrFuture(string result, TimeSpan diff)
+        {
+            var value = diff.TotalMilliseconds > 0 ? result + " ago" : "in " + result;
+            return value.Substring(0, 1).ToUpper() + value.Substring(1);
+        }
+
+        public IClock Clock { get; }
+    }
 }

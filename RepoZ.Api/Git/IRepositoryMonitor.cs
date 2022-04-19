@@ -1,24 +1,24 @@
-﻿using System;
-using System.Threading.Tasks;
-
 namespace RepoZ.Api.Git
 {
-	public interface IRepositoryMonitor
-	{
-		event EventHandler<Repository> OnChangeDetected;
+    using System;
+    using System.Threading.Tasks;
 
-		event EventHandler<string> OnDeletionDetected;
+    public interface IRepositoryMonitor
+    {
+        event EventHandler<Repository> OnChangeDetected;
 
-		event EventHandler<bool> OnScanStateChanged;
+        event EventHandler<string> OnDeletionDetected;
 
-		void Stop();
+        event EventHandler<bool> OnScanStateChanged;
 
-		void Observe();
+        void Stop();
 
-		void Reset();
+        void Observe();
 
-		Task ScanForLocalRepositoriesAsync();
+        void Reset();
 
-		void IgnoreByPath(string path);
-	}
+        Task ScanForLocalRepositoriesAsync();
+
+        void IgnoreByPath(string path);
+    }
 }

@@ -1,57 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-
 namespace RepoZ.App.Win.Controls
 {
-	public class AcrylicMenuItem : MenuItem
-	{
-		protected override void OnSubmenuOpened(RoutedEventArgs e)
-		{
-			base.OnSubmenuOpened(e);
+    using System;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
 
-			Dispatcher.BeginInvoke((Action)BlurSubMenu);
-		}
+    public class AcrylicMenuItem : MenuItem
+    {
+        protected override void OnSubmenuOpened(RoutedEventArgs e)
+        {
+            base.OnSubmenuOpened(e);
 
-		private void BlurSubMenu()
-		{
-			var firstSubItem = ItemContainerGenerator.ContainerFromIndex(0);
+            Dispatcher.BeginInvoke((Action)BlurSubMenu);
+        }
 
-			if (firstSubItem == null)
-				return;
+        private void BlurSubMenu()
+        {
+            DependencyObject firstSubItem = ItemContainerGenerator.ContainerFromIndex(0);
 
-			var container = VisualTreeHelper.GetParent(firstSubItem) as Visual;
+            if (firstSubItem == null)
+            {
+                return;
+            }
 
-			if (container == null)
-				return;
+            var container = VisualTreeHelper.GetParent(firstSubItem) as Visual;
 
-			DependencyObject parent = container;
-			int borderIndex = 0;
+            if (container == null)
+            {
+                return;
+            }
 
-			while (parent != null)
-			{
-				if (parent is Border b)
-				{
-					// only put color on the first border (transparent colors will add up otherwise)
-					if (borderIndex == 0)
-						b.Background = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
-					else
-						b.Background = Brushes.Transparent;
+            DependencyObject parent = container;
+            var borderIndex = 0;
 
-					borderIndex++;
-				}
+            while (parent != null)
+            {
+                if (parent is Border b)
+                {
+                    // only put color on the first border (transparent colors will add up otherwise)
+                    if (borderIndex == 0)
+                    {
+                        b.Background = new SolidColorBrush(Color.FromArgb(80, 0, 0, 0));
+                    }
+                    else
+                    {
+                        b.Background = Brushes.Transparent;
+                    }
 
-				parent = VisualTreeHelper.GetParent(parent);
-			}
+                    borderIndex++;
+                }
 
-			AcrylicHelper.EnableBlur(container);
-		}
-	}
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+
+            AcrylicHelper.EnableBlur(container);
+        }
+    }
 }

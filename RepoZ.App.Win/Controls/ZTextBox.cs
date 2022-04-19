@@ -1,25 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Windows.Input;
-
 namespace RepoZ.App.Win.Controls
 {
-	public class ZTextBox : TextBox
-	{
-		public event EventHandler Finish;
+    using System;
+    using System.Collections.Generic;
+    using System.Windows.Controls;
+    using System.Windows.Input;
 
-		protected override void OnKeyUp(KeyEventArgs e)
-		{
-			base.OnKeyUp(e);
+    public class ZTextBox : TextBox
+    {
+        public event EventHandler Finish;
 
-			if (e.Key == Key.Escape)
-				Clear();
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
 
-			if (FinisherKeys.Contains(e.Key))
-				Finish?.Invoke(this, EventArgs.Empty);
-		}
+            if (e.Key == Key.Escape)
+            {
+                Clear();
+            }
 
-		public List<Key> FinisherKeys { get; } = new List<Key>() { Key.Down, Key.Return, Key.Enter };
-	}
+            if (FinisherKeys.Contains(e.Key))
+            {
+                Finish?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public List<Key> FinisherKeys { get; } = new List<Key>()
+            {
+                Key.Down,
+                Key.Return,
+                Key.Enter,
+            };
+    }
 }

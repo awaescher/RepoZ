@@ -1,48 +1,53 @@
-﻿namespace RepoZ.Ipc
+namespace RepoZ.Ipc
 {
-	[System.Diagnostics.DebuggerDisplay("{Name}")]
-	public class Repository
-	{
-		public static Repository FromString(string value)
-		{
-			var parts = value?.Split(new string[] { "::" }, System.StringSplitOptions.None);
-			var partsCount = parts?.Length ?? 0;
+    using System;
 
-			var validFormat = partsCount == 3 || partsCount == 4;
-			if (!validFormat)
-				return null;
+    [System.Diagnostics.DebuggerDisplay("{Name}")]
+    public class Repository
+    {
+        public static Repository FromString(string value)
+        {
+            var parts = value?.Split(new string[] { "::" }, System.StringSplitOptions.None);
+            var partsCount = parts?.Length ?? 0;
 
-			return new Repository()
-			{
-				Name = parts[0],
-				BranchWithStatus = parts[1],
-				Path = parts[2],
-				HasUnpushedChanges = parts.Length > 3 && parts[3] == "1",
-			};
-		}
+            var validFormat = partsCount == 3 || partsCount == 4;
+            if (!validFormat)
+            {
+                return null;
+            }
 
-		public override string ToString()
-		{
-			if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(BranchWithStatus) || string.IsNullOrEmpty(Path))
-				return "";
+            return new Repository()
+                {
+                    Name = parts[0],
+                    BranchWithStatus = parts[1],
+                    Path = parts[2],
+                    HasUnpushedChanges = parts.Length > 3 && parts[3] == "1",
+                };
+        }
 
-			return $"{Name}::{BranchWithStatus}::{Path}::{(HasUnpushedChanges ? "1" : "0")}";
-		}
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(BranchWithStatus) || string.IsNullOrEmpty(Path))
+            {
+                return "";
+            }
 
-		public string Name { get; set; }
+            return $"{Name}::{BranchWithStatus}::{Path}::{(HasUnpushedChanges ? "1" : "0")}";
+        }
 
-		public string BranchWithStatus { get; set; }
+        public string Name { get; set; }
 
-		public string Path { get; set; }
+        public string BranchWithStatus { get; set; }
 
-        public string[] ReadAllBranches() => new string[0];
+        public string Path { get; set; }
 
-		public bool HasUnpushedChanges { get; set; }
+        public string[] ReadAllBranches()
+        {
+            return Array.Empty<string>();
+        }
 
-		public string SafePath
-		{
-			// use '/' for linux systems and bash command line (will work on cmd and powershell as well)
-			get => Path?.Replace(@"\", "/") ?? "";
-		}
-	}
+        public bool HasUnpushedChanges { get; set; }
+
+        public string SafePath => Path?.Replace(@"\", "/") ?? "";
+    }
 }

@@ -1,123 +1,131 @@
-﻿using System;
-using System.Diagnostics;
-using System.ComponentModel;
-
 namespace RepoZ.Api.Git
 {
-	[DebuggerDisplay("{Name} @{Path}")]
-	public class RepositoryView : IRepositoryView, INotifyPropertyChanged
-	{
-		private string _cachedRepositoryStatusCode;
-		private string _cachedRepositoryStatus;
-		private string _cachedRepositoryStatusWithBranch;
-		private bool _isSynchronizing;
+    using System;
+    using System.Diagnostics;
+    using System.ComponentModel;
 
-		public event PropertyChangedEventHandler PropertyChanged;
+    [DebuggerDisplay("{Name} @{Path}")]
+    public class RepositoryView : IRepositoryView, INotifyPropertyChanged
+    {
+        private string _cachedRepositoryStatusCode;
+        private string _cachedRepositoryStatus;
+        private string _cachedRepositoryStatusWithBranch;
+        private bool _isSynchronizing;
 
-		public RepositoryView(Repository repository)
-		{
-			Repository = repository ?? throw new ArgumentNullException(nameof(repository));
-			UpdateStampUtc = DateTime.UtcNow;
-		}
+        public event PropertyChangedEventHandler PropertyChanged;
 
-		public override bool Equals(object obj)
-		{
-			if (obj is RepositoryView other)
-				return other.Repository.Equals(this.Repository);
+        public RepositoryView(Repository repository)
+        {
+            Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            UpdateStampUtc = DateTime.UtcNow;
+        }
 
-			return object.ReferenceEquals(this, obj);
-		}
+        public override bool Equals(object obj)
+        {
+            if (obj is RepositoryView other)
+            {
+                return other.Repository.Equals(this.Repository);
+            }
 
-		private void EnsureStatusCache()
-		{
-			var repositoryStatusCode = Repository.GetStatusCode();
+            return object.ReferenceEquals(this, obj);
+        }
 
-			// compare the status code and not the full status string because the latter one is heavier to calculate
-			bool canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
+        private void EnsureStatusCache()
+        {
+            var repositoryStatusCode = Repository.GetStatusCode();
 
-			if (!canTakeFromCache)
-			{
-				var compressor = new StatusCompressor(new StatusCharacterMap());
-				_cachedRepositoryStatus = compressor.Compress(Repository);
-				_cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
+            // compare the status code and not the full status string because the latter one is heavier to calculate
+            var canTakeFromCache = _cachedRepositoryStatusCode == repositoryStatusCode;
 
-				_cachedRepositoryStatusCode = repositoryStatusCode;
-			}
-		}
+            if (!canTakeFromCache)
+            {
+                var compressor = new StatusCompressor(new StatusCharacterMap());
+                _cachedRepositoryStatus = compressor.Compress(Repository);
+                _cachedRepositoryStatusWithBranch = compressor.CompressWithBranch(Repository);
 
-		public string Name => (Repository.Name ?? "") + (IsSynchronizing ? SyncAppendix : "");
+                _cachedRepositoryStatusCode = repositoryStatusCode;
+            }
+        }
 
-		public string Path => Repository.Path ?? "";
+        public string Name => (Repository.Name ?? string.Empty) + (IsSynchronizing ? SyncAppendix : string.Empty);
 
-		public string Location => Repository.Location ?? "";
+        public string Path => Repository.Path ?? string.Empty;
 
-		public string CurrentBranch => Repository.CurrentBranch ?? "";
-        
-		public string[] ReadAllBranches() => Repository.ReadAllBranches() ?? new string[0];
+        public string Location => Repository.Location ?? string.Empty;
 
-		public string AheadBy => Repository.AheadBy?.ToString() ?? "";
+        public string CurrentBranch => Repository.CurrentBranch ?? string.Empty;
 
-		public string BehindBy => Repository.BehindBy?.ToString() ?? "";
+        public string[] ReadAllBranches()
+        {
+            return Repository.ReadAllBranches() ?? Array.Empty<string>();
+        }
 
-		public string[] Branches => Repository.Branches ?? new string[0];
+        public string AheadBy => Repository.AheadBy?.ToString() ?? string.Empty;
 
-		public string LocalUntracked => Repository.LocalUntracked?.ToString() ?? "";
+        public string BehindBy => Repository.BehindBy?.ToString() ?? string.Empty;
 
-		public string LocalModified => Repository.LocalModified?.ToString() ?? "";
+        public string[] Branches => Repository.Branches ?? Array.Empty<string>();
 
-		public string LocalMissing => Repository.LocalMissing?.ToString() ?? "";
+        public string LocalUntracked => Repository.LocalUntracked?.ToString() ?? string.Empty;
 
-		public string LocalAdded => Repository.LocalAdded?.ToString() ?? "";
+        public string LocalModified => Repository.LocalModified?.ToString() ?? string.Empty;
 
-		public string LocalStaged => Repository.LocalStaged?.ToString() ?? "";
+        public string LocalMissing => Repository.LocalMissing?.ToString() ?? string.Empty;
 
-		public string LocalRemoved => Repository.LocalRemoved?.ToString() ?? "";
+        public string LocalAdded => Repository.LocalAdded?.ToString() ?? string.Empty;
 
-		public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? "";
+        public string LocalStaged => Repository.LocalStaged?.ToString() ?? string.Empty;
 
-		public string[] RemoteUrls => Repository.RemoteUrls ?? new string[0];
+        public string LocalRemoved => Repository.LocalRemoved?.ToString() ?? string.Empty;
 
-		public string StashCount => Repository.StashCount?.ToString() ?? "";
+        public string LocalIgnored => Repository.LocalIgnored?.ToString() ?? string.Empty;
 
-		public bool WasFound => Repository.WasFound;
+        public string[] RemoteUrls => Repository.RemoteUrls ?? Array.Empty<string>();
 
-		public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
+        public string StashCount => Repository.StashCount?.ToString() ?? string.Empty;
 
-		public override int GetHashCode() => Repository.GetHashCode();
+        public bool WasFound => Repository.WasFound;
 
-		public Repository Repository { get; }
+        public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
 
-		public string Status
-		{
-			get
-			{
-				EnsureStatusCache();
-				return _cachedRepositoryStatus;
-			}
-		}
+        public override int GetHashCode()
+        {
+            return Repository.GetHashCode();
+        }
 
-		public string BranchWithStatus
-		{
-			get
-			{
-				EnsureStatusCache();
-				return _cachedRepositoryStatusWithBranch;
-			}
-		}
+        public Repository Repository { get; }
 
-		public bool IsSynchronizing
-		{
-			get { return _isSynchronizing; }
-			set
-			{
-				_isSynchronizing = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name))); // Name includes the activity icon
-			}
-		}
+        public string Status
+        {
+            get
+            {
+                EnsureStatusCache();
+                return _cachedRepositoryStatus;
+            }
+        }
 
-		private string SyncAppendix => "  \u2191\u2193"; // up and down arrows
+        public string BranchWithStatus
+        {
+            get
+            {
+                EnsureStatusCache();
+                return _cachedRepositoryStatusWithBranch;
+            }
+        }
 
-		public DateTime UpdateStampUtc { get; private set; }
+        public bool IsSynchronizing
+        {
+            get => _isSynchronizing;
+            set
+            {
+                _isSynchronizing = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name))); // Name includes the activity icon
+            }
+        }
 
-	}
+        private string SyncAppendix => "  \u2191\u2193"; // up and down arrows
+
+        public DateTime UpdateStampUtc { get; private set; }
+
+    }
 }

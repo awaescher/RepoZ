@@ -1,229 +1,253 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using grr.Messages;
-using grr.Messages.Filters;
-using System.IO;
-using NetMQ.Sockets;
-using NetMQ;
-using RepoZ.Ipc;
-
 namespace grr
 {
-	static class Program
-	{
-		private const int MAX_REPO_NAME_LENGTH = 35;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text;
+    using CommandLine;
+    using grr.Messages;
+    using grr.Messages.Filters;
+    using RepoZ.Ipc;
 
-		static void Main(string[] args)
-		{
-			Console.OutputEncoding = Encoding.UTF8;
+    static class Program
+    {
+        private const int MAX_REPO_NAME_LENGTH = 35;
 
-			args = PrepareArguments(args);
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
 
-			if (IsHelpRequested(args))
-			{
-				ShowHelp();
-			}
-			else
-			{
-				var message = TryParseArgumentsToMessage(args);
+            args = PrepareArguments(args);
 
-				if (message != null)
-				{
-					IpcClient.Result result = null;
+            if (IsHelpRequested(args))
+            {
+                ShowHelp();
+            }
+            else
+            {
+                IMessage message = TryParseArgumentsToMessage(args);
 
-					if (message.HasRemoteCommand)
-					{
-						var client = new IpcClient(new DefaultIpcEndpoint());
-						result = client.GetRepositories(message.GetRemoteCommand());
+                if (message != null)
+                {
+                    IpcClient.Result result = null;
 
-						if (result.Repositories?.Length > 0)
-						{
-							if (message.ShouldWriteRepositories(result.Repositories))
-								WriteRepositories(result.Repositories);
-						}
-						else
-						{
-							Console.WriteLine(result.Answer);
-						}
-					}
+                    if (message.HasRemoteCommand)
+                    {
+                        var client = new IpcClient(new DefaultIpcEndpoint());
+                        result = client.GetRepositories(message.GetRemoteCommand());
 
-					message?.Execute(result?.Repositories);
+                        if (result.Repositories?.Length > 0)
+                        {
+                            if (message.ShouldWriteRepositories(result.Repositories))
+                            {
+                                WriteRepositories(result.Repositories);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine(result.Answer);
+                        }
+                    }
 
-					WriteHistory(result?.Repositories);
-				}
-				else
-				{
-					Console.WriteLine("Could not parse command line arguments.");
-				}
-			}
+                    message?.Execute(result?.Repositories);
 
-			if (Debugger.IsAttached)
-				Console.ReadKey();
-		}
+                    WriteHistory(result?.Repositories);
+                }
+                else
+                {
+                    Console.WriteLine("Could not parse command line arguments.");
+                }
+            }
 
-		private static IMessage TryParseArgumentsToMessage(string[] args)
-		{
-			try
-			{
-				var parseResult = CommandLine.Parser.Default.ParseArguments(args, typeof(ListOptions), typeof(ChangeDirectoryOptions), typeof(GetDirectoryOptions), typeof(OpenDirectoryOptions));
+            if (Debugger.IsAttached)
+            {
+                Console.ReadKey();
+            }
+        }
 
-				if (parseResult.Tag == CommandLine.ParserResultType.NotParsed)
-					return null;
+        private static IMessage TryParseArgumentsToMessage(string[] args)
+        {
+            try
+            {
+                ParserResult<object> parseResult = CommandLine.Parser.Default.ParseArguments(args, typeof(ListOptions), typeof(ChangeDirectoryOptions), typeof(GetDirectoryOptions), typeof(OpenDirectoryOptions));
 
-				var options = parseResult.GetType().GetProperty("Value").GetValue(parseResult) as RepositoryFilterOptions;
+                if (parseResult.Tag == CommandLine.ParserResultType.NotParsed)
+                {
+                    return null;
+                }
 
-				// yes, that's a hack. I feel not good about it. The CommandLineParser seems not to be able to parse "cd -" since version 2.3.0 anymore
-				// and here we are, hacking our way around it ...
-				if (options != null)
-				{
-					if (options.RepositoryFilter == null
-						&& args.Length == 2
-						&& ("cd".Equals(args[0], StringComparison.OrdinalIgnoreCase) || "gd".Equals(args[0], StringComparison.OrdinalIgnoreCase))
-						&& args[1] == "-")
-					{
-						options.RepositoryFilter = "-";
-					}
-				}
+                var options = parseResult.GetType().GetProperty("Value").GetValue(parseResult) as RepositoryFilterOptions;
 
-				return GetMessage(options);
-			}
-			catch
-			{
-				return null;
-			}
-		}
+                // yes, that's a hack. I feel not good about it. The CommandLineParser seems not to be able to parse "cd -" since version 2.3.0 anymore
+                // and here we are, hacking our way around it ...
+                if (options != null)
+                {
+                    if (options.RepositoryFilter == null
+                        && args.Length == 2
+                        && ("cd".Equals(args[0], StringComparison.OrdinalIgnoreCase) || "gd".Equals(args[0], StringComparison.OrdinalIgnoreCase))
+                        && args[1] == "-")
+                    {
+                        options.RepositoryFilter = "-";
+                    }
+                }
 
-		private static void WriteHistory(Repository[] repositories)
-		{
-			var history = new History.State()
-			{
-				LastLocation = FindCallerWorkingDirectory(),
-				LastRepositories = repositories,
-				OverwriteRepositories = (repositories?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
+                return GetMessage(options);
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
-				// OverwriteRepositories = false?!
-				// if multiple repositories were found the last time we ran grr,
-				// these were written to the last state.
-				// if the user selects one with an index like "grr cd :2", we want
-				// to keep the last repositories to enable him to choose another one
-				// with the same indexes as before.
-				// so we have to get the old repositories - load and copy them if required
-			};
+        private static void WriteHistory(Repository[] repositories)
+        {
+            var history = new History.State()
+                {
+                    LastLocation = FindCallerWorkingDirectory(),
+                    LastRepositories = repositories,
+                    OverwriteRepositories = (repositories?.Length > 1) /* 0 or 1 repo should not overwrite the last list */
 
-			var repository = new History.FileHistoryRepository();
-			repository.Save(history);
-		}
+                    // OverwriteRepositories = false?!
+                    // if multiple repositories were found the last time we ran grr,
+                    // these were written to the last state.
+                    // if the user selects one with an index like "grr cd :2", we want
+                    // to keep the last repositories to enable him to choose another one
+                    // with the same indexes as before.
+                    // so we have to get the old repositories - load and copy them if required
+                };
 
-		private static string FindCallerWorkingDirectory()
-		{
-			// do NOT use the directory of the grr-assembly
-			// we need to preserve the context of the calling console
-			return System.IO.Directory.GetCurrentDirectory();
-		}
+            var repository = new History.FileHistoryRepository();
+            repository.Save(history);
+        }
 
-		private static void WriteRepositories(Repository[] repositories)
-		{
-			var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, repositories.Max(r => r.Name?.Length ?? 0));
-			var maxIndexStringLength = repositories.Length.ToString().Length;
-			var ellipsesSign = "\u2026";
-			var writeIndex = repositories.Length > 1;
+        private static string FindCallerWorkingDirectory()
+        {
+            // do NOT use the directory of the grr-assembly
+            // we need to preserve the context of the calling console
+            return System.IO.Directory.GetCurrentDirectory();
+        }
 
-			for (int i = 0; i < repositories.Length; i++)
-			{
-				var userIndex = i + 1; // the index visible to the user are 1-based, not 0-based;
+        private static void WriteRepositories(Repository[] repositories)
+        {
+            var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, repositories.Max(r => r.Name?.Length ?? 0));
+            var maxIndexStringLength = repositories.Length.ToString().Length;
+            var ellipsesSign = "\u2026";
+            var writeIndex = repositories.Length > 1;
 
-				string repoName = (repositories[i].Name.Length > MAX_REPO_NAME_LENGTH)
-					? repositories[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
-					: repositories[i].Name;
+            for (var i = 0; i < repositories.Length; i++)
+            {
+                var userIndex = i + 1; // the index visible to the user are 1-based, not 0-based;
 
-				Console.Write(" ");
-				if (writeIndex)
-					Console.Write($" [{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ");
-				Console.Write(repoName.PadRight(maxRepoNameLength + 3));
-				Console.Write(repositories[i].BranchWithStatus);
-				Console.WriteLine();
-			}
-		}
+                var repoName = (repositories[i].Name.Length > MAX_REPO_NAME_LENGTH)
+                    ? repositories[i].Name.Substring(0, MAX_REPO_NAME_LENGTH) + ellipsesSign
+                    : repositories[i].Name;
 
-		private static string[] PrepareArguments(string[] args)
-		{
-			if (args?.Length == 0)
-				args = new string[] { CommandLineOptions.ListCommand };
+                Console.Write(" ");
+                if (writeIndex)
+                {
+                    Console.Write($" [{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ");
+                }
 
-			if (!CommandLineOptions.IsKnownArgument(args.First()))
-			{
-				var newArgs = new List<string>(args);
-				newArgs.Insert(0, CommandLineOptions.ListCommand);
-				args = newArgs.ToArray();
-			}
+                Console.Write(repoName.PadRight(maxRepoNameLength + 3));
+                Console.Write(repositories[i].BranchWithStatus);
+                Console.WriteLine();
+            }
+        }
 
-			return args;
-		}
+        private static string[] PrepareArguments(string[] args)
+        {
+            if (args?.Length == 0)
+            {
+                args = new string[] { CommandLineOptions.LIST_COMMAND, };
+            }
 
-		private static IMessage GetMessage(RepositoryFilterOptions options)
-		{
-			// default should be listing all repositories
-			IMessage message = new ListRepositoriesMessage();
+            if (!CommandLineOptions.IsKnownArgument(args.First()))
+            {
+                var newArgs = new List<string>(args);
+                newArgs.Insert(0, CommandLineOptions.LIST_COMMAND);
+                args = newArgs.ToArray();
+            }
 
-			ApplyMessageFilters(options);
+            return args;
+        }
 
-			if (options is ListOptions)
-			{
-				if (options.HasFileFilter)
-					message = new ListRepositoryFilesMessage(options);
-				else
-					message = new ListRepositoriesMessage(options);
-			}
+        private static IMessage GetMessage(RepositoryFilterOptions options)
+        {
+            // default should be listing all repositories
+            IMessage message = new ListRepositoriesMessage();
 
-			if (options is ChangeDirectoryOptions)
-				message = new ChangeToDirectoryMessage(options);
+            ApplyMessageFilters(options);
 
-			if (options is GetDirectoryOptions)
-				message = new GetDirectoryMessage(options);
+            if (options is ListOptions)
+            {
+                if (options.HasFileFilter)
+                {
+                    message = new ListRepositoryFilesMessage(options);
+                }
+                else
+                {
+                    message = new ListRepositoriesMessage(options);
+                }
+            }
 
-			if (options is OpenDirectoryOptions)
-			{
-				if (options.HasFileFilter)
-					message = new OpenFileMessage(options);
-				else
-					message = new OpenDirectoryMessage(options);
-			}
+            if (options is ChangeDirectoryOptions)
+            {
+                message = new ChangeToDirectoryMessage(options);
+            }
 
-			return message;
-		}
+            if (options is GetDirectoryOptions)
+            {
+                message = new GetDirectoryMessage(options);
+            }
 
-		private static void ApplyMessageFilters(RepositoryFilterOptions filter)
-		{
-			var historyRepository = new History.FileHistoryRepository();
-			var filters = new IMessageFilter[]
-			{
-				new IndexMessageFilter(historyRepository),
-				new GoBackMessageFilter(historyRepository)
-			};
+            if (options is OpenDirectoryOptions)
+            {
+                if (options.HasFileFilter)
+                {
+                    message = new OpenFileMessage(options);
+                }
+                else
+                {
+                    message = new OpenDirectoryMessage(options);
+                }
+            }
 
-			foreach (var messageFilter in filters)
-				messageFilter.Filter(filter);
-		}
+            return message;
+        }
 
-		private static bool IsHelpRequested(string[] args)
-		{
-			if (args.Length != 1)
-				return false;
+        private static void ApplyMessageFilters(RepositoryFilterOptions filter)
+        {
+            var historyRepository = new History.FileHistoryRepository();
+            var filters = new IMessageFilter[]
+                {
+                    new IndexMessageFilter(historyRepository),
+                    new GoBackMessageFilter(historyRepository),
+                };
 
-			var arg = args[0].TrimStart('-').TrimStart('/');
+            foreach (IMessageFilter messageFilter in filters)
+            {
+                messageFilter.Filter(filter);
+            }
+        }
 
-			return CommandLineOptions.HelpCommand.Equals(arg, StringComparison.OrdinalIgnoreCase)
-				|| CommandLineOptions.HelpCommandChar.ToString().Equals(arg, StringComparison.OrdinalIgnoreCase);
-		}
+        private static bool IsHelpRequested(string[] args)
+        {
+            if (args.Length != 1)
+            {
+                return false;
+            }
 
-		private static void ShowHelp()
-		{
-			Console.WriteLine(CommandLineOptions.GetUsage());
-		}
-	}
+            var arg = args[0].TrimStart('-').TrimStart('/');
+
+            return CommandLineOptions.HELP_COMMAND.Equals(arg, StringComparison.OrdinalIgnoreCase)
+                   ||
+                   CommandLineOptions.HELP_COMMAND_CHAR.ToString().Equals(arg, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void ShowHelp()
+        {
+            Console.WriteLine(CommandLineOptions.GetUsage());
+        }
+    }
 }

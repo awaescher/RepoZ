@@ -1,36 +1,37 @@
-﻿using System.Windows.Forms;
-
 namespace RepoZ.App.Win
 {
-	public static class TaskbarLocator
-	{
-		public enum TaskBarLocation
-		{
-			Top,
-			Bottom,
-			Left,
-			Right
-		}
+    using System.Windows.Forms;
 
-		public static TaskBarLocation GetTaskBarLocation()
-		{
-			TaskBarLocation taskBarLocation = TaskBarLocation.Bottom;
-			bool taskBarOnTopOrBottom = (Screen.PrimaryScreen.WorkingArea.Width == Screen.PrimaryScreen.Bounds.Width);
+    public static class TaskbarLocator
+    {
+        public enum TaskBarLocation
+        {
+            Top,
+            Bottom,
+            Left,
+            Right,
+        }
 
-			if (taskBarOnTopOrBottom)
-			{
-				if (Screen.PrimaryScreen.WorkingArea.Top > 0)
-					taskBarLocation = TaskBarLocation.Top;
-			}
-			else
-			{
-				if (Screen.PrimaryScreen.WorkingArea.Left > 0)
-					taskBarLocation = TaskBarLocation.Left;
-				else
-					taskBarLocation = TaskBarLocation.Right;
-			}
+        public static TaskBarLocation GetTaskBarLocation()
+        {
+            TaskBarLocation taskBarLocation = TaskBarLocation.Bottom;
+            bool taskBarOnTopOrBottom = (Screen.PrimaryScreen.WorkingArea.Width == Screen.PrimaryScreen.Bounds.Width);
 
-			return taskBarLocation;
-		}
-	}
+            if (taskBarOnTopOrBottom)
+            {
+                if (Screen.PrimaryScreen.WorkingArea.Top > 0)
+                {
+                    taskBarLocation = TaskBarLocation.Top;
+                }
+            }
+            else
+            {
+                taskBarLocation = Screen.PrimaryScreen.WorkingArea.Left > 0
+                    ? TaskBarLocation.Left
+                    : TaskBarLocation.Right;
+            }
+
+            return taskBarLocation;
+        }
+    }
 }

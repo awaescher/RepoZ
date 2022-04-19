@@ -1,29 +1,29 @@
-﻿using grr.History;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace grr.Messages.Filters
+﻿namespace grr.Messages.Filters
 {
-	public class GoBackMessageFilter : IMessageFilter
-	{
-		private readonly IHistoryRepository _historyRepository;
+    using grr.History;
+    using System;
 
-		public GoBackMessageFilter(IHistoryRepository historyRepository)
-		{
-			_historyRepository = historyRepository ?? throw new ArgumentNullException(nameof(historyRepository));
-		}
+    public class GoBackMessageFilter : IMessageFilter
+    {
+        private readonly IHistoryRepository _historyRepository;
 
-		public void Filter(RepositoryFilterOptions filter)
-		{
-			string filterValue = filter?.RepositoryFilter ?? "";
-			if ("-" == filterValue)
-			{
-				var state = _historyRepository.Load();
-				filter.RepositoryFilter = state.LastLocation ?? filterValue;
-			}
-		}
-	}
+        public GoBackMessageFilter(IHistoryRepository historyRepository)
+        {
+            _historyRepository = historyRepository ?? throw new ArgumentNullException(nameof(historyRepository));
+        }
+
+        public void Filter(RepositoryFilterOptions filter)
+        {
+            var filterValue = filter?.RepositoryFilter ?? string.Empty;
+
+            if ("-" == filterValue)
+            {
+                State state = _historyRepository.Load();
+                if (filter != null)
+                {
+                    filter.RepositoryFilter = state.LastLocation ?? filterValue;
+                }
+            }
+        }
+    }
 }

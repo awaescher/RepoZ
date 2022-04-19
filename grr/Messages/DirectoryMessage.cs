@@ -1,28 +1,30 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using RepoZ.Ipc;
-
 namespace grr.Messages
 {
-	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public abstract class DirectoryMessage : IMessage
-	{
-		private readonly bool _argumentIsExistingDirectory;
+    using System.IO;
+    using RepoZ.Ipc;
 
-		public DirectoryMessage(RepositoryFilterOptions filter)
-		{
-			Filter = filter;
-			_argumentIsExistingDirectory = Directory.Exists(Filter.RepositoryFilter);
-		}
+    [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
+    public abstract class DirectoryMessage : IMessage
+    {
+        private readonly bool _argumentIsExistingDirectory;
 
-		public void Execute(Repository[] repositories)
-		{
-			if (_argumentIsExistingDirectory)
+        public DirectoryMessage(RepositoryFilterOptions filter)
+        {
+            Filter = filter;
+            _argumentIsExistingDirectory = Directory.Exists(Filter.RepositoryFilter);
+        }
+
+        public void Execute(Repository[] repositories)
+        {
+            if (_argumentIsExistingDirectory)
+            {
                 ExecuteExistingDirectoryWithSafetyCheck(Filter.RepositoryFilter);
-			else
-				ExecuteRepositoryQuery(repositories);
-		}
+            }
+            else
+            {
+                ExecuteRepositoryQuery(repositories);
+            }
+        }
 
         private void ExecuteExistingDirectoryWithSafetyCheck(string directory)
         {
@@ -34,50 +36,60 @@ namespace grr.Messages
         protected abstract void ExecuteExistingDirectory(string directory);
 
         protected virtual void ExecuteRepositoryQuery(Repository[] repositories)
-		{
-			if (repositories == null || repositories.Length <= 0)
-				return;
+        {
+            if (repositories == null || repositories.Length <= 0)
+            {
+                return;
+            }
 
-			foreach (var repository in repositories)
-			{
-				var directory = repository.SafePath;
+            foreach (Repository repository in repositories)
+            {
+                var directory = repository.SafePath;
 
-				if (string.IsNullOrWhiteSpace(directory))
-				{
-					System.Console.WriteLine("Repository path is empty. Aborting.");
-					return;
-				}
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    System.Console.WriteLine("Repository path is empty. Aborting.");
+                    return;
+                }
 
-				if (Directory.Exists(directory))
+                if (Directory.Exists(directory))
+                {
                     ExecuteExistingDirectoryWithSafetyCheck(directory);
-				else
-					System.Console.WriteLine("Repository path does not exist:\n" + directory);
-			}
-		}
+                }
+                else
+                {
+                    System.Console.WriteLine("Repository path does not exist:\n" + directory);
+                }
+            }
+        }
 
-		public virtual string GetRemoteCommand()
-		{
-			if (!HasRemoteCommand)
-				return null;
+        public virtual string GetRemoteCommand()
+        {
+            if (!HasRemoteCommand)
+            {
+                return null;
+            }
 
-			return string.IsNullOrEmpty(Filter?.RepositoryFilter)
-				? null /* makes no sense */
-				: $"list:{RegexFilter.Get(Filter.RepositoryFilter)}";
-		}
+            return string.IsNullOrEmpty(Filter?.RepositoryFilter)
+                ? null /* makes no sense */
+                : $"list:{RegexFilter.Get(Filter.RepositoryFilter)}";
+        }
 
-		public virtual bool HasRemoteCommand
-		{
-			get
-			{
-				if (_argumentIsExistingDirectory)
-					return false;
+        public virtual bool HasRemoteCommand
+        {
+            get
+            {
+                if (_argumentIsExistingDirectory)
+                {
+                    return false;
+                }
 
-				return !string.IsNullOrEmpty(Filter?.RepositoryFilter);
-			}
-		}
+                return !string.IsNullOrEmpty(Filter?.RepositoryFilter);
+            }
+        }
 
-		public abstract bool ShouldWriteRepositories(Repository[] repositories);
+        public abstract bool ShouldWriteRepositories(Repository[] repositories);
 
-		public RepositoryFilterOptions Filter { get; }
-	}
+        public RepositoryFilterOptions Filter { get; }
+    }
 }

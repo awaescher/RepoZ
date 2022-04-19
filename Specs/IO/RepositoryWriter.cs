@@ -1,159 +1,156 @@
-﻿using LibGit2Sharp;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Specs.IO
 {
-	public class RepositoryWriter
-	{
-		public RepositoryWriter(string path)
-		{
-			Path = path;
-		}
+    using LibGit2Sharp;
+    using System;
+    using System.IO;
+    using System.Linq;
 
-		public void InitBare()
-		{
-			var path = Repository.Init(Path, isBare: true);
-		}
+    public class RepositoryWriter
+    {
+        public RepositoryWriter(string path)
+        {
+            Path = path;
+        }
 
-		public void Clone(string sourcePath)
-		{
+        public void InitBare()
+        {
+            var path = Repository.Init(Path, isBare: true);
+        }
 
-			Repository.Clone(sourcePath, Path);
-		}
+        public void Clone(string sourcePath)
+        {
 
-		public void Branch(string name)
-		{
-			using (var repo = new Repository(Path))
-			{
-				repo.CreateBranch(name);
-			}
-		}
+            Repository.Clone(sourcePath, Path);
+        }
 
-		public void CreateFile(string nameWithExtension, string content)
-		{
-			File.WriteAllText(System.IO.Path.Combine(Path, nameWithExtension), content);
-		}
+        public void Branch(string name)
+        {
+            using (var repo = new Repository(Path))
+            {
+                repo.CreateBranch(name);
+            }
+        }
 
-		public void Stage(string nameWithExtension)
-		{
-			using (var repo = new Repository(Path))
-			{
-				Commands.Stage(repo, System.IO.Path.Combine(Path, nameWithExtension));
-			}
-		}
+        public void CreateFile(string nameWithExtension, string content)
+        {
+            File.WriteAllText(System.IO.Path.Combine(Path, nameWithExtension), content);
+        }
 
-		public void Commit(string message)
-		{
-			using (var repo = new Repository(Path))
-			{
-				repo.Commit(message, Signature, Signature);
-			}
-		}
+        public void Stage(string nameWithExtension)
+        {
+            using (var repo = new Repository(Path))
+            {
+                Commands.Stage(repo, System.IO.Path.Combine(Path, nameWithExtension));
+            }
+        }
 
-		public string Fetch()
-		{
-			using (var repo = new Repository(Path))
-			{
-				string logMessage = "";
+        public void Commit(string message)
+        {
+            using (var repo = new Repository(Path))
+            {
+                repo.Commit(message, Signature, Signature);
+            }
+        }
 
-				var remote = repo.Network.Remotes.Single();
-				var refs = remote.FetchRefSpecs.Select(r => r.Specification).ToArray();
-				Commands.Fetch(repo, remote.Name, refs, new FetchOptions(), logMessage);
+        public string Fetch()
+        {
+            using (var repo = new Repository(Path))
+            {
+                var logMessage = string.Empty;
 
-				return logMessage;
-			}
-		}
+                Remote remote = repo.Network.Remotes.Single();
+                var refs = remote.FetchRefSpecs.Select(r => r.Specification).ToArray();
+                Commands.Fetch(repo, remote.Name, refs, new FetchOptions(), logMessage);
 
-		public void Pull()
-		{
-			using (var repo = new Repository(Path))
-			{
-				var remote = repo.Network.Remotes.Single();
-				Commands.Pull(repo, Signature, new PullOptions());
-			}
-		}
+                return logMessage;
+            }
+        }
 
-		public void Merge(string branchName)
-		{
-			using (var repo = new Repository(Path))
-			{
-				repo.Merge(repo.Branches[branchName], Signature);
-			}
-		}
+        public void Pull()
+        {
+            using (var repo = new Repository(Path))
+            {
+                Remote remote = repo.Network.Remotes.Single();
+                Commands.Pull(repo, Signature, new PullOptions());
+            }
+        }
 
-		public void MergeWithTracked()
-		{
-			using (var repo = new Repository(Path))
-			{
-				repo.Merge(repo.Head.TrackedBranch, Signature);
-			}
-		}
+        public void Merge(string branchName)
+        {
+            using (var repo = new Repository(Path))
+            {
+                repo.Merge(repo.Branches[branchName], Signature);
+            }
+        }
 
-		public int Rebase(string ontoBranchName)
-		{
-			using (var repo = new Repository(Path))
-			{
-				var branch = repo.Head;
-				var target = repo.Branches[ontoBranchName];
+        public void MergeWithTracked()
+        {
+            using (var repo = new Repository(Path))
+            {
+                repo.Merge(repo.Head.TrackedBranch, Signature);
+            }
+        }
 
-				// ATTENTION:
-				// param "onto" should be null when just rebasing to the given upstream:
-				// https://libgit2.github.com/libgit2/#HEAD/group/rebase/git_rebase_init
-				Branch onto = null;
+        public int Rebase(string ontoBranchName)
+        {
+            using (var repo = new Repository(Path))
+            {
+                Branch branch = repo.Head;
+                Branch target = repo.Branches[ontoBranchName];
 
-				var result = repo.Rebase.Start(branch, target, onto, Identity, new RebaseOptions());
-				return (int)result.TotalStepCount;
-			}
-		}
+                // ATTENTION:
+                // param "onto" should be null when just rebasing to the given upstream:
+                // https://libgit2.github.com/libgit2/#HEAD/group/rebase/git_rebase_init
+                Branch onto = null;
 
-		public void Push()
-		{
-			using (var repo = new Repository(Path))
-			{
-				var remote = repo.Network.Remotes.Single();
-				repo.Network.Push(remote, repo.Head.CanonicalName, new PushOptions());
-			}
-		}
-		
-		internal void Checkout(string branch)
-		{
-			using (var repo = new Repository(Path))
-			{
-				Commands.Checkout(repo, branch);
-			}
-		}
+                RebaseResult result = repo.Rebase.Start(branch, target, onto, Identity, new RebaseOptions());
+                return (int)result.TotalStepCount;
+            }
+        }
 
-		public string Path { get; }
+        public void Push()
+        {
+            using (var repo = new Repository(Path))
+            {
+                Remote remote = repo.Network.Remotes.Single();
+                repo.Network.Push(remote, repo.Head.CanonicalName, new PushOptions());
+            }
+        }
 
-		protected Identity Identity => new Identity("John Doe", "johndoe@anywhe.re");
+        internal void Checkout(string branch)
+        {
+            using (var repo = new Repository(Path))
+            {
+                Commands.Checkout(repo, branch);
+            }
+        }
 
-		protected Signature Signature => new Signature(Identity, DateTimeOffset.Now);
+        public string Path { get; }
 
-		public string CurrentBranch
-		{
-			get
-			{
-				using (var repo = new Repository(Path))
-				{
-					return repo.Head.FriendlyName;
-				}
-			}
-		}
+        protected Identity Identity => new Identity("John Doe", "johndoe@anywhe.re");
 
-		public string HeadTip
-		{
-			get
-			{
-				using (var repo = new Repository(Path))
-				{
-					return repo.Head.Tip.Sha;
-				}
-			}
-		}
-	}
+        protected Signature Signature => new Signature(Identity, DateTimeOffset.Now);
+
+        public string CurrentBranch
+        {
+            get
+            {
+                using (var repo = new Repository(Path))
+                {
+                    return repo.Head.FriendlyName;
+                }
+            }
+        }
+
+        public string HeadTip
+        {
+            get
+            {
+                using (var repo = new Repository(Path))
+                {
+                    return repo.Head.Tip.Sha;
+                }
+            }
+        }
+    }
 }

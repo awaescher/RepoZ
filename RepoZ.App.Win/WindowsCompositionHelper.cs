@@ -1,101 +1,107 @@
-﻿using System;
-using System.Drawing.Printing;
-using System.Runtime.InteropServices;
-
 namespace RepoZ.App.Win
 {
-	public static class WindowsCompositionHelper
-	{
-		[DllImport("user32.dll")]
-		private static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
+    using System;
+    using System.Drawing.Printing;
+    using System.Runtime.InteropServices;
 
-		[DllImport("dwmapi.dll", PreserveSig = true)]
-		private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+    public static class WindowsCompositionHelper
+    {
+        [DllImport("user32.dll")]
+        private static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
 
-		[DllImport("dwmapi.dll")]
-		private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 
-		public static void EnableBlur(IntPtr hwnd)
-		{
-			try
-			{
-				var accent = new AccentPolicy();
-				var accentStructSize = Marshal.SizeOf(accent);
-				accent.AccentState = AccentState.ACCENT_ENABLE_BLURBEHIND;
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
 
-				var accentPtr = Marshal.AllocHGlobal(accentStructSize);
-				Marshal.StructureToPtr(accent, accentPtr, false);
+        public static void EnableBlur(IntPtr hwnd)
+        {
+            try
+            {
+                var accent = new AccentPolicy();
+                var accentStructSize = Marshal.SizeOf(accent);
+                accent.AccentState = AccentState.ACCENT_ENABLE_BLURBEHIND;
 
-				var data = new WindowCompositionAttributeData
-				{
-					Attribute = WindowCompositionAttribute.WCA_ACCENT_POLICY,
-					SizeOfData = accentStructSize,
-					Data = accentPtr
-				};
+                var accentPtr = Marshal.AllocHGlobal(accentStructSize);
+                Marshal.StructureToPtr(accent, accentPtr, false);
 
-				SetWindowCompositionAttribute(hwnd, ref data);
+                var data = new WindowCompositionAttributeData
+                    {
+                        Attribute = WindowCompositionAttribute.WCA_ACCENT_POLICY,
+                        SizeOfData = accentStructSize,
+                        Data = accentPtr,
+                    };
 
-				Marshal.FreeHGlobal(accentPtr);
-			}
-			catch (Exception)
-			{
-				// don't do anything in case this did not work. We won't have blur then ...
-			}
-		}
+                SetWindowCompositionAttribute(hwnd, ref data);
 
-		public static bool EnableDropShadow(IntPtr hwnd, Margins margins)
-		{
-			try
-			{
-				int val = 2;
-				int ret1 = DwmSetWindowAttribute(hwnd, 2, ref val, 4);
+                Marshal.FreeHGlobal(accentPtr);
+            }
+            catch (Exception)
+            {
+                // don't do anything in case this did not work. We won't have blur then ...
+            }
+        }
 
-				if (ret1 == 0)
-				{
-					Margins m = new Margins { Bottom = 0, Left = 0, Right = 0, Top = 0 };
-					int ret2 = DwmExtendFrameIntoClientArea(hwnd, ref m);
-					return ret2 == 0;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			catch (Exception)
-			{
-				return false;
-			}
-		}
-	}
+        public static bool EnableDropShadow(IntPtr hwnd, Margins margins)
+        {
+            try
+            {
+                int val = 2;
+                int ret1 = DwmSetWindowAttribute(hwnd, 2, ref val, 4);
 
-	internal enum AccentState
-	{
-		ACCENT_DISABLED = 1,
-		ACCENT_ENABLE_GRADIENT = 0,
-		ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
-		ACCENT_ENABLE_BLURBEHIND = 3,
-		ACCENT_INVALID_STATE = 4
-	}
+                if (ret1 == 0)
+                {
+                    var m = new Margins
+                        {
+                            Bottom = 0,
+                            Left = 0,
+                            Right = 0,
+                            Top = 0,
+                        };
+                    int ret2 = DwmExtendFrameIntoClientArea(hwnd, ref m);
+                    return ret2 == 0;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
 
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct AccentPolicy
-	{
-		public AccentState AccentState;
-		public int AccentFlags;
-		public int GradientColor;
-		public int AnimationId;
-	}
+    internal enum AccentState
+    {
+        ACCENT_DISABLED = 1,
+        ACCENT_ENABLE_GRADIENT = 0,
+        ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
+        ACCENT_ENABLE_BLURBEHIND = 3,
+        ACCENT_INVALID_STATE = 4,
+    }
 
-	[StructLayout(LayoutKind.Sequential)]
-	internal struct WindowCompositionAttributeData
-	{
-		public WindowCompositionAttribute Attribute;
-		public IntPtr Data;
-		public int SizeOfData;
-	}
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct AccentPolicy
+    {
+        public AccentState AccentState;
+        public int AccentFlags;
+        public int GradientColor;
+        public int AnimationId;
+    }
 
-	internal enum WindowCompositionAttribute
-	{
-		WCA_ACCENT_POLICY = 19
-	}
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct WindowCompositionAttributeData
+    {
+        public WindowCompositionAttribute Attribute;
+        public IntPtr Data;
+        public int SizeOfData;
+    }
+
+    internal enum WindowCompositionAttribute
+    {
+        WCA_ACCENT_POLICY = 19,
+    }
 }

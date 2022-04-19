@@ -1,87 +1,99 @@
-﻿using RepoZ.Api.Common;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-
 namespace RepoZ.Api.Git
 {
-	public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
-	{
-		private readonly ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
-		private readonly IThreadDispatcher _dispatcher;
+    using RepoZ.Api.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
 
-		public DefaultRepositoryInformationAggregator(StatusCompressor compressor, IThreadDispatcher dispatcher)
-		{
-			_dispatcher = dispatcher;
-		}
+    public class DefaultRepositoryInformationAggregator : IRepositoryInformationAggregator
+    {
+        private readonly ObservableCollection<RepositoryView> _dataSource = new ObservableCollection<RepositoryView>();
+        private readonly IThreadDispatcher _dispatcher;
 
-		public void Add(Repository repository)
-		{
-			_dispatcher.Invoke(() =>
-			{
-				var view = new RepositoryView(repository);
+        public DefaultRepositoryInformationAggregator(StatusCompressor compressor, IThreadDispatcher dispatcher)
+        {
+            _dispatcher = dispatcher;
+        }
 
-				_dataSource.Remove(view);
-				_dataSource.Add(view);
-			});
-		}
+        public void Add(Repository repository)
+        {
+            _dispatcher.Invoke(() =>
+                {
+                    var view = new RepositoryView(repository);
 
-		public void RemoveByPath(string path)
-		{
-			_dispatcher.Invoke(() =>
-			{
-				var viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
+                    _dataSource.Remove(view);
+                    _dataSource.Add(view);
+                });
+        }
 
-				for (int i = viewsToRemove.Length - 1; i >= 0; i--)
-					_dataSource.Remove(viewsToRemove[i]);
-			});
-		}
+        public void RemoveByPath(string path)
+        {
+            _dispatcher.Invoke(() =>
+                {
+                    RepositoryView[] viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-		public string GetStatusByPath(string path)
-		{
-			var view = GetRepositoryByPath(path);
-			return view?.BranchWithStatus;
-		}
+                    for (int i = viewsToRemove.Length - 1; i >= 0; i--)
+                    {
+                        _dataSource.Remove(viewsToRemove[i]);
+                    }
+                });
+        }
 
-		private RepositoryView GetRepositoryByPath(string path)
-		{
-			if (string.IsNullOrEmpty(path))
-				return null;
+        public string GetStatusByPath(string path)
+        {
+            RepositoryView view = GetRepositoryByPath(path);
+            return view?.BranchWithStatus;
+        }
 
-			List<RepositoryView> views = null;
-			try
-			{
-				views = _dataSource?.ToList();
-			}
-			catch (ArgumentException)
-			{ /* there are extremely rare threading issues with System.Array.Copy() here */ }
+        private RepositoryView GetRepositoryByPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
 
-			var hasAny = views?.Any() ?? false;
-			if (!hasAny)
-				return null;
+            List<RepositoryView> views = null;
+            try
+            {
+                views = _dataSource?.ToList();
+            }
+            catch (ArgumentException)
+            {
+                /* there are extremely rare threading issues with System.Array.Copy() here */
+            }
 
-			if (!path.EndsWith("\\", StringComparison.Ordinal))
-				path += "\\";
+            var hasAny = views?.Any() ?? false;
+            if (!hasAny)
+            {
+                return null;
+            }
 
-			var viewsByPath = views.Where(r => r?.Path != null && path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
+            if (!path.EndsWith("\\", StringComparison.Ordinal))
+            {
+                path += "\\";
+            }
 
-			if (!viewsByPath.Any())
-				return null;
+            IEnumerable<RepositoryView> viewsByPath = views.Where(r => r?.Path != null && path.StartsWith(r.Path, StringComparison.OrdinalIgnoreCase));
 
-			return viewsByPath.OrderByDescending(r => r.Path.Length).First();
-		}
+            if (!viewsByPath.Any())
+            {
+                return null;
+            }
 
-		public bool HasRepository(string path)
-		{
-			return GetRepositoryByPath(path) != null;
-		}
+            return viewsByPath.OrderByDescending(r => r.Path.Length).First();
+        }
 
-		public void Reset()
-		{
-			_dataSource.Clear();
-		}
+        public bool HasRepository(string path)
+        {
+            return GetRepositoryByPath(path) != null;
+        }
 
-		public ObservableCollection<RepositoryView> Repositories => _dataSource;
-	}
+        public void Reset()
+        {
+            _dataSource.Clear();
+        }
+
+        public ObservableCollection<RepositoryView> Repositories => _dataSource;
+    }
 }

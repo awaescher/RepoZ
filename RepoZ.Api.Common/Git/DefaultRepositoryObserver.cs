@@ -1,120 +1,123 @@
-﻿using RepoZ.Api.Git;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace RepoZ.Api.Common.Git
 {
-	public class DefaultRepositoryObserver : IRepositoryObserver
-	{
-		private Repository _repository;
-		private FileSystemWatcher _watcher;
-		private bool _ioDetected;
+    using RepoZ.Api.Git;
+    using System;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
 
-		public Action<Repository> OnChange { get; set; }
+    public class DefaultRepositoryObserver : IRepositoryObserver
+    {
+        private Repository _repository;
+        private FileSystemWatcher _watcher;
+        private bool _ioDetected;
 
-		public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
-		{
-			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        public Action<Repository> OnChange { get; set; }
 
-			_repository = repository;
+        public void Setup(Repository repository, int detectionToAlertDelayMilliseconds)
+        {
+            DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
-			_watcher = new FileSystemWatcher(_repository.Path);
-			_watcher.Created += _watcher_Created;
-			_watcher.Changed += _watcher_Changed;
-			_watcher.Deleted += _watcher_Deleted;
-			_watcher.Renamed += _watcher_Renamed;
-			_watcher.IncludeSubdirectories = true;
-		}
+            _repository = repository;
 
-		public void Start()
-		{
-			_watcher.EnableRaisingEvents = true;
-		}
+            _watcher = new FileSystemWatcher(_repository.Path);
+            _watcher.Created += WatcherCreated;
+            _watcher.Changed += WatcherChanged;
+            _watcher.Deleted += WatcherDeleted;
+            _watcher.Renamed += WatcherRenamed;
+            _watcher.IncludeSubdirectories = true;
+        }
 
-		public void Stop()
-		{
-			_watcher.EnableRaisingEvents = false;
-		}
+        public void Start()
+        {
+            _watcher.EnableRaisingEvents = true;
+        }
 
-		private void _watcher_Deleted(object sender, FileSystemEventArgs e)
-		{
-			PauseWatcherAndScheduleCallback();
-		}
+        public void Stop()
+        {
+            _watcher.EnableRaisingEvents = false;
+        }
 
-		private void _watcher_Renamed(object sender, RenamedEventArgs e)
-		{
-			PauseWatcherAndScheduleCallback();
-		}
+        private void WatcherDeleted(object sender, FileSystemEventArgs e)
+        {
+            PauseWatcherAndScheduleCallback();
+        }
 
-		private void _watcher_Changed(object sender, FileSystemEventArgs e)
-		{
-			PauseWatcherAndScheduleCallback();
-		}
+        private void WatcherRenamed(object sender, RenamedEventArgs e)
+        {
+            PauseWatcherAndScheduleCallback();
+        }
 
-		private void _watcher_Created(object sender, FileSystemEventArgs e)
-		{
-			PauseWatcherAndScheduleCallback();
-		}
+        private void WatcherChanged(object sender, FileSystemEventArgs e)
+        {
+            PauseWatcherAndScheduleCallback();
+        }
 
-		private void PauseWatcherAndScheduleCallback()
-		{
-			if (!_ioDetected)
-			{
-				_ioDetected = true;
+        private void WatcherCreated(object sender, FileSystemEventArgs e)
+        {
+            PauseWatcherAndScheduleCallback();
+        }
 
-				// stop the watcher once we found IO ...
-				Stop();
+        private void PauseWatcherAndScheduleCallback()
+        {
+            if (!_ioDetected)
+            {
+                _ioDetected = true;
 
-				// ... and schedule a method to reactivate the watchers again
-				// if nothing happened in between (regarding IO) it should also fire the OnChange-event
-				Task.Run(() =>
-					Thread.Sleep(DetectionToAlertDelayMilliseconds))
-					.ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected);
-			}
-		}
+                // stop the watcher once we found IO ...
+                Stop();
 
-		private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected(object state)
-		{
-			if (_ioDetected)
-			{
-				// reset the flag, wait for further IO ...
-				_ioDetected = false;
-				Start();
+                // ... and schedule a method to reactivate the watchers again
+                // if nothing happened in between (regarding IO) it should also fire the OnChange-event
+                Task.Run(() =>
+                        Thread.Sleep(DetectionToAlertDelayMilliseconds))
+                    .ContinueWith(AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected);
+            }
+        }
 
-				// ... and if nothing happened during the delay, invoke the OnChange-event
-				Task.Run(() =>
-					Thread.Sleep(DetectionToAlertDelayMilliseconds))
-					.ContinueWith(t =>
-					{
-						if (_ioDetected)
-							return;
+        private void AwakeWatcherAndScheduleEventInvocationIfNoFurtherIOGetsDetected(object state)
+        {
+            if (!_ioDetected)
+            {
+                return;
+            }
 
-						Console.WriteLine($"ONCHANGE on {_repository.Name}");
-						OnChange?.Invoke(_repository);
-					});
-			}
-		}
+            // reset the flag, wait for further IO ...
+            _ioDetected = false;
+            Start();
 
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+            // ... and if nothing happened during the delay, invoke the OnChange-event
+            Task.Run(() => Thread.Sleep(DetectionToAlertDelayMilliseconds))
+                .ContinueWith(t =>
+                    {
+                        if (_ioDetected)
+                        {
+                            return;
+                        }
 
-		public virtual void Dispose(bool disposing)
-		{
-			if (_watcher != null)
-			{
-				_watcher.Created -= _watcher_Created;
-				_watcher.Changed -= _watcher_Changed;
-				_watcher.Deleted -= _watcher_Deleted;
-				_watcher.Renamed -= _watcher_Renamed;
-				_watcher.Dispose();
-			}
-		}
+                        Console.WriteLine($"ONCHANGE on {_repository.Name}");
+                        OnChange?.Invoke(_repository);
+                    });
+        }
 
-		public int DetectionToAlertDelayMilliseconds { get; private set; }
-	}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            if (_watcher != null)
+            {
+                _watcher.Created -= WatcherCreated;
+                _watcher.Changed -= WatcherChanged;
+                _watcher.Deleted -= WatcherDeleted;
+                _watcher.Renamed -= WatcherRenamed;
+                _watcher.Dispose();
+            }
+        }
+
+        public int DetectionToAlertDelayMilliseconds { get; private set; }
+    }
 }

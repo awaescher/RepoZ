@@ -1,10 +1,10 @@
-using System;
-using System.Collections.Generic;
-using ExpressionStringEvaluator.VariableProviders;
-using RepoZ.Api.Git;
-
 namespace RepoZ.Api.Common.IO
 {
+    using System;
+    using System.Collections.Generic;
+    using ExpressionStringEvaluator.VariableProviders;
+    using RepoZ.Api.Git;
+
     public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repository>
     {
         private readonly Func<Repository, Dictionary<string, string>> _getRepoEnvironmentVariables;

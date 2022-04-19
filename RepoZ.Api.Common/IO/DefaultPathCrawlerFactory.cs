@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RepoZ.Api.IO;
-
 namespace RepoZ.Api.Common.IO
 {
-	public class DefaultPathCrawlerFactory : IPathCrawlerFactory
-	{
-		private readonly IPathSkipper _pathSkipper;
+    using RepoZ.Api.IO;
 
-		public DefaultPathCrawlerFactory(IPathSkipper pathSkipper)
-		{
-			_pathSkipper = pathSkipper;
-		}
+    public class DefaultPathCrawlerFactory : IPathCrawlerFactory
+    {
+        private readonly IPathSkipper _pathSkipper;
 
-		public IPathCrawler Create() => new GravellPathCrawler(_pathSkipper);
-	}
+        public DefaultPathCrawlerFactory(IPathSkipper pathSkipper)
+        {
+            _pathSkipper = pathSkipper;
+        }
+
+        public IPathCrawler Create()
+        {
+            return new GravellPathCrawler(_pathSkipper);
+        }
+    }
 }

@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using RepoZ.Api.Git;
-
 namespace Specs.Mocks
 {
-	internal class UselessRepositoryStore : IRepositoryStore
-	{
-		public IEnumerable<string> Get() => new string[0];
+    using System.Collections.Generic;
+    using RepoZ.Api.Git;
+    using System;
 
-		public void Set(IEnumerable<string> paths)
-		{
-		}
-	}
+    internal class UselessRepositoryStore : IRepositoryStore
+    {
+        public IEnumerable<string> Get()
+        {
+            return Array.Empty<string>();
+        }
+
+        public void Set(IEnumerable<string> paths) { }
+    }
 }

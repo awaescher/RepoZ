@@ -1,11 +1,11 @@
-﻿namespace RepoZ.Api.Git
+namespace RepoZ.Api.Git
 {
-	public interface IRepositoryIgnoreStore
-	{
-		void IgnoreByPath(string path);
+    public interface IRepositoryIgnoreStore
+    {
+        void IgnoreByPath(string path);
 
-		bool IsIgnored(string path);
+        bool IsIgnored(string path);
 
-		void Reset();
-	}
+        void Reset();
+    }
 }

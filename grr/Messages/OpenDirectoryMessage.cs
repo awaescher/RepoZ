@@ -1,27 +1,34 @@
-﻿using RepoZ.Ipc;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-
 namespace grr.Messages
 {
-	[System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
-	public class OpenDirectoryMessage : DirectoryMessage
-	{
-		public OpenDirectoryMessage(RepositoryFilterOptions filter)
-			: base(filter)
-		{
-		}
+    using RepoZ.Ipc;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
 
-		protected override void ExecuteExistingDirectory(string directory)
-		{
-			var directoryInQuotes = $"\"{directory}\"";
+    [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
+    public class OpenDirectoryMessage : DirectoryMessage
+    {
+        public OpenDirectoryMessage(RepositoryFilterOptions filter)
+            : base(filter)
+        {
+        }
 
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true });
-			else
-				Process.Start(new ProcessStartInfo("open", directoryInQuotes));
-		}
+        protected override void ExecuteExistingDirectory(string directory)
+        {
+            var directoryInQuotes = $"\"{directory}\"";
 
-		public override bool ShouldWriteRepositories(Repository[] repositories) => true;
-	}
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true });
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo("open", directoryInQuotes));
+            }
+        }
+
+        public override bool ShouldWriteRepositories(Repository[] repositories)
+        {
+            return true;
+        }
+    }
 }

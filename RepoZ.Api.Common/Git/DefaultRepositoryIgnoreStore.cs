@@ -1,73 +1,77 @@
-﻿using RepoZ.Api.Git;
-using RepoZ.Api.IO;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-
 namespace RepoZ.Api.Common.Git
 {
-	public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
-	{
-		private List<string> _ignores = null;
-		private IEnumerable<IgnoreRule> _rules;
-		private readonly object _lock = new object();
+    using RepoZ.Api.Git;
+    using RepoZ.Api.IO;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
 
-		public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
-			: base(errorHandler)
-		{
-			AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
-		}
+    public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
+    {
+        private List<string> _ignores = null;
+        private IEnumerable<IgnoreRule> _rules;
+        private readonly object _lock = new object();
 
-		public override string GetFileName() => Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");
+        public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
+            : base(errorHandler)
+        {
+            AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        }
 
-		public void IgnoreByPath(string path)
-		{
-			Ignores.Add(path);
-			UpdateRules();
+        public override string GetFileName()
+        {
+            return Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");
+        }
 
-			Set(Ignores);
-		}
+        public void IgnoreByPath(string path)
+        {
+            Ignores.Add(path);
+            UpdateRules();
 
-		public bool IsIgnored(string path)
-		{
-			if (_rules is null)
-				UpdateRules();
+            Set(Ignores);
+        }
 
-			return _rules.Any(r => r.IsIgnored(path));
-		}
+        public bool IsIgnored(string path)
+        {
+            if (_rules is null)
+            {
+                UpdateRules();
+            }
 
-		public void Reset()
-		{
-			Ignores.Clear();
-			UpdateRules();
+            return _rules.Any(r => r.IsIgnored(path));
+        }
 
-			Set(Ignores);
-		}
+        public void Reset()
+        {
+            Ignores.Clear();
+            UpdateRules();
 
-		private List<string> Ignores
-		{
-			get
-			{
-				if (_ignores == null)
-				{
-					lock (_lock)
-					{
-						_ignores = Get()?.ToList() ?? new List<string>();
-						UpdateRules();
-					}
-				}
+            Set(Ignores);
+        }
 
-				return _ignores;
-			}
-		}
+        private List<string> Ignores
+        {
+            get
+            {
+                if (_ignores == null)
+                {
+                    lock (_lock)
+                    {
+                        _ignores = Get()?.ToList() ?? new List<string>();
+                        UpdateRules();
+                    }
+                }
 
-		private void UpdateRules()
-		{
-			_rules = Ignores.Select(i => new IgnoreRule(i));
-		}
+                return _ignores;
+            }
+        }
 
-		public IAppDataPathProvider AppDataPathProvider { get; }
-	}
+        private void UpdateRules()
+        {
+            _rules = Ignores.Select(i => new IgnoreRule(i));
+        }
+
+        public IAppDataPathProvider AppDataPathProvider { get; }
+    }
 }

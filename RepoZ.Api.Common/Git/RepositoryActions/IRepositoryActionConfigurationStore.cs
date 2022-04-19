@@ -1,15 +1,15 @@
-﻿using RepoZ.Api.Git;
-
 namespace RepoZ.Api.Common.Git
 {
-	public interface IRepositoryActionConfigurationStore
-	{
-		void Preload();
+    using RepoZ.Api.Git;
 
-		RepositoryActionConfiguration RepositoryActionConfiguration { get; }
+    public interface IRepositoryActionConfigurationStore
+    {
+        void Preload();
 
-		RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo);
+        RepositoryActionConfiguration RepositoryActionConfiguration { get; }
 
-		RepositoryActionConfiguration LoadRepositoryActionConfiguration(string filename);
-	}
+        RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo);
+
+        RepositoryActionConfiguration LoadRepositoryActionConfiguration(string filename);
+    }
 }

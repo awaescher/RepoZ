@@ -1,8 +1,9 @@
-﻿namespace RepoZ.Api.Common.Common
+namespace RepoZ.Api.Common.Common
 {
-	public interface ITranslationService
-	{
-		string Translate(string value);
-		string Translate(string value, params object[] args);
-	}
+    public interface ITranslationService
+    {
+        string Translate(string value);
+
+        string Translate(string value, params object[] args);
+    }
 }

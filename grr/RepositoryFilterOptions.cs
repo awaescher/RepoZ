@@ -1,21 +1,19 @@
-﻿using CommandLine;
-
-namespace grr
+﻿namespace grr
 {
-	public class RepositoryFilterOptions
-	{
-		[Value(0)]
-		public string RepositoryFilter { get; set; }
+    using CommandLine;
 
-		[Value(1)]
-		public string FileFilter { get; set; }
+    public class RepositoryFilterOptions
+    {
+        [Value(0)] public string RepositoryFilter { get; set; }
 
-		[Option('r', "recursive", Default = false, HelpText = "Defines whether the file filter should be applied recursively or not.")]
-		public bool RecursiveFileFilter { get; set; }
+        [Value(1)] public string FileFilter { get; set; }
 
-		[Option('e', "elevated", Default = false, HelpText = "Defines whether the files should be opened in an elevated context or not.")]
-		public bool RequestElevation { get; set; }
+        [Option('r', "recursive", Default = false, HelpText = "Defines whether the file filter should be applied recursively or not.")]
+        public bool RecursiveFileFilter { get; set; }
 
-		public bool HasFileFilter => !string.IsNullOrWhiteSpace(FileFilter);
-	}
+        [Option('e', "elevated", Default = false, HelpText = "Defines whether the files should be opened in an elevated context or not.")]
+        public bool RequestElevation { get; set; }
+
+        public bool HasFileFilter => !string.IsNullOrWhiteSpace(FileFilter);
+    }
 }

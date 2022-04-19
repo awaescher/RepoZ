@@ -1,7 +1,7 @@
-﻿namespace RepoZ.Api.IO
+namespace RepoZ.Api.IO
 {
-	public interface IPathSkipper
-	{
-		bool ShouldSkip(string path);
-	}
+    public interface IPathSkipper
+    {
+        bool ShouldSkip(string path);
+    }
 }

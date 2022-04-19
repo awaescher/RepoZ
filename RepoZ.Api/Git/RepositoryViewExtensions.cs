@@ -1,45 +1,68 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-
 namespace RepoZ.Api.Git
 {
-	public static class RepositoryViewExtensions
-	{
-		public static bool MatchesRegexFilter(this IRepositoryView repositoryView, string pattern) => MatchesFilter(repositoryView, pattern, useRegex: true);
+    using System;
+    using System.Text.RegularExpressions;
 
-		public static bool MatchesFilter(this IRepositoryView repositoryView, string filter) => MatchesFilter(repositoryView, filter, useRegex: false);
+    public static class RepositoryViewExtensions
+    {
+        public static bool MatchesRegexFilter(this IRepositoryView repositoryView, string pattern)
+        {
+            return MatchesFilter(repositoryView, pattern, useRegex: true);
+        }
 
-		private static bool MatchesFilter(IRepositoryView repositoryView, string filter, bool useRegex)
-		{
-			if (string.IsNullOrEmpty(filter))
-				return true;
+        public static bool MatchesFilter(this IRepositoryView repositoryView, string filter)
+        {
+            return MatchesFilter(repositoryView, filter, useRegex: false);
+        }
 
-			if (filter.Replace(".*", "").Equals("todo", StringComparison.OrdinalIgnoreCase))
-				return repositoryView.HasUnpushedChanges;
+        private static bool MatchesFilter(IRepositoryView repositoryView, string filter, bool useRegex)
+        {
+            if (string.IsNullOrEmpty(filter))
+            {
+                return true;
+            }
 
-			string filterProperty = null;
+            if (filter.Replace(".*", "").Equals("todo", StringComparison.OrdinalIgnoreCase))
+            {
+                return repositoryView.HasUnpushedChanges;
+            }
 
-			// note, these are used in grr.RegexFilter as well
-			if (filter.StartsWith("n ", StringComparison.OrdinalIgnoreCase))
-				filterProperty = repositoryView.Name;
-			else if (filter.StartsWith("b ", StringComparison.OrdinalIgnoreCase))
-				filterProperty = repositoryView.CurrentBranch;
-			else if (filter.StartsWith("p ", StringComparison.OrdinalIgnoreCase))
-				filterProperty = repositoryView.Path;
-			if (filterProperty == null)
-				filterProperty = repositoryView.Name;
-			else
-				filter = filter.Substring(2);
+            string filterProperty = null;
 
-			if (string.IsNullOrEmpty(filter))
-				return true;
+            // note, these are used in grr.RegexFilter as well
+            if (filter.StartsWith("n ", StringComparison.OrdinalIgnoreCase))
+            {
+                filterProperty = repositoryView.Name;
+            }
+            else if (filter.StartsWith("b ", StringComparison.OrdinalIgnoreCase))
+            {
+                filterProperty = repositoryView.CurrentBranch;
+            }
+            else if (filter.StartsWith("p ", StringComparison.OrdinalIgnoreCase))
+            {
+                filterProperty = repositoryView.Path;
+            }
 
-			if (useRegex)
-				return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
+            if (filterProperty == null)
+            {
+                filterProperty = repositoryView.Name;
+            }
+            else
+            {
+                filter = filter.Substring(2);
+            }
 
-			return filterProperty?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
-		}
-	}
+            if (string.IsNullOrEmpty(filter))
+            {
+                return true;
+            }
+
+            if (useRegex)
+            {
+                return Regex.IsMatch(filterProperty, filter, RegexOptions.IgnoreCase);
+            }
+
+            return filterProperty?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) > -1;
+        }
+    }
 }

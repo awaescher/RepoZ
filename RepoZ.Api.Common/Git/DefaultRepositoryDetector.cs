@@ -1,131 +1,148 @@
-﻿using RepoZ.Api.Git;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
 namespace RepoZ.Api.Common.Git
 {
-	public class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
-	{
-		private const string HEAD_LOG_FILE = @".git\logs\HEAD";
+    using RepoZ.Api.Git;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
-		private FileSystemWatcher _watcher;
-		private readonly IRepositoryReader _repositoryReader;
+    public class DefaultRepositoryDetector : IRepositoryDetector, IDisposable
+    {
+        private const string HEAD_LOG_FILE = @".git\logs\HEAD";
 
-		public DefaultRepositoryDetector(IRepositoryReader repositoryReader)
-		{
-			_repositoryReader = repositoryReader;
-		}
+        private FileSystemWatcher _watcher;
+        private readonly IRepositoryReader _repositoryReader;
 
-		public Action<Repository> OnAddOrChange { get; set; }
-		public Action<string> OnDelete { get; set; }
+        public DefaultRepositoryDetector(IRepositoryReader repositoryReader)
+        {
+            _repositoryReader = repositoryReader;
+        }
 
-		public void Setup(string path, int detectionToAlertDelayMilliseconds)
-		{
-			DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
+        public Action<Repository> OnAddOrChange { get; set; }
+        public Action<string> OnDelete { get; set; }
 
-			_watcher = new FileSystemWatcher(path);
-			_watcher.Created += _watcher_Created;
-			_watcher.Changed += _watcher_Changed;
-			_watcher.Deleted += _watcher_Deleted;
-			_watcher.Renamed += _watcher_Renamed;
-			_watcher.IncludeSubdirectories = true;
-		}
+        public void Setup(string path, int detectionToAlertDelayMilliseconds)
+        {
+            DetectionToAlertDelayMilliseconds = detectionToAlertDelayMilliseconds;
 
-		public void Start()
-		{
-			_watcher.EnableRaisingEvents = true;
-		}
+            _watcher = new FileSystemWatcher(path);
+            _watcher.Created += WatcherCreated;
+            _watcher.Changed += WatcherChanged;
+            _watcher.Deleted += WatcherDeleted;
+            _watcher.Renamed += WatcherRenamed;
+            _watcher.IncludeSubdirectories = true;
+        }
 
-		public void Stop()
-		{
-			_watcher.EnableRaisingEvents = false;
-		}
+        public void Start()
+        {
+            _watcher.EnableRaisingEvents = true;
+        }
 
-		private void _watcher_Deleted(object sender, FileSystemEventArgs e)
-		{
-			if (!IsHead(e.FullPath))
-				return;
+        public void Stop()
+        {
+            _watcher.EnableRaisingEvents = false;
+        }
 
-			NotifyHeadDeletion(e.FullPath);
-		}
+        private void WatcherDeleted(object sender, FileSystemEventArgs e)
+        {
+            if (!IsHead(e.FullPath))
+            {
+                return;
+            }
 
-		private void _watcher_Renamed(object sender, RenamedEventArgs e)
-		{
-			if (!IsHead(e.OldFullPath))
-				return;
+            NotifyHeadDeletion(e.FullPath);
+        }
 
-			NotifyHeadDeletion(e.OldFullPath);
-		}
+        private void WatcherRenamed(object sender, RenamedEventArgs e)
+        {
+            if (!IsHead(e.OldFullPath))
+            {
+                return;
+            }
 
-		private void _watcher_Changed(object sender, FileSystemEventArgs e)
-		{
-			if (!IsHead(e.FullPath))
-				return;
+            NotifyHeadDeletion(e.OldFullPath);
+        }
 
-			EatRepo(e.FullPath);
-		}
+        private void WatcherChanged(object sender, FileSystemEventArgs e)
+        {
+            if (!IsHead(e.FullPath))
+            {
+                return;
+            }
 
-		private void _watcher_Created(object sender, FileSystemEventArgs e)
-		{
-			if (!IsHead(e.FullPath))
-				return;
+            EatRepo(e.FullPath);
+        }
 
-			Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
-				.ContinueWith(t => EatRepo(e.FullPath));
-		}
+        private void WatcherCreated(object sender, FileSystemEventArgs e)
+        {
+            if (!IsHead(e.FullPath))
+            {
+                return;
+            }
 
-		private bool IsHead(string path)
-		{
-			int index = GetGitPathEndFromHeadFile(path);
-			return index == (path.Length - HEAD_LOG_FILE.Length);
-		}
+            Task.Run(() => Task.Delay(DetectionToAlertDelayMilliseconds))
+                .ContinueWith(t => EatRepo(e.FullPath));
+        }
 
-		private string GetRepositoryPathFromHead(string headFile)
-		{
-			int end = GetGitPathEndFromHeadFile(headFile);
+        private bool IsHead(string path)
+        {
+            var index = GetGitPathEndFromHeadFile(path);
+            return index == (path.Length - HEAD_LOG_FILE.Length);
+        }
 
-			if (end < 0)
-				return string.Empty;
+        private string GetRepositoryPathFromHead(string headFile)
+        {
+            var end = GetGitPathEndFromHeadFile(headFile);
 
-			return headFile.Substring(0, end);
-		}
+            if (end < 0)
+            {
+                return string.Empty;
+            }
 
-		private int GetGitPathEndFromHeadFile(string path) => path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
+            return headFile.Substring(0, end);
+        }
 
-		private void EatRepo(string path)
-		{
-			var repo = _repositoryReader.ReadRepository(path);
+        private int GetGitPathEndFromHeadFile(string path)
+        {
+            return path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
+        }
 
-			if (repo?.WasFound ?? false)
-				OnAddOrChange?.Invoke(repo);
-		}
+        private void EatRepo(string path)
+        {
+            Repository repo = _repositoryReader.ReadRepository(path);
 
-		private void NotifyHeadDeletion(string headFile)
-		{
-			string path = GetRepositoryPathFromHead(headFile);
-			if (!string.IsNullOrEmpty(path))
-				OnDelete?.Invoke(path);
-		}
+            if (repo?.WasFound ?? false)
+            {
+                OnAddOrChange?.Invoke(repo);
+            }
+        }
 
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        private void NotifyHeadDeletion(string headFile)
+        {
+            var path = GetRepositoryPathFromHead(headFile);
+            if (!string.IsNullOrEmpty(path))
+            {
+                OnDelete?.Invoke(path);
+            }
+        }
 
-		protected virtual void Dispose(bool disposing)
-		{
-			if (_watcher != null)
-			{
-				_watcher.Created -= _watcher_Created;
-				_watcher.Changed -= _watcher_Changed;
-				_watcher.Deleted -= _watcher_Deleted;
-				_watcher.Renamed -= _watcher_Renamed;
-				_watcher.Dispose();
-			}
-		}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-		public int DetectionToAlertDelayMilliseconds { get; private set; }
-	}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_watcher != null)
+            {
+                _watcher.Created -= WatcherCreated;
+                _watcher.Changed -= WatcherChanged;
+                _watcher.Deleted -= WatcherDeleted;
+                _watcher.Renamed -= WatcherRenamed;
+                _watcher.Dispose();
+            }
+        }
+
+        public int DetectionToAlertDelayMilliseconds { get; private set; }
+    }
 }

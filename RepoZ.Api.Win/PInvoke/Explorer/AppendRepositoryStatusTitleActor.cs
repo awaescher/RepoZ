@@ -1,35 +1,35 @@
-﻿using RepoZ.Api.Git;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RepoZ.Api.Win.PInvoke.Explorer
 {
-	public class AppendRepositoryStatusTitleActor : ExplorerWindowActor
-	{
-		private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
+    using RepoZ.Api.Git;
+    using System;
 
-		public AppendRepositoryStatusTitleActor(IRepositoryInformationAggregator repositoryInfoAggregator)
-		{
-			_repositoryInfoAggregator = repositoryInfoAggregator;
-		}
+    public class AppendRepositoryStatusTitleActor : ExplorerWindowActor
+    {
+        private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
 
-		protected override void Act(IntPtr hwnd, string explorerLocationUrl)
-		{
-			if (!string.IsNullOrEmpty(explorerLocationUrl))
-			{
-				string path = new Uri(explorerLocationUrl).LocalPath;
+        public AppendRepositoryStatusTitleActor(IRepositoryInformationAggregator repositoryInfoAggregator)
+        {
+            _repositoryInfoAggregator = repositoryInfoAggregator;
+        }
 
-				string status = _repositoryInfoAggregator.GetStatusByPath(path);
+        protected override void Act(IntPtr hwnd, string explorerLocationUrl)
+        {
+            if (string.IsNullOrEmpty(explorerLocationUrl))
+            {
+                return;
+            }
 
-				if (!string.IsNullOrEmpty(status))
-				{
-					string separator = "  [";
-					WindowHelper.AppendWindowText(hwnd, separator, status + "]");
-				}
-			}
-		}
-	}
+            var path = new Uri(explorerLocationUrl).LocalPath;
+
+            var status = _repositoryInfoAggregator.GetStatusByPath(path);
+
+            if (string.IsNullOrEmpty(status))
+            {
+                return;
+            }
+
+            var separator = "  [";
+            WindowHelper.AppendWindowText(hwnd, separator, status + "]");
+        }
+    }
 }

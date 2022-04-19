@@ -1,18 +1,18 @@
-﻿using System;
-using RepoZ.Api.Common.Git.AutoFetch;
-
 namespace RepoZ.Api.Common.Common
 {
-	public interface IAppSettingsService
-	{
-		AutoFetchMode AutoFetchMode { get; set; }
+    using System;
+    using RepoZ.Api.Common.Git.AutoFetch;
 
-		bool PruneOnFetch { get; set; }
+    public interface IAppSettingsService
+    {
+        AutoFetchMode AutoFetchMode { get; set; }
 
-        Double MenuWidth { get; set; }
+        bool PruneOnFetch { get; set; }
 
-        Double MenuHeight { get; set; }
+        double MenuWidth { get; set; }
 
-		void RegisterInvalidationHandler(Action handler);
-	}
+        double MenuHeight { get; set; }
+
+        void RegisterInvalidationHandler(Action handler);
+    }
 }

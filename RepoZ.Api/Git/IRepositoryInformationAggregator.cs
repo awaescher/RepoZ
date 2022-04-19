@@ -1,19 +1,19 @@
-﻿using System.Collections.ObjectModel;
-
 namespace RepoZ.Api.Git
 {
-	public interface IRepositoryInformationAggregator
-	{
-		void Add(Repository repository);
+    using System.Collections.ObjectModel;
 
-		void RemoveByPath(string path);
+    public interface IRepositoryInformationAggregator
+    {
+        void Add(Repository repository);
 
-		string GetStatusByPath(string path);
+        void RemoveByPath(string path);
 
-		ObservableCollection<RepositoryView> Repositories { get; }
+        string GetStatusByPath(string path);
 
-		void Reset();
+        ObservableCollection<RepositoryView> Repositories { get; }
 
-		bool HasRepository(string path);
-	}
+        void Reset();
+
+        bool HasRepository(string path);
+    }
 }

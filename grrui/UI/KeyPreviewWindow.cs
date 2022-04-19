@@ -1,34 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using Terminal.Gui;
-
 namespace grrui.UI
 {
-	public class KeyPreviewWindow : Window
-	{
-		private Dictionary<Key, Action> _keyActions = new Dictionary<Key, Action>();
+    using System;
+    using System.Collections.Generic;
+    using Terminal.Gui;
 
-		public KeyPreviewWindow(NStack.ustring title)
-			: base(title)
-		{
-		}
+    public class KeyPreviewWindow : Window
+    {
+        private readonly Dictionary<Key, Action> _keyActions = new Dictionary<Key, Action>();
 
-		public KeyPreviewWindow(NStack.ustring title, int padding)
-			: base(title, padding)
-		{
-		}
+        public KeyPreviewWindow(NStack.ustring title)
+            : base(title)
+        {
+        }
 
-		public override bool ProcessKey(KeyEvent keyEvent)
-		{
-			if (_keyActions.TryGetValue(keyEvent.Key, out Action action))
-				action.Invoke();
+        public KeyPreviewWindow(NStack.ustring title, int padding)
+            : base(title, padding)
+        {
+        }
 
-			return base.ProcessKey(keyEvent);
-		}
+        public override bool ProcessKey(KeyEvent keyEvent)
+        {
+            if (_keyActions.TryGetValue(keyEvent.Key, out Action action))
+            {
+                action.Invoke();
+            }
 
-		public void DefineKeyAction(Key key, Action action)
-		{
-			_keyActions[key] = action;
-		}
-	}
+            return base.ProcessKey(keyEvent);
+        }
+
+        public void DefineKeyAction(Key key, Action action)
+        {
+            _keyActions[key] = action;
+        }
+    }
 }

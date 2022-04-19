@@ -1,32 +1,28 @@
-﻿using RepoZ.Api.Common;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-
 namespace RepoZ.App.Win.Converters
 {
-	public class UtcToHumanizedLocalDateTimeConverter : IValueConverter
-	{
-		public UtcToHumanizedLocalDateTimeConverter()
-		{
-			Humanizer = new HardcodededMiniHumanizer();
-		}
+    using RepoZ.Api.Common;
+    using System;
+    using System.Globalization;
+    using System.Windows.Data;
 
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			var date = DateTime.SpecifyKind(DateTime.Parse(value.ToString()), DateTimeKind.Utc).ToLocalTime();
-			return Humanizer.HumanizeTimestamp(date);
-		}
+    public class UtcToHumanizedLocalDateTimeConverter : IValueConverter
+    {
+        public UtcToHumanizedLocalDateTimeConverter()
+        {
+            Humanizer = new HardcodededMiniHumanizer();
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            DateTime date = DateTime.SpecifyKind(DateTime.Parse(value.ToString()), DateTimeKind.Utc).ToLocalTime();
+            return Humanizer.HumanizeTimestamp(date);
+        }
 
-		public IHumanizer Humanizer { get; }
-	}
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHumanizer Humanizer { get; }
+    }
 }

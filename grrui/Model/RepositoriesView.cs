@@ -1,54 +1,58 @@
-﻿using RepoZ.Api.Git;
-using RepoZ.Ipc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace grrui.Model
 {
-	public class RepositoriesView
-	{
-		private const int MAX_REPO_NAME_LENGTH = 35;
-		private static StatusCharacterMap _map;
-		private RepositoryView[] _repositoryViews;
+    using RepoZ.Api.Git;
+    using RepoZ.Ipc;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Repository = RepoZ.Ipc.Repository;
 
-		public RepositoriesView(IEnumerable<RepoZ.Ipc.Repository> repositories)
-		{
-			var repositoryCount = repositories.Count();
-			_repositoryViews = new RepositoryView[repositoryCount];
+    public class RepositoriesView
+    {
+        private const int MAX_REPO_NAME_LENGTH = 35;
+        private readonly RepositoryView[] _repositoryViews;
 
-			_map = new StatusCharacterMap();
+        public RepositoriesView(IEnumerable<RepoZ.Ipc.Repository> repositories)
+        {
+            Repository[] repos = repositories as Repository[] ?? repositories.ToArray();
 
-			var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, repositories.Max(r => r.Name?.Length ?? 0));
-			var maxIndexStringLength = repositoryCount.ToString().Length;
-			var writeIndex = repositoryCount > 1;
+            var repositoryCount = repos.Length;
+            _repositoryViews = new RepositoryView[repositoryCount];
 
-			for (int i = 0; i < repositoryCount; i++)
-			{
-				var userIndex = i + 1; // the index visible to the user is 1-based, not 0-based;
-				var repository = repositories.ElementAt(i);
+            var map = new StatusCharacterMap();
 
-				string repoName = (repository.Name.Length > MAX_REPO_NAME_LENGTH)
-					? repository.Name.Substring(0, MAX_REPO_NAME_LENGTH) + _map.EllipsesSign
-					: repository.Name;
+            var maxRepoNameLength = Math.Min(MAX_REPO_NAME_LENGTH, repos.Max(r => r.Name?.Length ?? 0));
+            var maxIndexStringLength = repositoryCount.ToString().Length;
+            var writeIndex = repositoryCount > 1;
 
-				var index = "";
-				if (writeIndex)
-					index = $"[{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ";
+            for (var i = 0; i < repositoryCount; i++)
+            {
+                var userIndex = i + 1; // the index visible to the user is 1-based, not 0-based;
+                Repository repository = repos.ElementAt(i);
 
-				var name = repoName.PadRight(maxRepoNameLength + 3);
-				var branch = repository.BranchWithStatus;
+                var repoName = (repository.Name.Length > MAX_REPO_NAME_LENGTH)
+                    ? repository.Name.Substring(0, MAX_REPO_NAME_LENGTH) + map.EllipsesSign
+                    : repository.Name;
 
-				var displayText = index + name + branch;
+                var index = "";
+                if (writeIndex)
+                {
+                    index = $"[{userIndex.ToString().PadLeft(maxIndexStringLength)}]  ";
+                }
 
-				_repositoryViews[i] = new RepositoryView(repository) { DisplayText = displayText };
-			}
-		}
+                var name = repoName.PadRight(maxRepoNameLength + 3);
+                var branch = repository.BranchWithStatus;
 
-		public RepositoryView[] Repositories => _repositoryViews
-			.Where(r => r.MatchesFilter(Filter ?? ""))
-			.ToArray();
+                var displayText = index + name + branch;
 
-		public string Filter { get; set; }
-	}
+                _repositoryViews[i] = new RepositoryView(repository) { DisplayText = displayText };
+            }
+        }
+
+        public RepositoryView[] Repositories => _repositoryViews
+                                                .Where(r => r.MatchesFilter(Filter ?? string.Empty))
+                                                .ToArray();
+
+        public string Filter { get; set; }
+    }
 }
