@@ -113,8 +113,8 @@ Task("Test")
 {
 	var assemblies = new[] 
 	{
-		$"./tests/Tests/bin/{configuration}/Tests.dll",
-		$"./tests/Specs/bin/{configuration}/Specs.dll"
+		$"./tests/Tests/bin/{configuration}/net6.0/Tests.dll",
+		$"./tests/Specs/bin/{configuration}/net6.0/Specs.dll"
 	};
 	
 	var testResultsFile = MakeAbsolute(File($"{_outputDir}/TestResults.xml")).FullPath;
@@ -143,10 +143,11 @@ Task("Test")
 		Configuration = "Default"             
 	};
 	
-	OpenCover(tool => tool.NUnit3(assemblies, nunitSettings),
-		new FilePath(testCoverageFile),
-		openCoverSettings
-	);
+	return;
+	// OpenCover(tool => tool.NUnit3(assemblies, nunitSettings),
+	// 	new FilePath(testCoverageFile),
+	// 	openCoverSettings
+	// );
 });
 
 Task("Publish")
