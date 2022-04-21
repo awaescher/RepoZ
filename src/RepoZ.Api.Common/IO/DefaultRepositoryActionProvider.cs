@@ -213,13 +213,14 @@ namespace RepoZ.Api.Common.IO
                                                                                              Name = _translationService.Translate("Remote branches"),
                                                                                              DeferredSubActionsEnumerator = () =>
                                                                                                  {
-                                                                                                     var remoteBranches = singleRepository.ReadAllBranches().Select(branch => new RepositoryAction()
-                                                                                                         {
-                                                                                                             Name = branch,
-                                                                                                             Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-                                                                                                             CanExecute = !singleRepository.CurrentBranch.Equals(branch,
-                                                                                                                 StringComparison.OrdinalIgnoreCase),
-                                                                                                         }).ToArray();
+                                                                                                     var remoteBranches = singleRepository.ReadAllBranches()
+                                                                                                         .Select(branch => new RepositoryAction()
+                                                                                                             {
+                                                                                                                 Name = branch,
+                                                                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+                                                                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
+                                                                                                             })
+                                                                                                         .ToArray();
 
                                                                                                      if (remoteBranches.Any())
                                                                                                      {
@@ -235,8 +236,7 @@ namespace RepoZ.Api.Common.IO
                                                                                                                  },
                                                                                                              new RepositoryAction()
                                                                                                                  {
-                                                                                                                     Name = _translationService.Translate(
-                                                                                                                         "Try to fetch changes if you're expecting remote branches"),
+                                                                                                                     Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"),
                                                                                                                      CanExecute = false,
                                                                                                                  },
                                                                                                          };
@@ -341,10 +341,139 @@ namespace RepoZ.Api.Common.IO
 
         private RepositoryAction CreateProcessRunnerAction(RepositoryActionConfiguration.RepositoryAction action, Repository repository, bool beginGroup = false)
         {
+            var type = action.Type;
             var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
             var command = ReplaceVariables(action.Command, repository);
             var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
             var arguments = ReplaceVariables(action.Arguments, repository);
+
+            if ("external commandline provider".Equals(type, StringComparison.CurrentCultureIgnoreCase))
+            {
+                return new RepositoryAction()
+                {
+                    Name = name,
+                    ExecutionCausesSynchronizing = true,
+                    DeferredSubActionsEnumerator = () =>
+                    {
+                        try
+                        {
+                            var specificRepoEnvValues = new Dictionary<string, string>();
+                            var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
+
+                            if (File.Exists(repozEnvFile))
+                            {
+                                var envVars = DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false));
+                                specificRepoEnvValues = envVars.ToDictionary();
+                            }
+
+                            var psi = new ProcessStartInfo(command, arguments)
+                            {
+                                WorkingDirectory = new FileInfo(command).DirectoryName,
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                WindowStyle = ProcessWindowStyle.Hidden,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                            };
+
+                            foreach (KeyValuePair<string, string> item in specificRepoEnvValues)
+                            {
+                                psi.EnvironmentVariables.Add(item.Key, item.Value);
+                            }
+
+                            var proc = Process.Start(psi);
+                            if (proc == null)
+                            {
+                                return new RepositoryAction[]
+                                    {
+                                        new RepositoryAction() { Name = _translationService.Translate("Could not start process"), CanExecute = false, },
+                                    };
+                            }
+                            else
+                            {
+                                proc.WaitForExit(7500);
+                                if (proc.HasExited)
+                                {
+                                    if (proc.ExitCode == 0)
+                                    {
+                                        var json = proc.StandardOutput.ReadToEnd();
+
+                                        var actionMenu = _repositoryActionConfigurationStore.LoadRepositoryActionConfigurationFromJson(json);
+                                        if (actionMenu.State == RepositoryActionConfiguration.LoadState.Error)
+                                        {
+                                            return new RepositoryAction[]
+                                                {
+                                                    new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions"), CanExecute = false, },
+                                                    new RepositoryAction() { Name = _configuration.LoadError, CanExecute = false, },
+                                                };
+                                        }
+
+                                        if (actionMenu.RepositoryActions.Count > 0)
+                                        {
+                                            return actionMenu.RepositoryActions
+                                                .Select(x => CreateProcessRunnerAction(x, repository, false))
+                                                .Concat(
+                                                    new RepositoryAction[]
+                                                    {
+                                                        new RepositoryAction() { Name = $"Last update: {DateTime.Now:HH:mm:ss}", CanExecute = false, },
+                                                    })
+                                                .ToArray();
+                                        }
+                                        else
+                                        {
+                                            return new RepositoryAction[]
+                                            {
+                                                new RepositoryAction() { Name = $"No entries found.", CanExecute = false, },
+                                                new RepositoryAction() { Name = $"Last update: {DateTime.Now:HH:mm:ss}", CanExecute = false, },
+                                            };
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var error = proc.StandardError.ReadToEnd();
+
+                                        return new RepositoryAction[]
+                                            {
+                                                new RepositoryAction() { Name = "No data found.", CanExecute = false, },
+                                                new RepositoryAction() { Name = $"Exit code {proc.ExitCode}", CanExecute = false, },
+                                                new RepositoryAction() { Name = string.IsNullOrEmpty(error) ? "Unknown error" : error, CanExecute = false, },
+                                                new RepositoryAction() { Name = $"Last update: {DateTime.Now:HH:mm:ss}", CanExecute = false, },
+                                            };
+                                    }
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        proc.Kill();
+
+                                        return new RepositoryAction[]
+                                        {
+                                            new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions. Process killed successfully"), CanExecute = false, },
+                                        };
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        return new RepositoryAction[]
+                                        {
+                                            new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions. Process didn't finish. Could not kill process"), CanExecute = false, },
+                                            new RepositoryAction() { Name = e.Message, CanExecute = false, },
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            return new RepositoryAction[]
+                            {
+                                new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions"), CanExecute = false },
+                                new RepositoryAction() { Name = e.Message, CanExecute = false }
+                            };
+                        }
+                    }
+                };
+            }
 
             if (action.Subfolder.Any())
             {

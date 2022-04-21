@@ -10,7 +10,7 @@
     <PackageReference Include="DotNetEnv" Version="2.3.0" />
     <PackageReference Include="ExpressionStringEvaluator" Version="0.1.9" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
   </ItemGroup>
 
   <ItemGroup>

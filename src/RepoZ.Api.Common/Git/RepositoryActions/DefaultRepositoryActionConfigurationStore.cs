@@ -88,6 +88,26 @@ namespace RepoZ.Api.Common.Git
             }
         }
 
+        public RepositoryActionConfiguration LoadRepositoryActionConfigurationFromJson(string jsonContent)
+        {
+            try
+            {
+                var lines = jsonContent.Split(new string[] { Environment.NewLine, }, StringSplitOptions.None);
+                var json = string.Join(Environment.NewLine, lines.Select(RemoveComment));
+                RepositoryActionConfiguration repositoryActionConfiguration = JsonConvert.DeserializeObject<RepositoryActionConfiguration>(json) ?? new RepositoryActionConfiguration();
+                repositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.Ok;
+                return repositoryActionConfiguration;
+            }
+            catch (Exception ex)
+            {
+                return new RepositoryActionConfiguration
+                    {
+                        State = RepositoryActionConfiguration.LoadState.Error,
+                        LoadError = ex.Message,
+                    };
+            }
+        }
+
         private bool TryCopyDefaultJsonFile()
         {
             var defaultFile = Path.Combine(_appDataPathProvider.GetAppResourcesPath(), REPOSITORY_ACTIONS_FILENAME);

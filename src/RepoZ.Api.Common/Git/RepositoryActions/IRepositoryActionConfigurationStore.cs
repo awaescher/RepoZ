@@ -11,5 +11,7 @@ namespace RepoZ.Api.Common.Git
         RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo);
 
         RepositoryActionConfiguration LoadRepositoryActionConfiguration(string filename);
+
+        RepositoryActionConfiguration LoadRepositoryActionConfigurationFromJson(string jsonContent);
     }
 }
