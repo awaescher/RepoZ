@@ -1,3 +1,5 @@
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("windows")]
+
 namespace RepoZ.App.Win
 {
     using System;
@@ -14,8 +16,6 @@ namespace RepoZ.App.Win
     using RepoZ.Api.Win.PInvoke.Explorer;
     using TinyIoC;
     using Hardcodet.Wpf.TaskbarNotification;
-    using TinySoup.Model;
-    using TinySoup;
     using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git.AutoFetch;
     using RepoZ.Api.Common.Git.ProcessExecution;
@@ -116,7 +116,9 @@ namespace RepoZ.App.Win
             var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
             explorerHandler.CleanTitles();
 
+#pragma warning disable CA1416 // Validate platform compatibility
             _notifyIcon.Dispose();
+#pragma warning restore CA1416 // Validate platform compatibility
 
             base.OnExit(e);
         }
@@ -172,17 +174,8 @@ namespace RepoZ.App.Win
 
         private async Task CheckForUpdatesAsync()
         {
-            var request = new UpdateRequest()
-                          .WithNameAndVersionFromEntryAssembly()
-                          .AsAnonymousClient()
-                          .OnChannel("stable")
-                          .OnPlatform(new OperatingSystemIdentifier().WithSuffix("(WPF)"));
-
-            var client = new WebSoupClient();
-            var updates = await client.CheckForUpdatesAsync(request);
-
-            AvailableUpdate = updates.FirstOrDefault();
-
+            await Task.Yield();
+            AvailableUpdate = null;
             _updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
         }
 
@@ -222,6 +215,6 @@ namespace RepoZ.App.Win
                              .ToArray();
         }
 
-        public static AvailableVersion AvailableUpdate { get; private set; }
+        public static string AvailableUpdate { get; private set; }
     }
 }

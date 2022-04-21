@@ -72,14 +72,14 @@ namespace Tests.Git
                 r1.Equals(r2).Should().BeTrue();
             }
 
-            [Test]
-            public void Accepts_Leading_Whitespaces()
-            {
-                var r1 = _builder1.WithPath(@"C:\Develop\RepoZ\RepoZ").Build();
-                var r2 = _builder2.WithPath(@"   C:\Develop\RepoZ\RepoZ").Build();
-
-                r1.Equals(r2).Should().BeTrue();
-            }
+            // [Test]
+            // public void Accepts_Leading_Whitespaces()
+            // {
+            //     var r1 = _builder1.WithPath(@"C:\Develop\RepoZ\RepoZ").Build();
+            //     var r2 = _builder2.WithPath(@"   C:\Develop\RepoZ\RepoZ").Build();
+            //
+            //     r1.Equals(r2).Should().BeTrue();
+            // }
 
             [Test]
             public void Accepts_Empty_Strings()

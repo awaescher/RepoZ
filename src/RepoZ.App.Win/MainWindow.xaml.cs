@@ -272,10 +272,10 @@ namespace RepoZ.App.Win
 
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            bool hasLink = !string.IsNullOrWhiteSpace(App.AvailableUpdate?.Url);
+            bool hasLink = !string.IsNullOrWhiteSpace(App.AvailableUpdate);
             if (hasLink)
             {
-                Navigate(App.AvailableUpdate.Url);
+                Navigate(App.AvailableUpdate);
             }
         }
 
@@ -329,7 +329,7 @@ namespace RepoZ.App.Win
 
         private void ShowUpdateIfAvailable()
         {
-            var updateHint = _translationService.Translate("Update hint", App.AvailableUpdate?.ShortestVersionString ?? "?.?");
+            var updateHint = _translationService.Translate("Update hint", App.AvailableUpdate ?? "?.?");
 
             UpdateButton.Visibility = App.AvailableUpdate == null ? Visibility.Hidden : Visibility.Visible;
             UpdateButton.ToolTip = App.AvailableUpdate == null ? "" : updateHint;
