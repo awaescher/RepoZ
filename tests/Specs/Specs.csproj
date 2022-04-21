@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AsyncIO" Version="0.1.69" />
     <PackageReference Include="FluentAssertions" Version="6.6.0" />
-    <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.1.0" />
     <PackageReference Include="Moq" Version="4.17.2" />

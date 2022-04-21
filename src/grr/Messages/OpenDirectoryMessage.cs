@@ -18,7 +18,7 @@ namespace grr.Messages
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(directoryInQuotes) { UseShellExecute = true, });
             }
             else
             {

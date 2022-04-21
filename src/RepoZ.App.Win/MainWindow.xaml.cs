@@ -266,7 +266,10 @@ namespace RepoZ.App.Win
 
             if (Directory.Exists(directoryName))
             {
-                Process.Start(directoryName);
+                Process.Start(new ProcessStartInfo(directoryName)
+                    {
+                        UseShellExecute = true,
+                    });
             }
         }
 
@@ -296,7 +299,10 @@ namespace RepoZ.App.Win
 
         private void Navigate(string url)
         {
-            Process.Start(url);
+            Process.Start(new ProcessStartInfo(url)
+                {
+                    UseShellExecute = true,
+                });
         }
 
         private void PlaceFormByTaskbarLocation()

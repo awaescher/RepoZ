@@ -123,7 +123,7 @@ namespace grr
             var command = Path.Combine(currentPath, "SendKeys.exe");
             if (File.Exists(command))
             {
-                Process.Start(new ProcessStartInfo(command, arguments) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(command, arguments) { UseShellExecute = true, });
             }
             else
             {
