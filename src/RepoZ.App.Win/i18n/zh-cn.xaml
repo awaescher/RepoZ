@@ -14,7 +14,7 @@
     <system:String x:Key="Follow">关注 @Waescher</system:String>
     <system:String x:Key="Star">在 GitHub 上 为RepoZ 点赞</system:String>
     <system:String x:Key="PingBack">反馈 ♥︎</system:String>
-    <system:String x:Key="Aggresive">积极</system:String>
+    <system:String x:Key="Aggressive">积极</system:String>
     <system:String x:Key="Adequate">适中</system:String>
     <system:String x:Key="Discretely">松散</system:String>
     <system:String x:Key="Off">禁用</system:String>

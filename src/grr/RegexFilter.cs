@@ -16,8 +16,8 @@ namespace grr
 
             if (isPrefixed)
             {
-                usedPrefix = value.Substring(0, 2);
-                value = value.Substring(2);
+                usedPrefix = value[..2];
+                value = value[2..];
             }
 
             // square brackets [] define a RegEx to use. If they are not given, use a like search

@@ -8,6 +8,6 @@ namespace RepoZ.Api.Common.Git.AutoFetch
 
         Adequate = 2,
 
-        Aggresive = 3,
+        Aggressive = 3,
     }
 }

@@ -38,7 +38,7 @@ namespace Specs
                 new DefaultRepositoryReader(),
                 new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader()),
                 new DefaultRepositoryObserverFactory(),
-                new DefaultPathCrawlerFactory(new NeverSkippingPathSkipper()),
+                new GitRepositoryFinderFactory(new NeverSkippingPathSkipper()),
                 new UselessRepositoryStore(),
                 new DefaultRepositoryInformationAggregator(
                     new StatusCompressor(new StatusCharacterMap()),
@@ -268,7 +268,7 @@ commit file             master   |  |       |                   |              v
         {
             Monitor.Expect(() =>
                     {
-                        int steps = _cloneB.Rebase("master");
+                        var steps = _cloneB.Rebase("master");
                         steps.Should().Be(1);
                     },
                 changes => changes >= 1,
@@ -288,10 +288,7 @@ commit file             master   |  |       |                   |              v
         [Order(16)]
         public void T7B_Detects_Repository_Merge_With_Other_Branch()
         {
-            Monitor.Expect(() =>
-                    {
-                        _cloneB.Merge("develop");
-                    },
+            Monitor.Expect(() => _cloneB.Merge("develop"),
                 changes => changes >= 1,
                 deletes => deletes == 0);
         }
@@ -300,12 +297,11 @@ commit file             master   |  |       |                   |              v
         [Order(17)]
         public void T8A_Detects_Repository_Push_With_Upstream()
         {
-            Monitor.Expect(() =>
+            Monitor.Expect(
+                () =>
                     {
                         _origin.HeadTip.Should().NotBe(_cloneB.HeadTip);
-
                         _cloneB.Push();
-
                         _origin.HeadTip.Should().Be(_cloneB.HeadTip);
                     },
                 changes => changes >= 1,
@@ -318,10 +314,8 @@ commit file             master   |  |       |                   |              v
         {
             NormalizeReadOnlyFiles(_cloneA.Path);
 
-            Monitor.Expect(() =>
-                    {
-                        Directory.Delete(_cloneA.Path, true);
-                    },
+            Monitor.Expect(
+                () => Directory.Delete(_cloneA.Path, true),
                 changes: 0,
                 deletes: 1);
         }

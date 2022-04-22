@@ -43,7 +43,7 @@ namespace RepoZ.App.Win
             _hotKeyActionToCall = hotKeyActionToCall;
 
             _source = HwndSource.FromHwnd(_handle);
-            _source.AddHook(HwndHook);
+            _source?.AddHook(HwndHook);
 
             if (!RegisterHotKey(_handle, _id, modifiers, key))
             {

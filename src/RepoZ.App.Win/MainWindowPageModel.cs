@@ -12,15 +12,11 @@ namespace RepoZ.App.Win
         public MainWindowPageModel(IAppSettingsService appSettingsService)
         {
             AppSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchMode)));
         }
 
         public AutoFetchMode AutoFetchMode
         {
-            get
-            {
-                return AppSettingsService.AutoFetchMode;
-            }
+            get => AppSettingsService.AutoFetchMode;
             set
             {
                 AppSettingsService.AutoFetchMode = value;
@@ -29,68 +25,38 @@ namespace RepoZ.App.Win
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchOff)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggresive)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggressive)));
             }
         }
 
         public bool AutoFetchOff
         {
-            get
-            {
-                return AutoFetchMode == AutoFetchMode.Off;
-            }
-            set
-            {
-                AutoFetchMode = AutoFetchMode.Off;
-            }
+            get => AutoFetchMode == AutoFetchMode.Off;
+            set => AutoFetchMode = AutoFetchMode.Off;
         }
 
         public bool AutoFetchDiscretely
         {
-            get
-            {
-                return AutoFetchMode == AutoFetchMode.Discretely;
-            }
-            set
-            {
-                AutoFetchMode = AutoFetchMode.Discretely;
-            }
+            get => AutoFetchMode == AutoFetchMode.Discretely;
+            set => AutoFetchMode = AutoFetchMode.Discretely;
         }
 
         public bool AutoFetchAdequate
         {
-            get
-            {
-                return AutoFetchMode == AutoFetchMode.Adequate;
-            }
-            set
-            {
-                AutoFetchMode = AutoFetchMode.Adequate;
-            }
+            get => AutoFetchMode == AutoFetchMode.Adequate;
+            set => AutoFetchMode = AutoFetchMode.Adequate;
         }
 
-        public bool AutoFetchAggresive
+        public bool AutoFetchAggressive
         {
-            get
-            {
-                return AutoFetchMode == AutoFetchMode.Aggresive;
-            }
-            set
-            {
-                AutoFetchMode = AutoFetchMode.Aggresive;
-            }
+            get => AutoFetchMode == AutoFetchMode.Aggressive;
+            set => AutoFetchMode = AutoFetchMode.Aggressive;
         }
 
         public bool PruneOnFetch
         {
-            get
-            {
-                return AppSettingsService.PruneOnFetch;
-            }
-            set
-            {
-                AppSettingsService.PruneOnFetch = value;
-            }
+            get => AppSettingsService.PruneOnFetch;
+            set => AppSettingsService.PruneOnFetch = value;
         }
 
         public IAppSettingsService AppSettingsService { get; }

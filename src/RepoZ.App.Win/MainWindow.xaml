@@ -124,7 +124,7 @@
 										<Separator/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Discretely}" IsCheckable="True" IsChecked="{Binding AutoFetchDiscretely}"/>
 										<controls:AcrylicMenuItem Header="{DynamicResource Adequate}" IsCheckable="True" IsChecked="{Binding AutoFetchAdequate}"/>
-										<controls:AcrylicMenuItem Header="{DynamicResource Aggresive}" IsCheckable="True" IsChecked="{Binding AutoFetchAggresive}"/>
+										<controls:AcrylicMenuItem Header="{DynamicResource Aggressive}" IsCheckable="True" IsChecked="{Binding AutoFetchAggressive}"/>
 									</controls:AcrylicMenuItem>
 
 									<controls:AcrylicMenuItem Header="{DynamicResource Advanced}" >

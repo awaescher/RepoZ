@@ -110,7 +110,7 @@ namespace grr
             PrintDebug($"Found a process, writing to process {target.ProcessName} ({target.Id})");
 
             // send CTRL+V with Enter to insert the command
-            var arguments = ("^v{Enter}");
+            var arguments = "^v{Enter}";
 
             arguments = $"-pid:{target.Id} \"{arguments}\"";
 

@@ -30,7 +30,7 @@ namespace RepoZ.Api.Common.Git.AutoFetch
                     { AutoFetchMode.Off, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.MaxValue, } },
                     { AutoFetchMode.Discretely, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromMinutes(5), } },
                     { AutoFetchMode.Adequate, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromMinutes(1), } },
-                    { AutoFetchMode.Aggresive, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
+                    { AutoFetchMode.Aggressive, new AutoFetchProfile() { PauseBetweenFetches = TimeSpan.FromSeconds(2), } },
                 };
 
             _timer = new Timer(FetchNext, null, Timeout.Infinite, Timeout.Infinite);

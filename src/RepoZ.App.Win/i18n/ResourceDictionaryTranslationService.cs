@@ -20,14 +20,9 @@ namespace RepoZ.App.Win.i18n
         {
             var translated = ResourceDictionary[value]?.ToString();
 
-            if (string.IsNullOrEmpty(translated))
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return string.Format(translated, args);
-            }
+            return string.IsNullOrEmpty(translated)
+                ? string.Empty
+                : string.Format(translated, args);
         }
 
         private static ResourceDictionary GetLocalResourceDictionary()
@@ -49,17 +44,6 @@ namespace RepoZ.App.Win.i18n
             }
         }
 
-        public static ResourceDictionary ResourceDictionary
-        {
-            get
-            {
-                if (_dictionary == null)
-                {
-                    _dictionary = GetLocalResourceDictionary();
-                }
-
-                return _dictionary;
-            }
-        }
+        public static ResourceDictionary ResourceDictionary => _dictionary ??= GetLocalResourceDictionary();
     }
 }

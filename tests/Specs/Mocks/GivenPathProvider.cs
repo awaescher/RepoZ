@@ -1,16 +1,19 @@
-using RepoZ.Api.IO;
-
 namespace Specs.Mocks
 {
-	internal class GivenPathProvider : IPathProvider
-	{
-		public GivenPathProvider(string[] paths)
-		{
-			Paths = paths;
-		}
+    using RepoZ.Api.IO;
 
-		public string[] Paths { get; set; }
+    internal class GivenPathProvider : IPathProvider
+    {
+        public GivenPathProvider(string[] paths)
+        {
+            Paths = paths;
+        }
 
-		public string[] GetPaths() => Paths;
-	}
+        public string[] Paths { get; set; }
+
+        public string[] GetPaths()
+        {
+            return Paths;
+        }
+    }
 }

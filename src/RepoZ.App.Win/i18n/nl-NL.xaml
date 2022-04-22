@@ -15,7 +15,7 @@ Handmatig zoeken naar Git repositories is ook mogelijk via het instellingen menu
 	<system:String x:Key="Follow">Volg mij op Twitter: @Waescher</system:String>
 	<system:String x:Key="Star">Geef RepoZ een ster op GitHub</system:String>
 	<system:String x:Key="PingBack">Ping back ♥︎</system:String>
-    <system:String x:Key="Aggresive">Agressief</system:String>
+    <system:String x:Key="Aggressive">Agressief</system:String>
     <system:String x:Key="Adequate">Adequaat</system:String>
 	<system:String x:Key="Discretely">Discreet</system:String>
 	<system:String x:Key="Off">Uit</system:String>

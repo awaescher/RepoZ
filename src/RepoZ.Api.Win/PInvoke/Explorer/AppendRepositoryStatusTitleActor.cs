@@ -28,8 +28,8 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
                 return;
             }
 
-            var separator = "  [";
-            WindowHelper.AppendWindowText(hwnd, separator, status + "]");
+            const string SEPARATOR = "  [";
+            WindowHelper.AppendWindowText(hwnd, SEPARATOR, status + "]");
         }
     }
 }

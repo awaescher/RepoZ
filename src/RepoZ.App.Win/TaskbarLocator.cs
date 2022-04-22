@@ -15,7 +15,7 @@ namespace RepoZ.App.Win
         public static TaskBarLocation GetTaskBarLocation()
         {
             TaskBarLocation taskBarLocation = TaskBarLocation.Bottom;
-            bool taskBarOnTopOrBottom = (Screen.PrimaryScreen.WorkingArea.Width == Screen.PrimaryScreen.Bounds.Width);
+            bool taskBarOnTopOrBottom = Screen.PrimaryScreen.WorkingArea.Width == Screen.PrimaryScreen.Bounds.Width;
 
             if (taskBarOnTopOrBottom)
             {

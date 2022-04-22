@@ -14,7 +14,7 @@ Alternativ, kann der Computer auch über das Menü oben rechts nach Repositories
 	<system:String x:Key="Follow">Twitter-Follower werden: @Waescher</system:String>
 	<system:String x:Key="Star">Einen GitHub-Stern spendieren</system:String>
 	<system:String x:Key="PingBack">Danke sagen ♥︎</system:String>
-	<system:String x:Key="Aggresive">Aggresiv</system:String>
+	<system:String x:Key="Aggressive">Aggresiv</system:String>
 	<system:String x:Key="Adequate">Adäquat</system:String>
 	<system:String x:Key="Discretely">Diskret</system:String>
 	<system:String x:Key="Off">Aus</system:String>

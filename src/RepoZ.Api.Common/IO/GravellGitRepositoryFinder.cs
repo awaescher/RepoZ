@@ -8,21 +8,21 @@ namespace RepoZ.Api.Common.IO
 
     // http://stackoverflow.com/questions/2106877/is-there-a-faster-way-than-this-to-find-all-the-files-in-a-directory-and-all-sub
 
-    public class GravellPathCrawler : IPathCrawler
+    public class GravellGitRepositoryFinder : IGitRepositoryFinder
     {
         private readonly IPathSkipper _pathSkipper;
 
-        public GravellPathCrawler(IPathSkipper pathSkipper)
+        public GravellGitRepositoryFinder(IPathSkipper pathSkipper)
         {
             _pathSkipper = pathSkipper;
         }
 
-        public List<string> Find(string root, string searchPattern, Action<string> onFoundAction, Action onQuit)
+        public List<string> Find(string root, Action<string> onFoundAction)
         {
-            return FindInternal(root, searchPattern, onFoundAction, onQuit).ToList();
+            return FindInternal(root, "HEAD", onFoundAction).ToList();
         }
 
-        private IEnumerable<string> FindInternal(string root, string searchPattern, Action<string> onFound, Action onQuit)
+        private IEnumerable<string> FindInternal(string root, string searchPattern, Action<string> onFound)
         {
             var pending = new Queue<string>();
             pending.Enqueue(root);
@@ -57,8 +57,6 @@ namespace RepoZ.Api.Common.IO
                     pending.Enqueue(tmp[i]);
                 }
             }
-
-            onQuit?.Invoke();
         }
     }
 }

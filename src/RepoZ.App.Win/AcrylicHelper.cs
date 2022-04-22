@@ -10,7 +10,10 @@ namespace RepoZ.App.Win
         public static void EnableBlur(Visual visual)
         {
             var hwnd = (HwndSource)PresentationSource.FromVisual(visual);
-            EnableBlur(hwnd.Handle);
+            if (hwnd != null)
+            {
+                EnableBlur(hwnd.Handle);
+            }
         }
 
         public static void EnableBlur(IntPtr hwnd)

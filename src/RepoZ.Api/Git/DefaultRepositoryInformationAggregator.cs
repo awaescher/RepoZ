@@ -33,7 +33,7 @@ namespace RepoZ.Api.Git
                 {
                     RepositoryView[] viewsToRemove = _dataSource.Where(r => r.Path.Equals(path, StringComparison.OrdinalIgnoreCase)).ToArray();
 
-                    for (int i = viewsToRemove.Length - 1; i >= 0; i--)
+                    for (var i = viewsToRemove.Length - 1; i >= 0; i--)
                     {
                         _dataSource.Remove(viewsToRemove[i]);
                     }

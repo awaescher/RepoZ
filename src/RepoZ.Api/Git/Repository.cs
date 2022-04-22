@@ -123,7 +123,7 @@ namespace RepoZ.Api.Git
         {
             return string.Join("-", new object[]
                 {
-                    CurrentBranch ?? "",
+                    CurrentBranch ?? string.Empty,
                     AheadBy ?? 0,
                     BehindBy ?? 0,
                     LocalUntracked ?? 0,

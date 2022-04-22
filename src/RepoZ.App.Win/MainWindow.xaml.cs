@@ -146,7 +146,7 @@ namespace RepoZ.App.Win
         private void lstRepositories_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // prevent doubleclicks from scrollbars and other non-data areas
-            if (e.OriginalSource is Grid || e.OriginalSource is TextBlock)
+            if (e.OriginalSource is Grid or TextBlock)
             {
                 InvokeActionOnCurrentRepository();
             }
@@ -193,11 +193,11 @@ namespace RepoZ.App.Win
 
         private void lstRepositories_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return || e.Key == Key.Enter)
+            if (e.Key is Key.Return or Key.Enter)
             {
                 InvokeActionOnCurrentRepository();
             }
-            else if (e.Key == Key.Left || e.Key == Key.Right)
+            else if (e.Key is Key.Left or Key.Right)
             {
                 // try open context menu.
                 var ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
@@ -212,8 +212,12 @@ namespace RepoZ.App.Win
 
         private void InvokeActionOnCurrentRepository()
         {
-            var selectedView = lstRepositories.SelectedItem as RepositoryView;
-            if (selectedView == null || !selectedView.WasFound)
+            if (lstRepositories.SelectedItem is not RepositoryView selectedView)
+            {
+                return;
+            }
+
+            if (!selectedView.WasFound)
             {
                 return;
             }
@@ -229,12 +233,12 @@ namespace RepoZ.App.Win
                 action = _repositoryActionProvider.GetPrimaryAction(selectedView.Repository);
             }
 
-            action?.Action?.Invoke(this, new EventArgs());
+            action?.Action?.Invoke(this, EventArgs.Empty);
         }
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            transitionerMain.SelectedIndex = (transitionerMain.SelectedIndex == 0 ? 1 : 0);
+            transitionerMain.SelectedIndex = transitionerMain.SelectedIndex == 0 ? 1 : 0;
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
@@ -441,8 +445,10 @@ namespace RepoZ.App.Win
             // show/hide the titlebar to move the window for screenshots, for example
             if (e.Key == Key.F11)
             {
-                var currentStyle = AcrylicWindow.GetAcrylicWindowStyle(this);
-                var newStyle = currentStyle == AcrylicWindowStyle.None ? AcrylicWindowStyle.Normal : AcrylicWindowStyle.None;
+                AcrylicWindowStyle currentStyle = AcrylicWindow.GetAcrylicWindowStyle(this);
+                AcrylicWindowStyle newStyle = currentStyle == AcrylicWindowStyle.None
+                    ? AcrylicWindowStyle.Normal
+                    : AcrylicWindowStyle.None;
                 AcrylicWindow.SetAcrylicWindowStyle(this, newStyle);
             }
 
@@ -466,7 +472,7 @@ namespace RepoZ.App.Win
             {
                 if (!_refreshDelayed)
                 {
-                    this.Dispatcher.InvokeAsync(async () =>
+                    Dispatcher.InvokeAsync(async () =>
                         {
                             _refreshDelayed = true;
                             await Task.Delay(200);
@@ -479,7 +485,7 @@ namespace RepoZ.App.Win
             }
 
             // Refresh the view
-            var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
+            ICollectionView view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
             view.Refresh();
         }
 
@@ -512,13 +518,7 @@ namespace RepoZ.App.Win
             );
         }
 
-        public bool IsShown
-        {
-            get
-            {
-                return Visibility == Visibility.Visible && IsActive;
-            }
-        }
+        public bool IsShown => Visibility == Visibility.Visible && IsActive;
     }
 
     public class CustomRepositoryViewSortBehavior : IComparer

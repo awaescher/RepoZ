@@ -20,7 +20,7 @@ namespace RepoZ.Api.Common.Git
         private readonly Timer _storeFlushTimer = null;
         private readonly IRepositoryDetectorFactory _repositoryDetectorFactory;
         private readonly IRepositoryObserverFactory _repositoryObserverFactory;
-        private readonly IPathCrawlerFactory _pathCrawlerFactory;
+        private readonly IGitRepositoryFinderFactory _gitRepositoryFinderFactory;
         private readonly IRepositoryReader _repositoryReader;
         private readonly IPathProvider _pathProvider;
         private readonly IRepositoryStore _repositoryStore;
@@ -33,7 +33,7 @@ namespace RepoZ.Api.Common.Git
             IRepositoryReader repositoryReader,
             IRepositoryDetectorFactory repositoryDetectorFactory,
             IRepositoryObserverFactory repositoryObserverFactory,
-            IPathCrawlerFactory pathCrawlerFactory,
+            IGitRepositoryFinderFactory gitRepositoryFinderFactory,
             IRepositoryStore repositoryStore,
             IRepositoryInformationAggregator repositoryInformationAggregator,
             IAutoFetchHandler autoFetchHandler,
@@ -43,7 +43,7 @@ namespace RepoZ.Api.Common.Git
             _repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
             _repositoryDetectorFactory = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
             _repositoryObserverFactory = repositoryObserverFactory ?? throw new ArgumentNullException(nameof(repositoryObserverFactory));
-            _pathCrawlerFactory = pathCrawlerFactory ?? throw new ArgumentNullException(nameof(pathCrawlerFactory));
+            _gitRepositoryFinderFactory = gitRepositoryFinderFactory ?? throw new ArgumentNullException(nameof(gitRepositoryFinderFactory));
             _pathProvider = pathProvider ?? throw new ArgumentNullException(nameof(pathProvider));
             _repositoryStore = repositoryStore ?? throw new ArgumentNullException(nameof(repositoryStore));
             _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
@@ -66,7 +66,7 @@ namespace RepoZ.Api.Common.Git
 
             IEnumerable<Task> tasks = paths.Select(path =>
                 {
-                    return Task.Run(() => _pathCrawlerFactory.Create().Find(path, "HEAD", OnFoundNewRepository, null))
+                    return Task.Run(() => _gitRepositoryFinderFactory.Create().Find(path, OnFoundNewRepository))
                                .ContinueWith(_ => scannedPaths++)
                                .ContinueWith(_ =>
                                    {

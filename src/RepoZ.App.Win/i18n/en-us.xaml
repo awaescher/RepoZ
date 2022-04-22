@@ -15,7 +15,7 @@ Alternatively, you can scan your computer manually for repositories in the setti
 	<system:String x:Key="Follow">Follow me on Twitter: @Waescher</system:String>
 	<system:String x:Key="Star">Star RepoZ on GitHub</system:String>
 	<system:String x:Key="PingBack">Ping back ♥︎</system:String>
-	<system:String x:Key="Aggresive">Aggressive</system:String>
+	<system:String x:Key="Aggressive">Aggressive</system:String>
 	<system:String x:Key="Adequate">Adequate</system:String>
 	<system:String x:Key="Discretely">Discretely</system:String>
 	<system:String x:Key="Off">Off</system:String>

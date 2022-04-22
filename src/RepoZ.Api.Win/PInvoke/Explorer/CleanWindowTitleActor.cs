@@ -7,8 +7,8 @@ namespace RepoZ.Api.Win.PInvoke.Explorer
         protected override void Act(IntPtr hwnd, string explorerLocationUrl)
         {
             Console.WriteLine("Clean " + explorerLocationUrl);
-            var separator = "  [";
-            WindowHelper.RemoveAppendedWindowText(hwnd, separator);
+            const string SEPARATOR = "  [";
+            WindowHelper.RemoveAppendedWindowText(hwnd, SEPARATOR);
         }
     }
 }

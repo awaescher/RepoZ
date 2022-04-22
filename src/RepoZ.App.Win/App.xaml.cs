@@ -133,7 +133,7 @@ namespace RepoZ.App.Win
             container.Register<WindowsExplorerHandler>().AsSingleton();
             container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
             container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
-            container.Register<IPathCrawlerFactory, DefaultPathCrawlerFactory>().AsSingleton();
+            container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>().AsSingleton();
 
             container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
             container.Register<IErrorHandler, UIErrorHandler>();
@@ -142,7 +142,7 @@ namespace RepoZ.App.Win
             container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
             container.Register<IRepositoryStore, DefaultRepositoryStore>();
             container.Register<IPathProvider, DefaultDriveEnumerator>();
-            container.Register<IPathCrawler, GravellPathCrawler>();
+            container.Register<IGitRepositoryFinder, GravellGitRepositoryFinder>(); // remove
             container.Register<IPathSkipper, WindowsPathSkipper>();
             container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
             container.Register<IGitCommander, ProcessExecutingGitCommander>();
