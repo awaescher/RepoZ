@@ -28,6 +28,7 @@ namespace RepoZ.Api.Common.IO
         private readonly ITranslationService _translationService;
         private readonly RepositoryActionConfiguration _configuration;
         private readonly ExpressionExecutor _expressionExecutor;
+        private static readonly Dictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
 
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
@@ -67,6 +68,8 @@ namespace RepoZ.Api.Common.IO
                     new EmptyVariableProvider(),
                     new CustomEnvironmentVariableVariableProvider(GetRepoEnvironmentVariables),
                     new RepositoryVariableProvider(),
+                    new SlashVariableProvider(),
+                    new BackslashVariableProvider(),
                 };
 
             var methods = new List<IMethod>
@@ -88,6 +91,7 @@ namespace RepoZ.Api.Common.IO
                     new StringLengthMethod(),
                     new IfThenElseMethod(),
                     new IfThenMethod(),
+                    new InMethod(),
                 };
 
             _expressionExecutor = new ExpressionStringEvaluator.Parser.ExpressionExecutor(providers, methods);
@@ -163,7 +167,7 @@ namespace RepoZ.Api.Common.IO
                         continue;
                     }
 
-                    foreach (var action in config.RepositoryActions.Where(a => EvaluateBooleanExpression(a.Active, singleRepository)))
+                    foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => EvaluateBooleanExpression(a.Active, singleRepository)))
                     {
                         yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
                     }
@@ -213,7 +217,7 @@ namespace RepoZ.Api.Common.IO
                                                                                              Name = _translationService.Translate("Remote branches"),
                                                                                              DeferredSubActionsEnumerator = () =>
                                                                                                  {
-                                                                                                     var remoteBranches = singleRepository.ReadAllBranches()
+                                                                                                     RepositoryAction[] remoteBranches = singleRepository.ReadAllBranches()
                                                                                                          .Select(branch => new RepositoryAction()
                                                                                                              {
                                                                                                                  Name = branch,
@@ -254,7 +258,7 @@ namespace RepoZ.Api.Common.IO
         {
             try
             {
-                var result = _expressionExecutor.Execute<Repository>(repository, value);
+                CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
                 if (result.IsBool(out var b))
                 {
                     return b.Value;
@@ -273,29 +277,51 @@ namespace RepoZ.Api.Common.IO
             }
         }
 
-        public static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
+        private string EvaluateStringExpression(string value, Repository repository)
         {
-            var specificRepoEnvValues = new Dictionary<string, string>(0);
-            var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
-
-            if (File.Exists(repozEnvFile))
+            if (value == null)
             {
-                try
-                {
-                    var envVars = DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false));
-                    specificRepoEnvValues = envVars.ToDictionary();
-                    return specificRepoEnvValues;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                return string.Empty;
             }
 
-            return specificRepoEnvValues;
+            try
+            {
+                CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
+                if (result.IsString(out var s))
+                {
+                    return s;
+                }
+
+                return string.Empty;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
         }
 
-        private string ReplaceVariables(string value, Repository repository)
+        public static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
+        {
+            var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
+
+            if (!File.Exists(repozEnvFile))
+            {
+                return _emptyDictionary;
+            }
+
+            try
+            {
+                return DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return _emptyDictionary;
+        }
+
+        private static string ReplaceVariables(string value, Repository repository)
         {
             if (value is null)
             {
@@ -345,7 +371,9 @@ namespace RepoZ.Api.Common.IO
             var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
             var command = ReplaceVariables(action.Command, repository);
             var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
-            var arguments = ReplaceVariables(action.Arguments, repository);
+
+            // var arguments = ReplaceVariables(action.Arguments, repository);
+            var arguments = EvaluateStringExpression(action.Arguments, repository);
 
             if ("external commandline provider".Equals(type, StringComparison.CurrentCultureIgnoreCase))
             {
@@ -357,14 +385,7 @@ namespace RepoZ.Api.Common.IO
                     {
                         try
                         {
-                            var specificRepoEnvValues = new Dictionary<string, string>();
                             var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
-
-                            if (File.Exists(repozEnvFile))
-                            {
-                                var envVars = DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false));
-                                specificRepoEnvValues = envVars.ToDictionary();
-                            }
 
                             var psi = new ProcessStartInfo(command, arguments)
                             {
@@ -376,9 +397,12 @@ namespace RepoZ.Api.Common.IO
                                 RedirectStandardError = true,
                             };
 
-                            foreach (KeyValuePair<string, string> item in specificRepoEnvValues)
+                            if (File.Exists(repozEnvFile))
                             {
-                                psi.EnvironmentVariables.Add(item.Key, item.Value);
+                                foreach (KeyValuePair<string, string> item in DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)))
+                                {
+                                    psi.EnvironmentVariables.Add(item.Key, item.Value);
+                                }
                             }
 
                             var proc = Process.Start(psi);
@@ -398,7 +422,7 @@ namespace RepoZ.Api.Common.IO
                                     {
                                         var json = proc.StandardOutput.ReadToEnd();
 
-                                        var actionMenu = _repositoryActionConfigurationStore.LoadRepositoryActionConfigurationFromJson(json);
+                                        RepositoryActionConfiguration actionMenu = _repositoryActionConfigurationStore.LoadRepositoryActionConfigurationFromJson(json);
                                         if (actionMenu.State == RepositoryActionConfiguration.LoadState.Error)
                                         {
                                             return new RepositoryAction[]

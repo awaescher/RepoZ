@@ -44,12 +44,14 @@ namespace RepoZ.Api.Common.IO
         {
             var prefixLength = PREFIX.Length;
             var envKey = key.Substring(prefixLength, key.Length - prefixLength);
-
             var envVars = _getRepoEnvironmentVariables.Invoke(context);
 
-            if (envVars.ContainsKey(envKey))
+            if (envVars != null)
             {
-                return envVars[envKey];
+                if (envVars.ContainsKey(envKey))
+                {
+                    return envVars[envKey];
+                }
             }
 
             var result = Environment.GetEnvironmentVariable(envKey) ?? string.Empty;

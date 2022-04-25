@@ -24,7 +24,7 @@ namespace RepoZ.Api.Git
         {
             if (obj is RepositoryView other)
             {
-                return other.Repository.Equals(this.Repository);
+                return other.Repository.Equals(Repository);
             }
 
             return object.ReferenceEquals(this, obj);
