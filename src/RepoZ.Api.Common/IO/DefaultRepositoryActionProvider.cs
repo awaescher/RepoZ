@@ -256,6 +256,12 @@ namespace RepoZ.Api.Common.IO
 
         private bool EvaluateBooleanExpression(string value, Repository repository)
         {
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return true;
+            }
+
             try
             {
                 CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
@@ -435,6 +441,7 @@ namespace RepoZ.Api.Common.IO
                                         if (actionMenu.RepositoryActions.Count > 0)
                                         {
                                             return actionMenu.RepositoryActions
+                                                .Where(x => EvaluateBooleanExpression(x.Active, repository))
                                                 .Select(x => CreateProcessRunnerAction(x, repository, false))
                                                 .Concat(
                                                     new RepositoryAction[]
@@ -506,6 +513,7 @@ namespace RepoZ.Api.Common.IO
                         Name = name,
                         DeferredSubActionsEnumerator = () =>
                             action.Subfolder
+                                  .Where(x => EvaluateBooleanExpression(x.Active, repository))
                                   .Select(x => CreateProcessRunnerAction(x, repository, false))
                                   .ToArray(),
                     };
