@@ -33,10 +33,11 @@ namespace Specs
             var repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
             Directory.CreateDirectory(repoPath);
 
+            var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object);
             _monitor = new DefaultRepositoryMonitor(
                 new GivenPathProvider(new string[] { repoPath, }),
-                new DefaultRepositoryReader(),
-                new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader()),
+                new DefaultRepositoryReader(defaultRepositoryTagsResolver),
+                new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader(defaultRepositoryTagsResolver)),
                 new DefaultRepositoryObserverFactory(),
                 new GitRepositoryFinderFactory(new NeverSkippingPathSkipper()),
                 new UselessRepositoryStore(),

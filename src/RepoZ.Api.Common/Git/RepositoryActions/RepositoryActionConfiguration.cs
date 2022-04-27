@@ -14,6 +14,9 @@ namespace RepoZ.Api.Common.Git
         [JsonProperty("file-associations")]
         public List<FileAssociation> FileAssociations { get; set; } = new List<FileAssociation>();
 
+        [JsonProperty("repository-tags")]
+        public List<RepositoryTag> RepositoryTags { get; set; } = new List<RepositoryTag>();
+
         [JsonIgnore]
         public LoadState State { get; set; } = LoadState.None;
 
@@ -65,6 +68,16 @@ namespace RepoZ.Api.Common.Git
 
             [JsonProperty("active")]
             public string Active { get; set; }
+        }
+
+        [System.Diagnostics.DebuggerDisplay("{Tag}")]
+        public class RepositoryTag
+        {
+            [JsonProperty("tag")]
+            public string Tag { get; set; }
+
+            [JsonProperty("selector")]
+            public string Select { get; set; }
         }
 
         public enum LoadState

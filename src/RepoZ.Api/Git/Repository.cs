@@ -49,6 +49,8 @@ namespace RepoZ.Api.Git
 
         public string[] LocalBranches { get; set; }
 
+        public string[] Tags { get; set; }
+
         [System.ComponentModel.Browsable(false)]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public Func<string[]> AllBranchesReader { get; set; }

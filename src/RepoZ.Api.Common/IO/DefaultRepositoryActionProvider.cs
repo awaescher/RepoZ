@@ -8,16 +8,6 @@ namespace RepoZ.Api.Common.IO
     using RepoZ.Api.Common.Common;
     using System.IO;
     using RepoZ.Api.Common.Git;
-    using ExpressionStringEvaluator.Parser;
-    using ExpressionStringEvaluator.Methods.BooleanToBoolean;
-    using ExpressionStringEvaluator.Methods.Flow;
-    using ExpressionStringEvaluator.Methods.StringToBoolean;
-    using ExpressionStringEvaluator.Methods.StringToInt;
-    using ExpressionStringEvaluator.Methods.StringToString;
-    using ExpressionStringEvaluator.Methods;
-    using ExpressionStringEvaluator.VariableProviders.DateTime;
-    using ExpressionStringEvaluator.VariableProviders;
-    using DotNetEnv;
 
     public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     {
@@ -27,8 +17,6 @@ namespace RepoZ.Api.Common.IO
         private readonly IErrorHandler _errorHandler;
         private readonly ITranslationService _translationService;
         private readonly RepositoryActionConfiguration _configuration;
-        private readonly ExpressionExecutor _expressionExecutor;
-        private static readonly Dictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
 
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
@@ -44,57 +32,6 @@ namespace RepoZ.Api.Common.IO
             _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
 
             _configuration = _repositoryActionConfigurationStore.RepositoryActionConfiguration;
-
-            var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
-                {
-                    DateTimeProvider = () => DateTime.Now,
-                };
-
-            var dateTimeNowVariableProviderOptions = new DateTimeNowVariableProviderOptions()
-                {
-                    DateTimeProvider = () => DateTime.Now,
-                };
-
-            var dateTimeDateVariableProviderOptions = new DateTimeDateVariableProviderOptions()
-                {
-                    DateTimeProvider = () => DateTime.Now,
-                };
-
-            var providers = new List<IVariableProvider>
-                {
-                    new DateTimeNowVariableProvider(dateTimeNowVariableProviderOptions),
-                    new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
-                    new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
-                    new EmptyVariableProvider(),
-                    new CustomEnvironmentVariableVariableProvider(GetRepoEnvironmentVariables),
-                    new RepositoryVariableProvider(),
-                    new SlashVariableProvider(),
-                    new BackslashVariableProvider(),
-                };
-
-            var methods = new List<IMethod>
-                {
-                    new StringTrimEndStringMethod(),
-                    new StringTrimStartStringMethod(),
-                    new StringTrimStringMethod(),
-                    new StringContainsStringMethod(),
-                    new StringLowerStringMethod(),
-                    new StringUpperStringMethod(),
-                    new UrlEncodeStringMethod(),
-                    new UrlDecodeStringMethod(),
-                    new StringEqualsStringMethod(),
-                    new AndBooleanMethod(),
-                    new OrBooleanMethod(),
-                    new StringIsNullOrEmptyBooleanMethod(),
-                    new FileExistsBooleanMethod(),
-                    new NotBooleanMethod(),
-                    new StringLengthMethod(),
-                    new IfThenElseMethod(),
-                    new IfThenMethod(),
-                    new InMethod(),
-                };
-
-            _expressionExecutor = new ExpressionStringEvaluator.Parser.ExpressionExecutor(providers, methods);
         }
 
         public RepositoryAction GetPrimaryAction(Repository repository)
@@ -167,7 +104,7 @@ namespace RepoZ.Api.Common.IO
                         continue;
                     }
 
-                    foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => EvaluateBooleanExpression(a.Active, singleRepository)))
+                    foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => RepositoryExpressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
                     {
                         yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
                     }
@@ -180,7 +117,7 @@ namespace RepoZ.Api.Common.IO
                         continue;
                     }
 
-                    foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => EvaluateBooleanExpression(a.Active, singleRepository)))
+                    foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => RepositoryExpressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
                     {
                         yield return CreateFileAssociationSubMenu(
                             singleRepository,
@@ -254,78 +191,6 @@ namespace RepoZ.Api.Common.IO
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
         }
 
-        private bool EvaluateBooleanExpression(string value, Repository repository)
-        {
-
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return true;
-            }
-
-            try
-            {
-                CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
-                if (result.IsBool(out var b))
-                {
-                    return b.Value;
-                }
-
-                if ("true".Equals(result.ToString(), StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private string EvaluateStringExpression(string value, Repository repository)
-        {
-            if (value == null)
-            {
-                return string.Empty;
-            }
-
-            try
-            {
-                CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
-                if (result.IsString(out var s))
-                {
-                    return s;
-                }
-
-                return string.Empty;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
-
-        public static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
-        {
-            var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
-
-            if (!File.Exists(repozEnvFile))
-            {
-                return _emptyDictionary;
-            }
-
-            try
-            {
-                return DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return _emptyDictionary;
-        }
 
         private static string ReplaceVariables(string value, Repository repository)
         {
@@ -379,7 +244,7 @@ namespace RepoZ.Api.Common.IO
             var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
 
             // var arguments = ReplaceVariables(action.Arguments, repository);
-            var arguments = EvaluateStringExpression(action.Arguments, repository);
+            var arguments = RepositoryExpressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
 
             if ("external commandline provider".Equals(type, StringComparison.CurrentCultureIgnoreCase))
             {
@@ -441,7 +306,7 @@ namespace RepoZ.Api.Common.IO
                                         if (actionMenu.RepositoryActions.Count > 0)
                                         {
                                             return actionMenu.RepositoryActions
-                                                .Where(x => EvaluateBooleanExpression(x.Active, repository))
+                                                .Where(x => RepositoryExpressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
                                                 .Select(x => CreateProcessRunnerAction(x, repository, false))
                                                 .Concat(
                                                     new RepositoryAction[]
@@ -513,7 +378,7 @@ namespace RepoZ.Api.Common.IO
                         Name = name,
                         DeferredSubActionsEnumerator = () =>
                             action.Subfolder
-                                  .Where(x => EvaluateBooleanExpression(x.Active, repository))
+                                  .Where(x => RepositoryExpressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
                                   .Select(x => CreateProcessRunnerAction(x, repository, false))
                                   .ToArray(),
                     };

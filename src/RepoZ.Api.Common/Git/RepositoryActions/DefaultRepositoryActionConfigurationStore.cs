@@ -58,8 +58,10 @@ namespace RepoZ.Api.Common.Git
                 {
                     if (!TryCopyDefaultJsonFile())
                     {
-                        RepositoryActionConfiguration = new RepositoryActionConfiguration();
-                        RepositoryActionConfiguration.State = RepositoryActionConfiguration.LoadState.None;
+                        RepositoryActionConfiguration = new RepositoryActionConfiguration
+                            {
+                                State = RepositoryActionConfiguration.LoadState.None,
+                            };
                         return;
                     }
                 }

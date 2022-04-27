@@ -6,9 +6,17 @@ namespace RepoZ.Api.Common.Git
     using System.IO;
     using System;
     using System.Collections.Generic;
+    using Repository = RepoZ.Api.Git.Repository;
 
     public class DefaultRepositoryReader : IRepositoryReader
     {
+        private readonly IRepositoryTagsResolver _resolver;
+
+        public DefaultRepositoryReader(IRepositoryTagsResolver resolver)
+        {
+            _resolver = resolver;
+        }
+
         public Api.Git.Repository ReadRepository(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -22,7 +30,12 @@ namespace RepoZ.Api.Common.Git
                 return Api.Git.Repository.Empty;
             }
 
-            return ReadRepositoryWithRetries(repoPath, 3);
+            Repository result = ReadRepositoryWithRetries(repoPath, 3);
+            if (result != null)
+            {
+                _resolver.UpdateTags(result);
+            }
+            return result;
         }
 
         private Api.Git.Repository ReadRepositoryWithRetries(string repoPath, int maxRetries)
@@ -87,9 +100,10 @@ namespace RepoZ.Api.Common.Git
                             LocalStaged = status?.Staged.Count(),
                             LocalRemoved = status?.Removed.Count(),
                             LocalIgnored = status?.Ignored.Count(),
-                            RemoteUrls = repo.Network?.Remotes?.Select(r => r.Url).Where(url => !string.IsNullOrEmpty(url)).ToArray() ?? new string[0],
+                            RemoteUrls = repo.Network?.Remotes?.Select(r => r.Url).Where(url => !string.IsNullOrEmpty(url)).ToArray() ?? Array.Empty<string>(),
                             StashCount = repo.Stashes?.Count() ?? 0,
-                        };
+                            Tags = Array.Empty<string>(),
+                    };
                 }
             }
             catch (Exception)

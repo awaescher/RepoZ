@@ -13,6 +13,7 @@ namespace RepoZ.App.Win
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using System.Windows.Input;
+using RepoZ.Api;
     using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git;
     using RepoZ.Api.Git;
@@ -29,6 +30,7 @@ namespace RepoZ.App.Win
         private readonly DefaultRepositoryMonitor _monitor;
         private readonly ITranslationService _translationService;
         private readonly IRepositoryActionConfigurationStore _actionConfigurationStore;
+        private readonly IRepositorySearch _repositorySearch;
         private bool _closeOnDeactivate = true;
         private bool _refreshDelayed = false;
         private DateTime _timeOfLastRefresh = DateTime.MinValue;
@@ -41,7 +43,8 @@ namespace RepoZ.App.Win
             IRepositoryIgnoreStore repositoryIgnoreStore,
             IAppSettingsService appSettingsService,
             ITranslationService translationService,
-            IRepositoryActionConfigurationStore actionConfigurationStore)
+            IRepositoryActionConfigurationStore actionConfigurationStore,
+            IRepositorySearch repositorySearch)
         {
             _translationService = translationService;
             InitializeComponent();
@@ -61,6 +64,7 @@ namespace RepoZ.App.Win
             _repositoryActionProvider = repositoryActionProvider ?? throw new ArgumentNullException(nameof(repositoryActionProvider));
             _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
             _actionConfigurationStore = actionConfigurationStore ?? throw new ArgumentNullException(nameof(actionConfigurationStore));
+            _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
 
             lstRepositories.ItemsSource = aggregator.Repositories;
 
@@ -491,7 +495,35 @@ namespace RepoZ.App.Win
 
         private bool FilterRepositories(object item)
         {
-            return !_refreshDelayed && ((item as RepositoryView)?.MatchesFilter(txtFilter.Text) ?? false);
+            var query = txtFilter.Text;
+
+            if (_refreshDelayed)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return true;
+            }
+
+            query = query.Trim();
+
+            if (query.StartsWith("!"))
+            {
+                var sanitizedQuery = query[1..];
+                if (string.IsNullOrWhiteSpace(sanitizedQuery))
+                {
+                    return true;
+                }
+
+                var results = _repositorySearch.Search(sanitizedQuery).ToArray();
+                return results.Contains((item as RepositoryView)?.Path);
+            }
+            else
+            {
+                return !_refreshDelayed && ((item as RepositoryView)?.MatchesFilter(txtFilter.Text) ?? false);
+            }
         }
 
         private void txtFilter_Finish(object sender, EventArgs e)

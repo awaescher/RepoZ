@@ -20,6 +20,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LuceneSearch\LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
     <ProjectReference Include="..\RepoZ.Api.Win\RepoZ.Api.Win.csproj" />
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
@@ -41,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="2.3.0" />
-    <PackageReference Include="ExpressionStringEvaluator" Version="0.1.12" />
+    <PackageReference Include="ExpressionStringEvaluator" Version="0.1.13" />
     <PackageReference Include="FluentWPF" Version="0.8.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="MahApps.Metro" Version="2.0.1" />

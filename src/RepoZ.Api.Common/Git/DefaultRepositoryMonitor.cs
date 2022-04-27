@@ -70,7 +70,7 @@ namespace RepoZ.Api.Common.Git
                                .ContinueWith(_ => scannedPaths++)
                                .ContinueWith(_ =>
                                    {
-                                       var newScanningState = (scannedPaths < paths.Length);
+                                       var newScanningState = scannedPaths < paths.Length;
                                        var didChange = newScanningState != Scanning;
                                        Scanning = newScanningState;
 

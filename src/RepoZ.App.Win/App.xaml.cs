@@ -16,15 +16,17 @@ namespace RepoZ.App.Win
     using RepoZ.Api.Win.PInvoke.Explorer;
     using TinyIoC;
     using Hardcodet.Wpf.TaskbarNotification;
+    using LuceneSearch;
     using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git.AutoFetch;
     using RepoZ.Api.Common.Git.ProcessExecution;
     using RepoZ.Ipc;
     using RepoZ.App.Win.i18n;
+    using RepoZ.Api;
 
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
     public partial class App : Application, IRepositorySource
     {
         private static Timer _explorerUpdateTimer;
@@ -151,6 +153,21 @@ namespace RepoZ.App.Win
             container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
             container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
             container.Register<ITranslationService, ResourceDictionaryTranslationService>();
+            container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>();
+
+            LuceneSearch.Registrations.RegisterInternals((t1, t2, asSingleton) =>
+                {
+                    if (asSingleton)
+                    {
+                        container.Register(t1, t2).AsSingleton();
+                    }
+                    else
+                    {
+                        container.Register(t1, t2);
+                    }
+                });
+
+            LuceneSearch.Registrations.Start(t => _ = container.Resolve(t));
         }
 
         protected static void UseRepositoryMonitor(TinyIoCContainer container)
