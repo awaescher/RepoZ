@@ -7,7 +7,7 @@ using Antlr.Runtime.Misc;
 using RepoZ.Api;
 using SimpleInjector;
 
-public static class Registrations
+public static class Bootstrapper
 {
     public static void Register(Container container)
     {

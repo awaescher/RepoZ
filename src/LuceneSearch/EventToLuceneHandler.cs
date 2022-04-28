@@ -52,7 +52,7 @@ internal class EventToLuceneHandler : IModule, IDisposable
 
     private void MonitorOnOnChangeDetected(object sender, Repository e)
     {
-        var repo = new RepositorySearchModel()
+        var repo = new RepositorySearchModel
             {
                 Path = e.Path,
                 RepositoryName = e.Name,

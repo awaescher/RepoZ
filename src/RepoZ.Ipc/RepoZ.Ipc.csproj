@@ -8,6 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="NetMQ" Version="4.0.0.207" />
+    <PackageReference Include="SimpleInjector" Version="5.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
   </ItemGroup>
 
 </Project>

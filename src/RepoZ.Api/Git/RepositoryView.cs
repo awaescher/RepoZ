@@ -3,6 +3,19 @@ namespace RepoZ.Api.Git
     using System;
     using System.Diagnostics;
     using System.ComponentModel;
+    using System.Linq;
+
+    public class TagViewModel
+    {
+        private readonly string _tag;
+
+        public TagViewModel(string tag)
+        {
+            _tag = tag;
+        }
+
+        public string Tag => _tag;
+    }
 
     [DebuggerDisplay("{Name} @{Path}")]
     public class RepositoryView : IRepositoryView, INotifyPropertyChanged
@@ -87,6 +100,8 @@ namespace RepoZ.Api.Git
         public bool WasFound => Repository.WasFound;
 
         public bool HasUnpushedChanges => Repository.HasUnpushedChanges;
+
+        public TagViewModel[] Tags  => Repository.Tags.Select(x => new TagViewModel(x)).ToArray() ?? Array.Empty<TagViewModel>();
 
         public override int GetHashCode()
         {

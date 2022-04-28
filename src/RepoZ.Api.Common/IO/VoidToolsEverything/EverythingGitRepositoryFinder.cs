@@ -24,12 +24,14 @@ namespace RepoZ.Api.Common.IO.VoidToolsEverything
                                         .Where(item => !_pathSkipper.ShouldSkip(item))
                                         .ToList();
 
-            if (onFoundAction != null)
+            if (onFoundAction == null)
             {
-                foreach (var item in result)
-                {
-                    onFoundAction.Invoke(item);
-                }
+                return result;
+            }
+
+            foreach (var item in result)
+            {
+                onFoundAction.Invoke(item);
             }
 
             return result;

@@ -189,18 +189,14 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
 
             foreach (var result in topDocs.ScoreDocs)
             {
-                var doc = searcher.Doc(result.Doc);
+                Document doc = searcher.Doc(result.Doc);
 
                 // Results are automatically sorted by relevance
                 var item = new RepositorySearchResult(result.Score)
                     {
                         // Id = GetId(doc),
-                        // Version = doc.GetField(KeyVersion)?.GetInt32Value() ?? 0,
                         RepositoryName = doc.GetField(KEY_REPOSITORY_NAME)?.GetStringValue(),
                         Path = doc.GetField(KEY_REPOSITORY_PATH)?.GetStringValue(),
-                        // LocationCountryName = doc.GetField(KeyLocCountry)?.GetStringValue(),
-                        // LocationState = doc.GetField(KeyLocState)?.GetStringValue(),
-                        // LocationCity = doc.GetField(KeyLocCity)?.GetStringValue(),
                         Tags = doc.GetValues(KEY_TAG)?.ToList() ?? new List<string>(),
                     };
 
@@ -239,12 +235,15 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
         return Guid.TryParse(guidString, out var id) ? id : Guid.Empty;
     }
 
+    // todo
+    private static readonly string[] _defaultQueryFields = new[] { KEY_REPOSITORY_NAME, KEY_TAG, };
+
     private MultiFieldQueryParser CreateQueryParser()
     {
-        var result = new MultiFieldQueryParser(
-            LuceneNetVersion.VERSION,
-            new[] { KEY_REPOSITORY_NAME, KEY_TAG, }, // todo define fields
-            _analyzer);
+        var result = new MultiFieldQueryParser(LuceneNetVersion.VERSION, _defaultQueryFields, _analyzer)
+            {
+                DefaultOperator = Operator.AND,
+            };
         return result;
     }
 

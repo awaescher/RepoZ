@@ -193,21 +193,74 @@
 									<TextBlock Text="{Binding CurrentBranch}"
                                                FontSize="13.5"
                                                Margin="8, 3, 8, 3" />
-									<Border Margin="8, 5, 8, 3"
-                                            Padding="6, 2, 6, 2"
-                                            BorderThickness="0"
-                                            Background="#14FFFFFF"
-                                            CornerRadius="5"
-                                             HorizontalAlignment="Left" >
-										<TextBlock Text="{Binding Status}"
-                                               FontFamily="Consolas"   
-                                               FontSize="13.5" >
-											<TextBlock.ToolTip>
-												<TextBlock Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"/>
-											</TextBlock.ToolTip>
-									</TextBlock>
-									</Border>
-								</StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+
+                                        <Border Margin="8, 5, 8, 3"
+                                                Padding="6, 2, 6, 2"
+                                                BorderThickness="0"
+                                                Background="#14FFFFFF"
+                                                CornerRadius="5"
+                                                HorizontalAlignment="Left" >
+										    <TextBlock Text="{Binding Status}"
+                                                   FontFamily="Consolas"   
+                                                   FontSize="13.5" >
+											    <TextBlock.ToolTip>
+												    <TextBlock Text="{Binding UpdateStampUtc, StringFormat=HH:mm:ss, Converter={StaticResource UtcToHumanizedLocalDateTimeConverter}}"/>
+											    </TextBlock.ToolTip>
+									    </TextBlock>
+									    </Border>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ItemsControl Grid.Column="0" ItemsSource="{Binding Tags}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                       <!-- <Button Content="{Binding Tag}" /> -->
+                                                               <!-- screenshot 1 -->
+                                                       <!-- <Border Margin="8, 5, 8, 3" -->
+                                                       <!--         Padding="6, 2, 6, 2" -->
+                                                       <!--         BorderThickness="0" -->
+                                                       <!--         Background="#FFED8888" -->
+                                                       <!--         CornerRadius="5" -->
+                                                       <!--         HorizontalAlignment="Left" > -->
+                                                       <!--     <TextBlock Text="{Binding Tag}" -->
+                                                       <!--                FontFamily="Consolas"  -->
+                                                       <!--                FontSize="13.5" > -->
+                                                       <!--     </TextBlock> -->
+                                                       <!-- </Border> -->
+
+													   <!-- screenshot 2 -->
+                   <!--                                      <Border Margin="8, 5, 8, 3" -->
+                   <!--                                             Padding="6, 2, 6, 2" -->
+                   <!--                                             BorderThickness="0" -->
+                   <!--                                             Background="#14FFFFFF" -->
+                   <!--                                             CornerRadius="5" -->
+                   <!--                                             HorizontalAlignment="Left" > -->
+                   <!--                                         <TextBlock Text="{Binding Tag}" -->
+                   <!--                                                    FontFamily="Consolas"  -->
+																	  <!-- Foreground="#FFED8888" -->
+                   <!--                                                    FontSize="13.5" > -->
+                   <!--                                         </TextBlock> -->
+                   <!--                                     </Border> -->
+
+                                                            <Border Margin="8, 5, 8, 3"
+                                                                   Padding="6, 2, 6, 2"
+                                                                   BorderThickness="0"
+                                                                   Background="#14FFFFFF"
+                                                                   CornerRadius="5"
+                                                                   HorizontalAlignment="Left" >
+                                                               <TextBlock Text="{Binding Tag}" FontFamily="Consolas" Foreground="#FFED8888" FontSize="13.5" />
+                                                           </Border>
+
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 						<ListBox.ContextMenu>

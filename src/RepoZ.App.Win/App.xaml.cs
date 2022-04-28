@@ -16,7 +16,6 @@ namespace RepoZ.App.Win
     using RepoZ.Api.Win.IO;
     using RepoZ.Api.Win.PInvoke.Explorer;
     using Hardcodet.Wpf.TaskbarNotification;
-    using LuceneSearch;
     using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git.AutoFetch;
     using RepoZ.Api.Common.Git.ProcessExecution;
@@ -24,10 +23,11 @@ namespace RepoZ.App.Win
     using RepoZ.App.Win.i18n;
     using RepoZ.Api;
     using SimpleInjector;
+    using Container = SimpleInjector.Container;
 
     /// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
     public partial class App : Application, IRepositorySource
     {
         private static Timer _explorerUpdateTimer;
@@ -36,7 +36,7 @@ namespace RepoZ.App.Win
         private static WindowsExplorerHandler _explorerHandler;
         private static IRepositoryMonitor _repositoryMonitor;
         private TaskbarIcon _notifyIcon;
-        private IpcServer _ipcServer;
+        private List<IModule> _modules;
         private IAppSettingsService _settings;
         private static Container _container;
 
@@ -66,9 +66,7 @@ namespace RepoZ.App.Win
             _container = new Container();
 
             RegisterServices(_container);
-
-            StartModules(_container);
-
+            
             UseRepositoryMonitor(_container);
             UseExplorerHandler(_container);
             PreloadRepositoryActions(_container);
@@ -85,9 +83,8 @@ namespace RepoZ.App.Win
             _hotkey = new HotKey(47110815);
             _hotkey.Register(window, HotKey.VK_R, HotKey.MOD_ALT | HotKey.MOD_CTRL, OnHotKeyPressed);
 
-            _ipcServer = new IpcServer(new DefaultIpcEndpoint(), this);
-            _ipcServer.Start();
-
+            _modules = _container.GetAllInstances<IModule>().ToList();
+            StartModules(_modules);
 
             _settings = _container.GetInstance<IAppSettingsService>();
 
@@ -114,9 +111,9 @@ namespace RepoZ.App.Win
         protected override void OnExit(ExitEventArgs e)
         {
             _container.GetInstance<MainWindow>().SizeChanged -= WindowOnSizeChanged;
-            _ipcServer?.Stop();
-            _ipcServer?.Dispose();
 
+            StopModules(_modules);
+            
             _hotkey.Unregister();
 
             _explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -131,8 +128,10 @@ namespace RepoZ.App.Win
             base.OnExit(e);
         }
 
-        protected static void RegisterServices(Container container)
+        protected void RegisterServices(Container container)
         {
+            container.RegisterInstance<IRepositorySource>(this);
+
             container.Register<MainWindow>(Lifestyle.Singleton);
             container.Register<StatusCharacterMap>(Lifestyle.Singleton);
             container.Register<StatusCompressor>(Lifestyle.Singleton);
@@ -159,13 +158,31 @@ namespace RepoZ.App.Win
             container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
             container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>(Lifestyle.Singleton);
 
-            LuceneSearch.Registrations.Register(container);
+            RepoZ.Ipc.Bootstrapper.Register(container);
+            LuceneSearch.Bootstrapper.Register(container);
         }
 
-        private static void StartModules(Container container)
+        public void StartModules(List<IModule> modules)
         {
-            IEnumerable<IModule> modules = container.GetAllInstances<IModule>();
             var allTasks = Task.WhenAll(modules.Select(x => x.StartAsync()));
+            allTasks.GetAwaiter().GetResult();
+        }
+
+        private static void StopModules(List<IModule> modules)
+        {
+            var allTasks = Task.WhenAll(modules.Select(async x =>
+                {
+                    await x.StopAsync();
+
+                    if (x is IAsyncDisposable asyncDisposable)
+                    {
+                        await asyncDisposable.DisposeAsync();
+                    }
+                    else if (x is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }));
             allTasks.GetAwaiter().GetResult();
         }
 

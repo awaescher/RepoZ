@@ -8,7 +8,7 @@ namespace RepoZ.Ipc
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class IpcServer : IDisposable
+    internal class IpcServer : IDisposable
     {
         private ResponseSocket _socketServer;
 
