@@ -2,10 +2,11 @@ namespace LuceneSearch;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using RepoZ.Api;
 using RepoZ.Api.Git;
 
-internal class EventToLuceneHandler : IDisposable
+internal class EventToLuceneHandler : IModule, IDisposable
 {
     private readonly IRepositoryMonitor _monitor;
     private readonly IRepositoryIndex _index;
@@ -16,9 +17,30 @@ internal class EventToLuceneHandler : IDisposable
         _monitor = monitor;
         _index = index;
         _search = search;
+    }
 
+    public Task StartAsync()
+    {
         _monitor.OnChangeDetected += MonitorOnOnChangeDetected;
         _monitor.OnDeletionDetected += MonitorOnOnDeletionDetected;
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync()
+    {
+        Unregister();
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Unregister();
+    }
+
+    private void Unregister()
+    {
+        _monitor.OnChangeDetected -= MonitorOnOnChangeDetected;
+        _monitor.OnDeletionDetected -= MonitorOnOnDeletionDetected;
     }
 
     private void MonitorOnOnDeletionDetected(object sender, string path)
@@ -39,11 +61,5 @@ internal class EventToLuceneHandler : IDisposable
 
         _index.ReIndexMediaFileAsync(repo);
         (_search as SearchAdapter)?.ResetCache();
-    }
-
-    public void Dispose()
-    {
-        _monitor.OnChangeDetected -= MonitorOnOnChangeDetected;
-        _monitor.OnDeletionDetected -= MonitorOnOnDeletionDetected;
     }
 }

@@ -3,6 +3,7 @@
 namespace RepoZ.App.Win
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -14,7 +15,6 @@ namespace RepoZ.App.Win
     using RepoZ.Api.IO;
     using RepoZ.Api.Win.IO;
     using RepoZ.Api.Win.PInvoke.Explorer;
-    using TinyIoC;
     using Hardcodet.Wpf.TaskbarNotification;
     using LuceneSearch;
     using RepoZ.Api.Common.Common;
@@ -23,8 +23,9 @@ namespace RepoZ.App.Win
     using RepoZ.Ipc;
     using RepoZ.App.Win.i18n;
     using RepoZ.Api;
+    using SimpleInjector;
 
-/// <summary>
+    /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
     public partial class App : Application, IRepositorySource
@@ -37,6 +38,7 @@ namespace RepoZ.App.Win
         private TaskbarIcon _notifyIcon;
         private IpcServer _ipcServer;
         private IAppSettingsService _settings;
+        private static Container _container;
 
         [STAThread]
         public static void Main()
@@ -61,19 +63,23 @@ namespace RepoZ.App.Win
 
             _notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
-            TinyIoCContainer container = TinyIoCContainer.Current;
+            _container = new Container();
 
-            RegisterServices(container);
+            RegisterServices(_container);
 
-            UseRepositoryMonitor(container);
-            UseExplorerHandler(container);
-            PreloadRepositoryActions(container);
+            StartModules(_container);
+
+            UseRepositoryMonitor(_container);
+            UseExplorerHandler(_container);
+            PreloadRepositoryActions(_container);
+
+            _container.Verify(VerificationOption.VerifyAndDiagnose);
 
             _updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
 
             // We noticed that the hotkey registration causes a high CPU utilization if the window was not shown before.
             // To fix this, we need to make the window visible in EnsureWindowHandle() but we set the opacity to 0.0 to prevent flickering
-            MainWindow window = container.Resolve<MainWindow>();
+            MainWindow window = _container.GetInstance<MainWindow>();
             EnsureWindowHandle(window);
 
             _hotkey = new HotKey(47110815);
@@ -83,7 +89,7 @@ namespace RepoZ.App.Win
             _ipcServer.Start();
 
 
-            _settings = container.Resolve<IAppSettingsService>();
+            _settings = _container.GetInstance<IAppSettingsService>();
 
             if (_settings.MenuWidth > 0)
             {
@@ -107,7 +113,7 @@ namespace RepoZ.App.Win
 
         protected override void OnExit(ExitEventArgs e)
         {
-            TinyIoCContainer.Current.Resolve<MainWindow>().SizeChanged -= WindowOnSizeChanged;
+            _container.GetInstance<MainWindow>().SizeChanged -= WindowOnSizeChanged;
             _ipcServer?.Stop();
             _ipcServer?.Dispose();
 
@@ -115,7 +121,7 @@ namespace RepoZ.App.Win
 
             _explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-            var explorerHandler = TinyIoCContainer.Current.Resolve<WindowsExplorerHandler>();
+            var explorerHandler = _container.GetInstance<WindowsExplorerHandler>();
             explorerHandler.CleanTitles();
 
 #pragma warning disable CA1416 // Validate platform compatibility
@@ -125,67 +131,60 @@ namespace RepoZ.App.Win
             base.OnExit(e);
         }
 
-        protected static void RegisterServices(TinyIoCContainer container)
+        protected static void RegisterServices(Container container)
         {
-            container.Register<MainWindow>().AsSingleton();
+            container.Register<MainWindow>(Lifestyle.Singleton);
+            container.Register<StatusCharacterMap>(Lifestyle.Singleton);
+            container.Register<StatusCompressor>(Lifestyle.Singleton);
+            container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
+            container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);
+            container.Register<WindowsExplorerHandler>(Lifestyle.Singleton);
+            container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>(Lifestyle.Singleton);
+            container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
+            container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
+            container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>(Lifestyle.Singleton);
+            container.Register<IErrorHandler, UIErrorHandler>(Lifestyle.Singleton);
+            container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>(Lifestyle.Singleton);
+            container.Register<IRepositoryReader, DefaultRepositoryReader>(Lifestyle.Singleton);
+            container.Register<IRepositoryWriter, DefaultRepositoryWriter>(Lifestyle.Singleton);
+            container.Register<IRepositoryStore, DefaultRepositoryStore>(Lifestyle.Singleton);
+            container.Register<IPathProvider, DefaultDriveEnumerator>(Lifestyle.Singleton);
+            container.Register<IPathSkipper, WindowsPathSkipper>(Lifestyle.Singleton);
+            container.Register<IThreadDispatcher, WpfThreadDispatcher>(Lifestyle.Singleton);
+            container.Register<IGitCommander, ProcessExecutingGitCommander>(Lifestyle.Singleton);
+            container.Register<IAppSettingsService, FileAppSettingsService>(Lifestyle.Singleton);
+            container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>(Lifestyle.Singleton);
+            container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
+            container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>(Lifestyle.Singleton);
+            container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
+            container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>(Lifestyle.Singleton);
 
-            container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>().AsSingleton();
-
-            container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>().AsSingleton();
-            container.Register<WindowsExplorerHandler>().AsSingleton();
-            container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>().AsSingleton();
-            container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>().AsSingleton();
-            container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>().AsSingleton();
-
-            container.Register<IAppDataPathProvider, DefaultAppDataPathProvider>();
-            container.Register<IErrorHandler, UIErrorHandler>();
-            container.Register<IRepositoryActionProvider, DefaultRepositoryActionProvider>();
-            container.Register<IRepositoryReader, DefaultRepositoryReader>();
-            container.Register<IRepositoryWriter, DefaultRepositoryWriter>();
-            container.Register<IRepositoryStore, DefaultRepositoryStore>();
-            container.Register<IPathProvider, DefaultDriveEnumerator>();
-            container.Register<IGitRepositoryFinder, GravellGitRepositoryFinder>(); // remove
-            container.Register<IPathSkipper, WindowsPathSkipper>();
-            container.Register<IThreadDispatcher, WpfThreadDispatcher>().AsSingleton();
-            container.Register<IGitCommander, ProcessExecutingGitCommander>();
-            container.Register<IAppSettingsService, FileAppSettingsService>();
-            container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>().AsSingleton();
-            container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>().AsSingleton();
-            container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>().AsSingleton();
-            container.Register<ITranslationService, ResourceDictionaryTranslationService>();
-            container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>();
-
-            LuceneSearch.Registrations.RegisterInternals((t1, t2, asSingleton) =>
-                {
-                    if (asSingleton)
-                    {
-                        container.Register(t1, t2).AsSingleton();
-                    }
-                    else
-                    {
-                        container.Register(t1, t2);
-                    }
-                });
-
-            LuceneSearch.Registrations.Start(t => _ = container.Resolve(t));
+            LuceneSearch.Registrations.Register(container);
         }
 
-        protected static void UseRepositoryMonitor(TinyIoCContainer container)
+        private static void StartModules(Container container)
         {
-            var repositoryInformationAggregator = container.Resolve<IRepositoryInformationAggregator>();
-            _repositoryMonitor = container.Resolve<IRepositoryMonitor>();
+            IEnumerable<IModule> modules = container.GetAllInstances<IModule>();
+            var allTasks = Task.WhenAll(modules.Select(x => x.StartAsync()));
+            allTasks.GetAwaiter().GetResult();
+        }
+
+        protected static void UseRepositoryMonitor(Container container)
+        {
+            var repositoryInformationAggregator = container.GetInstance<IRepositoryInformationAggregator>();
+            _repositoryMonitor = container.GetInstance<IRepositoryMonitor>();
             _repositoryMonitor.Observe();
         }
 
-        protected static void UseExplorerHandler(TinyIoCContainer container)
+        protected static void UseExplorerHandler(Container container)
         {
-            _explorerHandler = container.Resolve<WindowsExplorerHandler>();
+            _explorerHandler = container.GetInstance<WindowsExplorerHandler>();
             _explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
         }
 
-        protected static void PreloadRepositoryActions(TinyIoCContainer container)
+        protected static void PreloadRepositoryActions(Container container)
         {
-            var store = container.Resolve<IRepositoryActionConfigurationStore>();
+            var store = container.GetInstance<IRepositoryActionConfigurationStore>();
             store.Preload();
         }
 
@@ -219,7 +218,7 @@ namespace RepoZ.App.Win
 
         public Ipc.Repository[] GetMatchingRepositories(string repositoryNamePattern)
         {
-            var aggregator = TinyIoCContainer.Current.Resolve<IRepositoryInformationAggregator>();
+            var aggregator = _container.GetInstance<IRepositoryInformationAggregator>();
             return aggregator.Repositories
                              .Where(r => r.MatchesRegexFilter(repositoryNamePattern))
                              .Select(r => new Ipc.Repository

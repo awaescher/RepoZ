@@ -79,7 +79,7 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
             return new StreamWriter(stream.BaseStream, encoding);
         }
 
-        private void Time(string[] command, Action action)
+        private static void Time(string[] command, Action action)
         {
             DateTime start = DateTime.Now;
 
@@ -214,11 +214,11 @@ namespace RepoZ.Api.Common.Git.ProcessExecution
             return arg.Contains(" ") ? ("\"" + arg + "\"") : arg;
         }
 
-        private static readonly Regex ValidCommandName = new Regex("^[a-z0-9A-Z_-]+$");
+        private static readonly Regex _validCommandName = new Regex("^[a-z0-9A-Z_-]+$", RegexOptions.Compiled);
 
         private static void AssertValidCommand(string[] command)
         {
-            if (command.Length < 1 || !ValidCommandName.IsMatch(command[0]))
+            if (command.Length < 1 || !_validCommandName.IsMatch(command[0]))
             {
                 throw new Exception("bad git command: " + (command.Length == 0 ? "" : command[0]));
             }

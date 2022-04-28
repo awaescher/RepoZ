@@ -1,24 +1,22 @@
 namespace LuceneSearch;
 
 using System;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
+using Antlr.Runtime.Misc;
 using RepoZ.Api;
+using SimpleInjector;
 
 public static class Registrations
 {
-    public static void RegisterInternals(Action<Type, Type, bool> action)
+    public static void Register(Container container)
     {
-        action.Invoke(typeof(IRepositorySearch), typeof(SearchAdapter), true);
-        action.Invoke(typeof(ILuceneDirectoryFactory), typeof(RamLuceneDirectoryFactory), true);
+        container.Register<IRepositorySearch, SearchAdapter>(Lifestyle.Singleton);
+        container.Register<ILuceneDirectoryFactory, RamLuceneDirectoryFactory>(Lifestyle.Singleton);
+        container.Register<IRepositoryIndex, RepositoryIndex>(Lifestyle.Singleton);
+        container.Register<LuceneDirectoryInstance, LuceneDirectoryInstance>(Lifestyle.Singleton);
+        container.Register<RepositoryIndex, RepositoryIndex>(Lifestyle.Singleton);
 
-        action.Invoke(typeof(IRepositorySearch), typeof(SearchAdapter), true);
-        action.Invoke(typeof(IRepositoryIndex), typeof(RepositoryIndex), true);
-        action.Invoke(typeof(EventToLuceneHandler), typeof(EventToLuceneHandler), true);
-        action.Invoke(typeof(LuceneDirectoryInstance), typeof(LuceneDirectoryInstance), true);
-        action.Invoke(typeof(RepositoryIndex), typeof(RepositoryIndex), true);
-    }
-
-    public static void Start(Func<Type, object> func)
-    {
-        _ = func.Invoke(typeof(EventToLuceneHandler));
+        container.Collection.Append<IModule, EventToLuceneHandler>(Lifestyle.Singleton);
     }
 }

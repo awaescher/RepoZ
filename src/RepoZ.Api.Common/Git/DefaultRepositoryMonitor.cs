@@ -67,7 +67,7 @@ namespace RepoZ.Api.Common.Git
             IEnumerable<Task> tasks = paths.Select(path =>
                 {
                     return Task.Run(() => _gitRepositoryFinderFactory.Create().Find(path, OnFoundNewRepository))
-                               .ContinueWith(_ => scannedPaths++)
+                               .ContinueWith(_ => Interlocked.Increment(ref scannedPaths))
                                .ContinueWith(_ =>
                                    {
                                        var newScanningState = scannedPaths < paths.Length;
