@@ -129,8 +129,23 @@ namespace RepoZ.Api.Common.Git
 
         private static string RemoveComment(string line)
         {
-            var indexOfComment = line.IndexOf('#');
-            return indexOfComment < 0 ? line : line.Substring(0, indexOfComment);
+            var l = line.Trim();
+            if (l.Length == 0)
+            {
+                return line;
+            }
+
+            if (l[0] == '#')
+            {
+                return string.Empty;
+            }
+
+            if (l.StartsWith("//"))
+            {
+                return string.Empty;
+            }
+
+            return line;
         }
 
         public RepositoryActionConfiguration RepositoryActionConfiguration { get; private set; }
