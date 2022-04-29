@@ -1,9 +1,9 @@
-namespace RepoZ.Api.Win.PInvoke.Explorer
+namespace WindowsExplorerGitInfo.PInvoke.Explorer
 {
-    using RepoZ.Api.Git;
     using System;
+    using RepoZ.Api.Git;
 
-    public class AppendRepositoryStatusTitleActor : ExplorerWindowActor
+    internal class AppendRepositoryStatusTitleActor : ExplorerWindowActor
     {
         private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
 

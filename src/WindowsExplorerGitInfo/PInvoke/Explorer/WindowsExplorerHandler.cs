@@ -1,8 +1,8 @@
-namespace RepoZ.Api.Win.PInvoke.Explorer
+namespace WindowsExplorerGitInfo.PInvoke.Explorer
 {
     using RepoZ.Api.Git;
 
-    public class WindowsExplorerHandler
+    internal class WindowsExplorerHandler
     {
         private readonly IRepositoryInformationAggregator _repositoryInfoAggregator;
 

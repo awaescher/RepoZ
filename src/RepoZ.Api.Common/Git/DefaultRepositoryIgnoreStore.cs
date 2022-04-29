@@ -12,16 +12,18 @@ namespace RepoZ.Api.Common.Git
         private List<string> _ignores = null;
         private IEnumerable<IgnoreRule> _rules;
         private readonly object _lock = new object();
+        private readonly string _fullFilename;
 
         public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
             : base(errorHandler)
         {
             AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+            _fullFilename = Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");
         }
 
         public override string GetFileName()
         {
-            return Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");
+            return _fullFilename;
         }
 
         public void IgnoreByPath(string path)

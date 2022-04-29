@@ -1,8 +1,8 @@
-namespace RepoZ.Api.Win.PInvoke.Explorer
+namespace WindowsExplorerGitInfo.PInvoke.Explorer
 {
     using System;
 
-    public class CleanWindowTitleActor : ExplorerWindowActor
+    internal class CleanWindowTitleActor : ExplorerWindowActor
     {
         protected override void Act(IntPtr hwnd, string explorerLocationUrl)
         {

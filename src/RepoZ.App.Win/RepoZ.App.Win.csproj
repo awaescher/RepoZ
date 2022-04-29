@@ -25,6 +25,7 @@
     <ProjectReference Include="..\RepoZ.Api.Win\RepoZ.Api.Win.csproj" />
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
     <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj" />
+    <ProjectReference Include="..\WindowsExplorerGitInfo\WindowsExplorerGitInfo.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />

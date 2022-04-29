@@ -1,10 +1,10 @@
-namespace RepoZ.Api.Win.PInvoke.Explorer
+namespace WindowsExplorerGitInfo.PInvoke.Explorer
 {
     using System;
     using System.Collections;
     using System.IO;
 
-    public abstract class ExplorerWindowActor
+    internal abstract class ExplorerWindowActor
     {
         private Type _shellApplicationType;
 

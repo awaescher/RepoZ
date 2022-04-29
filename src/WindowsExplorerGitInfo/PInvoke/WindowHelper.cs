@@ -1,10 +1,10 @@
-namespace RepoZ.Api.Win.PInvoke
+namespace WindowsExplorerGitInfo.PInvoke
 {
     using System;
     using System.Runtime.InteropServices;
     using System.Text;
 
-    public class WindowHelper
+    internal class WindowHelper
     {
         [DllImport("user32.dll", SetLastError = true)]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);

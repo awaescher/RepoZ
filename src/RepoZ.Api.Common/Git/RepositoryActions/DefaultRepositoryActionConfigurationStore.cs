@@ -13,16 +13,19 @@ namespace RepoZ.Api.Common.Git
         private const string REPOSITORY_ACTIONS_FILENAME = "RepositoryActions.json";
         private readonly object _lock = new object();
         private readonly IAppDataPathProvider _appDataPathProvider;
+        private readonly string _fullFilename;
 
         public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
             : base(errorHandler)
         {
             _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+
+            _fullFilename = Path.Combine(_appDataPathProvider.GetAppDataPath(), REPOSITORY_ACTIONS_FILENAME);
         }
 
         public override string GetFileName()
         {
-            return Path.Combine(_appDataPathProvider.GetAppDataPath(), REPOSITORY_ACTIONS_FILENAME);
+            return _fullFilename;
         }
 
         public RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo)

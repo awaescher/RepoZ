@@ -1,14 +1,14 @@
-namespace RepoZ.Api.Win.PInvoke
+namespace WindowsExplorerGitInfo.PInvoke
 {
-    using RepoZ.Api.IO;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
+    using RepoZ.Api.IO;
 
-    public class WindowFinder
+    internal class WindowFinder
     {
         private readonly IEnumerable<IPathFinder> _pathFinders;
 

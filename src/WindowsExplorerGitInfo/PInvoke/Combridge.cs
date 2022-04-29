@@ -1,4 +1,4 @@
-namespace RepoZ.Api.Win.PInvoke
+namespace WindowsExplorerGitInfo.PInvoke
 {
     using System;
     using System.Reflection;
@@ -16,7 +16,7 @@ namespace RepoZ.Api.Win.PInvoke
     /// <remarks>
     /// This class is not related to any cities or universities located in the UK.
     /// </remarks>
-    public class Combridge : IDisposable
+    internal class Combridge : IDisposable
     {
         private Lazy<Type> _comType;
 

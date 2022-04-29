@@ -14,7 +14,6 @@ namespace RepoZ.App.Win
     using RepoZ.Api.Git;
     using RepoZ.Api.IO;
     using RepoZ.Api.Win.IO;
-    using RepoZ.Api.Win.PInvoke.Explorer;
     using Hardcodet.Wpf.TaskbarNotification;
     using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git.AutoFetch;
@@ -30,10 +29,8 @@ namespace RepoZ.App.Win
     /// </summary>
     public partial class App : Application, IRepositorySource
     {
-        private static Timer _explorerUpdateTimer;
         private static Timer _updateTimer;
         private HotKey _hotkey;
-        private static WindowsExplorerHandler _explorerHandler;
         private static IRepositoryMonitor _repositoryMonitor;
         private TaskbarIcon _notifyIcon;
         private List<IModule> _modules;
@@ -64,13 +61,9 @@ namespace RepoZ.App.Win
             _notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 
             _container = new Container();
-
             RegisterServices(_container);
-            
             UseRepositoryMonitor(_container);
-            UseExplorerHandler(_container);
             PreloadRepositoryActions(_container);
-
             _container.Verify(VerificationOption.VerifyAndDiagnose);
 
             _updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
@@ -116,11 +109,6 @@ namespace RepoZ.App.Win
             
             _hotkey.Unregister();
 
-            _explorerUpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
-
-            var explorerHandler = _container.GetInstance<WindowsExplorerHandler>();
-            explorerHandler.CleanTitles();
-
 #pragma warning disable CA1416 // Validate platform compatibility
             _notifyIcon.Dispose();
 #pragma warning restore CA1416 // Validate platform compatibility
@@ -137,7 +125,6 @@ namespace RepoZ.App.Win
             container.Register<StatusCompressor>(Lifestyle.Singleton);
             container.Register<IRepositoryInformationAggregator, DefaultRepositoryInformationAggregator>(Lifestyle.Singleton);
             container.Register<IRepositoryMonitor, DefaultRepositoryMonitor>(Lifestyle.Singleton);
-            container.Register<WindowsExplorerHandler>(Lifestyle.Singleton);
             container.Register<IRepositoryDetectorFactory, DefaultRepositoryDetectorFactory>(Lifestyle.Singleton);
             container.Register<IRepositoryObserverFactory, DefaultRepositoryObserverFactory>(Lifestyle.Singleton);
             container.Register<IGitRepositoryFinderFactory, GitRepositoryFinderFactory>(Lifestyle.Singleton);
@@ -160,6 +147,7 @@ namespace RepoZ.App.Win
 
             RepoZ.Ipc.Bootstrapper.Register(container);
             LuceneSearch.Bootstrapper.Register(container);
+            WindowsExplorerGitInfo.Bootstrapper.Register(container);
         }
 
         public void StartModules(List<IModule> modules)
@@ -188,21 +176,14 @@ namespace RepoZ.App.Win
 
         protected static void UseRepositoryMonitor(Container container)
         {
-            var repositoryInformationAggregator = container.GetInstance<IRepositoryInformationAggregator>();
+            // var repositoryInformationAggregator = container.GetInstance<IRepositoryInformationAggregator>();
             _repositoryMonitor = container.GetInstance<IRepositoryMonitor>();
             _repositoryMonitor.Observe();
         }
 
-        protected static void UseExplorerHandler(Container container)
-        {
-            _explorerHandler = container.GetInstance<WindowsExplorerHandler>();
-            _explorerUpdateTimer = new Timer(RefreshTimerCallback, null, 1000, Timeout.Infinite);
-        }
-
         protected static void PreloadRepositoryActions(Container container)
         {
-            var store = container.GetInstance<IRepositoryActionConfigurationStore>();
-            store.Preload();
+            container.GetInstance<IRepositoryActionConfigurationStore>().Preload();
         }
 
         private async Task CheckForUpdatesAsync()
@@ -210,12 +191,6 @@ namespace RepoZ.App.Win
             await Task.Yield();
             AvailableUpdate = null;
             _updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
-        }
-
-        protected static void RefreshTimerCallback(object state)
-        {
-            _explorerHandler.UpdateTitles();
-            _explorerUpdateTimer.Change(500, Timeout.Infinite);
         }
 
         private void EnsureWindowHandle(Window window)

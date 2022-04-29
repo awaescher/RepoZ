@@ -151,7 +151,6 @@ namespace RepoZ.Api.Common.Git
 
         public void Observe()
         {
-
             if (_detectors == null)
             {
                 // see https://answers.unity.com/questions/959106/how-to-monitor-file-system-in-mac.html
