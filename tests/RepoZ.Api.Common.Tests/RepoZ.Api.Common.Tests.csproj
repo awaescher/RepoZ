@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <!-- <Nullable>enable</Nullable> -->
+    <!-- <IsPackable>false</IsPackable> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyTestFile.XUnit" Version="2.0.3" />
+    <PackageReference Include="FakeItEasy" Version="7.3.1" />
+    <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="6.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Verify.Xunit" Version="16.7.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
+  </ItemGroup>
+
+</Project>

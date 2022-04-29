@@ -147,7 +147,10 @@ namespace RepoZ.App.Win
 
             RepoZ.Ipc.Bootstrapper.Register(container);
             LuceneSearch.Bootstrapper.Register(container);
+            
+#pragma warning disable CA1416 // Validate platform compatibility
             WindowsExplorerGitInfo.Bootstrapper.Register(container);
+#pragma warning restore CA1416 // Validate platform compatibility
         }
 
         public void StartModules(List<IModule> modules)
