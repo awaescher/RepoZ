@@ -23,6 +23,8 @@ namespace Specs
         private DefaultRepositoryMonitor _monitor;
         private string _rootPath;
 
+        private string _defaultBranch = "master";
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -123,6 +125,9 @@ commit file             master   |  |       |                   |              v
                     },
                 changes => changes >= 0, /* TODO */
                 deletes => deletes == 0);
+
+            _defaultBranch = _cloneA.CurrentBranch;
+            Assert.That(_cloneB.CurrentBranch, Is.EqualTo(_defaultBranch));
         }
 
         [Test]
@@ -193,7 +198,8 @@ commit file             master   |  |       |                   |              v
         {
             Monitor.Expect(() =>
                     {
-                        _cloneB.CurrentBranch.Should().Be("master");
+                        
+                        _cloneB.CurrentBranch.Should().Be(_defaultBranch);
                         _cloneB.Branch("develop");
                         _cloneB.Checkout("develop");
                         _cloneB.CurrentBranch.Should().Be("develop");
@@ -226,8 +232,8 @@ commit file             master   |  |       |                   |              v
         public void T5A_Preparation_Checkout_Master()
         {
             _cloneB.CurrentBranch.Should().Be("develop");
-            _cloneB.Checkout("master");
-            _cloneB.CurrentBranch.Should().Be("master");
+            _cloneB.Checkout(_defaultBranch);
+            _cloneB.CurrentBranch.Should().Be(_defaultBranch);
         }
 
         [Test]
@@ -258,7 +264,7 @@ commit file             master   |  |       |                   |              v
         [Order(13)]
         public void T6A_Preparation_Checkout_Develop()
         {
-            _cloneB.CurrentBranch.Should().Be("master");
+            _cloneB.CurrentBranch.Should().Be(_defaultBranch);
             _cloneB.Checkout("develop");
             _cloneB.CurrentBranch.Should().Be("develop");
         }
@@ -269,7 +275,7 @@ commit file             master   |  |       |                   |              v
         {
             Monitor.Expect(() =>
                     {
-                        var steps = _cloneB.Rebase("master");
+                        var steps = _cloneB.Rebase(_defaultBranch);
                         steps.Should().Be(1);
                     },
                 changes => changes >= 1,
@@ -281,8 +287,8 @@ commit file             master   |  |       |                   |              v
         public void T7A_Preparation_Checkout_Master()
         {
             _cloneB.CurrentBranch.Should().Be("develop");
-            _cloneB.Checkout("master");
-            _cloneB.CurrentBranch.Should().Be("master");
+            _cloneB.Checkout(_defaultBranch);
+            _cloneB.CurrentBranch.Should().Be(_defaultBranch);
         }
 
         [Test]

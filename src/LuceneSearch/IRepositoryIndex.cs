@@ -2,7 +2,6 @@ namespace LuceneSearch;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Lucene.Net.Search;
 
@@ -14,9 +13,11 @@ internal interface IRepositoryIndex
 
     RepositorySearchResult Search(Guid guid);
 
-    List<RepositorySearchResult> Search(string queryString, out int totalHits);
+    List<RepositorySearchResult> Search(string queryString, SearchOperator searchMode, out int totalHits);
 
     List<RepositorySearchResult> Search(Query query, Filter filter, out int totalHits);
-    void RemoveFromIndexByPath([NotNull] string path);
+
+    void RemoveFromIndexByPath(string path);
+
     void FlushAndCommit();
 }

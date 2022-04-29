@@ -14,6 +14,13 @@ using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Directory = Lucene.Net.Store.Directory;
 
+internal enum SearchOperator
+{
+    And,
+
+    Or,
+}
+
 internal class RepositoryIndex : IRepositoryIndex, IDisposable
 {
     private const string KEY_ID = "id";
@@ -158,13 +165,14 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
         return Search(query, null, out _).SingleOrDefault();
     }
     
-    public List<RepositorySearchResult> Search(string queryString, out int totalHits)
+    public List<RepositorySearchResult> Search(string queryString, SearchOperator searchMode, out int totalHits)
     {
         lock (_syncLock)
         {
             // Parse the query - assuming it's not a single term but an actual query string
             // the QueryParser used is using the same analyzer used for indexing
-            Query query = CreateQueryParser().Parse(queryString);
+            Query query = CreateQueryParser(MapOperator(searchMode)).Parse(queryString);
+
             return Search(query, null, out totalHits);
         }
     }
@@ -238,11 +246,11 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
     // todo
     private static readonly string[] _defaultQueryFields = new[] { KEY_REPOSITORY_NAME, KEY_TAG, };
 
-    private MultiFieldQueryParser CreateQueryParser()
+    private MultiFieldQueryParser CreateQueryParser(Operator defaultOperator)
     {
         var result = new MultiFieldQueryParser(LuceneNetVersion.VERSION, _defaultQueryFields, _analyzer)
             {
-                DefaultOperator = Operator.AND,
+                DefaultOperator = defaultOperator,
             };
         return result;
     }
@@ -265,6 +273,16 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
         }
 
         DeleteByTerm(new Term(KEY_ID, guid.ToString()));
+    }
+
+    private static Operator MapOperator(SearchOperator searchOperator)
+    {
+        return searchOperator switch
+            {
+                SearchOperator.And => Operator.AND,
+                SearchOperator.Or => Operator.OR,
+                _ => throw new ArgumentOutOfRangeException(nameof(searchOperator), searchOperator, null)
+            };
     }
 
     private void DeleteByTerm(Term term)

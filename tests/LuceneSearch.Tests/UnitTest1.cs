@@ -12,7 +12,7 @@ namespace LuceneSearch.Tests
         {
             var sut = new RepositoryIndex(new LuceneDirectoryInstance(new RamLuceneDirectoryFactory()));
 
-            var results = sut.Search("tag:work project x", out var hits);
+            var results = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
 
             hits.Should().Be(0);
         }
@@ -35,7 +35,7 @@ namespace LuceneSearch.Tests
             await sut.ReIndexMediaFileAsync(item).ConfigureAwait(false);
 
             // act
-            var result = sut.Search("tag:work project x", out var hits);
+            var result = sut.Search("tag:work project x", SearchOperator.Or, out var hits);
 
             // assert
             hits.Should().Be(1);

@@ -39,7 +39,7 @@ internal class SearchAdapter : IRepositorySearch
                 }
             }
 
-            List<RepositorySearchResult> results = _index.Search(query, out var _);
+            List<RepositorySearchResult> results = _index.Search(query, SearchOperator.And,out var _);
             _cache = results;
             _now = DateTime.UtcNow.AddSeconds(50);
             _query = query;

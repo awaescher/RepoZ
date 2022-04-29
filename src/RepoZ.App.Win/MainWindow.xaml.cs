@@ -13,7 +13,7 @@ namespace RepoZ.App.Win
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using System.Windows.Input;
-using RepoZ.Api;
+    using RepoZ.Api;
     using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git;
     using RepoZ.Api.Git;
@@ -253,6 +253,11 @@ using RepoZ.Api;
         private void ScanButton_Click(object sender, RoutedEventArgs e)
         {
             _monitor.ScanForLocalRepositoriesAsync();
+        }
+
+        private void ReloadConfigButton_Click(object sender, RoutedEventArgs e)
+        {
+            _actionConfigurationStore.Preload();
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)

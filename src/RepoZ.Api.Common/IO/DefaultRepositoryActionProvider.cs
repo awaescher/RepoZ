@@ -16,8 +16,7 @@ namespace RepoZ.Api.Common.IO
         private readonly IRepositoryMonitor _repositoryMonitor;
         private readonly IErrorHandler _errorHandler;
         private readonly ITranslationService _translationService;
-        private readonly RepositoryActionConfiguration _configuration;
-
+        
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
             IRepositoryWriter repositoryWriter,
@@ -30,9 +29,9 @@ namespace RepoZ.Api.Common.IO
             _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
             _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-
-            _configuration = _repositoryActionConfigurationStore.RepositoryActionConfiguration;
         }
+
+        private RepositoryActionConfiguration Configuration => _repositoryActionConfigurationStore.RepositoryActionConfiguration;
 
         public RepositoryAction GetPrimaryAction(Repository repository)
         {
@@ -55,7 +54,7 @@ namespace RepoZ.Api.Common.IO
             Repository[] repositories = repos.ToArray();
             Repository singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-            if (_configuration.State == RepositoryActionConfiguration.LoadState.Error)
+            if (Configuration.State == RepositoryActionConfiguration.LoadState.Error)
             {
                 yield return new RepositoryAction()
                     {
@@ -64,7 +63,7 @@ namespace RepoZ.Api.Common.IO
                     };
                 yield return new RepositoryAction()
                     {
-                        Name = _configuration.LoadError,
+                        Name = Configuration.LoadError,
                         CanExecute = false,
                     };
                 var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
@@ -93,9 +92,9 @@ namespace RepoZ.Api.Common.IO
                 }
             }
 
-            if (singleRepository != null && _configuration.State == RepositoryActionConfiguration.LoadState.Ok)
+            if (singleRepository != null && Configuration.State == RepositoryActionConfiguration.LoadState.Ok)
             {
-                RepositoryActionConfiguration[] repositoryActionConfigurations = new[] { _configuration, specificConfig, };
+                RepositoryActionConfiguration[] repositoryActionConfigurations = new[] { Configuration, specificConfig, };
 
                 foreach (RepositoryActionConfiguration config in repositoryActionConfigurations)
                 {
@@ -299,7 +298,7 @@ namespace RepoZ.Api.Common.IO
                                             return new RepositoryAction[]
                                                 {
                                                     new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions"), CanExecute = false, },
-                                                    new RepositoryAction() { Name = _configuration.LoadError, CanExecute = false, },
+                                                    new RepositoryAction() { Name = Configuration.LoadError, CanExecute = false, },
                                                 };
                                         }
 

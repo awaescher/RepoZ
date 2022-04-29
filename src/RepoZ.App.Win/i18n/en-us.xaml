@@ -85,4 +85,5 @@ Note that the status might be shorter if possible to improve readability.
 	<system:String x:Key="Try to fetch changes if you're expecting remote branches">Try to fetch changes if you're expecting remote branches</system:String>
     <system:String x:Key="Advanced">Advanced</system:String>
     <system:String x:Key="PruneOnFetch">Prune remote branches on fetch</system:String>
+    <system:String x:Key="ReloadConfig">Reload repository actions</system:String>
 </ResourceDictionary>

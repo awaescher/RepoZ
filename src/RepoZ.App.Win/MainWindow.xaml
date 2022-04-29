@@ -115,6 +115,7 @@
 										<controls:AcrylicMenuItem Header="{DynamicResource Clear}" Click="ClearButton_Click"/>
 										<Separator/>
 										<controls:AcrylicMenuItem Header="{DynamicResource CustomizeRepositoryActions}" Click="CustomizeContextMenu_Click" />
+                                        <controls:AcrylicMenuItem Header="{DynamicResource ReloadConfig}" Click="ReloadConfigButton_Click" x:Name="ReloadConfigMenuItem"/>
 										<Separator/>
 										<controls:AcrylicMenuItem Header="{DynamicResource ResetIgnoreRules}" Click="ResetIgnoreRulesButton_Click" />
 									</controls:AcrylicMenuItem>
@@ -129,7 +130,7 @@
 
 									<controls:AcrylicMenuItem Header="{DynamicResource Advanced}" >
 										<controls:AcrylicMenuItem Header="{DynamicResource PruneOnFetch}" IsCheckable="True" IsChecked="{Binding PruneOnFetch}" />
-									</controls:AcrylicMenuItem>
+                                    </controls:AcrylicMenuItem>
 
 									<Separator/>
 
