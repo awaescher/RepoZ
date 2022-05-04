@@ -1,12 +1,13 @@
-namespace RepoZ.Ipc
+﻿namespace RepoZ.Plugin.IpcService
 {
-    using NetMQ;
-    using NetMQ.Sockets;
     using System;
     using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using NetMQ;
+    using NetMQ.Sockets;
+    using RepoZ.Ipc;
 
     internal class IpcServer : IDisposable
     {
@@ -45,7 +46,7 @@ namespace RepoZ.Ipc
                     var answer = "(no repositories found)";
                     try
                     {
-                        Repository[] repos = RepositorySource.GetMatchingRepositories(repositoryNamePattern);
+                        Ipc.Repository[] repos = RepositorySource.GetMatchingRepositories(repositoryNamePattern);
                         if (repos.Any())
                         {
                             var serializedRepositories = repos

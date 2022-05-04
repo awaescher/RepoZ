@@ -1,9 +1,8 @@
-namespace RepoZ.Api.Common.IO.VoidToolsEverything
+namespace RepoZ.Plugin.EverythingFileSearch.Internal
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using RepoZ.Api.IO;
 
     internal class EverythingGitRepositoryFinder : IGitRepositoryFinder

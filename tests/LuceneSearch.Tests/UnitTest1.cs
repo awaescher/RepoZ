@@ -3,6 +3,7 @@ namespace LuceneSearch.Tests
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using RepoZ.Plugin.LuceneSearch;
     using Xunit;
 
     public class UnitTest1

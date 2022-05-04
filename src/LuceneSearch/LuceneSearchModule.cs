@@ -1,15 +1,12 @@
-namespace LuceneSearch;
+namespace RepoZ.Plugin.LuceneSearch;
 
-using System;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
-using Antlr.Runtime.Misc;
 using RepoZ.Api;
 using SimpleInjector;
+using SimpleInjector.Packaging;
 
-public static class Bootstrapper
+public class LuceneSearchModule : IPackage
 {
-    public static void Register(Container container)
+    public void RegisterServices(Container container)
     {
         container.Register<IRepositorySearch, SearchAdapter>(Lifestyle.Singleton);
         container.Register<ILuceneDirectoryFactory, RamLuceneDirectoryFactory>(Lifestyle.Singleton);

@@ -1,4 +1,4 @@
-namespace RepoZ.Ipc
+﻿namespace RepoZ.Plugin.IpcService
 {
     using System;
     using System.Threading.Tasks;

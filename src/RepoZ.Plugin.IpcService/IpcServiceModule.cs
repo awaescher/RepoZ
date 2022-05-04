@@ -1,12 +1,14 @@
-namespace RepoZ.Ipc
+namespace RepoZ.Plugin.IpcService
 {
     using RepoZ.Api;
+    using RepoZ.Ipc;
     using SimpleInjector;
-    using Container = SimpleInjector.Container;
+    using SimpleInjector.Packaging;
+    using Repository = RepoZ.Api.Git.Repository;
 
-    public static class Bootstrapper
+    public class IpcServiceModule : IPackage
     {
-        public static void Register(Container container)
+        public void RegisterServices(Container container)
         {
             //IRepositorySource
             container.Register<IIpcEndpoint, DefaultIpcEndpoint>(Lifestyle.Singleton);

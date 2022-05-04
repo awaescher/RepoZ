@@ -1,9 +1,8 @@
-namespace LuceneSearch;
+namespace RepoZ.Plugin.LuceneSearch;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Win32;
 using RepoZ.Api;
 
 internal class SearchAdapter : IRepositorySearch

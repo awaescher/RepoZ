@@ -1,56 +1,42 @@
 namespace RepoZ.Api.Common.IO
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using RepoZ.Api.Common.Common;
-    using RepoZ.Api.Common.IO.VoidToolsEverything;
     using RepoZ.Api.IO;
 
     public class GitRepositoryFinderFactory : IGitRepositoryFinderFactory
     {
-        private readonly IPathSkipper _pathSkipper;
         private readonly IAppSettingsService _appSettingsService;
-        private bool? _isEverythingInstalled;
-        private readonly object _lock = new object();
+        private readonly List<ISingleGitRepositoryFinderFactory> _factories;
 
-        public GitRepositoryFinderFactory(IPathSkipper pathSkipper, IAppSettingsService appSettingsService)
+        public GitRepositoryFinderFactory(IAppSettingsService appSettingsService, IEnumerable<ISingleGitRepositoryFinderFactory> factories)
         {
-            _pathSkipper = pathSkipper ?? throw new ArgumentNullException(nameof(pathSkipper));
             _appSettingsService = appSettingsService ?? throw new ArgumentNullException(nameof(appSettingsService));
+            _factories = factories?.ToList() ?? throw new ArgumentNullException(nameof(factories));
         }
 
         public IGitRepositoryFinder Create()
         {
-            if (UseEverything())
+            ISingleGitRepositoryFinderFactory factory = null;
+            // first try get Everything. hack.
+            if (_appSettingsService.EnabledSearchRepoEverything)
             {
-                return new EverythingGitRepositoryFinder(_pathSkipper);
-            }
-            else
-            {
-                return new GravellGitRepositoryFinder(_pathSkipper);
-            }
-        }
-
-        private bool UseEverything()
-        {
-            if (!_appSettingsService.EnabledSearchRepoEverything)
-            {
-                return false;
-            }
-
-            if (_isEverythingInstalled.HasValue)
-            {
-                return _isEverythingInstalled.Value;
-            }
-
-            lock (_lock)
-            {
-                if (!_isEverythingInstalled.HasValue)
+                factory = _factories.FirstOrDefault(x => x.Name.Contains("Everything") && x.IsActive);
+                if (factory != null)
                 {
-                    _isEverythingInstalled = Everything64Api.IsInstalled();
+                    return factory.Create();
                 }
             }
 
-            return _isEverythingInstalled.Value;
+            factory = _factories.FirstOrDefault(x => x.IsActive);
+            if (factory != null)
+            {
+                return factory.Create();
+            }
+
+            throw new Exception("Could not create IGitRepositoryFinder");
         }
     }
 }

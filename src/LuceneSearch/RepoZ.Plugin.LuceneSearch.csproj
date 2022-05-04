@@ -18,6 +18,7 @@
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageReference Include="Lucene.Net.Suggest" Version="4.8.0-beta00016" />
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
+    <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

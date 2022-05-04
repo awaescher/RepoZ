@@ -4,6 +4,7 @@ namespace Specs.Ipc
     using Moq;
     using RepoZ.Ipc;
     using FluentAssertions;
+    using RepoZ.Plugin.IpcService;
 
     public class RepoZIpcClientTests
     {

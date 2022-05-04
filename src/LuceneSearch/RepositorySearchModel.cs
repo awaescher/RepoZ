@@ -1,4 +1,4 @@
-namespace LuceneSearch;
+namespace RepoZ.Plugin.LuceneSearch;
 
 using System.Collections.Generic;
 

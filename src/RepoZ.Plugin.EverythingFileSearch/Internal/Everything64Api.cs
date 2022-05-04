@@ -1,4 +1,4 @@
-namespace RepoZ.Api.Common.IO.VoidToolsEverything
+namespace RepoZ.Plugin.EverythingFileSearch.Internal
 {
     using System;
     using System.Collections.Generic;

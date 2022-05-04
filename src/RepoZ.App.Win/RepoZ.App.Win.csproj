@@ -20,12 +20,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LuceneSearch\LuceneSearch.csproj" />
+    <ProjectReference Include="..\LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
     <ProjectReference Include="..\RepoZ.Api.Win\RepoZ.Api.Win.csproj" />
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
-    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj" />
-    <ProjectReference Include="..\WindowsExplorerGitInfo\WindowsExplorerGitInfo.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.EverythingFileSearch\RepoZ.Plugin.EverythingFileSearch.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.IpcService\RepoZ.Plugin.IpcService.csproj" />
+    <ProjectReference Include="..\WindowsExplorerGitInfo\RepoZ.Plugin.WindowsExplorerGitInfo.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
+    <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
     <!-- <PackageReference Include="SimpleInjector.Extensions.ExecutionContextScoping" Version="4.0.0" /> -->
     <!-- <PackageReference Include="SimpleInjector.Extensions.LifetimeScoping" Version="4.0.0" /> -->
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />

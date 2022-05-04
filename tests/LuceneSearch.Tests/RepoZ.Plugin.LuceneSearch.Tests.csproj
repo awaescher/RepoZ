@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LuceneSearch\LuceneSearch.csproj" />
+    <ProjectReference Include="..\..\src\LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj" />
   </ItemGroup>
 
 </Project>

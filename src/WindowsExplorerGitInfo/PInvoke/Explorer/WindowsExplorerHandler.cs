@@ -1,4 +1,4 @@
-namespace WindowsExplorerGitInfo.PInvoke.Explorer
+namespace RepoZ.Plugin.WindowsExplorerGitInfo.PInvoke.Explorer
 {
     using RepoZ.Api.Git;
 

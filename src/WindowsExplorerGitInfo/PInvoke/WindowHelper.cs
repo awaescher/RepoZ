@@ -1,4 +1,4 @@
-namespace WindowsExplorerGitInfo.PInvoke
+namespace RepoZ.Plugin.WindowsExplorerGitInfo.PInvoke
 {
     using System;
     using System.Runtime.InteropServices;
