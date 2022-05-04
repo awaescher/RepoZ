@@ -86,4 +86,5 @@ Note that the status might be shorter if possible to improve readability.
     <system:String x:Key="Advanced">Advanced</system:String>
     <system:String x:Key="PruneOnFetch">Prune remote branches on fetch</system:String>
     <system:String x:Key="ReloadConfig">Reload repository actions</system:String>
+    <system:String x:Key="EnabledSearchRepoEverything">Use Everything Search</system:String>
 </ResourceDictionary>

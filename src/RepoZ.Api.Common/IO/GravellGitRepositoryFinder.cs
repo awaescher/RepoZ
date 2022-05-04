@@ -14,7 +14,7 @@ namespace RepoZ.Api.Common.IO
 
         public GravellGitRepositoryFinder(IPathSkipper pathSkipper)
         {
-            _pathSkipper = pathSkipper;
+            _pathSkipper = pathSkipper ?? throw new ArgumentNullException(nameof(pathSkipper));
         }
 
         public List<string> Find(string root, Action<string> onFoundAction)
@@ -52,7 +52,7 @@ namespace RepoZ.Api.Common.IO
                 }
 
                 tmp = Directory.GetDirectories(root);
-                for (int i = 0; i < tmp.Length; i++)
+                for (var i = 0; i < tmp.Length; i++)
                 {
                     pending.Enqueue(tmp[i]);
                 }

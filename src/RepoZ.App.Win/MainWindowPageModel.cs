@@ -26,6 +26,7 @@ namespace RepoZ.App.Win
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchDiscretely)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAdequate)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AutoFetchAggressive)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EnabledSearchRepoEverything)));
             }
         }
 
@@ -57,6 +58,12 @@ namespace RepoZ.App.Win
         {
             get => AppSettingsService.PruneOnFetch;
             set => AppSettingsService.PruneOnFetch = value;
+        }
+
+        public bool EnabledSearchRepoEverything
+        {
+            get => AppSettingsService.EnabledSearchRepoEverything;
+            set => AppSettingsService.EnabledSearchRepoEverything = value;
         }
 
         public IAppSettingsService AppSettingsService { get; }

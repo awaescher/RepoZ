@@ -8,6 +8,7 @@ namespace Specs
     using FluentAssertions;
     using Moq;
     using NUnit.Framework;
+using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git;
     using RepoZ.Api.Common.Git.AutoFetch;
     using RepoZ.Api.Common.IO;
@@ -35,13 +36,16 @@ namespace Specs
             var repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
             Directory.CreateDirectory(repoPath);
 
+            var appSettingsService = new Mock<IAppSettingsService>();
+            appSettingsService.Setup(x => x.EnabledSearchRepoEverything).Returns(false);
+
             var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object);
             _monitor = new DefaultRepositoryMonitor(
                 new GivenPathProvider(new string[] { repoPath, }),
                 new DefaultRepositoryReader(defaultRepositoryTagsResolver),
                 new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader(defaultRepositoryTagsResolver)),
                 new DefaultRepositoryObserverFactory(),
-                new GitRepositoryFinderFactory(new NeverSkippingPathSkipper()),
+                new GitRepositoryFinderFactory(new NeverSkippingPathSkipper(), appSettingsService.Object),
                 new UselessRepositoryStore(),
                 new DefaultRepositoryInformationAggregator(
                     new StatusCompressor(new StatusCharacterMap()),

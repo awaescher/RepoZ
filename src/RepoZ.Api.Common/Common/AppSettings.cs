@@ -15,11 +15,14 @@ namespace RepoZ.Api.Common.Common
 
         public Size MenuSize { get; set; }
 
+        public bool EnabledSearchRepoEverything { get; set; }
+
         public static AppSettings Default => new AppSettings()
             {
                 AutoFetchMode = AutoFetchMode.Off,
                 PruneOnFetch = false,
                 MenuSize = Size.Default,
+                EnabledSearchRepoEverything = false,
             };
     }
 

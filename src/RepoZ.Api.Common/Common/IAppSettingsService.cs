@@ -13,6 +13,8 @@ namespace RepoZ.Api.Common.Common
 
         double MenuHeight { get; set; }
 
+        bool EnabledSearchRepoEverything { get; set; }
+
         void RegisterInvalidationHandler(Action handler);
     }
 }

@@ -8,6 +8,7 @@ namespace RepoZ.Api.Common.Git
     using RepoZ.Api.IO;
     using System.Threading;
     using System.IO;
+    using System.Security.Cryptography;
     using RepoZ.Api.Common.Git.AutoFetch;
 
     public class DefaultRepositoryMonitor : IRepositoryMonitor
@@ -67,17 +68,15 @@ namespace RepoZ.Api.Common.Git
             IEnumerable<Task> tasks = paths.Select(path =>
                 {
                     return Task.Run(() => _gitRepositoryFinderFactory.Create().Find(path, OnFoundNewRepository))
-                               .ContinueWith(_ => Interlocked.Increment(ref scannedPaths))
                                .ContinueWith(_ =>
                                    {
-                                       var newScanningState = scannedPaths < paths.Length;
-                                       var didChange = newScanningState != Scanning;
-                                       Scanning = newScanningState;
-
-                                       if (didChange)
+                                       if (Interlocked.Increment(ref scannedPaths) != paths.Length)
                                        {
-                                           OnScanStateChanged?.Invoke(this, Scanning);
+                                           return;
                                        }
+
+                                       Scanning = false;
+                                       OnScanStateChanged?.Invoke(this, Scanning);
                                    });
                 });
 

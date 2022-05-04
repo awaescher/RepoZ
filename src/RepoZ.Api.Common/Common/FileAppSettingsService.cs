@@ -126,6 +126,21 @@ namespace RepoZ.Api.Common.Common
             }
         }
 
+        public bool EnabledSearchRepoEverything
+        {
+            get => Settings.EnabledSearchRepoEverything;
+            set
+            {
+                if (value != Settings.EnabledSearchRepoEverything)
+                {
+                    Settings.EnabledSearchRepoEverything = value;
+
+                    NotifyChange();
+                    Save();
+                }
+            }
+        }
+
         public void RegisterInvalidationHandler(Action handler)
         {
             _invalidationHandlers.Add(handler);

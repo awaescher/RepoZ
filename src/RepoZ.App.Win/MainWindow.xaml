@@ -130,6 +130,7 @@
 
 									<controls:AcrylicMenuItem Header="{DynamicResource Advanced}" >
 										<controls:AcrylicMenuItem Header="{DynamicResource PruneOnFetch}" IsCheckable="True" IsChecked="{Binding PruneOnFetch}" />
+                                        <controls:AcrylicMenuItem Header="{DynamicResource EnabledSearchRepoEverything}" IsCheckable="True" IsChecked="{Binding EnabledSearchRepoEverything}" />
                                     </controls:AcrylicMenuItem>
 
 									<Separator/>
