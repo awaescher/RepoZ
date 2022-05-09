@@ -8,6 +8,8 @@ namespace RepoZ.Plugin.EverythingFileSearch
     {
         private readonly IPathSkipper _pathSkipper;
 
+        private readonly Lazy<bool> _isInstalled = new Lazy<bool>(() => Everything64Api.IsInstalled());
+
         public EverythingGitRepositoryFinderFactory(IPathSkipper pathSkipper)
         {
             _pathSkipper = pathSkipper ?? throw new ArgumentNullException(nameof(pathSkipper));
@@ -15,7 +17,7 @@ namespace RepoZ.Plugin.EverythingFileSearch
 
         public string Name { get; } = "Everything";
 
-        public bool IsActive { get; } = Everything64Api.IsInstalled();
+        public bool IsActive => _isInstalled.Value;
 
         public IGitRepositoryFinder Create()
         {
