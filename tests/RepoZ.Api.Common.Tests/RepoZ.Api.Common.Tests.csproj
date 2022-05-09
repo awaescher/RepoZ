@@ -27,4 +27,8 @@
     <ProjectReference Include="..\..\src\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IO\" />
+  </ItemGroup>
+
 </Project>

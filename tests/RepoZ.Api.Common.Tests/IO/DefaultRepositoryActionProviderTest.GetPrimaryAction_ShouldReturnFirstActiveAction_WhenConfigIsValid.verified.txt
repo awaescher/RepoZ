@@ -1,0 +1,6 @@
+﻿{
+  BeginGroup: false,
+  Name: 2-active,
+  CanExecute: true,
+  ExecutionCausesSynchronizing: false
+}

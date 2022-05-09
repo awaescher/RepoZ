@@ -454,7 +454,7 @@ namespace RepoZ.Api.Common.IO
                 };
         }
 
-        private void SafelyExecute(Action<Repository> action, Repository repository)
+        private static void SafelyExecute(Action<Repository> action, Repository repository)
         {
             try
             {
@@ -535,12 +535,12 @@ namespace RepoZ.Api.Common.IO
                 };
         }
 
-        private bool HasFiles(Repository repository, string searchPattern)
+        private static bool HasFiles(Repository repository, string searchPattern)
         {
             return GetFileEnumerator(repository, searchPattern).Any();
         }
 
-        private IEnumerable<string> GetFiles(Repository repository, string searchPattern)
+        private static IEnumerable<string> GetFiles(Repository repository, string searchPattern)
         {
             return GetFileEnumerator(repository, searchPattern)
                    .Take(25)
