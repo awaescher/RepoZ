@@ -1,6 +1,7 @@
 namespace Specs
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -8,11 +9,12 @@ namespace Specs
     using FluentAssertions;
     using Moq;
     using NUnit.Framework;
-using RepoZ.Api.Common.Common;
+    using RepoZ.Api.Common.Common;
     using RepoZ.Api.Common.Git;
     using RepoZ.Api.Common.Git.AutoFetch;
     using RepoZ.Api.Common.IO;
     using RepoZ.Api.Git;
+    using RepoZ.Api.IO;
     using Specs.IO;
     using Specs.Mocks;
 
@@ -37,7 +39,7 @@ using RepoZ.Api.Common.Common;
             Directory.CreateDirectory(repoPath);
 
             var appSettingsService = new Mock<IAppSettingsService>();
-            appSettingsService.Setup(x => x.EnabledSearchRepoEverything).Returns(false);
+            appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
 
             var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object);
             _monitor = new DefaultRepositoryMonitor(
@@ -45,7 +47,7 @@ using RepoZ.Api.Common.Common;
                 new DefaultRepositoryReader(defaultRepositoryTagsResolver),
                 new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader(defaultRepositoryTagsResolver)),
                 new DefaultRepositoryObserverFactory(),
-                new GitRepositoryFinderFactory(new NeverSkippingPathSkipper(), appSettingsService.Object),
+                new GitRepositoryFinderFactory(appSettingsService.Object, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper()) }),
                 new UselessRepositoryStore(),
                 new DefaultRepositoryInformationAggregator(
                     new StatusCompressor(new StatusCharacterMap()),

@@ -9,6 +9,7 @@
     <ProjectReference Include="..\..\src\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
     <ProjectReference Include="..\..\src\RepoZ.Api\RepoZ.Api.csproj" />
     <ProjectReference Include="..\..\src\RepoZ.Ipc\RepoZ.Ipc.csproj" />
+    <ProjectReference Include="..\..\src\RepoZ.Plugin.IpcService\RepoZ.Plugin.IpcService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

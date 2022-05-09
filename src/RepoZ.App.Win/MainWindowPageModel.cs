@@ -4,6 +4,7 @@ namespace RepoZ.App.Win
     using RepoZ.Api.Common.Git.AutoFetch;
     using System;
     using System.ComponentModel;
+    using System.Linq;
 
     public class MainWindowPageModel : INotifyPropertyChanged
     {
@@ -62,8 +63,36 @@ namespace RepoZ.App.Win
 
         public bool EnabledSearchRepoEverything
         {
-            get => AppSettingsService.EnabledSearchRepoEverything;
-            set => AppSettingsService.EnabledSearchRepoEverything = value;
+            get => AppSettingsService.EnabledSearchProviders.Any(item => "Everything".Equals(item, StringComparison.CurrentCultureIgnoreCase));
+            set
+            {
+                if (value)
+                {
+                    if (EnabledSearchRepoEverything)
+                    {
+                        return;
+                    }
+
+                    var list = AppSettingsService.EnabledSearchProviders.ToList();
+                    list.Add("Everything");
+                    AppSettingsService.EnabledSearchProviders = list;
+                }
+                else
+                {
+                    if (!EnabledSearchRepoEverything)
+                    {
+                        return;
+                    }
+
+                    var list = AppSettingsService.EnabledSearchProviders.ToList();
+                    var count = list.RemoveAll(item => "Everything".Equals(item, StringComparison.CurrentCultureIgnoreCase));
+                    if (count > 0)
+                    {
+                        AppSettingsService.EnabledSearchProviders = list;
+                    }
+                }
+                
+            }
         }
 
         public IAppSettingsService AppSettingsService { get; }

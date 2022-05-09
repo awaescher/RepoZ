@@ -20,12 +20,13 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LuceneSearch\LuceneSearch.csproj" />
     <ProjectReference Include="..\RepoZ.Api.Common\RepoZ.Api.Common.csproj" />
     <ProjectReference Include="..\RepoZ.Api.Win\RepoZ.Api.Win.csproj" />
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
-    <ProjectReference Include="..\RepoZ.Ipc\RepoZ.Ipc.csproj" />
-    <ProjectReference Include="..\WindowsExplorerGitInfo\WindowsExplorerGitInfo.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.EverythingFileSearch\RepoZ.Plugin.EverythingFileSearch.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.IpcService\RepoZ.Plugin.IpcService.csproj" />
+    <ProjectReference Include="..\RepoZ.Plugin.WindowsExplorerGitInfo\RepoZ.Plugin.WindowsExplorerGitInfo.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
+    <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
     <!-- <PackageReference Include="SimpleInjector.Extensions.ExecutionContextScoping" Version="4.0.0" /> -->
     <!-- <PackageReference Include="SimpleInjector.Extensions.LifetimeScoping" Version="4.0.0" /> -->
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
@@ -43,8 +45,6 @@
     </PackageReference>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="2.3.0" />
     <PackageReference Include="ExpressionStringEvaluator" Version="0.1.14" />
     <PackageReference Include="FluentWPF" Version="0.8.0" />

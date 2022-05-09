@@ -7,8 +7,7 @@ namespace RepoZ.Api.Common.IO
     using System.Linq;
 
     // http://stackoverflow.com/questions/2106877/is-there-a-faster-way-than-this-to-find-all-the-files-in-a-directory-and-all-sub
-
-    public class GravellGitRepositoryFinder : IGitRepositoryFinder
+    internal class GravellGitRepositoryFinder : IGitRepositoryFinder
     {
         private readonly IPathSkipper _pathSkipper;
 

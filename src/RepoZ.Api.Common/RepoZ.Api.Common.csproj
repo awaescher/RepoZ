@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\_ref\Everything64.dll" Link="Everything64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="2.3.0" />
     <PackageReference Include="ExpressionStringEvaluator" Version="0.1.14" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

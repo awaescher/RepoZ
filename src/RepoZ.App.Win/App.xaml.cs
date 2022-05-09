@@ -23,6 +23,8 @@ namespace RepoZ.App.Win
     using RepoZ.Api;
     using SimpleInjector;
     using Container = SimpleInjector.Container;
+    using System.IO;
+    using System.Reflection;
 
     /// <summary>
     /// Interaction logic for App.xaml
@@ -145,12 +147,11 @@ namespace RepoZ.App.Win
             container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
             container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>(Lifestyle.Singleton);
 
-            RepoZ.Ipc.Bootstrapper.Register(container);
-            LuceneSearch.Bootstrapper.Register(container);
-            
-#pragma warning disable CA1416 // Validate platform compatibility
-            WindowsExplorerGitInfo.Bootstrapper.Register(container);
-#pragma warning restore CA1416 // Validate platform compatibility
+            container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
+
+            IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory));
+            IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
+            container.RegisterPackages(assemblies);
         }
 
         public void StartModules(List<IModule> modules)
