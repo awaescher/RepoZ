@@ -39,7 +39,7 @@ namespace Specs
             Directory.CreateDirectory(repoPath);
 
             var appSettingsService = new Mock<IAppSettingsService>();
-            appSettingsService.Setup(x => x.EnabledSearchRepoEverything).Returns(false);
+            appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
 
             var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object);
             _monitor = new DefaultRepositoryMonitor(

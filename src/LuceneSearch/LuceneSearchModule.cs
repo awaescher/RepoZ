@@ -1,9 +1,11 @@
 namespace RepoZ.Plugin.LuceneSearch;
 
+using JetBrains.Annotations;
 using RepoZ.Api;
 using SimpleInjector;
 using SimpleInjector.Packaging;
 
+[UsedImplicitly]
 public class LuceneSearchModule : IPackage
 {
     public void RegisterServices(Container container)

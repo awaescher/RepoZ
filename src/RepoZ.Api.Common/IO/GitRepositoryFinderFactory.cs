@@ -20,17 +20,24 @@ namespace RepoZ.Api.Common.IO
         public IGitRepositoryFinder Create()
         {
             ISingleGitRepositoryFinderFactory factory = null;
-            // first try get Everything. hack.
-            if (_appSettingsService.EnabledSearchRepoEverything)
+
+            foreach (var enabledSearchProviderName in _appSettingsService.EnabledSearchProviders)
             {
-                factory = _factories.FirstOrDefault(x => x.Name.Contains("Everything") && x.IsActive);
+                if (!string.IsNullOrWhiteSpace(enabledSearchProviderName))
+                {
+                    factory = _factories.FirstOrDefault(searchProviderFactory => searchProviderFactory.IsActive
+                                                                                 &&
+                                                                                 searchProviderFactory.Name.Equals(enabledSearchProviderName, StringComparison.CurrentCultureIgnoreCase));
+                }
+
                 if (factory != null)
                 {
                     return factory.Create();
                 }
             }
 
-            factory = _factories.FirstOrDefault(x => x.IsActive);
+            // Default, fallback
+            factory = _factories.FirstOrDefault(searchProviderFactory => searchProviderFactory is GravellGitRepositoryFinderFactory);
             if (factory != null)
             {
                 return factory.Create();

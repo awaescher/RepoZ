@@ -1,20 +1,20 @@
-namespace RepoZ.Api.Common.Common
+namespace RepoZ.Api.Common.Common;
+
+using System;
+using System.Collections.Generic;
+using RepoZ.Api.Common.Git.AutoFetch;
+
+public interface IAppSettingsService
 {
-    using System;
-    using RepoZ.Api.Common.Git.AutoFetch;
+    AutoFetchMode AutoFetchMode { get; set; }
 
-    public interface IAppSettingsService
-    {
-        AutoFetchMode AutoFetchMode { get; set; }
+    bool PruneOnFetch { get; set; }
 
-        bool PruneOnFetch { get; set; }
+    double MenuWidth { get; set; }
 
-        double MenuWidth { get; set; }
+    double MenuHeight { get; set; }
 
-        double MenuHeight { get; set; }
+    List<string> EnabledSearchProviders { get; set; }
 
-        bool EnabledSearchRepoEverything { get; set; }
-
-        void RegisterInvalidationHandler(Action handler);
-    }
+    void RegisterInvalidationHandler(Action handler);
 }

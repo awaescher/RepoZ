@@ -5,6 +5,8 @@ using RepoZ.Api.IO;
 
 public class GravellGitRepositoryFinderFactory : ISingleGitRepositoryFinderFactory
 {
+    private const string FACTORY_NAME = "GravellGitRepositoryFinder";
+
     private readonly IPathSkipper _pathSkipper;
 
     public GravellGitRepositoryFinderFactory(IPathSkipper pathSkipper)
@@ -12,7 +14,7 @@ public class GravellGitRepositoryFinderFactory : ISingleGitRepositoryFinderFacto
         _pathSkipper = pathSkipper ?? throw new ArgumentNullException(nameof(pathSkipper));
     }
 
-    public string Name { get; } = "GravellGitRepositoryFinder";
+    public string Name => FACTORY_NAME;
 
     public bool IsActive { get; } = true;
 

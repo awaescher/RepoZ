@@ -5,6 +5,10 @@
     <!-- <Nullable>enable</Nullable> -->
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+  </ItemGroup>
+
   <!-- Each production project automatically makes internals visible to testproject with same name (suffixed with ".Tests"). -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
