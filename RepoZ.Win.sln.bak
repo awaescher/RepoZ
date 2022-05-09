@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Win", "src\RepoZ.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Common", "src\RepoZ.Api.Common\RepoZ.Api.Common.csproj", "{469C750E-7E80-472B-8C16-A7AD221DAE86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.LuceneSearch", "src\RepoZ.Plugin.LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj", "{409FE957-77C4-40E9-80F2-EBE26676645E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.LuceneSearch", "src\LuceneSearch\RepoZ.Plugin.LuceneSearch.csproj", "{409FE957-77C4-40E9-80F2-EBE26676645E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.LuceneSearch.Tests", "tests\RepoZ.Plugin.LuceneSearch.Tests\RepoZ.Plugin.LuceneSearch.Tests.csproj", "{48ED60BB-E01F-4395-978E-D25C11C25E52}"
 EndProject
