@@ -1,0 +1,34 @@
+{
+  "repository-tags": {
+    "tags": [
+      {
+        "tag": "work",
+
+        // optional, default true
+        "when": "{StringContains({Repository.SafePath}, \"work\")}"
+      },
+      {
+        "tag": "private",
+        "when": "{StringContains({Repository.SafePath}, \"Private\")}"
+      },
+      {
+        "tag": "always-tag"
+      }
+    ],
+    "variables": 
+    [
+      {
+        "name": "work_repo",
+        "value": "{StringContains({Repository.SafePath}, \"work\")}",
+        "enabled": true
+      },
+      // comment ar stripped
+      {
+        "name": "work_repo_1",
+        "value": "true",
+        // boolean to string works
+        "enabled": false
+      }
+    ]
+  }
+}

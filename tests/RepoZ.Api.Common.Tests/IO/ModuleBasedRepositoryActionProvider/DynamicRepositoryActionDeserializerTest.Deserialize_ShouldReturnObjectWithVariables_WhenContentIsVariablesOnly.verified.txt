@@ -1,0 +1,28 @@
+﻿{
+  Variables: [
+    {
+      Name: work_repo,
+      Value: {StringContains({Repository.SafePath}, "work")},
+      Enabled: True
+    },
+    {
+      Name: work_repo_1,
+      Value: true,
+      Enabled: False
+    },
+    {
+      Name: work_repo_2,
+      Value: {StringContains({Repository.SafePath}, "work")},
+      Enabled: false
+    },
+    {
+      Name: is_private_repo,
+      Value: false
+    },
+    {
+      Name: x,
+      Value: y
+    }
+  ],
+  TagCollection: {}
+}

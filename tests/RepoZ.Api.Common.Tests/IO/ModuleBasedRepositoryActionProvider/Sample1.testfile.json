@@ -1,0 +1,63 @@
+{
+  "repository-tags": {
+    "tags": [
+      {
+        "tag": "work",
+
+        // optional, default true
+        "when": "{StringContains({Repository.SafePath}, \"work\")}"
+      },
+      {
+        "tag": "private",
+        "when": "{StringContains({Repository.SafePath}, \"Private\")}"
+      },
+      {
+        "tag": "always-tag"
+      }
+    ],
+    "variables": [
+      {
+        "name": "work_repo",
+        "value": "{StringContains({Repository.SafePath}, \"work\")}",
+        "enabled": true
+      },
+      // comment ar stripped
+      {
+        "name": "work_repo_1",
+        "value": "true",
+        // boolean to string works
+        "enabled": false
+      }
+    ]
+  },
+  "variables": [
+    {
+      "name": "work_repo",
+      "value": "{StringContains({Repository.SafePath}, \"work\")}",
+      "enabled": true
+    },
+    // comment ar stripped
+    {
+      "name": "work_repo_1",
+      "value": "true",
+      // boolean to string works
+      "enabled": false
+    },
+    {
+      "name": "work_repo_2",
+      // single quote works
+      "value": "{StringContains({Repository.SafePath}, \"work\")}",
+      "enabled": "false"
+    },
+    {
+      "name": "is_private_repo",
+      "value": "false"
+    },
+    {
+      "name": "x",
+      "value": "y",
+      // this value is ignored
+      "dummy": "value"
+    }
+  ]
+}

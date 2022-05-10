@@ -1,0 +1,32 @@
+{
+  "repository-tags": [
+    {
+      "tag": "work",
+
+      // optional, default true
+      "when": "{StringContains({Repository.SafePath}, \"work\")}"
+    },
+    {
+      "tag": "private",
+      "when": "{StringContains({Repository.SafePath}, \"Private\")}"
+    },
+    {
+      "tag": "always-tag"
+    }
+  ],
+  "repository-tags": [
+    {
+      "tag": "work1",
+
+      // optional, default true
+      "when": "{StringContains({Repository.SafePath}, \"work\")}"
+    },
+    {
+      "tag": "private1",
+      "when": "{StringContains({Repository.SafePath}, \"Private\")}"
+    },
+    {
+      "tag": "always-tag1"
+    }
+  ]
+}

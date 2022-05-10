@@ -32,13 +32,13 @@
     <Resource Include="App.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <!-- <PackageReference Include="Microsoft.CSharp" Version="4.7.0" /> -->
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
     <PackageReference Include="SimpleInjector.Packaging" Version="5.0.0" />
     <!-- <PackageReference Include="SimpleInjector.Extensions.ExecutionContextScoping" Version="4.0.0" /> -->
     <!-- <PackageReference Include="SimpleInjector.Extensions.LifetimeScoping" Version="4.0.0" /> -->
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <!-- <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" /> -->
+    <!-- <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" /> -->
     <PackageReference Include="System.IO.Abstractions" Version="17.0.3" />
     <PackageReference Include="System.ServiceModel.Federation" Version="4.8.1" />
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.310801">
@@ -54,11 +54,10 @@
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.1.4" />
     <PackageReference Include="NetMQ" Version="4.0.0.207" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="protobuf-net" Version="2.4.6" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.3.0" />
+    <!-- <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.3.0" /> -->
   </ItemGroup>
   <PropertyGroup />
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
+  <!-- <ItemGroup> -->
+  <!--   <FrameworkReference Include="Microsoft.AspNetCore.App" /> -->
+  <!-- </ItemGroup> -->
 </Project>

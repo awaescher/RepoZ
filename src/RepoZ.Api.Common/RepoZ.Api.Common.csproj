@@ -13,10 +13,15 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="System.IO.Abstractions" Version="17.0.3" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="IO\ModuleBasedRepositoryActionProvider\" />
   </ItemGroup>
 
 </Project>

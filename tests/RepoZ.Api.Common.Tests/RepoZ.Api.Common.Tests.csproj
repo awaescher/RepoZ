@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <!-- <Nullable>enable</Nullable> -->
@@ -28,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IO\" />
+    <Folder Include="IO\ModuleBasedRepositoryActionProvider\" />
   </ItemGroup>
-
 </Project>

@@ -1,0 +1,17 @@
+﻿{
+  TagCollection: {
+    Tags: [
+      {
+        Tag: work,
+        When: {StringContains({Repository.SafePath}, "work")}
+      },
+      {
+        Tag: private,
+        When: {StringContains({Repository.SafePath}, "Private")}
+      },
+      {
+        Tag: always-tag
+      }
+    ]
+  }
+}
