@@ -24,5 +24,6 @@
       Value: y
     }
   ],
-  TagCollection: {}
+  TagsCollection: {},
+  ActionsCollection: {}
 }

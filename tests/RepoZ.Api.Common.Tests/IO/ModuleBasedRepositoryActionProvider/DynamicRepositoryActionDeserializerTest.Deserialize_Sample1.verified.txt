@@ -24,7 +24,7 @@
       Value: y
     }
   ],
-  TagCollection: {
+  TagsCollection: {
     Variables: [
       {
         Name: work_repo,
@@ -50,5 +50,6 @@
         Tag: always-tag
       }
     ]
-  }
+  },
+  ActionsCollection: {}
 }

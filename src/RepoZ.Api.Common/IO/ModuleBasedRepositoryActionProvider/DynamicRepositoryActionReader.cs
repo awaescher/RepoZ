@@ -64,7 +64,7 @@ public class DynamicRepositoryActionDeserializer
                             Variable v = variable.ToObject<Variable>();
                             if (v != null)
                             {
-                                repositoryActionConfiguration2.TagCollection.Variables.Add(v);
+                                repositoryActionConfiguration2.TagsCollection.Variables.Add(v);
                             }
                         }
                     }
@@ -79,7 +79,7 @@ public class DynamicRepositoryActionDeserializer
                     RepositoryActionTag v = variable.ToObject<RepositoryActionTag>();
                     if (v != null)
                     {
-                        repositoryActionConfiguration2.TagCollection.Tags.Add(v);
+                        repositoryActionConfiguration2.TagsCollection.Tags.Add(v);
                     }
                 }
             }
@@ -123,73 +123,45 @@ public class DynamicRepositoryActionDeserializer
         public string When { get; set; }
     }
 
-    public class RepositoryActionTags
+    public class TagsCollection
     {
         public List<Variable> Variables { get; set; } = new List<Variable>();
 
         public List<RepositoryActionTag> Tags { get; set; } = new List<RepositoryActionTag>();
     }
 
+    public class ActionsCollection
+    {
+        public List<Variable> Variables { get; set; } = new List<Variable>();
+
+        public List<RepositoryAction> Actions { get; set; } = new List<RepositoryAction>();
+    }
+
+    public class RepositoryAction
+    {
+        public string Type { get; set; }
+    
+        public string Name { get; set; }
+    
+        public string Command { get; set; }
+    
+        public List<string> Executables { get; set; } = new List<string>();
+    
+        public string Arguments { get; set; }
+    
+        public string Keys { get; set; }
+    
+        public string Active { get; set; }
+    
+        public List<RepositoryAction> Subfolder { get; set; } = new List<RepositoryAction>();
+    }
+
     public class RepositoryActionConfiguration2
     {
         public List<Variable> Variables { get; set; } = new List<Variable>();
 
-        // public List<RepositoryActionTag> Tags { get; set; } = new List<RepositoryActionTag>();
-        public RepositoryActionTags TagCollection { get; set; } = new RepositoryActionTags();
+        public TagsCollection TagsCollection { get; set; } = new TagsCollection();
 
-        // [JsonProperty("repository-actions")]
-        // public List<RepositoryAction> RepositoryActions { get; set; } = new List<RepositoryAction>();
-        //
-        // [JsonProperty("repository-tags")]
-        // public List<RepositoryTag> RepositoryTags { get; set; } = new List<RepositoryTag>();
-        //
-        // [System.Diagnostics.DebuggerDisplay("{Name}")]
-        // public class RepositoryAction
-        // {
-        //     [JsonProperty("type")]
-        //     public string Type { get; set; }
-        //
-        //     [JsonProperty("name")]
-        //     public string Name { get; set; }
-        //
-        //     [JsonProperty("command")]
-        //     public string Command { get; set; }
-        //
-        //     [JsonProperty("executables")]
-        //     public List<string> Executables { get; set; } = new List<string>();
-        //
-        //     [JsonProperty("arguments")]
-        //     public string Arguments { get; set; }
-        //
-        //     [JsonProperty("keys")]
-        //     public string Keys { get; set; }
-        //
-        //     [JsonProperty("active")]
-        //     public string Active { get; set; }
-        //
-        //     [JsonProperty("subfolder")]
-        //     public List<RepositoryAction> Subfolder { get; set; } = new List<RepositoryAction>();
-        // }
-        //
-        //
-        //
-        // [System.Diagnostics.DebuggerDisplay("{Tag}")]
-        // public class RepositoryTag
-        // {
-        //     [JsonProperty("tag")]
-        //     public string Tag { get; set; }
-        //
-        //     [JsonProperty("selector")]
-        //     public string Select { get; set; }
-        // }
-        //
-        // public enum LoadState
-        // {
-        //     Ok,
-        //     None,
-        //     Error,
-        // }
+        public ActionsCollection ActionsCollection { get; set; } = new ActionsCollection();
     }
 }
-
-// }

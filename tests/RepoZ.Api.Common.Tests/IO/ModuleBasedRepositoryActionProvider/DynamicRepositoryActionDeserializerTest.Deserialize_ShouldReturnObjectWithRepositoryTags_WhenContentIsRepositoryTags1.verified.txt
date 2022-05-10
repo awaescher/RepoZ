@@ -1,5 +1,5 @@
 ﻿{
-  TagCollection: {
+  TagsCollection: {
     Tags: [
       {
         Tag: work,
@@ -13,5 +13,6 @@
         Tag: always-tag
       }
     ]
-  }
+  },
+  ActionsCollection: {}
 }
