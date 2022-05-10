@@ -1,5 +1,6 @@
 namespace Tests.Git
 {
+    using System.IO.Abstractions;
     using FluentAssertions;
     using Moq;
     using NUnit.Framework;
@@ -16,7 +17,7 @@ namespace Tests.Git
         {
             var appDataPathProvider = new Mock<IAppDataPathProvider>();
             appDataPathProvider.Setup(x => x.GetAppDataPath()).Returns(""); //dummy value
-            _store = new DefaultRepositoryIgnoreStore(new Mock<IErrorHandler>().Object, appDataPathProvider.Object)
+            _store = new DefaultRepositoryIgnoreStore(new Mock<IErrorHandler>().Object, appDataPathProvider.Object, new FileSystem())
                 {
                     UseFilePersistence = false, 
                 };

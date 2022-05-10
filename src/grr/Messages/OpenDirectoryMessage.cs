@@ -2,13 +2,14 @@ namespace grr.Messages
 {
     using RepoZ.Ipc;
     using System.Diagnostics;
+    using System.IO.Abstractions;
     using System.Runtime.InteropServices;
 
     [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
     public class OpenDirectoryMessage : DirectoryMessage
     {
-        public OpenDirectoryMessage(RepositoryFilterOptions filter)
-            : base(filter)
+        public OpenDirectoryMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
+            : base(filter, fileSystem)
         {
         }
 

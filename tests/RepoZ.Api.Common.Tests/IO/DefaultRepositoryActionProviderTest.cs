@@ -1,11 +1,10 @@
 namespace RepoZ.Api.Common.Tests.IO;
 
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using EasyTestFileXunit;
 using FakeItEasy;
-using FluentAssertions;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
@@ -24,7 +23,8 @@ public class DefaultRepositoryActionProviderTest
     private readonly IRepositoryWriter _repositoryWriter = A.Fake<IRepositoryWriter>();
     private readonly IRepositoryMonitor _repositoryMonitor = A.Fake<IRepositoryMonitor>();
     private readonly ITranslationService _translationService = A.Fake<ITranslationService>();
-    
+    private readonly FileSystem _fileSystem = new FileSystem();
+
     public DefaultRepositoryActionProviderTest()
     {
         A.CallTo(() => _appDataPathProvider.GetAppDataPath()).Returns("GetAppDataPath");
@@ -62,7 +62,7 @@ public class DefaultRepositoryActionProviderTest
                         new RepositoryActionConfiguration.RepositoryAction(),
                     },
             });
-        var sut = new DefaultRepositoryActionProvider(_repositoryActionConfigurationStore, _repositoryWriter, _repositoryMonitor, _errorHandler, _translationService);
+        var sut = new DefaultRepositoryActionProvider(_repositoryActionConfigurationStore, _repositoryWriter, _repositoryMonitor, _errorHandler, _translationService, _fileSystem);
         // await using Stream stream = await EasyTestFile.LoadAsStream();
         var repository = new Repository()
             {

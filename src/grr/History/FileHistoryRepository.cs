@@ -1,16 +1,22 @@
-﻿namespace grr.History
+namespace grr.History
 {
-    using Microsoft.Win32;
     using RepoZ.Ipc;
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
 
     public class FileHistoryRepository : IHistoryRepository
     {
+        private readonly IFileSystem _fileSystem;
+
+        public FileHistoryRepository(IFileSystem fileSystem)
+        {
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        }
+
         public void Save(State state)
         {
             // if multiple repositories were found the last time we ran grr,
@@ -32,7 +38,7 @@
 
             try
             {
-                File.WriteAllLines(GetFileName(), lines, Encoding.Default);
+                _fileSystem.File.WriteAllLines(GetFileName(), lines, Encoding.Default);
             }
             catch (Exception)
             {
@@ -46,7 +52,7 @@
 
             try
             {
-                lines = File.ReadAllLines(GetFileName(), Encoding.Default);
+                lines = _fileSystem.File.ReadAllLines(GetFileName(), Encoding.Default);
             }
             catch
             {
@@ -57,7 +63,7 @@
             {
                 return new State()
                     {
-                        LastLocation = "",
+                        LastLocation = string.Empty,
                         LastRepositories = Array.Empty<Repository>()
                     };
             }
@@ -69,12 +75,12 @@
                 };
         }
 
-        private string GetFileName()
+        private static string GetFileName()
         {
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "RepoZ", "state.grr");
         }
 
-        private string Serialize(IEnumerable<Repository> repositories)
+        private static string Serialize(IEnumerable<Repository> repositories)
         {
             if (repositories == null)
             {
@@ -93,7 +99,7 @@
             return string.Join("|", names);
         }
 
-        private Repository[] Deserialize(string repositoryString)
+        private static Repository[] Deserialize(string repositoryString)
         {
             if (string.IsNullOrEmpty(repositoryString))
             {

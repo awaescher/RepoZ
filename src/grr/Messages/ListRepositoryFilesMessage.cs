@@ -3,15 +3,14 @@ namespace grr.Messages
     using RepoZ.Ipc;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
 
     [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
     public class ListRepositoryFilesMessage : FileMessage
     {
-        public ListRepositoryFilesMessage(RepositoryFilterOptions filter)
-            : base(filter)
-        {
-        }
+        public ListRepositoryFilesMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
+            : base(filter, fileSystem) { }
 
         protected override void ExecuteFound(string[] files)
         {
@@ -27,8 +26,9 @@ namespace grr.Messages
                 ? SearchOption.AllDirectories
                 : SearchOption.TopDirectoryOnly;
 
-            return Directory.GetFileSystemEntries(directory, filter.FileFilter, searchOption)
-                            .OrderBy(i => i);
+            // todo Fix IFileSystem
+            return /*FileSystem.*/Directory.GetFileSystemEntries(directory, filter.FileFilter, searchOption)
+                                      .OrderBy(i => i);
         }
 
         public override bool ShouldWriteRepositories(Repository[] repositories)

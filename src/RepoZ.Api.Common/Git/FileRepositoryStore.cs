@@ -2,7 +2,7 @@ namespace RepoZ.Api.Common.Git
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using RepoZ.Api.Common;
     using RepoZ.Api.Git;
@@ -10,10 +10,12 @@ namespace RepoZ.Api.Common.Git
     public abstract class FileRepositoryStore : IRepositoryStore
     {
         private readonly IErrorHandler _errorHandler;
+        private protected readonly IFileSystem FileSystem;
 
-        protected FileRepositoryStore(IErrorHandler errorHandler)
+        protected FileRepositoryStore(IErrorHandler errorHandler, IFileSystem fileSystem)
         {
-            _errorHandler = errorHandler;
+            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+            FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         }
 
         public abstract string GetFileName();
@@ -25,11 +27,11 @@ namespace RepoZ.Api.Common.Git
                 return Array.Empty<string>();
             }
 
-            if (File.Exists(file))
+            if (FileSystem.File.Exists(file))
             {
                 try
                 {
-                    return File.ReadAllLines(file);
+                    return FileSystem.File.ReadAllLines(file);
                 }
                 catch (Exception ex)
                 {
@@ -54,16 +56,16 @@ namespace RepoZ.Api.Common.Git
             }
 
             var file = GetFileName();
-            var path = Directory.GetParent(file).FullName;
+            var path = FileSystem.Directory.GetParent(file).FullName;
 
-            if (!Directory.Exists(path))
+            if (!FileSystem.Directory.Exists(path))
             {
-                Directory.CreateDirectory(path);
+                FileSystem.Directory.CreateDirectory(path);
             }
 
             try
             {
-                File.WriteAllLines(GetFileName(), paths.ToArray());
+                FileSystem.File.WriteAllLines(GetFileName(), paths.ToArray());
             }
             catch (Exception ex)
             {

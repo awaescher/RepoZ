@@ -1,17 +1,20 @@
 namespace grr.Messages
 {
-    using System.IO;
+    using System;
+    using System.IO.Abstractions;
     using RepoZ.Ipc;
 
     [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
     public abstract class DirectoryMessage : IMessage
     {
         private readonly bool _argumentIsExistingDirectory;
+        private protected readonly IFileSystem FileSystem;
 
-        public DirectoryMessage(RepositoryFilterOptions filter)
+        public DirectoryMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
         {
-            Filter = filter;
-            _argumentIsExistingDirectory = Directory.Exists(Filter.RepositoryFilter);
+            Filter = filter ?? throw new ArgumentNullException(nameof(filter));
+            FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+            _argumentIsExistingDirectory = FileSystem.Directory.Exists(Filter.RepositoryFilter);
         }
 
         public void Execute(Repository[] repositories)
@@ -52,7 +55,7 @@ namespace grr.Messages
                     return;
                 }
 
-                if (Directory.Exists(directory))
+                if (FileSystem.Directory.Exists(directory))
                 {
                     ExecuteExistingDirectoryWithSafetyCheck(directory);
                 }

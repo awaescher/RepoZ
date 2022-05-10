@@ -121,6 +121,8 @@ namespace grr
 
             var currentPath = Path.GetDirectoryName(Path.Combine(Assembly.GetExecutingAssembly().Location));
             var command = Path.Combine(currentPath, "SendKeys.exe");
+
+            // todo, in future, use IFileSystem
             if (File.Exists(command))
             {
                 Process.Start(new ProcessStartInfo(command, arguments) { UseShellExecute = true, });

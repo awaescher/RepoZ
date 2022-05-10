@@ -25,10 +25,11 @@ namespace RepoZ.App.Win
     using Container = SimpleInjector.Container;
     using System.IO;
     using System.Reflection;
+    using System.IO.Abstractions;
 
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
     public partial class App : Application, IRepositorySource
     {
         private static Timer _updateTimer;
@@ -149,7 +150,10 @@ namespace RepoZ.App.Win
 
             container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
-            IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory));
+            var fileSystem = new FileSystem();
+            container.RegisterInstance<IFileSystem>(fileSystem);
+
+            IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
             IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
             container.RegisterPackages(assemblies);
         }

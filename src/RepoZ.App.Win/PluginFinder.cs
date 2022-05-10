@@ -1,24 +1,23 @@
 namespace RepoZ.App.Win;
 
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
-using System.Reflection;
 
-public static class PluginFinder
+internal static class PluginFinder
 {
     // private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-    public static IEnumerable<FileInfo> FindPluginAssemblies(string baseDirectory)
+    public static IEnumerable<FileInfo> FindPluginAssemblies(string baseDirectory,IFileSystem fileSystem)
     {
         // Guard.NotNullOrWhiteSpace(baseDirectory, nameof(baseDirectory));
 
         // Logger.Debug(() => $"Plugin base directory {baseDirectory}");
 
-        var assemblies = GetPluginAssembliesInDirectory(baseDirectory);
+        IEnumerable<FileInfo> assemblies = GetPluginAssembliesInDirectory(baseDirectory);
 
-        foreach (var dir in GetPluginDirectories(baseDirectory))
+        foreach (var dir in GetPluginDirectories(baseDirectory, fileSystem))
         {
             assemblies = assemblies.Concat(GetPluginAssembliesInDirectory(dir));
         }
@@ -28,20 +27,21 @@ public static class PluginFinder
         return assemblies;
     }
 
-    private static IEnumerable<string> GetPluginDirectories(string baseDirectory)
+    private static IEnumerable<string> GetPluginDirectories(string baseDirectory, IFileSystem fileSystem)
     {
         var pluginBaseDirectory = Path.Combine(baseDirectory, "Plugins");
 
-        if (!Directory.Exists(pluginBaseDirectory))
+        if (!fileSystem.Directory.Exists(pluginBaseDirectory))
         {
             return Enumerable.Empty<string>();
         }
 
-        return Directory.EnumerateDirectories(pluginBaseDirectory);
+        return fileSystem.Directory.EnumerateDirectories(pluginBaseDirectory);
     }
 
     private static IEnumerable<FileInfo> GetPluginAssembliesInDirectory(string baseDirectory)
     {
+        // todo IFileystem
         return new DirectoryInfo(baseDirectory)
             .GetFiles()
             .Where(file =>
@@ -50,24 +50,4 @@ public static class PluginFinder
                 file.Extension.ToLower() == ".dll");
             // .Select(file => Assembly.Load(AssemblyName.GetAssemblyName(file.FullName)));
     }
-
-    // private static void LogFoundAssemblies(IEnumerable<Assembly> assemblies)
-    // {
-    //     // DebugGuard.NotNull(assemblies, nameof(assemblies));
-    //
-    //     // if (!Logger.IsDebugEnabled)
-    //         // return;
-    //
-    //     var assembliesArray = assemblies.ToArray();
-    //     if (assembliesArray.Any())
-    //     {
-    //         Logger.Debug("Found plugins:");
-    //         foreach (var assembly in assembliesArray)
-    //             Logger.Debug($"- {assembly.FullName}");
-    //     }
-    //     else
-    //     {
-    //         Logger.Debug("No plugins found");
-    //     }
-    // }
 }

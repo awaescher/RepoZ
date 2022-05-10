@@ -2,8 +2,7 @@ namespace RepoZ.Api.Common.IO;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using DotNetEnv;
+using System.IO.Abstractions;
 using ExpressionStringEvaluator.Methods;
 using ExpressionStringEvaluator.Methods.BooleanToBoolean;
 using ExpressionStringEvaluator.Methods.Flow;
@@ -17,8 +16,8 @@ using RepoZ.Api.Git;
 
 public static class RepositoryExpressionEvaluator
 {
-    private static readonly Dictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
     private static readonly ExpressionExecutor _expressionExecutor;
+    private static readonly IFileSystem _fileSystem = new FileSystem(); //todo DI
 
     static RepositoryExpressionEvaluator()
     {
@@ -43,7 +42,7 @@ public static class RepositoryExpressionEvaluator
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new CustomEnvironmentVariableVariableProvider(GetRepoEnvironmentVariables),
+                new CustomEnvironmentVariableVariableProvider(_fileSystem),
                 new RepositoryVariableProvider(),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
@@ -125,27 +124,5 @@ public static class RepositoryExpressionEvaluator
         {
             return false;
         }
-    }
-
-
-    private static Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
-    {
-        var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
-
-        if (!File.Exists(repozEnvFile))
-        {
-            return _emptyDictionary;
-        }
-
-        try
-        {
-            return DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-
-        return _emptyDictionary;
     }
 }

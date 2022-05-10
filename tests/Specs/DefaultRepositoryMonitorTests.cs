@@ -4,6 +4,7 @@ namespace Specs
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Threading;
     using FluentAssertions;
@@ -20,6 +21,7 @@ namespace Specs
 
     public class DefaultRepositoryMonitorTests
     {
+        private readonly IFileSystem _fileSystem = new FileSystem();
         private RepositoryWriter _origin;
         private RepositoryWriter _cloneA;
         private RepositoryWriter _cloneB;
@@ -31,37 +33,40 @@ namespace Specs
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            var fileSystem = new FileSystem();
             _rootPath = Path.Combine(Path.GetTempPath(), "RepoZ_Test_Repositories");
 
             TryCreateRootPath(_rootPath);
 
             var repoPath = Path.Combine(_rootPath, Guid.NewGuid().ToString());
-            Directory.CreateDirectory(repoPath);
+            _fileSystem.Directory.CreateDirectory(repoPath);
 
             var appSettingsService = new Mock<IAppSettingsService>();
             appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
 
-            var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object);
+            var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object, fileSystem);
             _monitor = new DefaultRepositoryMonitor(
                 new GivenPathProvider(new string[] { repoPath, }),
                 new DefaultRepositoryReader(defaultRepositoryTagsResolver),
                 new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader(defaultRepositoryTagsResolver)),
                 new DefaultRepositoryObserverFactory(),
-                new GitRepositoryFinderFactory(appSettingsService.Object, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper()) }),
+                new GitRepositoryFinderFactory(appSettingsService.Object, new List<ISingleGitRepositoryFinderFactory>() { new GravellGitRepositoryFinderFactory(new NeverSkippingPathSkipper(), _fileSystem) }),
                 new UselessRepositoryStore(),
                 new DefaultRepositoryInformationAggregator(
                     new StatusCompressor(new StatusCharacterMap()),
                     new DirectThreadDispatcher()),
                 new Mock<IAutoFetchHandler>().Object,
-                new Mock<IRepositoryIgnoreStore>().Object)
+                new Mock<IRepositoryIgnoreStore>().Object,
+                _fileSystem)
                 {
                     DelayGitRepositoryStatusAfterCreationMilliseconds = 100,
                     DelayGitStatusAfterFileOperationMilliseconds = 100,
                 };
 
-            _origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"));
-            _cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"));
-            _cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"));
+            
+            _origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"), fileSystem);
+            _cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"), fileSystem);
+            _cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"), fileSystem);
         }
 
         [OneTimeTearDown]
@@ -328,14 +333,14 @@ commit file             master   |  |       |                   |              v
             NormalizeReadOnlyFiles(_cloneA.Path);
 
             Monitor.Expect(
-                () => Directory.Delete(_cloneA.Path, true),
+                () => _fileSystem.Directory.Delete(_cloneA.Path, true),
                 changes: 0,
                 deletes: 1);
         }
 
-        private static void TryDeleteRootPath(string rootPath)
+        private void TryDeleteRootPath(string rootPath)
         {
-            if (!Directory.Exists(rootPath))
+            if (!_fileSystem.Directory.Exists(rootPath))
             {
                 return;
             }
@@ -346,7 +351,7 @@ commit file             master   |  |       |                   |              v
             {
                 NormalizeReadOnlyFiles(rootPath);
 
-                Directory.Delete(rootPath, true);
+                _fileSystem.Directory.Delete(rootPath, true);
             }
             catch (UnauthorizedAccessException)
             {
@@ -357,11 +362,11 @@ commit file             master   |  |       |                   |              v
             WaitFileOperationDelay();
         }
 
-        private static void NormalizeReadOnlyFiles(string rootPath)
+        private void NormalizeReadOnlyFiles(string rootPath)
         {
             // set readonly git files to "normal" 
             // otherwise we get UnauthorizedAccessExceptions
-            var readOnlyFiles = Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories)
+            var readOnlyFiles = _fileSystem.Directory.GetFiles(rootPath, "*.*", SearchOption.AllDirectories)
                                          .Where(f => File.GetAttributes(f).HasFlag(FileAttributes.ReadOnly));
 
             foreach (var file in readOnlyFiles)
@@ -370,16 +375,16 @@ commit file             master   |  |       |                   |              v
             }
         }
 
-        private static void TryCreateRootPath(string rootPath)
+        private void TryCreateRootPath(string rootPath)
         {
             TryDeleteRootPath(rootPath);
 
-            if (Directory.Exists(rootPath))
+            if (_fileSystem.Directory.Exists(rootPath))
             {
                 return;
             }
 
-            Directory.CreateDirectory(rootPath);
+            _fileSystem.Directory.CreateDirectory(rootPath);
         }
 
         private static void WaitFileOperationDelay()

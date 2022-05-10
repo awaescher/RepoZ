@@ -101,7 +101,7 @@ namespace RepoZ.Api.Common.Git
             return headFile.Substring(0, end);
         }
 
-        private int GetGitPathEndFromHeadFile(string path)
+        private static int GetGitPathEndFromHeadFile(string path)
         {
             return path.IndexOf(HEAD_LOG_FILE, StringComparison.OrdinalIgnoreCase);
         }

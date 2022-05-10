@@ -8,6 +8,7 @@ namespace RepoZ.Api.Common.IO
     using RepoZ.Api.Common.Common;
     using System.IO;
     using RepoZ.Api.Common.Git;
+    using System.IO.Abstractions;
 
     public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     {
@@ -16,19 +17,22 @@ namespace RepoZ.Api.Common.IO
         private readonly IRepositoryMonitor _repositoryMonitor;
         private readonly IErrorHandler _errorHandler;
         private readonly ITranslationService _translationService;
-        
+        private readonly IFileSystem _fileSystem;
+
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
             IRepositoryWriter repositoryWriter,
             IRepositoryMonitor repositoryMonitor,
             IErrorHandler errorHandler,
-            ITranslationService translationService)
+            ITranslationService translationService,
+            IFileSystem fileSystem)
         {
             _repositoryActionConfigurationStore = repositoryActionConfigurationStore ?? throw new ArgumentNullException(nameof(repositoryActionConfigurationStore));
             _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
             _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
             _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         }
 
         private RepositoryActionConfiguration Configuration => _repositoryActionConfigurationStore.RepositoryActionConfiguration;
@@ -46,7 +50,7 @@ namespace RepoZ.Api.Common.IO
 
         public IEnumerable<RepositoryAction> GetContextMenuActions(IEnumerable<Repository> repositories)
         {
-            return GetContextMenuActionsInternal(repositories.Where(r => Directory.Exists(r.SafePath))).Where(a => a != null);
+            return GetContextMenuActionsInternal(repositories.Where(r => _fileSystem.Directory.Exists(r.SafePath))).Where(a => a != null);
         }
 
         private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repos)
@@ -80,7 +84,7 @@ namespace RepoZ.Api.Common.IO
                 if (!string.IsNullOrWhiteSpace(tmpConfig?.RedirectFile))
                 {
                     var filename = ReplaceVariables(tmpConfig.RedirectFile, singleRepository);
-                    if (File.Exists(filename))
+                    if (_fileSystem.File.Exists(filename))
                     {
                         tmpConfig = _repositoryActionConfigurationStore.LoadRepositoryActionConfiguration(filename);
 
@@ -267,7 +271,7 @@ namespace RepoZ.Api.Common.IO
                                 RedirectStandardError = true,
                             };
 
-                            if (File.Exists(repozEnvFile))
+                            if (_fileSystem.File.Exists(repozEnvFile))
                             {
                                 foreach (KeyValuePair<string, string> item in DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)))
                                 {
@@ -393,7 +397,7 @@ namespace RepoZ.Api.Common.IO
                 foreach (var executable in executables)
                 {
                     var normalized = executable.Replace("\"", "");
-                    if (File.Exists(normalized) || Directory.Exists(normalized))
+                    if (_fileSystem.File.Exists(normalized) || _fileSystem.Directory.Exists(normalized))
                     {
                         return new RepositoryAction()
                             {

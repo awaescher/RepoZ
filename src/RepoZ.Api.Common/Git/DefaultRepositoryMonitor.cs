@@ -7,8 +7,7 @@ namespace RepoZ.Api.Common.Git
     using RepoZ.Api.Git;
     using RepoZ.Api.IO;
     using System.Threading;
-    using System.IO;
-    using System.Security.Cryptography;
+    using System.IO.Abstractions;
     using RepoZ.Api.Common.Git.AutoFetch;
 
     public class DefaultRepositoryMonitor : IRepositoryMonitor
@@ -28,6 +27,7 @@ namespace RepoZ.Api.Common.Git
         private readonly IRepositoryInformationAggregator _repositoryInformationAggregator;
         private readonly IRepositoryIgnoreStore _repositoryIgnoreStore;
         private readonly Dictionary<string, IRepositoryObserver> _repositoryObservers;
+        private readonly IFileSystem _fileSystem;
 
         public DefaultRepositoryMonitor(
             IPathProvider pathProvider,
@@ -38,8 +38,8 @@ namespace RepoZ.Api.Common.Git
             IRepositoryStore repositoryStore,
             IRepositoryInformationAggregator repositoryInformationAggregator,
             IAutoFetchHandler autoFetchHandler,
-            IRepositoryIgnoreStore repositoryIgnoreStore
-        )
+            IRepositoryIgnoreStore repositoryIgnoreStore,
+            IFileSystem fileSystem)
         {
             _repositoryReader = repositoryReader ?? throw new ArgumentNullException(nameof(repositoryReader));
             _repositoryDetectorFactory = repositoryDetectorFactory ?? throw new ArgumentNullException(nameof(repositoryDetectorFactory));
@@ -50,6 +50,7 @@ namespace RepoZ.Api.Common.Git
             _repositoryInformationAggregator = repositoryInformationAggregator ?? throw new ArgumentNullException(nameof(repositoryInformationAggregator));
             _repositoryObservers = new Dictionary<string, IRepositoryObserver>();
             _repositoryIgnoreStore = repositoryIgnoreStore;
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
 
             _storeFlushTimer = new Timer(RepositoryStoreFlushTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
 
@@ -134,7 +135,7 @@ namespace RepoZ.Api.Common.Git
 
             foreach (var path in _pathProvider.GetPaths())
             {
-                if (!Directory.Exists(path))
+                if (!_fileSystem.Directory.Exists(path))
                 {
                     continue;
                 }

@@ -11,10 +11,12 @@
     <RepositoryUrl>https://github.com/awaescher/RepoZ</RepositoryUrl>
     <ReleaseVersion>4.0</ReleaseVersion>
     <Version>1.0.0.0</Version>
+    <!-- <DefineConstants>$(DefineConstants);FEATURE_ENUMERATION_OPTIONS</DefineConstants> -->
 </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="System.IO.Abstractions" Version="17.0.3" />
     <PackageReference Include="TextCopy" Version="4.2.0" />
   </ItemGroup>
 

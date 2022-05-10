@@ -1,7 +1,6 @@
 namespace grrui.Model
 {
     using RepoZ.Api.Git;
-    using RepoZ.Ipc;
     using System;
     using System.Collections.Generic;
     using System.Linq;

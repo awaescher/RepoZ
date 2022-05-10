@@ -3,10 +3,9 @@ namespace RepoZ.Api.Common.Git
     using Newtonsoft.Json;
     using RepoZ.Api.IO;
     using System;
-    using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using RepoZ.Api.Git;
 
@@ -17,8 +16,8 @@ namespace RepoZ.Api.Common.Git
         private readonly IErrorHandler _errorHandler;
         private readonly string _fullFilename;
 
-        public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
-            : base(errorHandler)
+        public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
+            : base(errorHandler, fileSystem)
         {
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
             _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
@@ -34,7 +33,7 @@ namespace RepoZ.Api.Common.Git
         public RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo)
         {
             var file = Path.Combine(repo.Path, ".git", REPOSITORY_ACTIONS_FILENAME);
-            if (File.Exists(file))
+            if (FileSystem.File.Exists(file))
             {
                 RepositoryActionConfiguration result = LoadRepositoryActionConfiguration(file);
                 if (result.State == RepositoryActionConfiguration.LoadState.Ok)
@@ -44,7 +43,7 @@ namespace RepoZ.Api.Common.Git
             }
 
             file = Path.Combine(repo.Path, REPOSITORY_ACTIONS_FILENAME);
-            if (File.Exists(file))
+            if (FileSystem.File.Exists(file))
             {
                 RepositoryActionConfiguration result = LoadRepositoryActionConfiguration(file);
                 if (result.State == RepositoryActionConfiguration.LoadState.Ok)
@@ -60,7 +59,7 @@ namespace RepoZ.Api.Common.Git
         {
             lock (_lock)
             {
-                if (!File.Exists(GetFileName()))
+                if (!FileSystem.File.Exists(GetFileName()))
                 {
                     if (!TryCopyDefaultJsonFile())
                     {
@@ -80,9 +79,9 @@ namespace RepoZ.Api.Common.Git
         {
             try
             {
-                if (File.Exists(filename))
+                if (FileSystem.File.Exists(filename))
                 {
-                    using FileStream stream = File.OpenRead(filename);
+                    using Stream stream = FileSystem.File.OpenRead(filename);
                     return LoadRepositoryActionConfiguration(stream).GetAwaiter().GetResult();
                 }
 
@@ -147,14 +146,14 @@ namespace RepoZ.Api.Common.Git
 
             try
             {
-                File.Copy(defaultFile, targetFile);
+                FileSystem.File.Copy(defaultFile, targetFile);
             }
             catch
             {
                 /* lets ignore errors here, we just want to know if if worked or not by checking the file existence */
             }
 
-            return File.Exists(targetFile);
+            return FileSystem.File.Exists(targetFile);
         }
 
         private static string RemoveComment(string line)

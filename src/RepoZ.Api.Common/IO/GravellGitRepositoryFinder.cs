@@ -3,17 +3,19 @@ namespace RepoZ.Api.Common.IO
     using RepoZ.Api.IO;
     using System;
     using System.Collections.Generic;
-    using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
 
     // http://stackoverflow.com/questions/2106877/is-there-a-faster-way-than-this-to-find-all-the-files-in-a-directory-and-all-sub
     internal class GravellGitRepositoryFinder : IGitRepositoryFinder
     {
         private readonly IPathSkipper _pathSkipper;
+        private readonly IFileSystem _fileSystem;
 
-        public GravellGitRepositoryFinder(IPathSkipper pathSkipper)
+        public GravellGitRepositoryFinder(IPathSkipper pathSkipper, IFileSystem fileSystem)
         {
             _pathSkipper = pathSkipper ?? throw new ArgumentNullException(nameof(pathSkipper));
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         }
 
         public List<string> Find(string root, Action<string> onFoundAction)
@@ -37,7 +39,7 @@ namespace RepoZ.Api.Common.IO
                 string[] tmp;
                 try
                 {
-                    tmp = Directory.GetFiles(root, searchPattern);
+                    tmp = _fileSystem.Directory.GetFiles(root, searchPattern);
                 }
                 catch (Exception)
                 {
@@ -50,7 +52,7 @@ namespace RepoZ.Api.Common.IO
                     yield return tmp[i];
                 }
 
-                tmp = Directory.GetDirectories(root);
+                tmp = _fileSystem.Directory.GetDirectories(root);
                 for (var i = 0; i < tmp.Length; i++)
                 {
                     pending.Enqueue(tmp[i]);

@@ -195,7 +195,7 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
 
             totalHits = topDocs.TotalHits;
 
-            foreach (var result in topDocs.ScoreDocs)
+            foreach (ScoreDoc result in topDocs.ScoreDocs)
             {
                 Document doc = searcher.Doc(result.Doc);
 
@@ -240,7 +240,7 @@ internal class RepositoryIndex : IRepositoryIndex, IDisposable
             return Guid.Empty;
         }
 
-        return Guid.TryParse(guidString, out var id) ? id : Guid.Empty;
+        return Guid.TryParse(guidString, out Guid id) ? id : Guid.Empty;
     }
 
     // todo

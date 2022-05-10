@@ -1,13 +1,14 @@
 namespace grr.Messages
 {
     using System;
+    using System.IO.Abstractions;
     using RepoZ.Ipc;
 
     [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
     public class GetDirectoryMessage : DirectoryMessage
     {
-        public GetDirectoryMessage(RepositoryFilterOptions filter)
-            : base(filter)
+        public GetDirectoryMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
+            : base(filter, fileSystem)
         {
         }
 

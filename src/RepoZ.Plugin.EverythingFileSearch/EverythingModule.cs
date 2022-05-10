@@ -1,7 +1,6 @@
 namespace RepoZ.Plugin.EverythingFileSearch
 {
     using JetBrains.Annotations;
-    using RepoZ.Api;
     using RepoZ.Api.IO;
     using SimpleInjector;
     using SimpleInjector.Packaging;

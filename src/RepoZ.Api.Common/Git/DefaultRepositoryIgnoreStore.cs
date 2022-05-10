@@ -5,6 +5,7 @@ namespace RepoZ.Api.Common.Git
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
 
     public class DefaultRepositoryIgnoreStore : FileRepositoryStore, IRepositoryIgnoreStore
@@ -14,8 +15,8 @@ namespace RepoZ.Api.Common.Git
         private readonly object _lock = new object();
         private readonly string _fullFilename;
 
-        public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider)
-            : base(errorHandler)
+        public DefaultRepositoryIgnoreStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
+            : base(errorHandler, fileSystem)
         {
             AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
             _fullFilename = Path.Combine(AppDataPathProvider.GetAppDataPath(), "Repositories.ignore");

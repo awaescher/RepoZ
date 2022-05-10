@@ -6,6 +6,7 @@ namespace RepoZ.App.Win
     using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows;
@@ -34,6 +35,7 @@ namespace RepoZ.App.Win
         private bool _closeOnDeactivate = true;
         private bool _refreshDelayed = false;
         private DateTime _timeOfLastRefresh = DateTime.MinValue;
+        private readonly IFileSystem _fileSystem;
 
         public MainWindow(
             StatusCharacterMap statusCharacterMap,
@@ -44,7 +46,8 @@ namespace RepoZ.App.Win
             IAppSettingsService appSettingsService,
             ITranslationService translationService,
             IRepositoryActionConfigurationStore actionConfigurationStore,
-            IRepositorySearch repositorySearch)
+            IRepositorySearch repositorySearch,
+            IFileSystem fileSystem)
         {
             _translationService = translationService;
             InitializeComponent();
@@ -65,6 +68,7 @@ namespace RepoZ.App.Win
             _repositoryIgnoreStore = repositoryIgnoreStore ?? throw new ArgumentNullException(nameof(repositoryIgnoreStore));
             _actionConfigurationStore = actionConfigurationStore ?? throw new ArgumentNullException(nameof(actionConfigurationStore));
             _repositorySearch = repositorySearch ?? throw new ArgumentNullException(nameof(repositorySearch));
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
 
             lstRepositories.ItemsSource = aggregator.Repositories;
 
@@ -277,7 +281,7 @@ namespace RepoZ.App.Win
             var fileName = ((FileRepositoryStore)_actionConfigurationStore).GetFileName();
             var directoryName = Path.GetDirectoryName(fileName);
 
-            if (Directory.Exists(directoryName))
+            if (_fileSystem.Directory.Exists(directoryName))
             {
                 Process.Start(new ProcessStartInfo(directoryName)
                     {

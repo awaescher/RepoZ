@@ -6,15 +6,18 @@ namespace RepoZ.Api.Common.Common
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
 
     public class FileAppSettingsService : IAppSettingsService
     {
+        private readonly IFileSystem _fileSystem;
         private AppSettings _settings;
         private readonly List<Action> _invalidationHandlers = new List<Action>();
 
-        public FileAppSettingsService(IAppDataPathProvider appDataPathProvider)
+        public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
         {
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         }
 
@@ -22,14 +25,14 @@ namespace RepoZ.Api.Common.Common
         {
             var file = GetFileName();
 
-            if (!File.Exists(file))
+            if (!_fileSystem.File.Exists(file))
             {
                 return AppSettings.Default;
             }
 
             try
             {
-                var json = File.ReadAllText(file);
+                var json = _fileSystem.File.ReadAllText(file);
                 return JsonConvert.DeserializeObject<AppSettings>(json);
             }
             catch
@@ -43,16 +46,16 @@ namespace RepoZ.Api.Common.Common
         private void Save()
         {
             var file = GetFileName();
-            var path = Directory.GetParent(file).FullName;
+            var path = _fileSystem.Directory.GetParent(file).FullName;
 
-            if (!Directory.Exists(path))
+            if (!_fileSystem.Directory.Exists(path))
             {
-                Directory.CreateDirectory(path);
+                _fileSystem.Directory.CreateDirectory(path);
             }
 
             try
             {
-                File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(_settings, Formatting.Indented));
+                _fileSystem.File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(_settings, Formatting.Indented));
             }
             catch
             {

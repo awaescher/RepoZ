@@ -3,6 +3,7 @@ namespace grr
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Text;
     using CommandLine;
@@ -13,6 +14,8 @@ namespace grr
     static class Program
     {
         private const int MAX_REPO_NAME_LENGTH = 35;
+
+        private static readonly IFileSystem _fileSystem = new FileSystem();
 
         static void Main(string[] args)
         {
@@ -117,7 +120,7 @@ namespace grr
                     // so we have to get the old repositories - load and copy them if required
                 };
 
-            var repository = new History.FileHistoryRepository();
+            var repository = new History.FileHistoryRepository(_fileSystem);
             repository.Save(history);
         }
 
@@ -125,7 +128,7 @@ namespace grr
         {
             // do NOT use the directory of the grr-assembly
             // we need to preserve the context of the calling console
-            return System.IO.Directory.GetCurrentDirectory();
+            return _fileSystem.Directory.GetCurrentDirectory();
         }
 
         private static void WriteRepositories(Repository[] repositories)
@@ -183,7 +186,7 @@ namespace grr
             {
                 if (options.HasFileFilter)
                 {
-                    message = new ListRepositoryFilesMessage(options);
+                    message = new ListRepositoryFilesMessage(options, _fileSystem);
                 }
                 else
                 {
@@ -193,23 +196,23 @@ namespace grr
 
             if (options is ChangeDirectoryOptions)
             {
-                message = new ChangeToDirectoryMessage(options);
+                message = new ChangeToDirectoryMessage(options, _fileSystem);
             }
 
             if (options is GetDirectoryOptions)
             {
-                message = new GetDirectoryMessage(options);
+                message = new GetDirectoryMessage(options, _fileSystem);
             }
 
             if (options is OpenDirectoryOptions)
             {
                 if (options.HasFileFilter)
                 {
-                    message = new OpenFileMessage(options);
+                    message = new OpenFileMessage(options, _fileSystem);
                 }
                 else
                 {
-                    message = new OpenDirectoryMessage(options);
+                    message = new OpenDirectoryMessage(options, _fileSystem);
                 }
             }
 
@@ -218,7 +221,7 @@ namespace grr
 
         private static void ApplyMessageFilters(RepositoryFilterOptions filter)
         {
-            var historyRepository = new History.FileHistoryRepository();
+            var historyRepository = new History.FileHistoryRepository(_fileSystem);
             var filters = new IMessageFilter[]
                 {
                     new IndexMessageFilter(historyRepository),
@@ -231,9 +234,9 @@ namespace grr
             }
         }
 
-        private static bool IsHelpRequested(string[] args)
+        private static bool IsHelpRequested(IReadOnlyList<string> args)
         {
-            if (args.Length != 1)
+            if (args.Count != 1)
             {
                 return false;
             }

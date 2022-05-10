@@ -2,15 +2,15 @@ namespace grr.Messages
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
 
     [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
     public abstract class FileMessage : DirectoryMessage
     {
-        public FileMessage(RepositoryFilterOptions filter)
-            : base(filter)
+        public FileMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
+            : base(filter, fileSystem)
         {
         }
 
@@ -43,8 +43,8 @@ namespace grr.Messages
                 ? SearchOption.AllDirectories
                 : SearchOption.TopDirectoryOnly;
 
-            return Directory.GetFiles(directory, filter.FileFilter, searchOption)
-                            .OrderBy(i => i);
+            return FileSystem.Directory.GetFiles(directory, filter.FileFilter, searchOption)
+                                       .OrderBy(i => i);
         }
 
         protected abstract void ExecuteFound(string[] files);

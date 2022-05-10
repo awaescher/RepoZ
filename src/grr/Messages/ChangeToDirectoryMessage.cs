@@ -2,14 +2,15 @@ namespace grr.Messages
 {
     using System;
     using System.Diagnostics;
+    using System.IO.Abstractions;
     using System.Runtime.InteropServices;
     using RepoZ.Ipc;
 
     [DebuggerDisplay("{GetRemoteCommand()}")]
     public class ChangeToDirectoryMessage : DirectoryMessage
     {
-        public ChangeToDirectoryMessage(RepositoryFilterOptions filter)
-            : base(filter) { }
+        public ChangeToDirectoryMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
+            : base(filter, fileSystem) { }
 
         protected override void ExecuteExistingDirectory(string directory)
         {

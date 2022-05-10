@@ -3,14 +3,15 @@ namespace grr.Messages
     using RepoZ.Ipc;
     using System;
     using System.Diagnostics;
+    using System.IO.Abstractions;
     using System.Linq;
     using System.Runtime.InteropServices;
 
     [System.Diagnostics.DebuggerDisplay("{GetRemoteCommand()}")]
     public class OpenFileMessage : FileMessage
     {
-        public OpenFileMessage(RepositoryFilterOptions filter)
-            : base(filter)
+        public OpenFileMessage(RepositoryFilterOptions filter, IFileSystem fileSystem)
+            : base(filter, fileSystem)
         {
         }
 

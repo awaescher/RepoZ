@@ -1,7 +1,7 @@
 namespace RepoZ.Api.Common.Git
 {
     using System;
-    using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using RepoZ.Api.Common.IO;
     using RepoZ.Api.Git;
@@ -9,10 +9,12 @@ namespace RepoZ.Api.Common.Git
     public class DefaultRepositoryTagsResolver : IRepositoryTagsResolver
     {
         private readonly IRepositoryActionConfigurationStore _configStore;
+        private readonly IFileSystem _fileSystem;
 
-        public DefaultRepositoryTagsResolver(IRepositoryActionConfigurationStore configStore)
+        public DefaultRepositoryTagsResolver(IRepositoryActionConfigurationStore configStore, IFileSystem fileSystem)
         {
-            _configStore = configStore;
+            _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _configStore.Preload();
         }
 
@@ -42,7 +44,7 @@ namespace RepoZ.Api.Common.Git
             {
                 if (!string.IsNullOrWhiteSpace(repoConfig.RedirectFile))
                 {
-                    if (File.Exists(repoConfig.RedirectFile))
+                    if (_fileSystem.File.Exists(repoConfig.RedirectFile))
                     {
                         try
                         {
