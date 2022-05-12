@@ -1,0 +1,13 @@
+﻿{
+  RepositorySpecificConfigFiles: [
+    {
+      Filename: ab1.env,
+      When: false
+    },
+    {
+      Filename: ab.env
+    }
+  ],
+  TagsCollection: {},
+  ActionsCollection: {}
+}

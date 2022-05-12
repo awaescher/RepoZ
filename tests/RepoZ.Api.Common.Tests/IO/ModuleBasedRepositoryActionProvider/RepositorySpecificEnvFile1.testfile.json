@@ -1,0 +1,12 @@
+{
+  "repository-specific-env-files": 
+  [
+    {
+      "filename": "ab1.env",
+      "when": "false"
+    },
+    {
+      "filename": "ab.env"
+    }
+  ]
+}

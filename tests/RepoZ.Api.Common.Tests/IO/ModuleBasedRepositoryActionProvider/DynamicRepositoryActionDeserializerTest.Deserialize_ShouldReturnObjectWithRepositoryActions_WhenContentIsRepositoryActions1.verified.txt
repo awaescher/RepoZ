@@ -1,0 +1,18 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: false,
+        MultiSelectEnabled: true
+      },
+      {
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: False
+      }
+    ]
+  }
+}

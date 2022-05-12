@@ -1,0 +1,127 @@
+{
+  "repository-specific-config-files": [
+    {
+      "filename": "{Repostitory.Path}\\RepositoryActions.json",
+      "when": "false"
+    },
+    {
+      "filename": "{Repostitory.Path}\\.git\\RepositoryActions.json"
+    }
+  ],
+  "repository-specific-env-files": [
+    {
+      "filename": "ab1.env",
+      "when": "false"
+    },
+    {
+      "filename": "ab.env"
+    }
+  ],
+  "repository-tags": {
+    "tags": [
+      {
+        "tag": "work",
+
+        // optional, default true
+        "when": "{StringContains({Repository.SafePath}, \"work\")}"
+      },
+      {
+        "tag": "private",
+        "when": "{StringContains({Repository.SafePath}, \"Private\")}"
+      },
+      {
+        "tag": "always-tag"
+      }
+    ],
+    "variables": [
+      {
+        "name": "work_repo",
+        "value": "{StringContains({Repository.SafePath}, \"work\")}",
+        "enabled": true
+      },
+      // comment ar stripped
+      {
+        "name": "work_repo_1",
+        "value": "true",
+        // boolean to string works
+        "enabled": false
+      }
+    ]
+  },
+  "variables": [
+    {
+      "name": "work_repo",
+      "value": "{StringContains({Repository.SafePath}, \"work\")}",
+      "enabled": true
+    },
+    // comment ar stripped
+    {
+      "name": "work_repo_1",
+      "value": "true",
+      // boolean to string works
+      "enabled": false
+    },
+    {
+      "name": "work_repo_2",
+      // single quote works
+      "value": "{StringContains({Repository.SafePath}, \"work\")}",
+      "enabled": "false"
+    },
+    {
+      "name": "is_private_repo",
+      "value": "false"
+    },
+    {
+      "name": "x",
+      "value": "y",
+      // this value is ignored
+      "dummy": "value"
+    }
+  ],
+  "repository-actions": {
+    "variables": [
+      {
+        "name": "work_repo",
+        "value": "{StringContains({Repository.SafePath}, \"work\")}",
+        "enabled": true
+      },
+      // comment ar stripped
+      {
+        "name": "work_repo_1",
+        "value": "true",
+        // boolean to string works
+        "enabled": false
+      }
+    ],
+    "actions": [
+      {
+        // type, string, optional, defaults to ..
+        "type": "browser@1",
+        "name": "{OpenIn} Windows File Explorer",
+        // optional, default true
+        "active": "false",
+
+        // optional, default to false
+        "multi-select-enabled": "true",
+
+        // optional
+        "variables": [
+          {
+            "name": "name",
+            "value": "{StringContains({Repository.SafePath}, \"abc\")}"
+          }
+        ],
+        "data": // optional, depends op type
+        {
+        }
+      },
+      {
+        // type, string, optional, defaults to ..
+        "type": "browser@1",
+        "name": "{OpenIn} Windows File Explorer",
+        // false as boolean instead of string
+        "active": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+﻿{
+  Variables: [
+    {
+      Name: work_repo,
+      Value: {StringContains({Repository.SafePath}, "work")},
+      Enabled: True
+    },
+    {
+      Name: work_repo_1,
+      Value: true,
+      Enabled: False
+    },
+    {
+      Name: work_repo_2,
+      Value: {StringContains({Repository.SafePath}, "work")},
+      Enabled: false
+    },
+    {
+      Name: is_private_repo,
+      Value: false
+    },
+    {
+      Name: x,
+      Value: y
+    }
+  ],
+  TagsCollection: {
+    Variables: [
+      {
+        Name: work_repo,
+        Value: {StringContains({Repository.SafePath}, "work")},
+        Enabled: True
+      },
+      {
+        Name: work_repo_1,
+        Value: true,
+        Enabled: False
+      }
+    ],
+    Tags: [
+      {
+        Tag: work,
+        When: {StringContains({Repository.SafePath}, "work")}
+      },
+      {
+        Tag: private,
+        When: {StringContains({Repository.SafePath}, "Private")}
+      },
+      {
+        Tag: always-tag
+      }
+    ]
+  },
+  ActionsCollection: {
+    Variables: [
+      {
+        Name: work_repo,
+        Value: {StringContains({Repository.SafePath}, "work")},
+        Enabled: True
+      },
+      {
+        Name: work_repo_1,
+        Value: true,
+        Enabled: False
+      }
+    ],
+    Actions: [
+      {
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: false,
+        MultiSelectEnabled: true
+      },
+      {
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: False
+      }
+    ]
+  }
+}

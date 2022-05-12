@@ -1,23 +1,11 @@
 namespace RepoZ.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
-using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
-using VerifyTests;
 using VerifyXunit;
 using Xunit;
-
-public static class VerifierInitializer
-{
-    [ModuleInitializer]
-    public static void Initialize()
-    {
-        VerifierSettings.DisableRequireUniquePrefix();
-    }
-}
 
 [UsesEasyTestFile]
 [UsesVerify]
@@ -133,11 +121,181 @@ public class DynamicRepositoryActionDeserializerTest
     }
 
     [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("RepositoryActions1");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions2()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("RepositoryActions2");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result).UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1));
+    }
+    
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions3()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("RepositoryActions3");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("Redirect1");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect2()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("Redirect2");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result).UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1));
+    }
+
+    [Fact]
+    public async Task Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect3()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("Redirect3");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_ShouldReturnObject_WhenContentIsRepositorySpecificEnvFile1()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("RepositorySpecificEnvFile1");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_ShouldReturnObject_WhenContentIsRepositorySpecificConfigFile1()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("RepositorySpecificConfigFile1");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
     public async Task Deserialize_Sample1()
     {
         // arrange
         var settings = new EasyTestFileSettings();
         settings.UseFileName("Sample1");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_Sample2()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("Sample2");
+        settings.UseExtension("json");
+
+        var content = await EasyTestFile.LoadAsText(settings);
+
+        // act
+        var result = await _sut.DeserializeAsync(content);
+
+        // assert
+        await Verifier.Verify(result);
+    }
+
+    [Fact]
+    public async Task Deserialize_Sample3()
+    {
+        // arrange
+        var settings = new EasyTestFileSettings();
+        settings.UseFileName("Sample3");
         settings.UseExtension("json");
 
         var content = await EasyTestFile.LoadAsText(settings);

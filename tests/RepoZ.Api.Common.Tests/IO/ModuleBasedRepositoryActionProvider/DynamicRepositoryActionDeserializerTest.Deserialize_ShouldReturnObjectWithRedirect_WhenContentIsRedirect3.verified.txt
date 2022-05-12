@@ -1,0 +1,8 @@
+﻿{
+  Redirect: {
+    Filename: filename.txt,
+    Enabled: true
+  },
+  TagsCollection: {},
+  ActionsCollection: {}
+}

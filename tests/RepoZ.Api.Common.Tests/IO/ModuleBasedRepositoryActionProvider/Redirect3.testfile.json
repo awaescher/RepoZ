@@ -1,0 +1,6 @@
+{
+  "redirect": {
+    "filename": "filename.txt",
+    "enabled":  "true"
+  }
+}

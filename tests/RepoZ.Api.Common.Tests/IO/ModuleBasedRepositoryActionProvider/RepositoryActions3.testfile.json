@@ -1,0 +1,48 @@
+{
+  "repository-actions": 
+  {
+    "variables": 
+    [
+      {
+        "name": "work_repo",
+        "value": "{StringContains({Repository.SafePath}, \"work\")}",
+        "enabled": true
+      },
+      // comment are stripped
+      {
+        "name": "work_repo_1",
+        "value": "true",
+        // boolean to string works
+        "enabled": false
+      }
+    ],
+    "actions": [
+      {
+        // type, string, optional, defaults to ..
+        "type": "browser@1",
+        "name": "{OpenIn} Windows File Explorer",
+        // optional, default true
+        "active": "false",
+
+        // optional, default to false
+        "multi-select-enabled": "true",
+
+        // optional
+        "variables": [
+          {
+            "name": "name",
+            "value": "{StringContains({Repository.SafePath}, \"abc\")}"
+          }
+        ],
+        "url" : "https://google.com"
+      },
+      {
+        // type, string, optional, defaults to ..
+        "type": "browser@1",
+        "name": "{OpenIn} Windows File Explorer",
+        // false as boolean instead of string
+        "active": false
+      }
+    ]
+  }
+}

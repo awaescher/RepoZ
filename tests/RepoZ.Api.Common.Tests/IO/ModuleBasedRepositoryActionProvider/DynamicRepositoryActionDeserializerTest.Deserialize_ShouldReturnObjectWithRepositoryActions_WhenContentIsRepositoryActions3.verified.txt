@@ -1,0 +1,31 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Variables: [
+      {
+        Name: work_repo,
+        Value: {StringContains({Repository.SafePath}, "work")},
+        Enabled: True
+      },
+      {
+        Name: work_repo_1,
+        Value: true,
+        Enabled: False
+      }
+    ],
+    Actions: [
+      {
+        Url: https://google.com,
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: false,
+        MultiSelectEnabled: true
+      },
+      {
+        Type: browser@1,
+        Name: {OpenIn} Windows File Explorer,
+        Active: False
+      }
+    ]
+  }
+}

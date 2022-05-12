@@ -1,0 +1,7 @@
+﻿{
+  Redirect: {
+    Filename: filename.txt
+  },
+  TagsCollection: {},
+  ActionsCollection: {}
+}

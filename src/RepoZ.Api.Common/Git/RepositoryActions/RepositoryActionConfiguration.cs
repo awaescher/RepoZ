@@ -87,4 +87,92 @@ namespace RepoZ.Api.Common.Git
             Error,
         }
     }
+
+    // variables
+    // include-config
+    // repository-tags
+    // repository-actions
+    //    variables
+    //    actions
+    //      include config from file
+    //      include config from process
+    //      file-association
+    //      process
+    //      git actions?
+    //      azure devops?
+    //      browser
+    //      submenu
+
+
+
+    /*
+
+{
+    "variables":
+    [
+            {
+                "name": "name",
+                "value": '{StringContains({Repository.SafePath}, "DRC")}',
+                "enabled": true, // <- optional,default true
+            },
+            {
+                "name": "name",
+                "value": '{StringContains({Repository.SafePath}, "DRC")}',
+                "enabled": '{StringContains()}', 
+            }
+    ],
+
+    "include-config" :
+    [
+        {
+            "filename": ??
+            "enabled": '{StringContains()}',
+        }
+
+    ],
+
+    "repository-tags":
+    [
+            {
+                "tag": "DRC",
+                "when": '{StringContains({Repository.SafePath}, "DRC")}'
+                "enabled": true/false // <- optional, default true
+            }
+
+    // of
+        "variables" :
+        [
+{
+                "name": "name",
+                "value": '{StringContains({Repository.SafePath}, "DRC")}',
+                "enabled": true,
+            },
+            {
+                "name": "name",
+                "value": '{StringContains({Repository.SafePath}, "DRC")}',
+                "enabled": '{StringContains()}',
+            }
+        ],
+        "tags":
+        [
+            {
+                "tag": "DRC",
+                "when": '{StringContains({Repository.SafePath}, "DRC")}'
+                "enabled": true/false // <- optional, default true
+            }
+        ]
+
+
+      
+    ],
+
+
+
+}
+
+
+     */
+
+
+
 }
