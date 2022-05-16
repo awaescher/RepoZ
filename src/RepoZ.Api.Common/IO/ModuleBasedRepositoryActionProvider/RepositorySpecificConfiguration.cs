@@ -9,6 +9,7 @@ using System.Text;
 using JetBrains.Annotations;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
@@ -95,6 +96,8 @@ public class RepositorySpecificConfiguration
 
         // load variables global
 
+        var separator = false;
+
         if (rootFile.ActionsCollection != null)
         {
             // add variables to set
@@ -105,15 +108,23 @@ public class RepositorySpecificConfiguration
                 // item.Variables
                 if ((!multiSelectRequired || IsEnabled(item.MultiSelectEnabled, false, singleRepository)) && IsEnabled(item.Active, true, singleRepository))
                 {
-                    yield return new RepositoryAction()
-                        {
-                            Action = null,
-                            BeginGroup = false,
-                            CanExecute = true,
-                            Name = item.Name,
-                            ExecutionCausesSynchronizing = true,
-                            DeferredSubActionsEnumerator = null,
-                        };
+                    if (item is RepositoryActionSeparatorV1)
+                    {
+                        separator = true;
+                    }
+                    else
+                    {
+                        yield return new RepositoryAction()
+                            {
+                                Action = null, // todo
+                                BeginGroup = separator,
+                                CanExecute = true, // todo
+                                Name = item.Name,
+                                ExecutionCausesSynchronizing = false,//todo
+                                DeferredSubActionsEnumerator = null,// todo
+                            };
+                        separator = false;
+                    }
                 }
             }
         }

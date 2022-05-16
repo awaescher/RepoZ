@@ -1,0 +1,11 @@
+﻿[
+  {
+    Name: Google 1,
+    CanExecute: true
+  },
+  {
+    Name: Google 2,
+    BeginGroup: true,
+    CanExecute: true
+  }
+]

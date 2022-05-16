@@ -1,0 +1,17 @@
+{
+  "repository-actions": [
+    {
+      "type": "browser@1",
+      "name": "Google 1",
+      "url": "https://google.com"
+    },
+    {
+      "type":  "separator@1"
+    },
+    {
+      "type": "browser@1",
+      "name": "Google 2",
+      "url": "https://google.com"
+    }
+  ]
+}
