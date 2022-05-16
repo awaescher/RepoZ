@@ -4,6 +4,14 @@
     CanExecute: true
   },
   {
+    Name: Google 2,
+    CanExecute: true
+  },
+  {
+    Name: Google 4,
+    CanExecute: true
+  },
+  {
     Name: Google 5,
     CanExecute: true
   }
