@@ -9,6 +9,8 @@ namespace RepoZ.Api.Common.IO
     using System.IO;
     using RepoZ.Api.Common.Git;
     using System.IO.Abstractions;
+    using JetBrains.Annotations;
+    using RepoZ.Api.Common.IO.ExpressionEvaluator;
 
     public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     {
@@ -18,6 +20,7 @@ namespace RepoZ.Api.Common.IO
         private readonly IErrorHandler _errorHandler;
         private readonly ITranslationService _translationService;
         private readonly IFileSystem _fileSystem;
+        private readonly RepositoryExpressionEvaluator _expressionEvaluator;
 
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
@@ -25,7 +28,8 @@ namespace RepoZ.Api.Common.IO
             IRepositoryMonitor repositoryMonitor,
             IErrorHandler errorHandler,
             ITranslationService translationService,
-            IFileSystem fileSystem)
+            IFileSystem fileSystem,
+            RepositoryExpressionEvaluator expressionEvaluator)
         {
             _repositoryActionConfigurationStore = repositoryActionConfigurationStore ?? throw new ArgumentNullException(nameof(repositoryActionConfigurationStore));
             _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
@@ -33,6 +37,7 @@ namespace RepoZ.Api.Common.IO
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
             _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+            _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         }
 
         private RepositoryActionConfiguration Configuration => _repositoryActionConfigurationStore.RepositoryActionConfiguration;
@@ -107,7 +112,7 @@ namespace RepoZ.Api.Common.IO
                         continue;
                     }
 
-                    foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => RepositoryExpressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
+                    foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
                     {
                         yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
                     }
@@ -120,7 +125,7 @@ namespace RepoZ.Api.Common.IO
                         continue;
                     }
 
-                    foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => RepositoryExpressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
+                    foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
                     {
                         yield return CreateFileAssociationSubMenu(
                             singleRepository,
@@ -247,7 +252,7 @@ namespace RepoZ.Api.Common.IO
             var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
 
             // var arguments = ReplaceVariables(action.Arguments, repository);
-            var arguments = RepositoryExpressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
+            var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
 
             if ("external commandline provider".Equals(type, StringComparison.CurrentCultureIgnoreCase))
             {
@@ -309,7 +314,7 @@ namespace RepoZ.Api.Common.IO
                                         if (actionMenu.RepositoryActions.Count > 0)
                                         {
                                             return actionMenu.RepositoryActions
-                                                .Where(x => RepositoryExpressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
+                                                .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
                                                 .Select(x => CreateProcessRunnerAction(x, repository, false))
                                                 .Concat(
                                                     new RepositoryAction[]
@@ -381,7 +386,7 @@ namespace RepoZ.Api.Common.IO
                         Name = name,
                         DeferredSubActionsEnumerator = () =>
                             action.Subfolder
-                                  .Where(x => RepositoryExpressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
+                                  .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
                                   .Select(x => CreateProcessRunnerAction(x, repository, false))
                                   .ToArray(),
                     };

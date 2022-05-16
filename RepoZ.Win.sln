@@ -31,7 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{D6E3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Api.Common.Tests", "tests\RepoZ.Api.Common.Tests\RepoZ.Api.Common.Tests.csproj", "{60920D6B-248F-4E90-A34F-9BBB4F494209}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepoZ.Plugin.IpcService", "src\RepoZ.Plugin.IpcService\RepoZ.Plugin.IpcService.csproj", "{01F564A1-BA9F-4BC4-A3AF-D9CDE4B654DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.IpcService", "src\RepoZ.Plugin.IpcService\RepoZ.Plugin.IpcService.csproj", "{01F564A1-BA9F-4BC4-A3AF-D9CDE4B654DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepoZ.Plugin.EverythingFileSearch", "src\RepoZ.Plugin.EverythingFileSearch\RepoZ.Plugin.EverythingFileSearch.csproj", "{C85EAF73-3491-4C67-9047-B677CC999184}"
 EndProject

@@ -26,6 +26,10 @@ namespace RepoZ.App.Win
     using System.IO;
     using System.Reflection;
     using System.IO.Abstractions;
+    using RepoZ.Api.Common.IO.ExpressionEvaluator;
+using ExpressionStringEvaluator.VariableProviders;
+    using ExpressionStringEvaluator.Methods;
+    using ExpressionStringEvaluator.VariableProviders.DateTime;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -153,7 +157,37 @@ namespace RepoZ.App.Win
             var fileSystem = new FileSystem();
             container.RegisterInstance<IFileSystem>(fileSystem);
 
-            IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
+            container.Register<RepositoryExpressionEvaluator>(Lifestyle.Singleton);
+            Assembly[] repoExpressionEvaluators = new[]
+                {
+                    typeof(IVariableProvider).Assembly,
+                    typeof(RepositoryExpressionEvaluator).Assembly,
+                };
+            // container.Collection.Register(typeof(IVariableProvider), repoExpressionEvaluators, Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>();
+            container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>();
+            container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>();
+            container.Collection.Append<IVariableProvider, EmptyVariableProvider>();
+            container.Collection.Append<IVariableProvider, CustomEnvironmentVariableVariableProvider>();
+            container.Collection.Append<IVariableProvider, RepositoryVariableProvider>();
+            container.Collection.Append<IVariableProvider, SlashVariableProvider>();
+            container.Collection.Append<IVariableProvider, BackslashVariableProvider>();
+
+            container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
+            container.RegisterInstance(new DateTimeVariableProviderOptions()
+                {
+                    DateTimeProvider = () => DateTime.Now,
+                });
+            container.RegisterInstance(new DateTimeNowVariableProviderOptions()
+                {
+                    DateTimeProvider = () => DateTime.Now,
+                });
+            container.RegisterInstance(new DateTimeDateVariableProviderOptions()
+                {
+                    DateTimeProvider = () => DateTime.Now,
+                });
+
+            IEnumerable < FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
             IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
             container.RegisterPackages(assemblies);
         }

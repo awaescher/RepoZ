@@ -7,6 +7,14 @@ namespace Specs
     using System.IO.Abstractions;
     using System.Linq;
     using System.Threading;
+using ExpressionStringEvaluator.Methods.BooleanToBoolean;
+using ExpressionStringEvaluator.Methods.Flow;
+using ExpressionStringEvaluator.Methods.StringToBoolean;
+using ExpressionStringEvaluator.Methods.StringToInt;
+using ExpressionStringEvaluator.Methods.StringToString;
+using ExpressionStringEvaluator.Methods;
+using ExpressionStringEvaluator.VariableProviders.DateTime;
+using ExpressionStringEvaluator.VariableProviders;
     using FluentAssertions;
     using Moq;
     using NUnit.Framework;
@@ -14,6 +22,7 @@ namespace Specs
     using RepoZ.Api.Common.Git;
     using RepoZ.Api.Common.Git.AutoFetch;
     using RepoZ.Api.Common.IO;
+    using RepoZ.Api.Common.IO.ExpressionEvaluator;
     using RepoZ.Api.Git;
     using RepoZ.Api.IO;
     using Specs.IO;
@@ -32,7 +41,7 @@ namespace Specs
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            var fileSystem = new FileSystem();
+           var fileSystem = new FileSystem();
             _rootPath = Path.Combine(Path.GetTempPath(), "RepoZ_Test_Repositories");
 
             TryCreateRootPath(_rootPath);
@@ -43,7 +52,58 @@ namespace Specs
             var appSettingsService = new Mock<IAppSettingsService>();
             appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
 
-            var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object, fileSystem);
+            var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
+            {
+                DateTimeProvider = () => DateTime.Now,
+            };
+
+            var dateTimeNowVariableProviderOptions = new DateTimeNowVariableProviderOptions()
+            {
+                DateTimeProvider = () => DateTime.Now,
+            };
+
+            var dateTimeDateVariableProviderOptions = new DateTimeDateVariableProviderOptions()
+            {
+                DateTimeProvider = () => DateTime.Now,
+            };
+
+            var providers = new List<IVariableProvider>
+            {
+                new DateTimeNowVariableProvider(dateTimeNowVariableProviderOptions),
+                new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
+                new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
+                new EmptyVariableProvider(),
+                new CustomEnvironmentVariableVariableProvider(_fileSystem),
+                new RepositoryVariableProvider(),
+                new SlashVariableProvider(),
+                new BackslashVariableProvider(),
+            };
+
+            var methods = new List<IMethod>
+            {
+                new StringTrimEndStringMethod(),
+                new StringTrimStartStringMethod(),
+                new StringTrimStringMethod(),
+                new StringContainsStringMethod(),
+                new StringLowerStringMethod(),
+                new StringUpperStringMethod(),
+                new UrlEncodeStringMethod(),
+                new UrlDecodeStringMethod(),
+                new StringEqualsStringMethod(),
+                new AndBooleanMethod(),
+                new OrBooleanMethod(),
+                new StringIsNullOrEmptyBooleanMethod(),
+                new FileExistsBooleanMethod(),
+                new NotBooleanMethod(),
+                new StringLengthMethod(),
+                new IfThenElseMethod(),
+                new IfThenMethod(),
+                new InMethod(),
+                new StringReplaceMethod(),
+                new SubstringMethod(),
+            };
+
+            var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object, fileSystem, new RepositoryExpressionEvaluator(providers, methods));
             Monitor = new DefaultRepositoryMonitor(
                 new GivenPathProvider(new string[] { repoPath, }),
                 new DefaultRepositoryReader(defaultRepositoryTagsResolver),

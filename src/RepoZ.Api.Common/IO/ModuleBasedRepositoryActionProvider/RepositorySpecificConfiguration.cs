@@ -7,6 +7,7 @@ using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
@@ -17,12 +18,18 @@ public class RepositorySpecificConfiguration
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
     private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
+    private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
 
-    public RepositorySpecificConfiguration(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem, [NotNull] DynamicRepositoryActionDeserializer appsettingsDeserializer)
+    public RepositorySpecificConfiguration(
+        IAppDataPathProvider appDataPathProvider,
+        IFileSystem fileSystem,
+        DynamicRepositoryActionDeserializer appsettingsDeserializer,
+        RepositoryExpressionEvaluator repoExpressionEvaluator)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
+        _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
     }
 
     public IEnumerable<RepositoryAction> Create(params RepoZ.Api.Git.Repository[] repository)
@@ -92,12 +99,11 @@ public class RepositorySpecificConfiguration
         {
             // add variables to set
             // rootFile.ActionsCollection.Variables
-            foreach (var item in rootFile.ActionsCollection.Actions)
+            foreach (Data.RepositoryAction item in rootFile.ActionsCollection.Actions)
             {
                 // add variables if any to set
                 // item.Variables
-
-                if (!multiSelectRequired || IsEnabled(item.MultiSelectEnabled, false, singleRepository))
+                if ((!multiSelectRequired || IsEnabled(item.MultiSelectEnabled, false, singleRepository)) && IsEnabled(item.Active, true, singleRepository))
                 {
                     yield return new RepositoryAction()
                         {
@@ -113,20 +119,15 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    private string Evaluate(string fileRefFilename, Repository repository)
+    private string Evaluate(string input, Repository repository)
     {
-        //todo
-        return fileRefFilename;
+        return _repoExpressionEvaluator.EvaluateStringExpression(input, repository);
     }
 
     private bool IsEnabled(string booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
     {
-        if (string.IsNullOrWhiteSpace(booleanExpression))
-        {
-            return defaultWhenNullOrEmpty;
-        }
-
-        //todo
-        return true;
+        return string.IsNullOrWhiteSpace(booleanExpression)
+            ? defaultWhenNullOrEmpty
+            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
     }
 }

@@ -1,5 +1,6 @@
 namespace RepoZ.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
@@ -7,7 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
+using ExpressionStringEvaluator.Methods.BooleanToBoolean;
+using ExpressionStringEvaluator.Methods.Flow;
+using ExpressionStringEvaluator.Methods.StringToBoolean;
+using ExpressionStringEvaluator.Methods.StringToInt;
+using ExpressionStringEvaluator.Methods.StringToString;
+using ExpressionStringEvaluator.Methods;
+using ExpressionStringEvaluator.VariableProviders.DateTime;
+using ExpressionStringEvaluator.VariableProviders;
 using FakeItEasy;
+using FluentAssertions;
+using RepoZ.Api.Common.IO;
+using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoZ.Api.Git;
@@ -26,6 +38,7 @@ public class RepositorySpecificConfigurationTest
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
     private readonly string _tempPath;
+    private readonly RepositoryExpressionEvaluator _repositoryExpressionEvaluator;
 
     public RepositorySpecificConfigurationTest()
     {
@@ -47,21 +60,75 @@ public class RepositorySpecificConfigurationTest
                 new ActionBrowserV1Deserializer(),
                 new ActionFolderV1Deserializer(),
                 new ActionSeparatorV1Deserializer()));
+
+
+        var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
+        {
+            DateTimeProvider = () => DateTime.Now,
+        };
+
+        var dateTimeNowVariableProviderOptions = new DateTimeNowVariableProviderOptions()
+        {
+            DateTimeProvider = () => DateTime.Now,
+        };
+
+        var dateTimeDateVariableProviderOptions = new DateTimeDateVariableProviderOptions()
+        {
+            DateTimeProvider = () => DateTime.Now,
+        };
+
+        var providers = new List<IVariableProvider>
+            {
+                new DateTimeNowVariableProvider(dateTimeNowVariableProviderOptions),
+                new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
+                new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
+                new EmptyVariableProvider(),
+                new CustomEnvironmentVariableVariableProvider(_fileSystem),
+                new RepositoryVariableProvider(),
+                new SlashVariableProvider(),
+                new BackslashVariableProvider(),
+            };
+
+        var methods = new List<IMethod>
+            {
+                new StringTrimEndStringMethod(),
+                new StringTrimStartStringMethod(),
+                new StringTrimStringMethod(),
+                new StringContainsStringMethod(),
+                new StringLowerStringMethod(),
+                new StringUpperStringMethod(),
+                new UrlEncodeStringMethod(),
+                new UrlDecodeStringMethod(),
+                new StringEqualsStringMethod(),
+                new AndBooleanMethod(),
+                new OrBooleanMethod(),
+                new StringIsNullOrEmptyBooleanMethod(),
+                new FileExistsBooleanMethod(),
+                new NotBooleanMethod(),
+                new StringLengthMethod(),
+                new IfThenElseMethod(),
+                new IfThenMethod(),
+                new InMethod(),
+                new StringReplaceMethod(),
+                new SubstringMethod(),
+            };
+
+        _repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(providers, methods);
     }
 
-    // [Fact]
-    // public async Task Wip()
-    // {
-    //     // arrange
-    //     _testFileSettings.UseFileName("RepositoryActions1");
-    //     var content = await EasyTestFile.LoadAsText(_testFileSettings);
-    //     _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
-    //     var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer);
-    //
-    //     // act
-    //     var result = sut.Create(new Repository());
-    //
-    //     // assert
-    //     await Verifier.Verify(result, _verifySettings);
-    // }
+    [Fact]
+    public async Task Create_ShouldOnlyProcessActiveItems()
+    {
+        // arrange
+        _testFileSettings.UseFileName("RepositoryActions1");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings);
+        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
+        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
+
+        // act
+        IEnumerable<RepositoryAction> result = sut.Create(new Repository());
+
+        // assert
+        result.Should().BeEmpty();
+    }
 }

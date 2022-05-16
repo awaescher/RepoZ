@@ -4,17 +4,20 @@ namespace RepoZ.Api.Common.Git
     using System.IO.Abstractions;
     using System.Linq;
     using RepoZ.Api.Common.IO;
+using RepoZ.Api.Common.IO.ExpressionEvaluator;
     using RepoZ.Api.Git;
 
     public class DefaultRepositoryTagsResolver : IRepositoryTagsResolver
     {
         private readonly IRepositoryActionConfigurationStore _configStore;
         private readonly IFileSystem _fileSystem;
+        private readonly RepositoryExpressionEvaluator _expressionEvaluator;
 
-        public DefaultRepositoryTagsResolver(IRepositoryActionConfigurationStore configStore, IFileSystem fileSystem)
+        public DefaultRepositoryTagsResolver(IRepositoryActionConfigurationStore configStore, IFileSystem fileSystem, RepositoryExpressionEvaluator expressionEvaluator)
         {
             _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+            _expressionEvaluator = expressionEvaluator;
             _configStore.Preload();
         }
 
@@ -32,7 +35,7 @@ namespace RepoZ.Api.Common.Git
             }
 
             var globalConfigTags = globalConfig.RepositoryTags?
-                                               .Where(y => RepositoryExpressionEvaluator.EvaluateBooleanExpression(y.Select, repository))
+                                               .Where(y => _expressionEvaluator.EvaluateBooleanExpression(y.Select, repository))
                                                .Select(x => x.Tag)
                                                .ToArray()
                                    ?? Array.Empty<string>();
@@ -65,7 +68,7 @@ namespace RepoZ.Api.Common.Git
             if (repoConfig != null && repoConfig.State == RepositoryActionConfiguration.LoadState.Ok)
             {
                 repositoryConfigTags = repoConfig.RepositoryTags
-                                                 .Where(y => RepositoryExpressionEvaluator.EvaluateBooleanExpression(y.Select, repository))
+                                                 .Where(y => _expressionEvaluator.EvaluateBooleanExpression(y.Select, repository))
                                                  .Select(x => x.Tag)
                                                  .ToArray();
             }

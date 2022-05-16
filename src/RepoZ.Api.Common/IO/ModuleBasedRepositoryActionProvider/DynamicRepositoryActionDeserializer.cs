@@ -13,7 +13,7 @@ public class DynamicRepositoryActionDeserializer
 {
     private readonly ActionDeserializerComposition _deserializers;
 
-    public DynamicRepositoryActionDeserializer([NotNull] ActionDeserializerComposition deserializers)
+    public DynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
     {
         _deserializers = deserializers ?? throw new ArgumentNullException(nameof(deserializers));
     }
