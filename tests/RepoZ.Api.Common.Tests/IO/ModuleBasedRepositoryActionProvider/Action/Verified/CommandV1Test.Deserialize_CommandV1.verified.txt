@@ -1,0 +1,22 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionCommandV1,
+        Command: wt,
+        Arguments: -d "{Repository.SafePath}",
+        Type: command@1,
+        Name: {OpenIn} Windows Terminal
+      },
+      {
+        $type: RepositoryActionCommandV1,
+        Command: cmd,
+        Arguments: /K "cd /d {Repository.SafePath}",
+        Type: command@1,
+        Name: {OpenIn} Windows Command Shell,
+        Active: false
+      }
+    ]
+  }
+}

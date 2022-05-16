@@ -1,0 +1,20 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "command@1",
+        "name": "{OpenIn} Windows Terminal",
+        "command": "wt",
+        "arguments": "-d \"{Repository.SafePath}\""
+      },
+      {
+        "type": "command@1",
+        "name": "{OpenIn} Windows Command Shell",
+        "command": "cmd",
+        // single quotes
+        "arguments": "/K \"cd /d {Repository.SafePath}\"",
+        "active": "false"
+      }
+    ]
+  }
+}

@@ -57,6 +57,8 @@ public class RepositorySpecificConfigurationTest
 
         _appsettingsDeserializer = new DynamicRepositoryActionDeserializer(
             new ActionDeserializerComposition(
+                new ActionExecutableV1Deserializer(),
+                new ActionCommandV1Deserializer(),
                 new ActionBrowserV1Deserializer(),
                 new ActionFolderV1Deserializer(),
                 new ActionSeparatorV1Deserializer(),

@@ -1,0 +1,43 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %LocalAppData%/SourceTree/SourceTree.exe,
+          %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
+        ],
+        Arguments: -f "{Repository.Location}{backslash}{Repository.Name}",
+        Type: executable@1,
+        Name: {OpenIn} Sourcetree,
+        Active: true
+      },
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
+        ],
+        Type: executable@1,
+        Name: {OpenIn} Sourcetree 1
+      },
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
+        ],
+        Type: executable@1,
+        Name: {OpenIn} Sourcetree 1.1
+      },
+      {
+        $type: RepositoryActionExecutableV1,
+        Executables: [
+          %LocalAppData%/SourceTree/SourceTree.exe,
+          %PROGRAMFILES(X86)%/Atlassian/SourceTree/SourceTree.exe
+        ],
+        Type: executable@1,
+        Name: {OpenIn} Sourcetree 2
+      }
+    ]
+  }
+}
