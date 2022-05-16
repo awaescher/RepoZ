@@ -3,6 +3,7 @@
   ActionsCollection: {
     Actions: [
       {
+        $type: RepositoryActionBrowserV1,
         Type: browser@1,
         Name: {OpenIn} Windows File Explorer,
         Active: false,
@@ -15,6 +16,7 @@
         ]
       },
       {
+        $type: RepositoryActionBrowserV1,
         Type: browser@1,
         Name: {OpenIn} Windows File Explorer,
         Active: False

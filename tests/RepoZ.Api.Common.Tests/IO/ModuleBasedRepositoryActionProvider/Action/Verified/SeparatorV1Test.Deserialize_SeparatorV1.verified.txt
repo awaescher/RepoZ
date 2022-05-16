@@ -3,6 +3,7 @@
   ActionsCollection: {
     Actions: [
       {
+        $type: RepositoryActionSeparatorV1,
         Type: separator@1,
         Name: doesn't matter'
       }

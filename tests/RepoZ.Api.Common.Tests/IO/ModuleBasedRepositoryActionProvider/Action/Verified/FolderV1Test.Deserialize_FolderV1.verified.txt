@@ -3,10 +3,13 @@
   ActionsCollection: {
     Actions: [
       {
+        $type: RepositoryActionFolderV1,
         Items: [
           {
+            $type: RepositoryActionFolderV1,
             Items: [
               {
+                $type: RepositoryActionFolderV1,
                 Type: folder@1,
                 Name: Folder 3,
                 Active: false

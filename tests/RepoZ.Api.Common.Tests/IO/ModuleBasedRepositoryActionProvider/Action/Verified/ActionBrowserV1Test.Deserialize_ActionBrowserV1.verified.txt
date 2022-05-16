@@ -3,6 +3,7 @@
   ActionsCollection: {
     Actions: [
       {
+        $type: RepositoryActionBrowserV1,
         Url: https://google.com,
         Type: browser@1,
         Name: Goto google.com,
