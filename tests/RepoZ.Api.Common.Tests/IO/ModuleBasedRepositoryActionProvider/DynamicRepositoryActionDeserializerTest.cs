@@ -27,7 +27,8 @@ public class DynamicRepositoryActionDeserializerTest
             new ActionDeserializerComposition(
                 new ActionBrowserV1Deserializer(),
                 new ActionFolderV1Deserializer(),
-                new ActionSeparatorV1Deserializer()));
+                new ActionSeparatorV1Deserializer(),
+                new ActionGitV1Deserializer()));
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

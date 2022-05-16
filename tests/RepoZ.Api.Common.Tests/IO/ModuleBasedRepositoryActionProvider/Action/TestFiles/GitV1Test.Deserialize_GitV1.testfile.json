@@ -1,0 +1,10 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "git@1",
+        "command": "Pull"
+      }
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionGitV1,
+        Command: Pull,
+        Type: git@1
+      }
+    ]
+  }
+}

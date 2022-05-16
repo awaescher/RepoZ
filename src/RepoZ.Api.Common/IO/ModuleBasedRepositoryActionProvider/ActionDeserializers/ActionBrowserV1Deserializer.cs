@@ -22,3 +22,21 @@ public class ActionBrowserV1Deserializer : IActionDeserializer
         return jToken.ToObject<RepositoryActionBrowserV1>();
     }
 }
+
+public class ActionGitV1Deserializer : IActionDeserializer
+{
+    bool IActionDeserializer.CanDeserialize(string type)
+    {
+        return "git@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+    }
+
+    RepositoryAction IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer)
+    {
+        return Deserialize(jToken);
+    }
+
+    public RepositoryActionGitV1 Deserialize(JToken jToken)
+    {
+        return jToken.ToObject<RepositoryActionGitV1>();
+    }
+}

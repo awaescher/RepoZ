@@ -59,7 +59,8 @@ public class RepositorySpecificConfigurationTest
             new ActionDeserializerComposition(
                 new ActionBrowserV1Deserializer(),
                 new ActionFolderV1Deserializer(),
-                new ActionSeparatorV1Deserializer()));
+                new ActionSeparatorV1Deserializer(),
+                new ActionGitV1Deserializer()));
 
 
         var dateTimeTimeVariableProviderOptions = new DateTimeVariableProviderOptions()
