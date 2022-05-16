@@ -1,9 +1,13 @@
 namespace RepoZ.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 
+using System;
 using System.Threading.Tasks;
 using EasyTestFile;
 using EasyTestFileXunit;
+using FluentAssertions;
+using Newtonsoft.Json;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using VerifyTests;
 using VerifyXunit;
 using Xunit;
@@ -36,7 +40,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -50,7 +54,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -64,7 +68,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -78,7 +82,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -92,7 +96,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings).UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRepositoryTags_WhenContentIsRepositoryTags1));
@@ -106,7 +110,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -120,7 +124,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -134,7 +138,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings).UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRepositoryActions_WhenContentIsRepositoryActions1));
@@ -148,7 +152,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -162,7 +166,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -176,7 +180,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings).UseMethodName(nameof(Deserialize_ShouldReturnObjectWithRedirect_WhenContentIsRedirect1));
@@ -190,7 +194,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -204,7 +208,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -218,7 +222,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -232,7 +236,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -246,7 +250,7 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -260,9 +264,21 @@ public class DynamicRepositoryActionDeserializerTest
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
-        var result = await _sut.DeserializeAsync(content);
+        var result = _sut.Deserialize(content);
 
         // assert
         await Verifier.Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public void EmptyFile_ShouldThrow()
+    {
+        // arrange
+
+        // act
+        Func<RepositoryActionConfiguration2> act = () => _ = _sut.Deserialize(ReadOnlySpan<char>.Empty);
+
+        // assert
+        _ = act.Should().Throw<JsonReaderException>().WithMessage("Error reading JObject from JsonReader. Path '', line 0, position 0.");
     }
 }

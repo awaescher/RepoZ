@@ -20,8 +20,4 @@
     <ProjectReference Include="..\RepoZ.Api\RepoZ.Api.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="IO\ModuleBasedRepositoryActionProvider\" />
-  </ItemGroup>
-
 </Project>

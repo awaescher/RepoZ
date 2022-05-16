@@ -25,7 +25,6 @@ namespace Specs
         private RepositoryWriter _origin;
         private RepositoryWriter _cloneA;
         private RepositoryWriter _cloneB;
-        private DefaultRepositoryMonitor _monitor;
         private string _rootPath;
 
         private string _defaultBranch = "master";
@@ -45,7 +44,7 @@ namespace Specs
             appSettingsService.Setup(x => x.EnabledSearchProviders).Returns(new List<string>(0));
 
             var defaultRepositoryTagsResolver = new DefaultRepositoryTagsResolver(new Mock<IRepositoryActionConfigurationStore>().Object, fileSystem);
-            _monitor = new DefaultRepositoryMonitor(
+            Monitor = new DefaultRepositoryMonitor(
                 new GivenPathProvider(new string[] { repoPath, }),
                 new DefaultRepositoryReader(defaultRepositoryTagsResolver),
                 new DefaultRepositoryDetectorFactory(new DefaultRepositoryReader(defaultRepositoryTagsResolver)),
@@ -63,7 +62,6 @@ namespace Specs
                     DelayGitStatusAfterFileOperationMilliseconds = 100,
                 };
 
-            
             _origin = new RepositoryWriter(Path.Combine(repoPath, "BareOrigin"), fileSystem);
             _cloneA = new RepositoryWriter(Path.Combine(repoPath, "CloneA"), fileSystem);
             _cloneB = new RepositoryWriter(Path.Combine(repoPath, "CloneB"), fileSystem);
@@ -72,7 +70,7 @@ namespace Specs
         [OneTimeTearDown]
         public void TearDown()
         {
-            _monitor.Stop();
+            Monitor.Stop();
             //_monitor.Dispose();
 
             WaitFileOperationDelay();
@@ -392,6 +390,6 @@ commit file             master   |  |       |                   |              v
             Thread.Sleep(500);
         }
 
-        protected DefaultRepositoryMonitor Monitor => _monitor;
+        protected DefaultRepositoryMonitor Monitor { get; private set; }
     }
 }
