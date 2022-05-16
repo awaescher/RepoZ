@@ -4,8 +4,7 @@
     CanExecute: true
   },
   {
-    Name: Google 2,
-    BeginGroup: true,
+    Name: Google 5,
     CanExecute: true
   }
 ]

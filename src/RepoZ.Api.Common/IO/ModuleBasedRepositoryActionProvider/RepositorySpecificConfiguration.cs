@@ -40,8 +40,12 @@ public class RepositorySpecificConfiguration
             throw new ArgumentNullException(nameof(repository));
         }
 
-        Repository singleRepository = repository.SingleOrDefault();
+        Repository singleRepository = null;
         var multiSelectRequired = repository.Length > 1;
+        if (!multiSelectRequired)
+        {
+            singleRepository = repository.FirstOrDefault();
+        }
 
         // load default file
         RepositoryActionConfiguration2 rootFile = null;

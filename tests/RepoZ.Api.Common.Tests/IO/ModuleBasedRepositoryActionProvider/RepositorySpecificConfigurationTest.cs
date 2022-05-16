@@ -117,6 +117,22 @@ public class RepositorySpecificConfigurationTest
     }
 
     [Fact]
+    public async Task Create_ShouldRespectMultiSelectRepos()
+    {
+        // arrange
+        _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
+        var content = await EasyTestFile.LoadAsText(_testFileSettings);
+        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
+        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
+
+        // act
+        IEnumerable<RepositoryAction> result = sut.Create(new Repository(), new Repository());
+
+        // assert
+        await Verifier.Verify(result, _verifySettings);
+    }
+
+    [Fact]
     public async Task Create_ShouldOnlyProcessActiveItems()
     {
         // arrange

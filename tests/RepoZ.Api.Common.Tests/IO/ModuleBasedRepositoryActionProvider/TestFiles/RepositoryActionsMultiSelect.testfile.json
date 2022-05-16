@@ -1,0 +1,35 @@
+{
+  "repository-actions": [
+    {
+      "type": "browser@1",
+      "name": "Google 1",
+      "url": "https://google.com",
+      "multi-select-enabled": "true"
+    },
+    {
+      "type": "browser@1",
+      "name": "Google 2",
+      "url": "https://google.com",
+      "multi-select-enabled": "false"
+    },
+    {
+      "type": "browser@1",
+      "name": "Google 3",
+      "url": "https://google.com",
+      "multi-select-enabled": "true",
+      "active": false 
+    },
+    {
+      "type": "browser@1",
+      "name": "Google 4",
+      "url": "https://google.com",
+      "multi-select-enabled": "false"
+    },
+    {
+      "type": "browser@1",
+      "name": "Google 5",
+      "url": "https://google.com",
+      "multi-select-enabled": "true"
+    }
+  ]
+}
