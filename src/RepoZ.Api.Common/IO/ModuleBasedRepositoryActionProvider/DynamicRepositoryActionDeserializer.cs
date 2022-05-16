@@ -3,6 +3,7 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Antlr4.Runtime;
 using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
@@ -10,13 +11,14 @@ using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 
 public class DynamicRepositoryActionDeserializer
 {
-    private readonly List<IActionDeserializer> _deserializers = new()
-        {
-            new ActionBrowserV1Deserializer(),
-            new FolderV1Deserializer(),
-        };
+    private readonly ActionDeserializerComposition _deserializers;
 
-    public RepositoryActionConfiguration2 Deserialize(ReadOnlySpan<char> rawContent)
+    public DynamicRepositoryActionDeserializer([NotNull] ActionDeserializerComposition deserializers)
+    {
+        _deserializers = deserializers ?? throw new ArgumentNullException(nameof(deserializers));
+    }
+
+    public RepositoryActionConfiguration2 Deserialize(string rawContent)
     {
         var configuration = new RepositoryActionConfiguration2();
 
@@ -82,7 +84,7 @@ public class DynamicRepositoryActionDeserializer
                 continue;
             }
 
-            RepositoryAction customAction = DeserializeAction(typeValue, variable);
+            RepositoryAction customAction = _deserializers.DeserializeSingleAction(typeValue, variable);
             if (customAction == null)
             {
                 continue;
@@ -151,28 +153,5 @@ public class DynamicRepositoryActionDeserializer
                 Filename = value,
                 // Enabled = 
             };
-
-    }
-
-    private RepositoryAction DeserializeAction(string type, JToken obj)
-    {
-        IActionDeserializer instance = _deserializers.FirstOrDefault(x => x.CanDeserialize(type));
-        RepositoryAction result = instance == null
-            ? obj.ToObject<RepositoryAction>()
-            : instance.Deserialize(obj);
-
-        if (result == null)
-        {
-            return null;
-        }
-
-        JToken jTokenVariables = obj["multi-select-enabled"];
-
-        if (jTokenVariables != null)
-        {
-            result.MultiSelectEnabled = jTokenVariables.Value<string>();
-        }
-
-        return result;
     }
 }

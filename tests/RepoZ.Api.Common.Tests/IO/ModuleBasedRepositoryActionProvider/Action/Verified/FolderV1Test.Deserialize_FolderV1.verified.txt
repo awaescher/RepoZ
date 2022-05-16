@@ -1,0 +1,25 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        Items: [
+          {
+            Items: [
+              {
+                Type: folder@1,
+                Name: Folder 3,
+                Active: false
+              }
+            ],
+            Type: folder@1,
+            Name: Folder 2,
+            Active: True
+          }
+        ],
+        Type: folder@1,
+        Name: Folder 1
+      }
+    ]
+  }
+}

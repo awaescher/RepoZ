@@ -1,0 +1,12 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "browser@1",
+        "name": "Goto google.com",
+        "active": false,
+        "url": "https://google.com"
+      }
+    ]
+  }
+}

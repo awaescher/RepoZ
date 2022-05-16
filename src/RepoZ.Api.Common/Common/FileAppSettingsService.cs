@@ -14,11 +14,12 @@ namespace RepoZ.Api.Common.Common
         private readonly IFileSystem _fileSystem;
         private AppSettings _settings;
         private readonly List<Action> _invalidationHandlers = new List<Action>();
+        private readonly IAppDataPathProvider _appDataPathProvider;
 
         public FileAppSettingsService(IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
         {
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-            AppDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+            _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         }
 
         private AppSettings Load()
@@ -65,10 +66,8 @@ namespace RepoZ.Api.Common.Common
 
         private string GetFileName()
         {
-            return Path.Combine(AppDataPathProvider.GetAppDataPath(), "appsettings.json");
+            return Path.Combine(_appDataPathProvider.GetAppDataPath(), "appsettings.json");
         }
-
-        public IAppDataPathProvider AppDataPathProvider { get; }
 
         public AppSettings Settings => _settings ??= Load();
 

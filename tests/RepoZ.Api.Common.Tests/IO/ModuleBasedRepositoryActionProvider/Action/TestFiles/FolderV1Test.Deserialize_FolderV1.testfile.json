@@ -1,0 +1,26 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "folder@1",
+        "name": "Folder 1",
+        "items": 
+        [
+          {
+            "type": "folder@1",
+            "name": "Folder 2",
+            "active": true,
+            "items": 
+            [
+              {
+                "type": "folder@1",
+                "name": "Folder 3",
+                "active": "false"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

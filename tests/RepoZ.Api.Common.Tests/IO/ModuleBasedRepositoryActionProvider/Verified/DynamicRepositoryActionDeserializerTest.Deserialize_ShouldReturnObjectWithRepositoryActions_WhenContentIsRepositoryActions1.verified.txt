@@ -6,7 +6,13 @@
         Type: browser@1,
         Name: {OpenIn} Windows File Explorer,
         Active: false,
-        MultiSelectEnabled: true
+        MultiSelectEnabled: true,
+        Variables: [
+          {
+            Name: name,
+            Value: {StringContains({Repository.SafePath}, "abc")}
+          }
+        ]
       },
       {
         Type: browser@1,

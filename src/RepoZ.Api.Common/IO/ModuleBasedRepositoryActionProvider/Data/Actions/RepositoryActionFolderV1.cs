@@ -4,5 +4,5 @@ using System.Collections.Generic;
 
 public class RepositoryActionFolderV1 : RepositoryAction
 {
-    public List<RepositoryAction> Actions { get; set; }
+    public List<RepositoryAction> Items { get; set; } = new List<RepositoryAction>();
 }

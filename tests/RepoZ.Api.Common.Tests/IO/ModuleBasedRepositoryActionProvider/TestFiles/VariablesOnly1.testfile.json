@@ -15,7 +15,7 @@
     {
       "name": "work_repo_2",
       // single quote works
-      "value": "{StringContains({Repository.SafePath}, \"work\")}",
+      "value": "{StringContains({Repository.SafePath}, \"work\")}", // comment
       "enabled": "false"
     },
     {

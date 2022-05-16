@@ -1,0 +1,11 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        Type: separator@1,
+        Name: doesn't matter'
+      }
+    ]
+  }
+}

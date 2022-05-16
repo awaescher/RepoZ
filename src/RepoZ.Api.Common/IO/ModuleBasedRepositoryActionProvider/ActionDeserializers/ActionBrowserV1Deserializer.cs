@@ -12,7 +12,7 @@ public class ActionBrowserV1Deserializer : IActionDeserializer
         return "browser@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    RepositoryAction IActionDeserializer.Deserialize(JToken jToken)
+    RepositoryAction IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer)
     {
         return Deserialize(jToken);
     }

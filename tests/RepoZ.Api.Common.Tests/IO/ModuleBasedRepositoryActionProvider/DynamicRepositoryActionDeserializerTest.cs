@@ -7,6 +7,7 @@ using EasyTestFileXunit;
 using FluentAssertions;
 using Newtonsoft.Json;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using VerifyTests;
 using VerifyXunit;
@@ -22,7 +23,11 @@ public class DynamicRepositoryActionDeserializerTest
 
     public DynamicRepositoryActionDeserializerTest()
     {
-        _sut = new DynamicRepositoryActionDeserializer();
+        _sut = new DynamicRepositoryActionDeserializer(
+            new ActionDeserializerComposition(
+                new ActionBrowserV1Deserializer(),
+                new ActionFolderV1Deserializer(),
+                new ActionSeparatorV1Deserializer()));
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
@@ -276,7 +281,7 @@ public class DynamicRepositoryActionDeserializerTest
         // arrange
 
         // act
-        Func<RepositoryActionConfiguration2> act = () => _ = _sut.Deserialize(ReadOnlySpan<char>.Empty);
+        Func<RepositoryActionConfiguration2> act = () => _ = _sut.Deserialize(string.Empty);
 
         // assert
         _ = act.Should().Throw<JsonReaderException>().WithMessage("Error reading JObject from JsonReader. Path '', line 0, position 0.");

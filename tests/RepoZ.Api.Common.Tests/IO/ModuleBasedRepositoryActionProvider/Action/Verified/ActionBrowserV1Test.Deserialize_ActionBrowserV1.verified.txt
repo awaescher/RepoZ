@@ -1,0 +1,13 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        Url: https://google.com,
+        Type: browser@1,
+        Name: Goto google.com,
+        Active: False
+      }
+    ]
+  }
+}

@@ -5,20 +5,20 @@ using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 
-public class FolderV1Deserializer : IActionDeserializer
+public class ActionSeparatorV1Deserializer : IActionDeserializer
 {
     bool IActionDeserializer.CanDeserialize(string type)
     {
-        return "folder@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
+        return "separator@1".Equals(type, StringComparison.CurrentCultureIgnoreCase);
     }
 
-    RepositoryAction IActionDeserializer.Deserialize(JToken jToken)
+    RepositoryAction IActionDeserializer.Deserialize(JToken jToken, ActionDeserializerComposition actionDeserializer)
     {
         return Deserialize(jToken);
     }
 
-    public RepositoryActionFolderV1 Deserialize(JToken jToken)
+    public RepositoryActionSeparatorV1 Deserialize(JToken jToken)
     {
-        return jToken.ToObject<RepositoryActionFolderV1>();
+        return jToken.ToObject<RepositoryActionSeparatorV1>();
     }
 }

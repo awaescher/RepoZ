@@ -17,11 +17,7 @@
           "name": "name",
           "value": "{StringContains({Repository.SafePath}, \"abc\")}"
         }
-      ],
-      "data": // optional, depends op type
-      {
-
-      }
+      ]
     },
     {
       // type, string, optional, defaults to ..

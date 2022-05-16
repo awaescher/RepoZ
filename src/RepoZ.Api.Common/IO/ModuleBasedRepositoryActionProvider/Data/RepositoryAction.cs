@@ -1,5 +1,7 @@
 namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 
+using System.Collections.Generic;
+
 public class RepositoryAction
 {
     public string Type { get; set; }
@@ -20,5 +22,5 @@ public class RepositoryAction
 
     // public List<RepositoryAction> Subfolder { get; set; } = new List<RepositoryAction>();
 
-    //TODO variables?!?!
+    public List<Variable> Variables { get; set; } = new List<Variable>();
 }

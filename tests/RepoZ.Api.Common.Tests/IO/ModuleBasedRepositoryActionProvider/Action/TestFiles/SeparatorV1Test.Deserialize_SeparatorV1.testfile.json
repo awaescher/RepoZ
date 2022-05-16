@@ -1,0 +1,10 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "separator@1",
+        "name": "doesn't matter'"
+      }
+    ]
+  }
+}
