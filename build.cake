@@ -23,7 +23,8 @@ private FilePath GetLatestMSBuildPath()
 var target = Argument<string>("target", "Default");
 var configuration = Argument<string>("configuration", "Release");
 var system = Argument<string>("system", System.Environment.OSVersion.Platform.ToString().StartsWith("Win") ? "win" : "mac");
-var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "netcoreapp3.1");
+var netcoreTargetFramework = Argument<string>("targetFrameworkNetCore", "net6.0");
+var netcoreTargetPlatform = Argument<string>("netcoreTargetPlatform", system == "win" ? "-windows" : "-macos");
 var netcoreTargetRuntime = Argument<string>("netcoreTargetRuntime", system=="win" ? "win-x64" : "osx-x64");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -92,13 +93,16 @@ Task("SetVersion")
 
 	});
 
-Task("Build")
+Task("BuildOnMac")
     .Description("Builds all the different parts of the project.")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
 	.IsDependentOn("SetVersion")
     .Does(() =>
 {
+	if (system != "mac")
+		return;
+
 	// build the solution
 	Information("Building {0}", _solution);
 		MSBuild(_solution, settings => 
@@ -107,13 +111,13 @@ Task("Build")
 			settings.SetPlatformTarget(PlatformTarget.MSIL)
 					// .UseToolVersion(MSBuildToolVersion.VS2022)
 					.WithProperty("TreatWarningsAsErrors","true")
-					.WithTarget("Build")
+					.WithTarget("BuildOnMac")
 					.SetConfiguration(configuration);
 		});
 });
 
 Task("Test")
-	.IsDependentOn("Build")
+	.IsDependentOn("BuildOnMac")
 	.Does(() => 
 {
 	if (system == "mac")
@@ -158,24 +162,42 @@ Task("Test")
 });
 
 Task("Publish")
-	.IsDependentOn("Build")
-	.IsDependentOn("Test")
+	.IsDependentOn("BuildOnMac")
+	//.IsDependentOn("Test")
 	.Does(() => 
 {
-	// copy RepoZ main app files
-	CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
-	
 	// publish netcore apps
-	var settings = new DotNetCorePublishSettings
+	var consoleSettings = new DotNetCorePublishSettings
 	{
 		Framework = netcoreTargetFramework,
 		Configuration = configuration,
 		Runtime = netcoreTargetRuntime,
 		SelfContained = true
 	};
-	DotNetCorePublish("./grr/grr.csproj", settings);
-	DotNetCorePublish("./grrui/grrui.csproj", settings);
+	var executableSettings = new DotNetCorePublishSettings
+	{
+		Framework = netcoreTargetFramework + netcoreTargetPlatform,
+		Configuration = configuration,
+		Runtime = netcoreTargetRuntime,
+		SelfContained = true
+	};
+
+	if (system == "mac")
+	{
+		// copy RepoZ main app files
+		CopyFiles($"RepoZ.App.{system}/bin/" + configuration + "/**/*", _assemblyDir, true);
+	}
+	else
+	{
+		DotNetCorePublish($"./RepoZ.App.{system}/RepoZ.App.{system}.csproj", executableSettings);
+	}
 	
+	DotNetCorePublish("./grr/grr.csproj", consoleSettings);
+	DotNetCorePublish("./grrui/grrui.csproj", consoleSettings);
+	
+	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+
 	// on macOS, we need to put the "tools" grr & grrui to another location, so deploy them to a subfolder here.
 	// the RepoZ.app file has to be copied to "Applications" whereas the tools might go to "Application Support".
 	if (system == "mac")
@@ -183,9 +205,10 @@ Task("Publish")
 		_assemblyDir = Directory($"{_assemblyDir}/RepoZ-CLI");
 		EnsureDirectoryExists(_assemblyDir);
 	}
-
-	CopyFiles($"grr/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
-	CopyFiles($"grrui/bin/{configuration}/{netcoreTargetFramework}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+	else
+	{
+		CopyFiles($"RepoZ.App.{system}/bin/{configuration}/{(netcoreTargetFramework + netcoreTargetPlatform)}/{netcoreTargetRuntime}/publish/*", _assemblyDir, true);
+	}
 	
 	foreach (var extension in new string[]{"pdb", "config", "xml"})
 		DeleteFiles(_assemblyDir.Path + "/*." + extension);
