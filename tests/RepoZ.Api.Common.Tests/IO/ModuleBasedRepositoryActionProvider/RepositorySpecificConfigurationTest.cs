@@ -186,20 +186,4 @@ public class RepositorySpecificConfigurationTest
         // assert
         await Verifier.Verify(result, _verifySettings);
     }
-
-    [Fact]
-    public async Task Create_ShouldProcessSeparator2()
-    {
-        // arrange
-        _testFileSettings.UseFileName("RepositoryActionsWithSeparator2");
-        var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
-
-        // act
-        IEnumerable<RepositoryAction> result = sut.Create(new Repository());
-
-        // assert
-        await Verifier.Verify(result, _verifySettings).UseMethodName(nameof(Create_ShouldProcessSeparator1));
-    }
 }
