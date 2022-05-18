@@ -139,9 +139,9 @@ namespace RepoZ.Api.Common.IO
             }
 
             yield return new RepositorySeparatorAction();
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, executionCausesSynchronizing: true);
+            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
+            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
             if (singleRepository != null)
             {
@@ -199,7 +199,7 @@ namespace RepoZ.Api.Common.IO
             }
 
             yield return new RepositorySeparatorAction();
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path));
+            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path));
         }
 
 
@@ -436,43 +436,6 @@ namespace RepoZ.Api.Common.IO
                 };
         }
 
-        private RepositoryAction CreateActionForMultipleRepositories(
-            string name,
-            IEnumerable<Repository> repositories,
-            Action<Repository> action,
-            bool executionCausesSynchronizing = false)
-        {
-            return new RepositoryAction()
-                {
-                    Name = name,
-                    Action = (_, __) =>
-                        {
-                            // copy over to an array to not get an exception
-                            // once the enumerator changes (which can happen when a change
-                            // is detected and a repository is renewed) while the loop is running
-                            Repository[] repositoryArray = repositories.ToArray();
-
-                            foreach (Repository repository in repositoryArray)
-                            {
-                                SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
-                            }
-                        },
-                    ExecutionCausesSynchronizing = executionCausesSynchronizing,
-                };
-        }
-
-        private static void SafelyExecute(Action<Repository> action, Repository repository)
-        {
-            try
-            {
-                action(repository);
-            }
-            catch
-            {
-                // nothing to see here
-            }
-        }
-
         private RepositoryAction CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
         {
             if (HasFiles(repository, filePattern))
@@ -516,33 +479,45 @@ namespace RepoZ.Api.Common.IO
         }
     }
 
-    public static class ProcessHelper
+
+    public static class MultipleRepositoryActionHelper
     {
-        public static void StartProcess(string process, string arguments, IErrorHandler _errorHandler)
+        public static RepositoryAction CreateActionForMultipleRepositories(
+            string name,
+            IEnumerable<Repository> repositories,
+            Action<Repository> action,
+            bool executionCausesSynchronizing = false)
+        {
+            return new RepositoryAction()
+                {
+                    Name = name,
+                    Action = (_, _) =>
+                        {
+                            // copy over to an array to not get an exception
+                            // once the enumerator changes (which can happen when a change
+                            // is detected and a repository is renewed) while the loop is running
+                            Repository[] repositoryArray = repositories.ToArray();
+
+                            foreach (Repository repository in repositoryArray)
+                            {
+                                SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
+                            }
+                        },
+                    ExecutionCausesSynchronizing = executionCausesSynchronizing,
+                };
+        }
+
+        private static void SafelyExecute(Action<Repository> action, Repository repository)
         {
             try
             {
-                Debug.WriteLine("Starting: " + process + arguments);
-                Process.Start(process, arguments);
-                return;
+                action(repository);
             }
-            catch (Exception)
+            catch
             {
-                // swallow, retry below.
-            }
-
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo(process, arguments)
-                    {
-                        UseShellExecute = true,
-                    };
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                _errorHandler.Handle(ex.Message);
+                // nothing to see here
             }
         }
+
     }
 }
