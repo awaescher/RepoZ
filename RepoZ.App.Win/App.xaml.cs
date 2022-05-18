@@ -35,9 +35,9 @@ namespace RepoZ.App.Win
 		private static IRepositoryMonitor _repositoryMonitor;
 		private TaskbarIcon _notifyIcon;
 		private IpcServer _ipcServer;
-        private IAppSettingsService _settings;
+		private IAppSettingsService _settings;
 
-        [STAThread]
+		[STAThread]
 		public static void Main()
 		{
 			var app = new App();
@@ -81,32 +81,27 @@ namespace RepoZ.App.Win
 			_ipcServer = new IpcServer(new DefaultIpcEndpoint(), this);
 			_ipcServer.Start();
 
+			_settings = container.Resolve<IAppSettingsService>();
 
-            _settings = container.Resolve<IAppSettingsService>();
+			if (_settings.MenuWidth > 0)
+				window.Width = _settings.MenuWidth;
 
-            if (_settings.MenuWidth > 0)
-            {
-                window.Width = _settings.MenuWidth;
-            }
+			if (_settings.MenuHeight > 0)
+				window.Height = _settings.MenuHeight;
 
-            if (_settings.MenuHeight > 0)
-            {
-                window.Height = _settings.MenuHeight;
-            }
-
-            window.SizeChanged += WindowOnSizeChanged;
+			window.SizeChanged += WindowOnSizeChanged;
 		}
 
-        private void WindowOnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            // persist
-            _settings.MenuWidth = e.NewSize.Width;
-            _settings.MenuHeight = e.NewSize.Height;
-        }
+		private void WindowOnSizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			// persist
+			_settings.MenuWidth = e.NewSize.Width;
+			_settings.MenuHeight = e.NewSize.Height;
+		}
 
 		protected override void OnExit(ExitEventArgs e)
 		{
-            TinyIoCContainer.Current.Resolve<MainWindow>().SizeChanged -= WindowOnSizeChanged;
+			TinyIoCContainer.Current.Resolve<MainWindow>().SizeChanged -= WindowOnSizeChanged;
 			_ipcServer?.Stop();
 			_ipcServer?.Dispose();
 

@@ -8,7 +8,7 @@ namespace RepoZ.App.Win
 	{
 		public void Invoke(Action act)
 		{
-			Application.Current.Dispatcher.Invoke(act);
+			Application.Current?.Dispatcher.Invoke(act);
 		}
 	}
 }

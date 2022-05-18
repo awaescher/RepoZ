@@ -29,7 +29,21 @@ namespace RepoZ.Ipc
 
 			while (true)
 			{
-				var load = _socketServer.ReceiveFrameBytes(out bool hasMore);
+				byte[] load = null;
+
+				try
+				{
+					load = _socketServer.ReceiveFrameBytes(out bool hasMore);
+				}
+				catch (System.Net.Sockets.SocketException)
+				{
+					// we can ignore socket exceptions that might
+					// occur when the app is shutting down
+					if (_socketServer is null)
+						return;
+
+					throw;
+				}
 
 				string message = Encoding.UTF8.GetString(load);
 

@@ -64,8 +64,8 @@ namespace RepoZ.App.Win
 				case WM_HOTKEY:
 					if (wParam.ToInt32() == _id)
 					{
-							_hotKeyActionToCall?.Invoke();
-							handled = true;
+						_hotKeyActionToCall?.Invoke();
+						handled = true;
 					}
 					break;
 			}

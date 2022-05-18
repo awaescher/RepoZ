@@ -154,16 +154,12 @@ namespace RepoZ.App.Win
 		private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
 		{
 			if (ctxMenu == null)
-			{
 				return false;
-			}
 
 			var selectedViews = lstRepositories.SelectedItems?.OfType<RepositoryView>();
 
-			if (selectedViews == null || !selectedViews.Any())
-			{
+			if (selectedViews?.Any() != true)
 				return false;
-			}
 
 			var items = ctxMenu.Items;
 			items.Clear();
@@ -187,11 +183,11 @@ namespace RepoZ.App.Win
 			else if (e.Key == Key.Left || e.Key == Key.Right)
 			{
 				// try open context menu.
-				var ctxMenu = ((FrameworkElement) e.Source).ContextMenu;
+				var ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
 				if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
 				{
 					ctxMenu.Placement = PlacementMode.Left;
-					ctxMenu.PlacementTarget = (UIElement) e.OriginalSource;
+					ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
 					ctxMenu.IsOpen = true;
 				}
 			}
@@ -437,7 +433,6 @@ namespace RepoZ.App.Win
 				return;
 			}
 
-			// Refresh the view
 			var view = CollectionViewSource.GetDefaultView(lstRepositories.ItemsSource);
 			view.Refresh();
 		}
