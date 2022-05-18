@@ -188,12 +188,17 @@ namespace RepoZ.App.Win
             var innerRepositories = selectedViews.Select(view => view.Repository);
             foreach (var action in _repositoryActionProvider.GetContextMenuActions(innerRepositories))
             {
-                if (action.BeginGroup && items.Count > 0)
+                if (action is RepositorySeparatorAction)
                 {
-                    items.Add(new Separator());
+                    if (items.Count > 0)
+                    {
+                        items.Add(new Separator());
+                    }
                 }
-
-                items.Add(CreateMenuItem(sender, action, selectedViews));
+                else
+                {
+                    items.Add(CreateMenuItem(sender, action, selectedViews));
+                }
             }
 
             return true;

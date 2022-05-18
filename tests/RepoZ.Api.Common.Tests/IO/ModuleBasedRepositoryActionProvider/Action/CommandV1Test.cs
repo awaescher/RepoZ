@@ -21,7 +21,7 @@ public class CommandV1Test
 
     public CommandV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new ActionCommandV1Deserializer()));
+        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionCommandV1Deserializer(), }));
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

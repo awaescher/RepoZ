@@ -30,6 +30,9 @@ namespace RepoZ.App.Win
 using ExpressionStringEvaluator.VariableProviders;
     using ExpressionStringEvaluator.Methods;
     using ExpressionStringEvaluator.VariableProviders.DateTime;
+    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -164,14 +167,14 @@ using ExpressionStringEvaluator.VariableProviders;
                     typeof(RepositoryExpressionEvaluator).Assembly,
                 };
             // container.Collection.Register(typeof(IVariableProvider), repoExpressionEvaluators, Lifestyle.Singleton);
-            container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>();
-            container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>();
-            container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>();
-            container.Collection.Append<IVariableProvider, EmptyVariableProvider>();
-            container.Collection.Append<IVariableProvider, CustomEnvironmentVariableVariableProvider>();
-            container.Collection.Append<IVariableProvider, RepositoryVariableProvider>();
-            container.Collection.Append<IVariableProvider, SlashVariableProvider>();
-            container.Collection.Append<IVariableProvider, BackslashVariableProvider>();
+            container.Collection.Append<IVariableProvider, DateTimeNowVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, DateTimeTimeVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, EmptyVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);
 
             container.Collection.Register(typeof(IMethod), repoExpressionEvaluators, Lifestyle.Singleton);
             container.RegisterInstance(new DateTimeVariableProviderOptions()
@@ -187,7 +190,17 @@ using ExpressionStringEvaluator.VariableProviders;
                     DateTimeProvider = () => DateTime.Now,
                 });
 
-            IEnumerable < FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
+            container.Register<ActionDeserializerComposition>(Lifestyle.Singleton);
+            container.Collection.Register<IActionDeserializer>(
+                new[] { typeof(IActionDeserializer).Assembly, },
+                Lifestyle.Singleton);
+
+            container.Register<ActionMapperComposition>(Lifestyle.Singleton);
+            container.Collection.Register<IActionToRepositoryActionMapper>(
+                new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
+                Lifestyle.Singleton);
+
+            IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
             IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
             container.RegisterPackages(assemblies);
         }

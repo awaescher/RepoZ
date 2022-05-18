@@ -25,12 +25,15 @@ public class DynamicRepositoryActionDeserializerTest
     {
         _sut = new DynamicRepositoryActionDeserializer(
             new ActionDeserializerComposition(
-                new ActionExecutableV1Deserializer(),
-                new ActionCommandV1Deserializer(),
-                new ActionBrowserV1Deserializer(),
-                new ActionFolderV1Deserializer(),
-                new ActionSeparatorV1Deserializer(),
-                new ActionGitV1Deserializer()));
+                new IActionDeserializer[]
+                {
+                    new ActionExecutableV1Deserializer(),
+                    new ActionCommandV1Deserializer(),
+                    new ActionBrowserV1Deserializer(),
+                    new ActionFolderV1Deserializer(),
+                    new ActionSeparatorV1Deserializer(),
+                    new ActionGitV1Deserializer(),
+                }));
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

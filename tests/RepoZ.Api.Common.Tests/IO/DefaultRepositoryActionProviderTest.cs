@@ -142,7 +142,6 @@ public class DefaultRepositoryActionProviderTest
         A.CallTo(_errorHandler).MustNotHaveHappened();
         await Verifier.Verify(new
             {
-                result.BeginGroup,
                 result.Name,
                 result.CanExecute,
                 result.ExecutionCausesSynchronizing,

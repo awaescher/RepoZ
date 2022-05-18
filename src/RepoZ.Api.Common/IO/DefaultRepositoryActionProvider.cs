@@ -137,7 +137,8 @@ namespace RepoZ.Api.Common.IO
                 yield return CreateBrowseRemoteAction(singleRepository);
             }
 
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, beginGroup: true, executionCausesSynchronizing: true);
+            yield return new RepositorySeparatorAction();
+            yield return CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
             yield return CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
@@ -156,9 +157,9 @@ namespace RepoZ.Api.Common.IO
                                                                                  })
                                                                              .Union(new[]
                                                                                  {
+                                                                                     new RepositorySeparatorAction(),
                                                                                      new RepositoryAction()
                                                                                          {
-                                                                                             BeginGroup = true,
                                                                                              Name = _translationService.Translate("Remote branches"),
                                                                                              DeferredSubActionsEnumerator = () =>
                                                                                                  {
@@ -196,7 +197,8 @@ namespace RepoZ.Api.Common.IO
                     };
             }
 
-            yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path), beginGroup: true);
+            yield return new RepositorySeparatorAction();
+            yield return CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path));
         }
 
 
@@ -406,9 +408,8 @@ namespace RepoZ.Api.Common.IO
                     {
                         return new RepositoryAction()
                             {
-                                BeginGroup = beginGroup,
                                 Name = name,
-                                Action = (_, __) => StartProcess(executable, arguments),
+                                Action = (_, _) => ProcessHelper.StartProcess(executable, arguments, _errorHandler),
                             };
                     }
                 }
@@ -417,22 +418,20 @@ namespace RepoZ.Api.Common.IO
             {
                 return new RepositoryAction()
                     {
-                        BeginGroup = beginGroup,
                         Name = name,
-                        Action = (_, __) => StartProcess(command, arguments),
+                        Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
                     };
             }
 
             return null;
         }
 
-        private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "", bool beginGroup = false)
+        private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
         {
             return new RepositoryAction()
                 {
-                    BeginGroup = beginGroup,
                     Name = name,
-                    Action = (_, __) => StartProcess(process, arguments),
+                    Action = (_, __) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
                 };
         }
 
@@ -440,7 +439,6 @@ namespace RepoZ.Api.Common.IO
             string name,
             IEnumerable<Repository> repositories,
             Action<Repository> action,
-            bool beginGroup = false,
             bool executionCausesSynchronizing = false)
         {
             return new RepositoryAction()
@@ -458,7 +456,6 @@ namespace RepoZ.Api.Common.IO
                                 SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
                             }
                         },
-                    BeginGroup = beginGroup,
                     ExecutionCausesSynchronizing = executionCausesSynchronizing,
                 };
         }
@@ -472,33 +469,6 @@ namespace RepoZ.Api.Common.IO
             catch
             {
                 // nothing to see here
-            }
-        }
-
-        private void StartProcess(string process, string arguments)
-        {
-            try
-            {
-                Debug.WriteLine("Starting: " + process + arguments);
-                Process.Start(process, arguments);
-                return;
-            }
-            catch (Exception)
-            {
-                // swallow, retry below.
-            }
-
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo(process, arguments)
-                    {
-                        UseShellExecute = true,
-                    };
-                Process.Start(psi);
-            }
-            catch (Exception ex)
-            {
-                _errorHandler.Handle(ex.Message);
             }
         }
 
@@ -566,6 +536,36 @@ namespace RepoZ.Api.Common.IO
                    .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
                    .Select(f => f.FullName)
                    .Where(f => !f.StartsWith("."));
+        }
+    }
+
+    public static class ProcessHelper
+    {
+        public static void StartProcess(string process, string arguments, IErrorHandler _errorHandler)
+        {
+            try
+            {
+                Debug.WriteLine("Starting: " + process + arguments);
+                Process.Start(process, arguments);
+                return;
+            }
+            catch (Exception)
+            {
+                // swallow, retry below.
+            }
+
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo(process, arguments)
+                    {
+                        UseShellExecute = true,
+                    };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.Handle(ex.Message);
+            }
         }
     }
 }

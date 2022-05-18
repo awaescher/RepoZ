@@ -112,23 +112,15 @@ public class RepositorySpecificConfiguration
                 // item.Variables
                 if ((!multiSelectRequired || IsEnabled(item.MultiSelectEnabled, false, singleRepository)) && IsEnabled(item.Active, true, singleRepository))
                 {
-                    if (item is RepositoryActionSeparatorV1)
-                    {
-                        separator = true;
-                    }
-                    else
-                    {
-                        yield return new RepositoryAction()
-                            {
-                                Action = null, // todo
-                                BeginGroup = separator,
-                                CanExecute = true, // todo
-                                Name = item.Name,
-                                ExecutionCausesSynchronizing = false,//todo
-                                DeferredSubActionsEnumerator = null,// todo
-                            };
-                        separator = false;
-                    }
+                    yield return new RepositoryAction()
+                        {
+                            Action = null, // todo
+                            CanExecute = true, // todo
+                            Name = item.Name,
+                            ExecutionCausesSynchronizing = false, //todo
+                            DeferredSubActionsEnumerator = null, // todo
+                        };
+                    separator = false;
                 }
             }
         }

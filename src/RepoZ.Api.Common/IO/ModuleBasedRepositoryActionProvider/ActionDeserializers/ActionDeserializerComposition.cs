@@ -1,6 +1,7 @@
 namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -9,7 +10,7 @@ public class ActionDeserializerComposition
 {
     private readonly IActionDeserializer[] _deserializers;
 
-    public ActionDeserializerComposition(params IActionDeserializer[] deserializers)
+    public ActionDeserializerComposition(IEnumerable<IActionDeserializer> deserializers)
     {
         _deserializers = deserializers?.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
     }
