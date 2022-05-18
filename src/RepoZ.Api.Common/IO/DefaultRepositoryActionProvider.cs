@@ -11,6 +11,7 @@ namespace RepoZ.Api.Common.IO
     using System.IO.Abstractions;
     using JetBrains.Annotations;
     using RepoZ.Api.Common.IO.ExpressionEvaluator;
+    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
     public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     {
@@ -134,7 +135,7 @@ namespace RepoZ.Api.Common.IO
                     }
                 }
 
-                yield return CreateBrowseRemoteAction(singleRepository);
+                yield return new ActionBrowseRepositoryV1Mapper(_expressionEvaluator, _translationService, _errorHandler).CreateBrowseRemoteAction(singleRepository);
             }
 
             yield return new RepositorySeparatorAction();
@@ -488,30 +489,6 @@ namespace RepoZ.Api.Common.IO
             }
 
             return null;
-        }
-
-        private RepositoryAction CreateBrowseRemoteAction(Repository repository)
-        {
-            if (repository.RemoteUrls.Length == 0)
-            {
-                return null;
-            }
-
-            var actionName = _translationService.Translate("Browse remote");
-
-            if (repository.RemoteUrls.Length == 1)
-            {
-                return CreateProcessRunnerAction(actionName, repository.RemoteUrls[0]);
-            }
-
-            return new RepositoryAction()
-                {
-                    Name = actionName,
-                    DeferredSubActionsEnumerator = () => repository.RemoteUrls
-                                                                   .Take(50)
-                                                                   .Select(url => CreateProcessRunnerAction(url, url))
-                                                                   .ToArray(),
-                };
         }
 
         private static bool HasFiles(Repository repository, string searchPattern)

@@ -65,6 +65,7 @@ public class RepositorySpecificConfigurationTest
                         new ActionFolderV1Deserializer(),
                         new ActionSeparatorV1Deserializer(),
                         new ActionGitV1Deserializer(),
+                        new ActionBrowseRepositoryV1Deserializer(),
                     }));
 
 
