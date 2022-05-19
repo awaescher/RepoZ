@@ -12,6 +12,37 @@ namespace RepoZ.Api.Common.IO
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
     using Repository = RepoZ.Api.Git.Repository;
 
+    public static class CoenRepoZEnvironmentVarialeStore
+    {
+        public static AsyncLocal<Dictionary<string, string>> EnvVars = new AsyncLocal<Dictionary<string, string>>();
+
+        public static IDisposable Set(Dictionary<string, string> envVars)
+        {
+            EnvVars.Value = envVars;
+            return new ExecuteOnDisposed(() => EnvVars.Value = null);
+        }
+
+        public static Dictionary<string, string> Get(Repository repository)
+        {
+            return EnvVars.Value ?? new Dictionary<string, string>(0);
+        }
+    }
+
+    public class ExecuteOnDisposed : IDisposable
+    {
+        private readonly Func<Dictionary<string, string>> _func;
+
+        public ExecuteOnDisposed(Func<Dictionary<string, string>> func)
+        {
+            _func = func;
+        }
+
+        public void Dispose()
+        {
+            _func?.Invoke();
+        }
+    }
+
     public static class RepoZVariableProviderStore
     {
         public static AsyncLocal<Scope> VariableScope = new AsyncLocal<Scope>();
@@ -61,6 +92,71 @@ namespace RepoZ.Api.Common.IO
                 _isDisposed = true;
             }
         }
+    }
+
+    public class VariableCollection
+    {
+        private readonly List<EvaluatingVariable> _variables;
+
+        public VariableCollection(List<Variable> variables)
+        {
+            _variables = variables.Select(x => new EvaluatingVariable(x.Name, x.Value, x.Enabled)).ToList();
+        }
+
+        // public string GetValueWhenEnabled(string key, Scope parent)
+        // {
+        //     //evaluate all
+        //     for (int i = 0; i < _variables.Count; i++)
+        //     {
+        //         _variables[i].Evaluate(parent, _variables.Take(i));
+        //         if (_variables[i].Name.Equals(key, StringComparison.CurrentCultureIgnoreCase))
+        //         {
+        //             if (_variables[i].IsEnabled(parent))
+        //             {
+        //                 return _variables.GetValue(parent);
+        //             }
+        //
+        //             return string.Empty;
+        //         }
+        //     }
+        // }
+
+    }
+
+    public class EvaluatingVariable
+    {
+        public string Name { get; }
+        private readonly string _value;
+        private readonly string _enabled;
+
+        private bool? _isEnabled = null;
+        private string _evaluatedValue = null;
+
+        public EvaluatingVariable(string name, string value, string enabled)
+        {
+            Name = name;
+            _value = value;
+            _enabled = enabled;
+        }
+
+        public (string key, string value, bool enabled) Evaluate(Scope parent, IEnumerable<EvaluatingVariable> variables)
+        {
+            if (!_isEnabled.HasValue)
+            {
+                _isEnabled = true;
+            }
+
+            if (_evaluatedValue == null)
+            {
+
+            }
+
+            return (Name, _evaluatedValue, _isEnabled.Value!);
+        }
+
+        // public bool IsEnabled(Scope parent)
+        // {
+        // }
     }
 
 
@@ -207,27 +303,32 @@ namespace RepoZ.Api.Common.IO
             return result;
         }
 
-        private Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
+        private Dictionary<string, string> GetRepoEnvironmentVariables(Repository context)
         {
-            var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
-
-            // todo use FileSystemIFileSystem
-            if (!_fileSystem.File.Exists(repozEnvFile))
-            {
-                return _emptyDictionary;
-            }
-
-            try
-            {
-                return DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return _emptyDictionary;
+            return CoenRepoZEnvironmentVarialeStore.Get(context);
         }
+
+        // private Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
+        // {
+        //     var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
+        //
+        //     // todo use FileSystemIFileSystem
+        //     if (!_fileSystem.File.Exists(repozEnvFile))
+        //     {
+        //         return _emptyDictionary;
+        //     }
+        //
+        //     try
+        //     {
+        //         return DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         Console.WriteLine(e);
+        //     }
+        //
+        //     return _emptyDictionary;
+        // }
 
     }
 }

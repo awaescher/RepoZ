@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Resources;
 using System.Text;
+using DotNetEnv;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -54,6 +56,8 @@ public class RepositorySpecificConfiguration
 
         // load default file
         RepositoryActionConfiguration2 rootFile = null;
+        RepositoryActionConfiguration2 repoSpecificConfig = null;
+
         var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
         if (!_fileSystem.File.Exists(filename))
         {
@@ -75,36 +79,107 @@ public class RepositorySpecificConfiguration
             throw new Exception("Could not deserialize appsettings.json");
         }
 
-        using IDisposable _ = RepoZVariableProviderStore.Push(rootFile.Variables);
-
         Redirect redirect = rootFile.Redirect;
-        if (!string.IsNullOrWhiteSpace(redirect?.Filename) && IsEnabled(redirect?.Enabled, true, singleRepository))
+        if (IsEnabled(redirect?.Enabled, true, null))
         {
-            // load
-            throw new NotImplementedException("todo, implement");
-        }
-
-        // select first one only, todo
-        FileReference fileRef= rootFile.RepositorySpecificConfigFiles.FirstOrDefault(x => x != null);
-        if (fileRef != null)
-        {
-            if (IsEnabled(fileRef.When, true, singleRepository))
+            filename = Evaluate(redirect?.Filename, null);
+            if (_fileSystem.File.Exists(filename))
             {
-                var filenam1e = Evaluate(fileRef.Filename, repository.Single());
-                if (_fileSystem.File.Exists(filenam1e))
+                try
                 {
-                    // try load 
+                    var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
+                    rootFile = _appSettingsDeserializer.Deserialize(content);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Could not deserialize appsettings.json", e);
+                }
+
+                if (rootFile == null)
+                {
+                    throw new Exception("Could not deserialize appsettings.json");
                 }
             }
         }
 
-        if (rootFile.RepositorySpecificEnvironmentFiles?.Any() ?? false)
+        using IDisposable rootVariables = RepoZVariableProviderStore.Push(rootFile.Variables);
+
+        Dictionary<string, string> envVars = null;
+
+        if (!multiSelectRequired)
         {
-            // load
-            throw new NotImplementedException("todo, implement");
+            // load repo specific environment variables
+            for (var i = 0; i < rootFile.RepositorySpecificEnvironmentFiles.Count; i++)
+            {
+                if (envVars != null)
+                {
+                    continue;
+                }
+
+                FileReference fileRef = rootFile.RepositorySpecificEnvironmentFiles[i];
+                if (fileRef == null || !IsEnabled(fileRef.When, true, singleRepository))
+                {
+                    continue;
+                }
+
+                var f = Evaluate(fileRef.Filename, singleRepository);
+                if (!_fileSystem.File.Exists(f))
+                {
+                    continue;
+                }
+                //private Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
+
+                //var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
+
+                try
+                {
+                    envVars = DotNetEnv.Env.Load(f, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
         }
 
-        
+        using IDisposable repoSpecificEnvVariables = CoenRepoZEnvironmentVarialeStore.Set(envVars);
+
+        if (!multiSelectRequired)
+        {
+            // load repo specific config
+            for (int i = 0; i < rootFile.RepositorySpecificConfigFiles.Count; i++)
+            {
+                if (repoSpecificConfig != null)
+                {
+                    continue;
+                }
+
+                FileReference fileRef = rootFile.RepositorySpecificConfigFiles[i];
+                if (fileRef == null || !IsEnabled(fileRef.When, true, singleRepository))
+                {
+                    continue;
+                }
+
+                var f = Evaluate(fileRef.Filename, singleRepository);
+                if (!_fileSystem.File.Exists(f))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var content = _fileSystem.File.ReadAllText(f, Encoding.UTF8);
+                    repoSpecificConfig = _appSettingsDeserializer.Deserialize(content);
+                }
+                catch (Exception)
+                {
+                    // log, no warning.
+                    // throw new Exception("Could not deserialize appsettings.json", e);
+                }
+            }
+        }
+
+        using IDisposable repoSepecificVariables = RepoZVariableProviderStore.Push(repoSpecificConfig?.Variables);
 
         // load variables global
         if (rootFile.ActionsCollection != null)
