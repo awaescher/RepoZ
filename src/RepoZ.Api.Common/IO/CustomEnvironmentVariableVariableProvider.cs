@@ -45,7 +45,7 @@ namespace RepoZ.Api.Common.IO
 
     public static class RepoZVariableProviderStore
     {
-        public static AsyncLocal<Scope> VariableScope = new AsyncLocal<Scope>();
+        public static readonly AsyncLocal<Scope> VariableScope = new AsyncLocal<Scope>();
 
         public static IDisposable Push(List<Variable> vars)
         {
@@ -220,11 +220,11 @@ namespace RepoZ.Api.Common.IO
                 return false;
             }
 
-            Variable var = scope.Variables.FirstOrDefault(x => x.Name == key);
+            Variable var = scope.Variables.FirstOrDefault(x => x.Name.Equals(key, StringComparison.CurrentCultureIgnoreCase));
 
             if (var != null)
             {
-                if (var.Enabled == "false") // todo
+                if (var.Enabled.Equals("false",StringComparison.CurrentCultureIgnoreCase))
                 {
                     value = string.Empty;
                     return true;

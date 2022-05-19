@@ -34,6 +34,6 @@ public static class ActionMapperCompositionFactory
                 new ActionAssociateFileV1Mapper(expressionEvaluator, translationService, errorHandler)
             };
 
-        return new ActionMapperComposition(list);
+        return new ActionMapperComposition(list, expressionEvaluator);
     }
 }

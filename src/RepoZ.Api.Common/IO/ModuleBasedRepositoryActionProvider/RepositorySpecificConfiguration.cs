@@ -102,7 +102,25 @@ public class RepositorySpecificConfiguration
             }
         }
 
-        using IDisposable rootVariables = RepoZVariableProviderStore.Push(rootFile.Variables);
+        List<Variable> EvaluateVariables(IEnumerable<Variable> vars)
+        {
+            if (vars == null)
+            {
+                return new List<Variable>(0);
+            }
+
+            return vars
+                   .Where(v => IsEnabled(v.Enabled, true, singleRepository))
+                   .Select(v => new Variable()
+                       {
+                           Name = v.Name,
+                           Enabled = "true",
+                           Value = Evaluate(v.Value, singleRepository),
+                       })
+                   .ToList();
+        }
+
+        using IDisposable rootVariables = RepoZVariableProviderStore.Push(EvaluateVariables(rootFile.Variables));
 
         Dictionary<string, string> envVars = null;
 
@@ -179,19 +197,18 @@ public class RepositorySpecificConfiguration
             }
         }
 
-        using IDisposable repoSepecificVariables = RepoZVariableProviderStore.Push(repoSpecificConfig?.Variables);
+        using IDisposable repoSepecificVariables = RepoZVariableProviderStore.Push(EvaluateVariables(repoSpecificConfig?.Variables));
 
         // load variables global
         if (rootFile.ActionsCollection != null)
         {
-            using IDisposable disposable = RepoZVariableProviderStore.Push(rootFile.ActionsCollection.Variables);
+            using IDisposable disposable = RepoZVariableProviderStore.Push(EvaluateVariables(rootFile.ActionsCollection.Variables));
 
             // add variables to set
             // rootFile.ActionsCollection.Variables
             foreach (Data.RepositoryAction action in rootFile.ActionsCollection.Actions)
             {
-                //coen
-                using IDisposable x = RepoZVariableProviderStore.Push(action.Variables);
+                using IDisposable x = RepoZVariableProviderStore.Push(EvaluateVariables(action.Variables));
 
                 if (multiSelectRequired)
                 {

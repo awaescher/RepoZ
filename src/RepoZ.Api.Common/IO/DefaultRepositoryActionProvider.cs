@@ -66,9 +66,9 @@ namespace RepoZ.Api.Common.IO
         {
             Repository[] repositories = repos.ToArray();
             
-            foreach (RepositoryAction x in _repoSpecificConfig.Create(repositories))
+            foreach (RepositoryAction repositoryAction in _repoSpecificConfig.Create(repositories))
             {
-                yield return x;
+                yield return repositoryAction;
             }
         }
 
