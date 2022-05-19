@@ -125,19 +125,25 @@ public class RepositorySpecificConfiguration
             filename = Evaluate(redirect?.Filename, null);
             if (_fileSystem.File.Exists(filename))
             {
+                exception = null;
                 try
                 {
                     var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
                     rootFile = _appSettingsDeserializer.Deserialize(content);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new Exception("Could not deserialize appsettings.json", e);
+                    exception = ex;
                 }
 
-                if (rootFile == null)
+                if (exception != null)
                 {
-                    throw new Exception("Could not deserialize appsettings.json");
+                    foreach (RepositoryAction failingItem in CreateFailing(exception, filename))
+                    {
+                        yield return failingItem;
+                    }
+
+                    yield break;
                 }
             }
         }
@@ -167,14 +173,13 @@ public class RepositorySpecificConfiguration
         if (!multiSelectRequired)
         {
             // load repo specific environment variables
-            for (var i = 0; i < rootFile.RepositorySpecificEnvironmentFiles.Count; i++)
+            foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles)
             {
                 if (envVars != null)
                 {
                     continue;
                 }
 
-                FileReference fileRef = rootFile.RepositorySpecificEnvironmentFiles[i];
                 if (fileRef == null || !IsEnabled(fileRef.When, true, singleRepository))
                 {
                     continue;
@@ -183,6 +188,7 @@ public class RepositorySpecificConfiguration
                 var f = Evaluate(fileRef.Filename, singleRepository);
                 if (!_fileSystem.File.Exists(f))
                 {
+                    // log warning?
                     continue;
                 }
 
@@ -192,7 +198,7 @@ public class RepositorySpecificConfiguration
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    // log warning
                 }
             }
         }
@@ -202,14 +208,13 @@ public class RepositorySpecificConfiguration
         if (!multiSelectRequired)
         {
             // load repo specific config
-            for (int i = 0; i < rootFile.RepositorySpecificConfigFiles.Count; i++)
+            foreach (FileReference fileRef in rootFile.RepositorySpecificConfigFiles)
             {
                 if (repoSpecificConfig != null)
                 {
                     continue;
                 }
 
-                FileReference fileRef = rootFile.RepositorySpecificConfigFiles[i];
                 if (fileRef == null || !IsEnabled(fileRef.When, true, singleRepository))
                 {
                     continue;
@@ -218,8 +223,11 @@ public class RepositorySpecificConfiguration
                 var f = Evaluate(fileRef.Filename, singleRepository);
                 if (!_fileSystem.File.Exists(f))
                 {
+                    // warning
                     continue;
                 }
+
+                // todo redirect
 
                 try
                 {
@@ -228,8 +236,7 @@ public class RepositorySpecificConfiguration
                 }
                 catch (Exception)
                 {
-                    // log, no warning.
-                    // throw new Exception("Could not deserialize appsettings.json", e);
+                    // warning.
                 }
             }
         }
@@ -237,13 +244,18 @@ public class RepositorySpecificConfiguration
         using IDisposable repoSepecificVariables = RepoZVariableProviderStore.Push(EvaluateVariables(repoSpecificConfig?.Variables));
 
         // load variables global
-        if (rootFile.ActionsCollection != null)
+        foreach (ActionsCollection actionsCollection in new []{ rootFile.ActionsCollection , repoSpecificConfig?.ActionsCollection, })
         {
-            using IDisposable disposable = RepoZVariableProviderStore.Push(EvaluateVariables(rootFile.ActionsCollection.Variables));
+            if (actionsCollection == null)
+            {
+                continue;
+            }
+
+            using IDisposable disposable = RepoZVariableProviderStore.Push(EvaluateVariables(actionsCollection.Variables));
 
             // add variables to set
             // rootFile.ActionsCollection.Variables
-            foreach (Data.RepositoryAction action in rootFile.ActionsCollection.Actions)
+            foreach (Data.RepositoryAction action in actionsCollection.Actions)
             {
                 using IDisposable x = RepoZVariableProviderStore.Push(EvaluateVariables(action.Variables));
 
