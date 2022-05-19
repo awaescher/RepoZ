@@ -42,10 +42,8 @@ public class RepositorySpecificConfigurationTest
     private readonly string _tempPath;
     private readonly RepositoryExpressionEvaluator _repositoryExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapperComposition;
-    private ITranslationService _translationService;
-    private IErrorHandler _errorHandler;
-    private IRepositoryWriter _repositoryWriter;
-    private IRepositoryMonitor _repositoryMonitor;
+    private readonly ITranslationService _translationService;
+    private readonly IErrorHandler _errorHandler;
 
     public RepositorySpecificConfigurationTest()
     {
@@ -138,16 +136,16 @@ public class RepositorySpecificConfigurationTest
         _translationService = A.Fake<ITranslationService>();
         A.CallTo(() => _translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string);
         _errorHandler = A.Fake<IErrorHandler>();
-        _repositoryWriter = A.Fake<IRepositoryWriter>();
-        _repositoryMonitor = A.Fake<IRepositoryMonitor>();
+        IRepositoryWriter repositoryWriter = A.Fake<IRepositoryWriter>();
+        IRepositoryMonitor repositoryMonitor = A.Fake<IRepositoryMonitor>();
 
         _actionMapperComposition = ActionMapperCompositionFactory.Create(
             _repositoryExpressionEvaluator,
             _translationService,
             _errorHandler,
             _fileSystem,
-            _repositoryWriter,
-            _repositoryMonitor);
+            repositoryWriter,
+            repositoryMonitor);
     }
 
     [Fact]
