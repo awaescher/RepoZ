@@ -1,19 +1,24 @@
 ﻿[
   {
     Name: Google 1,
+    Action: {
+      Type: Action<object, object>,
+      Target: ActionBrowserV1Mapper.<>c__DisplayClass7_0,
+      Method: Void Map(System.Object, System.Object)
+    },
     CanExecute: true
   },
   {
-    CanExecute: true
-  },
-  {
-    CanExecute: true
-  },
-  {
+    $type: RepositorySeparatorAction,
     CanExecute: true
   },
   {
     Name: Google 2,
+    Action: {
+      Type: Action<object, object>,
+      Target: ActionBrowserV1Mapper.<>c__DisplayClass7_0,
+      Method: Void Map(System.Object, System.Object)
+    },
     CanExecute: true
   }
 ]

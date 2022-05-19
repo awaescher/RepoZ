@@ -367,8 +367,13 @@ namespace RepoZ.App.Win
             parent.ColumnDefinitions[Grid.GetColumn(UpdateButton)].Width = App.AvailableUpdate == null ? new GridLength(0) : GridLength.Auto;
         }
 
-        private MenuItem CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
+        private Control /*MenuItem*/ CreateMenuItem(object sender, RepositoryAction action, IEnumerable<RepositoryView> affectedViews = null)
         {
+            if (action is RepositorySeparatorAction)
+            {
+                return new Separator();
+            }
+
             Action<object, object> clickAction = (object clickSender, object clickArgs) =>
                 {
                     if (action?.Action != null)
@@ -403,14 +408,14 @@ namespace RepoZ.App.Win
             {
                 // this is a template submenu item to enable submenus under the current
                 // menu item. this item gets removed when the real subitems are created
-                item.Items.Add("");
+                item.Items.Add(string.Empty);
 
                 void SelfDetachingEventHandler(object _, RoutedEventArgs __)
                 {
                     item.SubmenuOpened -= SelfDetachingEventHandler;
                     item.Items.Clear();
 
-                    foreach (var subAction in action.DeferredSubActionsEnumerator())
+                    foreach (RepositoryAction subAction in action.DeferredSubActionsEnumerator())
                     {
                         item.Items.Add(CreateMenuItem(sender, subAction));
                     }
@@ -431,7 +436,7 @@ namespace RepoZ.App.Win
                 return;
             }
 
-            foreach (var view in affectedViews)
+            foreach (RepositoryView view in affectedViews)
             {
                 view.IsSynchronizing = synchronizing;
             }

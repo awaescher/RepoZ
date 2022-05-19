@@ -3,6 +3,7 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using RepoZ.Api.Common.Common;
@@ -15,11 +16,13 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly IErrorHandler _errorHandler;
+    private readonly ITranslationService _translationService;
 
-    public ActionBrowserV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, [NotNull] IErrorHandler errorHandler)
+    public ActionBrowserV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
     }
 
     bool IActionToRepositoryActionMapper.CanMap(Data.RepositoryAction action)
@@ -27,9 +30,14 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionBrowserV1;
     }
 
-    IEnumerable<RepositoryAction> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
+    bool IActionToRepositoryActionMapper.CanHandleMultipeRepositories()
     {
-        return Map(action as RepositoryActionBrowserV1, repository);
+        return false;
+    }
+
+    IEnumerable<RepositoryAction> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    {
+        return Map(action as RepositoryActionBrowserV1, repository.First());
     }
 
     public IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionBrowserV1 action, Repository repository)
@@ -39,13 +47,12 @@ public class ActionBrowserV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = action.Name;
-        // var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService);
         var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
         yield return new RepositoryAction()
             {
-                Name = action.Name,
-                Action = (_, _) => ProcessHelper.StartProcess(name, url, _errorHandler),
+                Name = name,
+                Action = (_, _) => ProcessHelper.StartProcess(url, string.Empty, _errorHandler),
             };
     }
 }

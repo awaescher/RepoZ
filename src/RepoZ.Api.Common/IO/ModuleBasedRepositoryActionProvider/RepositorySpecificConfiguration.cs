@@ -6,10 +6,9 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Text;
-using JetBrains.Annotations;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
@@ -20,17 +19,22 @@ public class RepositorySpecificConfiguration
     private readonly IFileSystem _fileSystem;
     private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+    private readonly ActionMapperComposition _actionMapper;
+
+    public const string FILENAME = "RepositoryActionsV2.json";
 
     public RepositorySpecificConfiguration(
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
         DynamicRepositoryActionDeserializer appsettingsDeserializer,
-        RepositoryExpressionEvaluator repoExpressionEvaluator)
+        RepositoryExpressionEvaluator repoExpressionEvaluator,
+        ActionMapperComposition actionMapper)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
+        _actionMapper = actionMapper ?? throw new ArgumentNullException(nameof(actionMapper));
     }
 
     public IEnumerable<RepositoryAction> Create(params RepoZ.Api.Git.Repository[] repository)
@@ -49,10 +53,10 @@ public class RepositorySpecificConfiguration
 
         // load default file
         RepositoryActionConfiguration2 rootFile = null;
-        var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), "appsettings.json");
+        var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
         if (!_fileSystem.File.Exists(filename))
         {
-            throw new Exception("app settings file does not exists");
+            throw new Exception(FILENAME + " file does not exists");
         }
 
         try
@@ -90,8 +94,7 @@ public class RepositorySpecificConfiguration
                 }
             }
         }
-
-
+        
         if (rootFile.RepositorySpecificEnvironmentFiles?.Any() ?? false)
         {
             // load
@@ -99,28 +102,30 @@ public class RepositorySpecificConfiguration
         }
 
         // load variables global
-
-        var separator = false;
-
         if (rootFile.ActionsCollection != null)
         {
             // add variables to set
             // rootFile.ActionsCollection.Variables
-            foreach (Data.RepositoryAction item in rootFile.ActionsCollection.Actions)
+            foreach (Data.RepositoryAction action in rootFile.ActionsCollection.Actions)
             {
-                // add variables if any to set
-                // item.Variables
-                if ((!multiSelectRequired || IsEnabled(item.MultiSelectEnabled, false, singleRepository)) && IsEnabled(item.Active, true, singleRepository))
+                if (multiSelectRequired)
                 {
-                    yield return new RepositoryAction()
-                        {
-                            Action = null, // todo
-                            CanExecute = true, // todo
-                            Name = item.Name,
-                            ExecutionCausesSynchronizing = false, //todo
-                            DeferredSubActionsEnumerator = null, // todo
-                        };
-                    separator = false;
+                    var actionNotCapableForMultipleRepos = repository.Any(repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
+                    if (actionNotCapableForMultipleRepos)
+                    {
+                        continue;
+                    }
+                }
+
+                IEnumerable<RepositoryAction> result = _actionMapper.Map(action, singleRepository ?? repository.First() /*todo*/); 
+                if (result == null)
+                {
+                    continue;
+                }
+
+                foreach (RepositoryAction singleItem in result)
+                {
+                    yield return singleItem;
                 }
             }
         }

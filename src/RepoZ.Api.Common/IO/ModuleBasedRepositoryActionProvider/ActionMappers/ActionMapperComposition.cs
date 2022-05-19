@@ -3,6 +3,7 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
@@ -16,11 +17,11 @@ public class ActionMapperComposition
         _deserializers = deserializers?.Where(x => x != null).ToArray() ?? throw new ArgumentNullException(nameof(deserializers));
     }
 
-    public IEnumerable<RepositoryAction> Map(RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action, RepoZ.Api.Git.Repository repository)
+    public IEnumerable<RepositoryAction> Map(RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action, params RepoZ.Api.Git.Repository[] repositories)
     {
         IActionToRepositoryActionMapper deserializer = _deserializers.FirstOrDefault(x => x.CanMap(action));
 
-        IEnumerable<RepositoryAction> result = deserializer?.Map(action, repository, this);
+        IEnumerable<RepositoryAction> result = deserializer?.Map(action, repositories, this);
 
         return result;
     }

@@ -9,9 +9,9 @@ namespace RepoZ.Api.Common.IO
     using System.IO;
     using RepoZ.Api.Common.Git;
     using System.IO.Abstractions;
-    using JetBrains.Annotations;
     using RepoZ.Api.Common.IO.ExpressionEvaluator;
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 
     public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     {
@@ -22,6 +22,7 @@ namespace RepoZ.Api.Common.IO
         private readonly ITranslationService _translationService;
         private readonly IFileSystem _fileSystem;
         private readonly RepositoryExpressionEvaluator _expressionEvaluator;
+        private readonly RepositorySpecificConfiguration _repoSpecificConfig;
 
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
@@ -30,7 +31,8 @@ namespace RepoZ.Api.Common.IO
             IErrorHandler errorHandler,
             ITranslationService translationService,
             IFileSystem fileSystem,
-            RepositoryExpressionEvaluator expressionEvaluator)
+            RepositoryExpressionEvaluator expressionEvaluator,
+            RepositorySpecificConfiguration repoSpecificConfig)
         {
             _repositoryActionConfigurationStore = repositoryActionConfigurationStore ?? throw new ArgumentNullException(nameof(repositoryActionConfigurationStore));
             _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
@@ -39,6 +41,7 @@ namespace RepoZ.Api.Common.IO
             _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
+            _repoSpecificConfig = repoSpecificConfig ?? throw new ArgumentNullException(nameof(repoSpecificConfig));
         }
 
         private RepositoryActionConfiguration Configuration => _repositoryActionConfigurationStore.RepositoryActionConfiguration;
@@ -63,6 +66,16 @@ namespace RepoZ.Api.Common.IO
         {
             Repository[] repositories = repos.ToArray();
             Repository singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
+
+            if (singleRepository != null)
+            {
+                foreach (RepositoryAction x in _repoSpecificConfig.Create(repositories))
+                {
+                    yield return x;
+                }
+
+                yield break;
+            }
 
             if (Configuration.State == RepositoryActionConfiguration.LoadState.Error)
             {
@@ -89,7 +102,7 @@ namespace RepoZ.Api.Common.IO
 
                 if (!string.IsNullOrWhiteSpace(tmpConfig?.RedirectFile))
                 {
-                    var filename = ReplaceVariables(tmpConfig.RedirectFile, singleRepository);
+                    var filename = NameHelper.ReplaceVariables(tmpConfig.RedirectFile, singleRepository);
                     if (_fileSystem.File.Exists(filename))
                     {
                         tmpConfig = _repositoryActionConfigurationStore.LoadRepositoryActionConfiguration(filename);
@@ -115,7 +128,7 @@ namespace RepoZ.Api.Common.IO
 
                     foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
                     {
-                        yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
+                        yield return CreateProcessRunnerAction(action, singleRepository);
                     }
                 }
 
@@ -130,7 +143,7 @@ namespace RepoZ.Api.Common.IO
                     {
                         yield return CreateFileAssociationSubMenu(
                             singleRepository,
-                            ReplaceTranslatables(fileAssociation.Name),
+                            NameHelper.ReplaceTranslatables(fileAssociation.Name, _translationService),
                             fileAssociation.Extension);
                     }
                 }
@@ -138,13 +151,14 @@ namespace RepoZ.Api.Common.IO
                 yield return new ActionBrowseRepositoryV1Mapper(_expressionEvaluator, _translationService, _errorHandler).CreateBrowseRemoteAction(singleRepository);
             }
 
-            yield return new RepositorySeparatorAction();
-            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, executionCausesSynchronizing: true);
-            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
-            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
+            // yield return new RepositorySeparatorAction();
+            // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Fetch"), repositories, _repositoryWriter.Fetch, executionCausesSynchronizing: true);
+            // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
+            // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
             if (singleRepository != null)
             {
+                // moved
                 yield return new RepositoryAction()
                     {
                         Name = _translationService.Translate("Checkout"),
@@ -198,61 +212,16 @@ namespace RepoZ.Api.Common.IO
                     };
             }
 
-            yield return new RepositorySeparatorAction();
-            yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path));
+            // yield return new RepositorySeparatorAction();
+            // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path));
         }
 
-
-        private static string ReplaceVariables(string value, Repository repository)
-        {
-            if (value is null)
-            {
-                return string.Empty;
-            }
-
-            return Environment.ExpandEnvironmentVariables(
-                value
-                    .Replace("{Repository.Name}", repository.Name)
-                    .Replace("{Repository.Path}", repository.Path)
-                    .Replace("{Repository.SafePath}", repository.SafePath)
-                    .Replace("{Repository.Location}", repository.Location)
-                    .Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
-                    .Replace("{Repository.Branches}", string.Join("|", repository.Branches))
-                    .Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches))
-                    .Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls)));
-        }
-
-        private string ReplaceTranslatables(string value)
-        {
-            if (value is null)
-            {
-                return string.Empty;
-            }
-
-            value = ReplaceTranslatable(value, "Open");
-            value = ReplaceTranslatable(value, "OpenIn");
-            value = ReplaceTranslatable(value, "OpenWith");
-
-            return value;
-        }
-
-        private string ReplaceTranslatable(string value, string translatable)
-        {
-            if (value.StartsWith("{" + translatable + "}"))
-            {
-                var rest = value.Replace("{" + translatable + "}", "").Trim();
-                return _translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
-            }
-
-            return value;
-        }
-
-        private RepositoryAction CreateProcessRunnerAction(RepositoryActionConfiguration.RepositoryAction action, Repository repository, bool beginGroup = false)
+        private RepositoryAction CreateProcessRunnerAction(RepositoryActionConfiguration.RepositoryAction action, Repository repository)
         {
             var type = action.Type;
-            var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
-            var command = ReplaceVariables(action.Command, repository);
-            var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
+            var name = NameHelper.ReplaceTranslatables(NameHelper.ReplaceVariables(_translationService.Translate(action.Name), repository), _translationService);
+            var command = NameHelper.ReplaceVariables(action.Command, repository);
+            var executables = action.Executables.Select(e => NameHelper.ReplaceVariables(e, repository));
 
             // var arguments = ReplaceVariables(action.Arguments, repository);
             var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
@@ -318,7 +287,7 @@ namespace RepoZ.Api.Common.IO
                                         {
                                             return actionMenu.RepositoryActions
                                                 .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
-                                                .Select(x => CreateProcessRunnerAction(x, repository, false))
+                                                .Select(x => CreateProcessRunnerAction(x, repository))
                                                 .Concat(
                                                     new RepositoryAction[]
                                                     {
@@ -390,7 +359,7 @@ namespace RepoZ.Api.Common.IO
                         DeferredSubActionsEnumerator = () =>
                             action.Subfolder
                                   .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
-                                  .Select(x => CreateProcessRunnerAction(x, repository, false))
+                                  .Select(x => CreateProcessRunnerAction(x, repository))
                                   .ToArray(),
                     };
             }
@@ -445,7 +414,7 @@ namespace RepoZ.Api.Common.IO
                         Name = actionName,
                         DeferredSubActionsEnumerator = () =>
                             GetFiles(repository, filePattern)
-                                .Select(solutionFile => ReplaceVariables(solutionFile, repository))
+                                .Select(solutionFile => NameHelper.ReplaceVariables(solutionFile, repository))
                                 .Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
                                 .ToArray(),
                     };
@@ -479,6 +448,61 @@ namespace RepoZ.Api.Common.IO
         }
     }
 
+    public static class NameHelper
+    {
+        public static string EvaluateName(in string input, in Repository repository, ITranslationService translationService)
+        {
+            return ReplaceTranslatables(
+                ReplaceVariables(
+                    translationService.Translate(input),
+                    repository),
+                translationService);
+        }
+
+        public static string ReplaceVariables(string value, Repository repository)
+        {
+            if (value is null)
+            {
+                return string.Empty;
+            }
+
+            return Environment.ExpandEnvironmentVariables(
+                value
+                    .Replace("{Repository.Name}", repository.Name)
+                    .Replace("{Repository.Path}", repository.Path)
+                    .Replace("{Repository.SafePath}", repository.SafePath)
+                    .Replace("{Repository.Location}", repository.Location)
+                    .Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
+                    .Replace("{Repository.Branches}", string.Join("|", repository.Branches ?? Array.Empty<string>()))
+                    .Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches ?? Array.Empty<string>()))
+                    .Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls ?? Array.Empty<string>())));
+        }
+
+        public static string ReplaceTranslatables(string value, ITranslationService translationService)
+        {
+            if (value is null)
+            {
+                return string.Empty;
+            }
+
+            value = ReplaceTranslatable(value, "Open", translationService);
+            value = ReplaceTranslatable(value, "OpenIn", translationService);
+            value = ReplaceTranslatable(value, "OpenWith", translationService);
+
+            return value;
+        }
+
+        public static string ReplaceTranslatable(string value, string translatable, ITranslationService translationService)
+        {
+            if (value.StartsWith("{" + translatable + "}"))
+            {
+                var rest = value.Replace("{" + translatable + "}", "").Trim();
+                return translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
+            }
+
+            return value;
+        }
+    }
 
     public static class MultipleRepositoryActionHelper
     {
@@ -518,6 +542,5 @@ namespace RepoZ.Api.Common.IO
                 // nothing to see here
             }
         }
-
     }
 }

@@ -27,9 +27,14 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionBrowseRepositoryV1;
     }
 
-    IEnumerable<RepositoryAction> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
+    bool IActionToRepositoryActionMapper.CanHandleMultipeRepositories()
     {
-        return Map(action as RepositoryActionBrowseRepositoryV1, repository);
+        return false;
+    }
+
+    IEnumerable<RepositoryAction> IActionToRepositoryActionMapper.Map(Data.RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    {
+        return Map(action as RepositoryActionBrowseRepositoryV1, repository.First());
     }
 
     public IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionBrowseRepositoryV1 action, Repository repository)

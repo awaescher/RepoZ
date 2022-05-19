@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 public static class ProcessHelper
 {
-    public static void StartProcess(string process, string arguments, IErrorHandler _errorHandler)
+    public static void StartProcess(string process, string arguments, IErrorHandler errorHandler)
     {
         try
         {
@@ -28,7 +28,7 @@ public static class ProcessHelper
         }
         catch (Exception ex)
         {
-            _errorHandler.Handle(ex.Message);
+            errorHandler.Handle(ex.Message);
         }
     }
 }

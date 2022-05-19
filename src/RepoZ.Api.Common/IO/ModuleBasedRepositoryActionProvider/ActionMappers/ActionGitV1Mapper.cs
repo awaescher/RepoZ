@@ -24,7 +24,12 @@ public class ActionGitV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionGitV1;
     }
 
-    IEnumerable<Api.Git.RepositoryAction> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
+    bool IActionToRepositoryActionMapper.CanHandleMultipeRepositories()
+    {
+        return false;
+    }
+
+    IEnumerable<Api.Git.RepositoryAction> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
     {
         return Map(action as RepositoryActionGitV1);
     }

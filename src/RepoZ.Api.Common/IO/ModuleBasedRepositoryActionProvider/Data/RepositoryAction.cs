@@ -8,10 +8,6 @@ public class RepositoryAction
 
     public string Name { get; set; }
 
-    // public string Command { get; set; }
-
-    // public string Keys { get; set; }
-
     public string Active { get; set; }
 
     public string MultiSelectEnabled { get; set; }

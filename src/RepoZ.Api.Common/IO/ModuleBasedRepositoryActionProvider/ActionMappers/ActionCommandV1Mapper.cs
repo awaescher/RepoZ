@@ -2,7 +2,8 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
+using System.Linq;
+using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoZ.Api.Git;
@@ -12,10 +13,12 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly IErrorHandler _errorHandler;
+    private readonly ITranslationService _translationService;
 
-    public ActionCommandV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, IErrorHandler errorHandler)
+    public ActionCommandV1Mapper(RepositoryExpressionEvaluator expressionEvaluator, ITranslationService translationService, IErrorHandler errorHandler)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
+        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
@@ -24,9 +27,14 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionCommandV1;
     }
 
-    IEnumerable<Api.Git.RepositoryAction> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
+    bool IActionToRepositoryActionMapper.CanHandleMultipeRepositories()
     {
-        return Map(action as RepositoryActionCommandV1, repository);
+        return false;
+    }
+
+    IEnumerable<Api.Git.RepositoryAction> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    {
+        return Map(action as RepositoryActionCommandV1, repository.First());
     }
 
     public IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionCommandV1 action, Repository repository)
@@ -36,15 +44,13 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = action.Name;
-        // var name = ReplaceTranslatables(ReplaceVariables(_translationService.Translate(action.Name), repository));
-
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService);
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command, repository);
         var arguments = action.Arguments; //todo
 
         yield return new Api.Git.RepositoryAction
             {
-                Name = action.Name,
+                Name = name,
                 Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
             };
     }

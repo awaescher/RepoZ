@@ -18,10 +18,12 @@ using ExpressionStringEvaluator.VariableProviders.DateTime;
 using ExpressionStringEvaluator.VariableProviders;
 using FakeItEasy;
 using FluentAssertions;
+using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using VerifyTests;
@@ -39,6 +41,11 @@ public class RepositorySpecificConfigurationTest
     private readonly VerifySettings _verifySettings;
     private readonly string _tempPath;
     private readonly RepositoryExpressionEvaluator _repositoryExpressionEvaluator;
+    private readonly ActionMapperComposition _actionMapperComposition;
+    private ITranslationService _translationService;
+    private IErrorHandler _errorHandler;
+    private IRepositoryWriter _repositoryWriter;
+    private IRepositoryMonitor _repositoryMonitor;
 
     public RepositorySpecificConfigurationTest()
     {
@@ -65,7 +72,13 @@ public class RepositorySpecificConfigurationTest
                         new ActionFolderV1Deserializer(),
                         new ActionSeparatorV1Deserializer(),
                         new ActionGitV1Deserializer(),
+                        new ActionGitCheckoutV1Deserializer(),
+                        new ActionGitFetchV1Deserializer(),
+                        new ActionGitPushV1Deserializer(),
+                        new ActionGitPullV1Deserializer(),
                         new ActionBrowseRepositoryV1Deserializer(),
+                        new ActionIgnoreRepositoriesV1Deserializer(),
+                        new ActionAssociateFileV1Deserializer(),
                     }));
 
 
@@ -121,6 +134,20 @@ public class RepositorySpecificConfigurationTest
             };
 
         _repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(providers, methods);
+
+        _translationService = A.Fake<ITranslationService>();
+        A.CallTo(() => _translationService.Translate(A<string>._)).ReturnsLazily(call => call.Arguments[0] as string);
+        _errorHandler = A.Fake<IErrorHandler>();
+        _repositoryWriter = A.Fake<IRepositoryWriter>();
+        _repositoryMonitor = A.Fake<IRepositoryMonitor>();
+
+        _actionMapperComposition = ActionMapperCompositionFactory.Create(
+            _repositoryExpressionEvaluator,
+            _translationService,
+            _errorHandler,
+            _fileSystem,
+            _repositoryWriter,
+            _repositoryMonitor);
     }
 
     [Fact]
@@ -129,8 +156,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
+        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository(), new Repository());
@@ -145,8 +172,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
+        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository());
@@ -161,8 +188,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
+        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository());
@@ -177,8 +204,8 @@ public class RepositorySpecificConfigurationTest
         // arrange
         _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
-        _fileSystem.AddFile(Path.Combine(_tempPath, "appsettings.json"), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator);
+        _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
+        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository());

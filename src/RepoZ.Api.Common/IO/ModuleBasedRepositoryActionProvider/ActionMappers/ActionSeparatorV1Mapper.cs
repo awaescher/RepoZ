@@ -2,6 +2,7 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -22,9 +23,23 @@ public class ActionSeparatorV1Mapper : IActionToRepositoryActionMapper
         return action is RepositoryActionSeparatorV1;
     }
 
-    IEnumerable<Api.Git.RepositoryAction> IActionToRepositoryActionMapper.Map(RepositoryAction action, Repository repository, ActionMapperComposition actionMapperComposition)
+    public bool CanHandleMultipeRepositories()
     {
-        return Map(action as RepositoryActionSeparatorV1, repository);
+        return true;
+    }
+
+    IEnumerable<Api.Git.RepositoryAction> IActionToRepositoryActionMapper.Map(RepositoryAction action, IEnumerable<Repository> repository, ActionMapperComposition actionMapperComposition)
+    {
+        foreach (Repository r in repository)
+        {
+            Api.Git.RepositoryAction[] result = Map(action as RepositoryActionSeparatorV1, r).ToArray();
+            if (result.Any())
+            {
+                return result;
+            }
+        }
+
+        return Array.Empty<Api.Git.RepositoryAction>();
     }
 
     public IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionSeparatorV1 action, Repository repository)

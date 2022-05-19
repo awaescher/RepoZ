@@ -200,6 +200,11 @@ using ExpressionStringEvaluator.VariableProviders;
                 new[] { typeof(IActionToRepositoryActionMapper).Assembly, },
                 Lifestyle.Singleton);
 
+
+            container.Register<DynamicRepositoryActionDeserializer>(Lifestyle.Singleton);
+            container.Register<RepositorySpecificConfiguration>(Lifestyle.Singleton);
+
+
             IEnumerable<FileInfo> pluginDlls = PluginFinder.FindPluginAssemblies(Path.Combine(AppDomain.CurrentDomain.BaseDirectory), fileSystem);
             IEnumerable<Assembly> assemblies = pluginDlls.Select(plugin => Assembly.Load(AssemblyName.GetAssemblyName(plugin.FullName)));
             container.RegisterPackages(assemblies);
