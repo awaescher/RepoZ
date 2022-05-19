@@ -157,7 +157,14 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
+        var sut = new RepositorySpecificConfiguration(
+            _appDataPathProvider,
+            _fileSystem,
+            _appsettingsDeserializer,
+            _repositoryExpressionEvaluator,
+            _actionMapperComposition,
+            _translationService,
+            _errorHandler);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository(), new Repository());
@@ -173,7 +180,14 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActionsMultiSelect");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
+        var sut = new RepositorySpecificConfiguration(
+            _appDataPathProvider,
+            _fileSystem,
+            _appsettingsDeserializer,
+            _repositoryExpressionEvaluator,
+            _actionMapperComposition,
+            _translationService,
+            _errorHandler);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository());
@@ -189,7 +203,14 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActions1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
+        var sut = new RepositorySpecificConfiguration(
+            _appDataPathProvider,
+            _fileSystem,
+            _appsettingsDeserializer,
+            _repositoryExpressionEvaluator,
+            _actionMapperComposition,
+            _translationService,
+            _errorHandler);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository());
@@ -205,7 +226,14 @@ public class RepositorySpecificConfigurationTest
         _testFileSettings.UseFileName("RepositoryActionsWithSeparator1");
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositorySpecificConfiguration.FILENAME), new MockFileData(content, Encoding.UTF8));
-        var sut = new RepositorySpecificConfiguration(_appDataPathProvider, _fileSystem, _appsettingsDeserializer, _repositoryExpressionEvaluator, _actionMapperComposition);
+        var sut = new RepositorySpecificConfiguration(
+            _appDataPathProvider,
+            _fileSystem,
+            _appsettingsDeserializer,
+            _repositoryExpressionEvaluator,
+            _actionMapperComposition,
+            _translationService,
+            _errorHandler);
 
         // act
         IEnumerable<RepositoryAction> result = sut.Create(new Repository());

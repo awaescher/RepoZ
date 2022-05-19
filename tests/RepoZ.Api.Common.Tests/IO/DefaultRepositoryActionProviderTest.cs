@@ -153,7 +153,9 @@ public class DefaultRepositoryActionProviderTest
                     _errorHandler,
                     _fileSystem,
                     _repositoryWriter,
-                    _repositoryMonitor)));
+                    _repositoryMonitor),
+                _translationService,
+                _errorHandler));
         // await using Stream stream = await EasyTestFile.LoadAsStream();
         var repository = new Repository()
             {

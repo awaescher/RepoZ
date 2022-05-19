@@ -5,19 +5,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Resources;
 using System.Text;
 using DotNetEnv;
-using JetBrains.Annotations;
-using LibGit2Sharp;
 using RepoZ.Api.Common.Common;
-using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
-using RepoZ.Api.Git;
 using RepoZ.Api.IO;
-using static System.Collections.Specialized.BitVector32;
 using Repository = RepoZ.Api.Git.Repository;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
 
@@ -29,6 +23,7 @@ public class RepositorySpecificConfiguration
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapper;
     private readonly ITranslationService _translationService;
+    private readonly IErrorHandler _errorHandler;
 
     public const string FILENAME = "RepositoryActionsV2.json";
 
@@ -38,7 +33,8 @@ public class RepositorySpecificConfiguration
         DynamicRepositoryActionDeserializer appsettingsDeserializer,
         RepositoryExpressionEvaluator repoExpressionEvaluator,
         ActionMapperComposition actionMapper,
-        [NotNull] ITranslationService translationService)
+        ITranslationService translationService,
+        IErrorHandler errorHandler)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -46,23 +42,31 @@ public class RepositorySpecificConfiguration
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _actionMapper = actionMapper ?? throw new ArgumentNullException(nameof(actionMapper));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
-    private IEnumerable<RepositoryAction> CreateFailing(Exception ex)
+    private IEnumerable<RepositoryAction> CreateFailing(Exception ex, string filename)
     {
         yield return new RepositoryAction()
             {
                 Name = _translationService.Translate("Could not read repository actions"),
                 CanExecute = false,
             };
+
         yield return new RepositoryAction()
             {
                 Name = ex.Message,
                 CanExecute = false,
             };
 
-        var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
-        yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
+        if (!string.IsNullOrWhiteSpace(filename))
+        {
+            yield return new RepositoryAction()
+                {
+                    Name = _translationService.Translate("Fix"),
+                    Action = (_, _) => ProcessHelper.StartProcess(_fileSystem.Path.GetDirectoryName(filename), string.Empty, _errorHandler),
+                };
+        }
     }
 
     public IEnumerable<RepositoryAction> Create(params RepoZ.Api.Git.Repository[] repository)
@@ -86,7 +90,7 @@ public class RepositorySpecificConfiguration
         var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
         if (!_fileSystem.File.Exists(filename))
         {
-            foreach (RepositoryAction failingItem in CreateFailing(new Exception(FILENAME + " file does not exists")))
+            foreach (RepositoryAction failingItem in CreateFailing(new Exception(FILENAME + " file does not exists"), filename))
             {
                 yield return failingItem;
             }
@@ -107,7 +111,7 @@ public class RepositorySpecificConfiguration
 
         if (exception != null)
         {
-            foreach (RepositoryAction failingItem in CreateFailing(e))
+            foreach (RepositoryAction failingItem in CreateFailing(exception, filename))
             {
                 yield return failingItem;
             }
