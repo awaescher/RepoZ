@@ -65,11 +65,8 @@ namespace RepoZ.Api.Common.IO
         private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repos)
         {
             Repository[] repositories = repos.ToArray();
-            
-            foreach (RepositoryAction repositoryAction in _repoSpecificConfig.Create(repositories))
-            {
-                yield return repositoryAction;
-            }
+
+            return _repoSpecificConfig.Create(repositories);
         }
 
         private IEnumerable<RepositoryAction> Ge1tContextMenuActionsInternal(IEnumerable<Repository> repos)
@@ -77,21 +74,21 @@ namespace RepoZ.Api.Common.IO
             Repository[] repositories = repos.ToArray();
             Repository singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
-            if (Configuration.State == RepositoryActionConfiguration.LoadState.Error)
-            {
-                yield return new RepositoryAction()
-                    {
-                        Name = _translationService.Translate("Could not read repository actions"),
-                        CanExecute = false,
-                    };
-                yield return new RepositoryAction()
-                    {
-                        Name = Configuration.LoadError,
-                        CanExecute = false,
-                    };
-                var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
-                yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
-            }
+            // if (Configuration.State == RepositoryActionConfiguration.LoadState.Error)
+            // {
+            //     yield return new RepositoryAction()
+            //         {
+            //             Name = _translationService.Translate("Could not read repository actions"),
+            //             CanExecute = false,
+            //         };
+            //     yield return new RepositoryAction()
+            //         {
+            //             Name = Configuration.LoadError,
+            //             CanExecute = false,
+            //         };
+            //     var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
+            //     yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
+            // }
 
             // load specific repo config
             RepositoryActionConfiguration specificConfig = null;
@@ -132,23 +129,23 @@ namespace RepoZ.Api.Common.IO
                     }
                 }
 
-                foreach (RepositoryActionConfiguration config in repositoryActionConfigurations)
-                {
-                    if (config == null || config.State != RepositoryActionConfiguration.LoadState.Ok)
-                    {
-                        continue;
-                    }
+                // foreach (RepositoryActionConfiguration config in repositoryActionConfigurations)
+                // {
+                //     if (config == null || config.State != RepositoryActionConfiguration.LoadState.Ok)
+                //     {
+                //         continue;
+                //     }
+                //
+                //     // foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
+                //     // {
+                //     //     yield return CreateFileAssociationSubMenu(
+                //     //         singleRepository,
+                //     //         NameHelper.ReplaceTranslatables(fileAssociation.Name, _translationService),
+                //     //         fileAssociation.Extension);
+                //     // }
+                // }
 
-                    // foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
-                    // {
-                    //     yield return CreateFileAssociationSubMenu(
-                    //         singleRepository,
-                    //         NameHelper.ReplaceTranslatables(fileAssociation.Name, _translationService),
-                    //         fileAssociation.Extension);
-                    // }
-                }
-
-                yield return new ActionBrowseRepositoryV1Mapper(_expressionEvaluator, _translationService, _errorHandler).CreateBrowseRemoteAction(singleRepository);
+                // yield return new ActionBrowseRepositoryV1Mapper(_expressionEvaluator, _translationService, _errorHandler).CreateBrowseRemoteAction(singleRepository);
             }
 
             // yield return new RepositorySeparatorAction();
@@ -156,61 +153,61 @@ namespace RepoZ.Api.Common.IO
             // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Pull"), repositories, _repositoryWriter.Pull, executionCausesSynchronizing: true);
             // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Push"), repositories, _repositoryWriter.Push, executionCausesSynchronizing: true);
 
-            if (singleRepository != null)
-            {
-                // moved
-                yield return new RepositoryAction()
-                    {
-                        Name = _translationService.Translate("Checkout"),
-                        DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
-                                                                             .Take(50)
-                                                                             .Select(branch => new RepositoryAction()
-                                                                                 {
-                                                                                     Name = branch,
-                                                                                     Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-                                                                                     CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
-                                                                                 })
-                                                                             .Union(new[]
-                                                                                 {
-                                                                                     new RepositorySeparatorAction(),
-                                                                                     new RepositoryAction()
-                                                                                         {
-                                                                                             Name = _translationService.Translate("Remote branches"),
-                                                                                             DeferredSubActionsEnumerator = () =>
-                                                                                                 {
-                                                                                                     RepositoryAction[] remoteBranches = singleRepository.ReadAllBranches()
-                                                                                                         .Select(branch => new RepositoryAction()
-                                                                                                             {
-                                                                                                                 Name = branch,
-                                                                                                                 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-                                                                                                                 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
-                                                                                                             })
-                                                                                                         .ToArray();
-
-                                                                                                     if (remoteBranches.Any())
-                                                                                                     {
-                                                                                                         return remoteBranches;
-                                                                                                     }
-
-                                                                                                     return new RepositoryAction[]
-                                                                                                         {
-                                                                                                             new RepositoryAction()
-                                                                                                                 {
-                                                                                                                     Name = _translationService.Translate("No remote branches found"),
-                                                                                                                     CanExecute = false,
-                                                                                                                 },
-                                                                                                             new RepositoryAction()
-                                                                                                                 {
-                                                                                                                     Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"),
-                                                                                                                     CanExecute = false,
-                                                                                                                 },
-                                                                                                         };
-                                                                                                 },
-                                                                                         },
-                                                                                 })
-                                                                             .ToArray(),
-                    };
-            }
+            // if (singleRepository != null)
+            // {
+            //     // moved
+            //     yield return new RepositoryAction()
+            //         {
+            //             Name = _translationService.Translate("Checkout"),
+            //             DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
+            //                                                                  .Take(50)
+            //                                                                  .Select(branch => new RepositoryAction()
+            //                                                                      {
+            //                                                                          Name = branch,
+            //                                                                          Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+            //                                                                          CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
+            //                                                                      })
+            //                                                                  .Union(new[]
+            //                                                                      {
+            //                                                                          new RepositorySeparatorAction(),
+            //                                                                          new RepositoryAction()
+            //                                                                              {
+            //                                                                                  Name = _translationService.Translate("Remote branches"),
+            //                                                                                  DeferredSubActionsEnumerator = () =>
+            //                                                                                      {
+            //                                                                                          RepositoryAction[] remoteBranches = singleRepository.ReadAllBranches()
+            //                                                                                              .Select(branch => new RepositoryAction()
+            //                                                                                                  {
+            //                                                                                                      Name = branch,
+            //                                                                                                      Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+            //                                                                                                      CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase),
+            //                                                                                                  })
+            //                                                                                              .ToArray();
+            //
+            //                                                                                          if (remoteBranches.Any())
+            //                                                                                          {
+            //                                                                                              return remoteBranches;
+            //                                                                                          }
+            //
+            //                                                                                          return new RepositoryAction[]
+            //                                                                                              {
+            //                                                                                                  new RepositoryAction()
+            //                                                                                                      {
+            //                                                                                                          Name = _translationService.Translate("No remote branches found"),
+            //                                                                                                          CanExecute = false,
+            //                                                                                                      },
+            //                                                                                                  new RepositoryAction()
+            //                                                                                                      {
+            //                                                                                                          Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"),
+            //                                                                                                          CanExecute = false,
+            //                                                                                                      },
+            //                                                                                              };
+            //                                                                                      },
+            //                                                                              },
+            //                                                                      })
+            //                                                                  .ToArray(),
+            //         };
+            // }
 
             // yield return new RepositorySeparatorAction();
             // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(_translationService.Translate("Ignore"), repositories, r => _repositoryMonitor.IgnoreByPath(r.Path));
@@ -351,59 +348,59 @@ namespace RepoZ.Api.Common.IO
                 };
             }
 
-            if (action.Subfolder.Any())
-            {
-                return new RepositoryAction()
-                    {
-                        Name = name,
-                        DeferredSubActionsEnumerator = () =>
-                            action.Subfolder
-                                  .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
-                                  .Select(x => CreateProcessRunnerAction(x, repository))
-                                  .ToArray(),
-                    };
-            }
+            // if (action.Subfolder.Any())
+            // {
+            //     return new RepositoryAction()
+            //         {
+            //             Name = name,
+            //             DeferredSubActionsEnumerator = () =>
+            //                 action.Subfolder
+            //                       .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
+            //                       .Select(x => CreateProcessRunnerAction(x, repository))
+            //                       .ToArray(),
+            //         };
+            // }
 
-            if (command.Equals("browser", StringComparison.CurrentCultureIgnoreCase))
-            {
-                // assume arguments is an url.
-                return CreateProcessRunnerAction(name, arguments);
-            }
-            else if (string.IsNullOrEmpty(action.Command))
-            {
-                foreach (var executable in executables)
-                {
-                    var normalized = executable.Replace("\"", "");
-                    if (_fileSystem.File.Exists(normalized) || _fileSystem.Directory.Exists(normalized))
-                    {
-                        return new RepositoryAction()
-                            {
-                                Name = name,
-                                Action = (_, _) => ProcessHelper.StartProcess(executable, arguments, _errorHandler),
-                            };
-                    }
-                }
-            }
-            else
-            {
-                return new RepositoryAction()
-                    {
-                        Name = name,
-                        Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
-                    };
-            }
+            // if (command.Equals("browser", StringComparison.CurrentCultureIgnoreCase))
+            // {
+            //     // assume arguments is an url.
+            //     return CreateProcessRunnerAction(name, arguments);
+            // }
+            // else if (string.IsNullOrEmpty(action.Command))
+            // {
+            //     foreach (var executable in executables)
+            //     {
+            //         var normalized = executable.Replace("\"", "");
+            //         if (_fileSystem.File.Exists(normalized) || _fileSystem.Directory.Exists(normalized))
+            //         {
+            //             return new RepositoryAction()
+            //                 {
+            //                     Name = name,
+            //                     Action = (_, _) => ProcessHelper.StartProcess(executable, arguments, _errorHandler),
+            //                 };
+            //         }
+            //     }
+            // }
+            // else
+            // {
+            //     return new RepositoryAction()
+            //         {
+            //             Name = name,
+            //             Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
+            //         };
+            // }
 
             return null;
         }
 
-        private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
-        {
-            return new RepositoryAction()
-                {
-                    Name = name,
-                    Action = (_, __) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
-                };
-        }
+        // private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+        // {
+        //     return new RepositoryAction()
+        //         {
+        //             Name = name,
+        //             Action = (_, __) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
+        //         };
+        // }
     }
 
     public static class NameHelper
@@ -454,13 +451,14 @@ namespace RepoZ.Api.Common.IO
 
         public static string ReplaceTranslatable(string value, string translatable, ITranslationService translationService)
         {
-            if (value.StartsWith("{" + translatable + "}"))
+            if (!value.StartsWith("{" + translatable + "}"))
             {
-                var rest = value.Replace("{" + translatable + "}", "").Trim();
-                return translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
+                return value;
             }
 
-            return value;
+            var rest = value.Replace("{" + translatable + "}", "").Trim();
+            return translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
+
         }
     }
 
