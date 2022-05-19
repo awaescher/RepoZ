@@ -8,12 +8,17 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using DotNetEnv;
+using JetBrains.Annotations;
+using LibGit2Sharp;
+using RepoZ.Api.Common.Common;
+using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using static System.Collections.Specialized.BitVector32;
+using Repository = RepoZ.Api.Git.Repository;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
 
 public class RepositorySpecificConfiguration
@@ -23,6 +28,7 @@ public class RepositorySpecificConfiguration
     private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapper;
+    private readonly ITranslationService _translationService;
 
     public const string FILENAME = "RepositoryActionsV2.json";
 
@@ -31,13 +37,32 @@ public class RepositorySpecificConfiguration
         IFileSystem fileSystem,
         DynamicRepositoryActionDeserializer appsettingsDeserializer,
         RepositoryExpressionEvaluator repoExpressionEvaluator,
-        ActionMapperComposition actionMapper)
+        ActionMapperComposition actionMapper,
+        [NotNull] ITranslationService translationService)
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _actionMapper = actionMapper ?? throw new ArgumentNullException(nameof(actionMapper));
+        _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
+    }
+
+    private IEnumerable<RepositoryAction> CreateFailing(Exception ex)
+    {
+        yield return new RepositoryAction()
+            {
+                Name = _translationService.Translate("Could not read repository actions"),
+                CanExecute = false,
+            };
+        yield return new RepositoryAction()
+            {
+                Name = ex.Message,
+                CanExecute = false,
+            };
+
+        var location = ((FileRepositoryStore)_repositoryActionConfigurationStore).GetFileName();
+        yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
     }
 
     public IEnumerable<RepositoryAction> Create(params RepoZ.Api.Git.Repository[] repository)
@@ -61,22 +86,33 @@ public class RepositorySpecificConfiguration
         var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
         if (!_fileSystem.File.Exists(filename))
         {
-            throw new Exception(FILENAME + " file does not exists");
+            foreach (RepositoryAction failingItem in CreateFailing(new Exception(FILENAME + " file does not exists")))
+            {
+                yield return failingItem;
+            }
+
+            yield break;
         }
 
+        Exception exception = null;
         try
         {
             var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
             rootFile = _appSettingsDeserializer.Deserialize(content);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            throw new Exception("Could not deserialize appsettings.json", e);
+            exception = ex;
         }
 
-        if (rootFile == null)
+        if (exception != null)
         {
-            throw new Exception("Could not deserialize appsettings.json");
+            foreach (RepositoryAction failingItem in CreateFailing(e))
+            {
+                yield return failingItem;
+            }
+
+            yield break;
         }
 
         Redirect redirect = rootFile.Redirect;
@@ -145,9 +181,6 @@ public class RepositorySpecificConfiguration
                 {
                     continue;
                 }
-                //private Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
-
-                //var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
 
                 try
                 {
