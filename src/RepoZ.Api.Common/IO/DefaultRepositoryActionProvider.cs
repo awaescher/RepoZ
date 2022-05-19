@@ -65,17 +65,17 @@ namespace RepoZ.Api.Common.IO
         private IEnumerable<RepositoryAction> GetContextMenuActionsInternal(IEnumerable<Repository> repos)
         {
             Repository[] repositories = repos.ToArray();
-            Repository singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
-
-            if (singleRepository != null)
+            
+            foreach (RepositoryAction x in _repoSpecificConfig.Create(repositories))
             {
-                foreach (RepositoryAction x in _repoSpecificConfig.Create(repositories))
-                {
-                    yield return x;
-                }
-
-                yield break;
+                yield return x;
             }
+        }
+
+        private IEnumerable<RepositoryAction> Ge1tContextMenuActionsInternal(IEnumerable<Repository> repos)
+        {
+            Repository[] repositories = repos.ToArray();
+            Repository singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
 
             if (Configuration.State == RepositoryActionConfiguration.LoadState.Error)
             {
@@ -139,13 +139,13 @@ namespace RepoZ.Api.Common.IO
                         continue;
                     }
 
-                    foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
-                    {
-                        yield return CreateFileAssociationSubMenu(
-                            singleRepository,
-                            NameHelper.ReplaceTranslatables(fileAssociation.Name, _translationService),
-                            fileAssociation.Extension);
-                    }
+                    // foreach (RepositoryActionConfiguration.FileAssociation fileAssociation in config.FileAssociations.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
+                    // {
+                    //     yield return CreateFileAssociationSubMenu(
+                    //         singleRepository,
+                    //         NameHelper.ReplaceTranslatables(fileAssociation.Name, _translationService),
+                    //         fileAssociation.Extension);
+                    // }
                 }
 
                 yield return new ActionBrowseRepositoryV1Mapper(_expressionEvaluator, _translationService, _errorHandler).CreateBrowseRemoteAction(singleRepository);
@@ -404,59 +404,19 @@ namespace RepoZ.Api.Common.IO
                     Action = (_, __) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
                 };
         }
-
-        private RepositoryAction CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
-        {
-            if (HasFiles(repository, filePattern))
-            {
-                return new RepositoryAction()
-                    {
-                        Name = actionName,
-                        DeferredSubActionsEnumerator = () =>
-                            GetFiles(repository, filePattern)
-                                .Select(solutionFile => NameHelper.ReplaceVariables(solutionFile, repository))
-                                .Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
-                                .ToArray(),
-                    };
-            }
-
-            return null;
-        }
-
-        private static bool HasFiles(Repository repository, string searchPattern)
-        {
-            return GetFileEnumerator(repository, searchPattern).Any();
-        }
-
-        private static IEnumerable<string> GetFiles(Repository repository, string searchPattern)
-        {
-            return GetFileEnumerator(repository, searchPattern)
-                   .Take(25)
-                   .OrderBy(f => f);
-        }
-
-        private static IEnumerable<string> GetFileEnumerator(Repository repository, string searchPattern)
-        {
-            // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
-            // .app or .xcodeproj on macOS
-
-            var directory = new DirectoryInfo(repository.Path);
-            return directory
-                   .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
-                   .Select(f => f.FullName)
-                   .Where(f => !f.StartsWith("."));
-        }
     }
 
     public static class NameHelper
     {
-        public static string EvaluateName(in string input, in Repository repository, ITranslationService translationService)
+        public static string EvaluateName(in string input, in Repository repository, ITranslationService translationService, RepositoryExpressionEvaluator repositoryExpressionEvaluator)
         {
-            return ReplaceTranslatables(
-                ReplaceVariables(
-                    translationService.Translate(input),
-                    repository),
-                translationService);
+            return repositoryExpressionEvaluator.EvaluateStringExpression(
+                ReplaceTranslatables(
+                    ReplaceVariables(
+                        translationService.Translate(input),
+                        repository),
+                    translationService),
+                repository);
         }
 
         public static string ReplaceVariables(string value, Repository repository)

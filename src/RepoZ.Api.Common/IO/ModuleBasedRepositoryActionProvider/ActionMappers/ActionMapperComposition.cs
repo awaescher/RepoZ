@@ -21,6 +21,8 @@ public class ActionMapperComposition
     {
         IActionToRepositoryActionMapper deserializer = _deserializers.FirstOrDefault(x => x.CanMap(action));
 
+        using IDisposable disposable = RepoZVariableProviderStore.Push(action.Variables);
+        
         IEnumerable<RepositoryAction> result = deserializer?.Map(action, repositories, this);
 
         return result;

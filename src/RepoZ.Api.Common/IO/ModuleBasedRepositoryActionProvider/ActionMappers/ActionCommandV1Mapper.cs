@@ -44,7 +44,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService);
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command, repository);
         var arguments = action.Arguments; //todo
 

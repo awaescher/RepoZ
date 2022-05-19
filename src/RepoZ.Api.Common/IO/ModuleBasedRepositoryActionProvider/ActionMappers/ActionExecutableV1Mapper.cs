@@ -48,7 +48,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService);
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         // var url = _expressionEvaluator.EvaluateStringExpression(action.Url, repository);
 
         var found = false;

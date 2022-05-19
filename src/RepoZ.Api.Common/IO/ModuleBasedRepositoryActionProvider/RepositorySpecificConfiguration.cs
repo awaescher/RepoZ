@@ -11,6 +11,7 @@ using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoZ.Api.Git;
 using RepoZ.Api.IO;
+using static System.Collections.Specialized.BitVector32;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
 
 public class RepositorySpecificConfiguration
@@ -74,6 +75,8 @@ public class RepositorySpecificConfiguration
             throw new Exception("Could not deserialize appsettings.json");
         }
 
+        using IDisposable _ = RepoZVariableProviderStore.Push(rootFile.Variables);
+
         Redirect redirect = rootFile.Redirect;
         if (!string.IsNullOrWhiteSpace(redirect?.Filename) && IsEnabled(redirect?.Enabled, true, singleRepository))
         {
@@ -94,20 +97,27 @@ public class RepositorySpecificConfiguration
                 }
             }
         }
-        
+
         if (rootFile.RepositorySpecificEnvironmentFiles?.Any() ?? false)
         {
             // load
             throw new NotImplementedException("todo, implement");
         }
 
+        
+
         // load variables global
         if (rootFile.ActionsCollection != null)
         {
+            using IDisposable disposable = RepoZVariableProviderStore.Push(rootFile.ActionsCollection.Variables);
+
             // add variables to set
             // rootFile.ActionsCollection.Variables
             foreach (Data.RepositoryAction action in rootFile.ActionsCollection.Actions)
             {
+                //coen
+                using IDisposable x = RepoZVariableProviderStore.Push(action.Variables);
+
                 if (multiSelectRequired)
                 {
                     var actionNotCapableForMultipleRepos = repository.Any(repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
@@ -117,7 +127,7 @@ public class RepositorySpecificConfiguration
                     }
                 }
 
-                IEnumerable<RepositoryAction> result = _actionMapper.Map(action, singleRepository ?? repository.First() /*todo*/); 
+                IEnumerable<RepositoryAction> result = _actionMapper.Map(action, singleRepository ?? repository.First() /*todo*/);
                 if (result == null)
                 {
                     continue;

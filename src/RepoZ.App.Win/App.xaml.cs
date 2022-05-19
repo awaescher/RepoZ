@@ -172,6 +172,7 @@ using ExpressionStringEvaluator.VariableProviders;
             container.Collection.Append<IVariableProvider, DateTimeDateVariableProvider>(Lifestyle.Singleton);
             container.Collection.Append<IVariableProvider, EmptyVariableProvider>(Lifestyle.Singleton);
             container.Collection.Append<IVariableProvider, CustomEnvironmentVariableVariableProvider>(Lifestyle.Singleton);
+            container.Collection.Append<IVariableProvider, RepoZVariableProvider>(Lifestyle.Singleton);
             container.Collection.Append<IVariableProvider, RepositoryVariableProvider>(Lifestyle.Singleton);
             container.Collection.Append<IVariableProvider, SlashVariableProvider>(Lifestyle.Singleton);
             container.Collection.Append<IVariableProvider, BackslashVariableProvider>(Lifestyle.Singleton);

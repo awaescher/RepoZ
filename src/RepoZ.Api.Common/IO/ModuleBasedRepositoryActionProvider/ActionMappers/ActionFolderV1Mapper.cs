@@ -47,7 +47,7 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService);
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         yield return new Api.Git.RepositoryAction()
             {
                 Name = name,

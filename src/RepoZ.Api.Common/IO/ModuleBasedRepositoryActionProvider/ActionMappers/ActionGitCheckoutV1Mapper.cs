@@ -49,7 +49,7 @@ public class ActionGitCheckoutV1Mapper : IActionToRepositoryActionMapper
         var name = action.Name;
         if (!string.IsNullOrEmpty(name))
         {
-            name = NameHelper.EvaluateName(action.Name, repository, _translationService);
+            name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         }
 
         if (string.IsNullOrWhiteSpace(name))

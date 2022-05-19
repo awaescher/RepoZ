@@ -2,12 +2,14 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoZ.Api.Git;
+using static RepoZ.Api.Common.Git.RepositoryActionConfiguration;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
@@ -45,15 +47,65 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-
-        var name = NameHelper.EvaluateName(action.Name, repository, _translationService);
+        var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command, repository);
         var arguments = action.Arguments; //todo
 
-        yield return new Api.Git.RepositoryAction
+        yield return CreateFileAssociationSubMenu(
+            repository,
+            name,
+            action.Extension);
+    }
+
+    private Api.Git.RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
+    {
+        return new Api.Git.RepositoryAction()
+        {
+            Name = name,
+            Action = (_, _) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
+        };
+    }
+
+    private Api.Git.RepositoryAction CreateFileAssociationSubMenu(Repository repository, string actionName, string filePattern)
+    {
+        if (!HasFiles(repository, filePattern))
+        {
+            return null;
+        }
+
+        return new Api.Git.RepositoryAction()
             {
-                Name = name,
-                Action = (_, _) => ProcessHelper.StartProcess(command, arguments, _errorHandler),
+                Name = actionName,
+                DeferredSubActionsEnumerator = () =>
+                    GetFiles(repository, filePattern)
+                        .Select(solutionFile => NameHelper.ReplaceVariables(solutionFile, repository))
+                        .Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
+                        .ToArray(),
             };
     }
+
+    private static bool HasFiles(Repository repository, string searchPattern)
+    {
+        return GetFileEnumerator(repository, searchPattern).Any();
+    }
+
+    private static IEnumerable<string> GetFiles(Repository repository, string searchPattern)
+    {
+        return GetFileEnumerator(repository, searchPattern)
+               .OrderBy(f => f)
+               .Take(25);
+    }
+
+    private static IEnumerable<string> GetFileEnumerator(Repository repository, string searchPattern)
+    {
+        // prefer EnumerateFileSystemInfos() over EnumerateFiles() to include packaged folders like
+        // .app or .xcodeproj on macOS
+
+        var directory = new DirectoryInfo(repository.Path);
+        return directory
+               .EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
+               .Select(f => f.FullName)
+               .Where(f => !f.StartsWith("."));
+    }
+
 }
