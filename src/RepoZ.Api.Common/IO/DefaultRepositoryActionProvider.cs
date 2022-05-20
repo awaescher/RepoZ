@@ -10,15 +10,11 @@ namespace RepoZ.Api.Common.IO
     using RepoZ.Api.Common.Git;
     using System.IO.Abstractions;
     using RepoZ.Api.Common.IO.ExpressionEvaluator;
-    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 
     public class DefaultRepositoryActionProvider : IRepositoryActionProvider
     {
         private readonly IRepositoryActionConfigurationStore _repositoryActionConfigurationStore;
-        private readonly IRepositoryWriter _repositoryWriter;
-        private readonly IRepositoryMonitor _repositoryMonitor;
-        private readonly IErrorHandler _errorHandler;
         private readonly ITranslationService _translationService;
         private readonly IFileSystem _fileSystem;
         private readonly RepositoryExpressionEvaluator _expressionEvaluator;
@@ -26,25 +22,17 @@ namespace RepoZ.Api.Common.IO
 
         public DefaultRepositoryActionProvider(
             IRepositoryActionConfigurationStore repositoryActionConfigurationStore,
-            IRepositoryWriter repositoryWriter,
-            IRepositoryMonitor repositoryMonitor,
-            IErrorHandler errorHandler,
             ITranslationService translationService,
             IFileSystem fileSystem,
             RepositoryExpressionEvaluator expressionEvaluator,
             RepositorySpecificConfiguration repoSpecificConfig)
         {
             _repositoryActionConfigurationStore = repositoryActionConfigurationStore ?? throw new ArgumentNullException(nameof(repositoryActionConfigurationStore));
-            _repositoryWriter = repositoryWriter ?? throw new ArgumentNullException(nameof(repositoryWriter));
-            _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
-            _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
             _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
             _repoSpecificConfig = repoSpecificConfig ?? throw new ArgumentNullException(nameof(repoSpecificConfig));
         }
-
-        private RepositoryActionConfiguration Configuration => _repositoryActionConfigurationStore.RepositoryActionConfiguration;
 
         public RepositoryAction GetPrimaryAction(Repository repository)
         {
@@ -53,7 +41,7 @@ namespace RepoZ.Api.Common.IO
 
         public RepositoryAction GetSecondaryAction(Repository repository)
         {
-            IEnumerable<RepositoryAction> actions = GetContextMenuActions(new[] { repository, });
+            IEnumerable<RepositoryAction> actions = GetContextMenuActions(new[] { repository, }).Take(2);
             return actions.Count() > 1 ? actions.ElementAt(1) : null;
         }
 
@@ -74,52 +62,6 @@ namespace RepoZ.Api.Common.IO
             {
                 Console.WriteLine(ex.Message);
                 throw;
-            }
-        }
-
-        private IEnumerable<RepositoryAction> Ge1tContextMenuActionsInternal(IEnumerable<Repository> repos)
-        {
-            Repository[] repositories = repos.ToArray();
-            Repository singleRepository = repositories.Count() == 1 ? repositories.Single() : null;
-
-            // load specific repo config
-            RepositoryActionConfiguration specificConfig = null;
-            if (singleRepository != null)
-            {
-                RepositoryActionConfiguration tmpConfig = _repositoryActionConfigurationStore.LoadRepositoryConfiguration(singleRepository);
-                specificConfig = tmpConfig;
-
-                if (!string.IsNullOrWhiteSpace(tmpConfig?.RedirectFile))
-                {
-                    var filename = NameHelper.ReplaceVariables(tmpConfig.RedirectFile, singleRepository);
-                    if (_fileSystem.File.Exists(filename))
-                    {
-                        tmpConfig = _repositoryActionConfigurationStore.LoadRepositoryActionConfiguration(filename);
-
-                        if (tmpConfig != null && tmpConfig.State == RepositoryActionConfiguration.LoadState.Ok)
-                        {
-                            specificConfig = tmpConfig;
-                        }
-                    }
-                }
-            }
-
-            if (singleRepository != null && Configuration.State == RepositoryActionConfiguration.LoadState.Ok)
-            {
-                RepositoryActionConfiguration[] repositoryActionConfigurations = new[] { Configuration, specificConfig, };
-
-                foreach (RepositoryActionConfiguration config in repositoryActionConfigurations)
-                {
-                    if (config == null || config.State != RepositoryActionConfiguration.LoadState.Ok)
-                    {
-                        continue;
-                    }
-
-                    foreach (RepositoryActionConfiguration.RepositoryAction action in config.RepositoryActions.Where(a => _expressionEvaluator.EvaluateBooleanExpression(a.Active, singleRepository)))
-                    {
-                        yield return CreateProcessRunnerAction(action, singleRepository);
-                    }
-                }
             }
         }
 
@@ -186,7 +128,6 @@ namespace RepoZ.Api.Common.IO
                                             return new RepositoryAction[]
                                                 {
                                                     new RepositoryAction() { Name = _translationService.Translate("Could not read repository actions"), CanExecute = false, },
-                                                    new RepositoryAction() { Name = Configuration.LoadError, CanExecute = false, },
                                                 };
                                         }
 
@@ -260,114 +201,6 @@ namespace RepoZ.Api.Common.IO
            
 
             return null;
-        }
-
-        // private RepositoryAction CreateProcessRunnerAction(string name, string process, string arguments = "")
-        // {
-        //     return new RepositoryAction()
-        //         {
-        //             Name = name,
-        //             Action = (_, __) => ProcessHelper.StartProcess(process, arguments, _errorHandler),
-        //         };
-        // }
-    }
-
-    public static class NameHelper
-    {
-        public static string EvaluateName(in string input, in Repository repository, ITranslationService translationService, RepositoryExpressionEvaluator repositoryExpressionEvaluator)
-        {
-            return repositoryExpressionEvaluator.EvaluateStringExpression(
-                ReplaceTranslatables(
-                    ReplaceVariables(
-                        translationService.Translate(input),
-                        repository),
-                    translationService),
-                repository);
-        }
-
-        public static string ReplaceVariables(string value, Repository repository)
-        {
-            if (value is null)
-            {
-                return string.Empty;
-            }
-
-            return Environment.ExpandEnvironmentVariables(
-                value
-                    .Replace("{Repository.Name}", repository.Name)
-                    .Replace("{Repository.Path}", repository.Path)
-                    .Replace("{Repository.SafePath}", repository.SafePath)
-                    .Replace("{Repository.Location}", repository.Location)
-                    .Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
-                    .Replace("{Repository.Branches}", string.Join("|", repository.Branches ?? Array.Empty<string>()))
-                    .Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches ?? Array.Empty<string>()))
-                    .Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls ?? Array.Empty<string>())));
-        }
-
-        public static string ReplaceTranslatables(string value, ITranslationService translationService)
-        {
-            if (value is null)
-            {
-                return string.Empty;
-            }
-
-            value = ReplaceTranslatable(value, "Open", translationService);
-            value = ReplaceTranslatable(value, "OpenIn", translationService);
-            value = ReplaceTranslatable(value, "OpenWith", translationService);
-
-            return value;
-        }
-
-        public static string ReplaceTranslatable(string value, string translatable, ITranslationService translationService)
-        {
-            if (!value.StartsWith("{" + translatable + "}"))
-            {
-                return value;
-            }
-
-            var rest = value.Replace("{" + translatable + "}", "").Trim();
-            return translationService.Translate("(" + translatable + ")", rest); // XMl doesn't support {}
-
-        }
-    }
-
-    public static class MultipleRepositoryActionHelper
-    {
-        public static RepositoryAction CreateActionForMultipleRepositories(
-            string name,
-            IEnumerable<Repository> repositories,
-            Action<Repository> action,
-            bool executionCausesSynchronizing = false)
-        {
-            return new RepositoryAction()
-                {
-                    Name = name,
-                    Action = (_, _) =>
-                        {
-                            // copy over to an array to not get an exception
-                            // once the enumerator changes (which can happen when a change
-                            // is detected and a repository is renewed) while the loop is running
-                            Repository[] repositoryArray = repositories.ToArray();
-
-                            foreach (Repository repository in repositoryArray)
-                            {
-                                SafelyExecute(action, repository); // git/io-exceptions will break the loop, put in try/catch
-                            }
-                        },
-                    ExecutionCausesSynchronizing = executionCausesSynchronizing,
-                };
-        }
-
-        private static void SafelyExecute(Action<Repository> action, Repository repository)
-        {
-            try
-            {
-                action(repository);
-            }
-            catch
-            {
-                // nothing to see here
-            }
         }
     }
 }

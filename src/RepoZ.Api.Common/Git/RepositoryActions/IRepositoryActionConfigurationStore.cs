@@ -6,9 +6,7 @@ namespace RepoZ.Api.Common.Git
 
     public interface IRepositoryActionConfigurationStore
     {
-        void Preload();
-
-        RepositoryActionConfiguration RepositoryActionConfiguration { get; }
+        RepositoryActionConfiguration LoadGlobalRepositoryActions();
 
         RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo);
 

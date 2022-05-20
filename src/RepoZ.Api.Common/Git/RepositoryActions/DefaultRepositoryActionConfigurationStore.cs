@@ -12,7 +12,6 @@ namespace RepoZ.Api.Common.Git
     public class DefaultRepositoryActionConfigurationStore : FileRepositoryStore, IRepositoryActionConfigurationStore
     {
         private const string REPOSITORY_ACTIONS_FILENAME = "RepositoryActions.json";
-        private readonly object _lock = new object();
         private readonly IErrorHandler _errorHandler;
         private readonly string _fullFilename;
 
@@ -55,24 +54,9 @@ namespace RepoZ.Api.Common.Git
             return null;
         }
 
-        public void Preload()
+        public RepositoryActionConfiguration LoadGlobalRepositoryActions()
         {
-            lock (_lock)
-            {
-                if (!FileSystem.File.Exists(GetFileName()))
-                {
-                    if (!TryCopyDefaultJsonFile())
-                    {
-                        RepositoryActionConfiguration = new RepositoryActionConfiguration
-                            {
-                                State = RepositoryActionConfiguration.LoadState.None,
-                            };
-                        return;
-                    }
-                }
-
-                RepositoryActionConfiguration = LoadRepositoryActionConfiguration(GetFileName());
-            }
+            return LoadRepositoryActionConfiguration(GetFileName());
         }
 
         public RepositoryActionConfiguration LoadRepositoryActionConfiguration(string filename)
@@ -139,23 +123,6 @@ namespace RepoZ.Api.Common.Git
             }
         }
 
-        private bool TryCopyDefaultJsonFile()
-        {
-            var defaultFile = Path.Combine(_fullFilename);
-            var targetFile = GetFileName();
-
-            try
-            {
-                FileSystem.File.Copy(defaultFile, targetFile);
-            }
-            catch
-            {
-                /* lets ignore errors here, we just want to know if if worked or not by checking the file existence */
-            }
-
-            return FileSystem.File.Exists(targetFile);
-        }
-
         private static string RemoveComment(string line)
         {
             var l = line.Trim();
@@ -176,7 +143,5 @@ namespace RepoZ.Api.Common.Git
 
             return line;
         }
-
-        public RepositoryActionConfiguration RepositoryActionConfiguration { get; private set; }
     }
 }

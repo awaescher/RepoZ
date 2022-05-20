@@ -27,16 +27,16 @@ namespace RepoZ.App.Win
     using System.Reflection;
     using System.IO.Abstractions;
     using RepoZ.Api.Common.IO.ExpressionEvaluator;
-using ExpressionStringEvaluator.VariableProviders;
+    using ExpressionStringEvaluator.VariableProviders;
     using ExpressionStringEvaluator.Methods;
     using ExpressionStringEvaluator.VariableProviders.DateTime;
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 
-/// <summary>
-/// Interaction logic for App.xaml
-/// </summary>
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
     public partial class App : Application, IRepositorySource
     {
         private static Timer _updateTimer;
@@ -73,7 +73,6 @@ using ExpressionStringEvaluator.VariableProviders;
             _container = new Container();
             RegisterServices(_container);
             UseRepositoryMonitor(_container);
-            PreloadRepositoryActions(_container);
             _container.Verify(VerificationOption.VerifyAndDiagnose);
 
             _updateTimer = new Timer(async state => await CheckForUpdatesAsync(), null, 5000, Timeout.Infinite);
@@ -240,11 +239,6 @@ using ExpressionStringEvaluator.VariableProviders;
             // var repositoryInformationAggregator = container.GetInstance<IRepositoryInformationAggregator>();
             _repositoryMonitor = container.GetInstance<IRepositoryMonitor>();
             _repositoryMonitor.Observe();
-        }
-
-        protected static void PreloadRepositoryActions(Container container)
-        {
-            container.GetInstance<IRepositoryActionConfigurationStore>().Preload();
         }
 
         private async Task CheckForUpdatesAsync()

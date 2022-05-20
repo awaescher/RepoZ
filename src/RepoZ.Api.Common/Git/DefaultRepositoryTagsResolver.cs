@@ -18,12 +18,12 @@ using RepoZ.Api.Common.IO.ExpressionEvaluator;
             _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _expressionEvaluator = expressionEvaluator;
-            _configStore.Preload();
+            _configStore.LoadGlobalRepositoryActions();
         }
 
         public void UpdateTags(Repository repository)
         {
-            RepositoryActionConfiguration globalConfig = _configStore.RepositoryActionConfiguration;
+            RepositoryActionConfiguration globalConfig = _configStore.LoadGlobalRepositoryActions();
             if (globalConfig == null)
             {
                 return;

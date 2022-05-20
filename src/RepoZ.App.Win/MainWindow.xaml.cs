@@ -266,7 +266,8 @@ namespace RepoZ.App.Win
 
         private void ReloadConfigButton_Click(object sender, RoutedEventArgs e)
         {
-            _actionConfigurationStore.Preload();
+            // not needed
+            _actionConfigurationStore.LoadGlobalRepositoryActions();
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)

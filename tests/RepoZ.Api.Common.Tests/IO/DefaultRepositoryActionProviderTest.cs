@@ -2,7 +2,6 @@ namespace RepoZ.Api.Common.Tests.IO;
 
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using EasyTestFileXunit;
@@ -105,37 +104,9 @@ public class DefaultRepositoryActionProviderTest
     public async Task GetPrimaryAction_ShouldReturnFirstActiveAction_WhenConfigIsValid()
     {
         // arrange
-        A.CallTo(() => _repositoryActionConfigurationStore.RepositoryActionConfiguration).Returns(new RepositoryActionConfiguration()
-            {
-                State = RepositoryActionConfiguration.LoadState.Ok,
-                RepositoryActions = new List<RepositoryActionConfiguration.RepositoryAction>()
-                    {
-                        new RepositoryActionConfiguration.RepositoryAction()
-                            {
-                                Active = "false",
-                                Name = "1-not-active",
-                            },
-                        new RepositoryActionConfiguration.RepositoryAction()
-                            {
-                                Active = "true",
-                                Name = "2-active",
-                                Command = "browser",
-                                Arguments = "https://github.com/coenm/",
-                            },
-                        new RepositoryActionConfiguration.RepositoryAction()
-                            {
-                                Active = "true",
-                                Name = "3-active",
-                            },
-                        new RepositoryActionConfiguration.RepositoryAction(),
-                    },
-            });
         var repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(_providers, _methods);
         var sut = new DefaultRepositoryActionProvider(
             _repositoryActionConfigurationStore,
-            _repositoryWriter,
-            _repositoryMonitor,
-            _errorHandler,
             _translationService,
             _fileSystem,
             repositoryExpressionEvaluator,
