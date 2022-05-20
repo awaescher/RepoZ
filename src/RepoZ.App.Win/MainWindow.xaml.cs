@@ -266,8 +266,8 @@ namespace RepoZ.App.Win
 
         private void ReloadConfigButton_Click(object sender, RoutedEventArgs e)
         {
-            // not needed
-            _actionConfigurationStore.LoadGlobalRepositoryActions();
+            // // not needed
+            // _actionConfigurationStore.LoadGlobalRepositoryActions();
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
@@ -282,9 +282,9 @@ namespace RepoZ.App.Win
 
         private void CustomizeContextMenu_Click(object sender, RoutedEventArgs e)
         {
-            Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
+            // Navigate("https://github.com/awaescher/RepoZ-RepositoryActions");
 
-            var fileName = ((FileRepositoryStore)_actionConfigurationStore).GetFileName();
+            var fileName = _actionConfigurationStore.GetFileName();
             var directoryName = Path.GetDirectoryName(fileName);
 
             if (_fileSystem.Directory.Exists(directoryName))

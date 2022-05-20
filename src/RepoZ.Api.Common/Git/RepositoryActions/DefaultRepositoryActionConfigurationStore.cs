@@ -7,24 +7,27 @@ namespace RepoZ.Api.Common.Git
     using System.IO.Abstractions;
     using System.Linq;
     using System.Threading.Tasks;
+    using JetBrains.Annotations;
     using RepoZ.Api.Git;
 
-    public class DefaultRepositoryActionConfigurationStore : FileRepositoryStore, IRepositoryActionConfigurationStore
+    public class DefaultRepositoryActionConfigurationStore : IRepositoryActionConfigurationStore
     {
         private const string REPOSITORY_ACTIONS_FILENAME = "RepositoryActions.json";
         private readonly IErrorHandler _errorHandler;
+        private readonly IFileSystem _fileSystem;
         private readonly string _fullFilename;
 
         public DefaultRepositoryActionConfigurationStore(IErrorHandler errorHandler, IAppDataPathProvider appDataPathProvider, IFileSystem fileSystem)
-            : base(errorHandler, fileSystem)
+            // : base(errorHandler, fileSystem)
         {
             _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
+            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _ = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
 
             _fullFilename = Path.Combine(appDataPathProvider.GetAppDataPath(), REPOSITORY_ACTIONS_FILENAME);
         }
 
-        public override string GetFileName()
+        public string GetFileName()
         {
             return _fullFilename;
         }
@@ -32,7 +35,7 @@ namespace RepoZ.Api.Common.Git
         public RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo)
         {
             var file = Path.Combine(repo.Path, ".git", REPOSITORY_ACTIONS_FILENAME);
-            if (FileSystem.File.Exists(file))
+            if (_fileSystem.File.Exists(file))
             {
                 RepositoryActionConfiguration result = LoadRepositoryActionConfiguration(file);
                 if (result.State == RepositoryActionConfiguration.LoadState.Ok)
@@ -42,7 +45,7 @@ namespace RepoZ.Api.Common.Git
             }
 
             file = Path.Combine(repo.Path, REPOSITORY_ACTIONS_FILENAME);
-            if (FileSystem.File.Exists(file))
+            if (_fileSystem.File.Exists(file))
             {
                 RepositoryActionConfiguration result = LoadRepositoryActionConfiguration(file);
                 if (result.State == RepositoryActionConfiguration.LoadState.Ok)
@@ -63,9 +66,9 @@ namespace RepoZ.Api.Common.Git
         {
             try
             {
-                if (FileSystem.File.Exists(filename))
+                if (_fileSystem.File.Exists(filename))
                 {
-                    using Stream stream = FileSystem.File.OpenRead(filename);
+                    using Stream stream = _fileSystem.File.OpenRead(filename);
                     return LoadRepositoryActionConfiguration(stream).GetAwaiter().GetResult();
                 }
 

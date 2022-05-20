@@ -6,6 +6,8 @@ namespace RepoZ.Api.Common.Git
 
     public interface IRepositoryActionConfigurationStore
     {
+        string GetFileName();
+
         RepositoryActionConfiguration LoadGlobalRepositoryActions();
 
         RepositoryActionConfiguration LoadRepositoryConfiguration(Repository repo);
@@ -13,7 +15,5 @@ namespace RepoZ.Api.Common.Git
         RepositoryActionConfiguration LoadRepositoryActionConfiguration(string filename);
 
         RepositoryActionConfiguration LoadRepositoryActionConfigurationFromJson(string jsonContent);
-
-        Task<RepositoryActionConfiguration> LoadRepositoryActionConfiguration(Stream stream);
     }
 }
