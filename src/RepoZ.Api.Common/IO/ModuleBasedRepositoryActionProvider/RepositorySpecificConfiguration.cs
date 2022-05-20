@@ -69,18 +69,18 @@ public class RepositorySpecificConfiguration
         }
     }
 
-    public IEnumerable<RepositoryAction> Create(params RepoZ.Api.Git.Repository[] repository)
+    public IEnumerable<RepositoryAction> Create(params RepoZ.Api.Git.Repository[] repositories)
     {
-        if (repository == null)
+        if (repositories == null)
         {
-            throw new ArgumentNullException(nameof(repository));
+            throw new ArgumentNullException(nameof(repositories));
         }
 
         Repository singleRepository = null;
-        var multiSelectRequired = repository.Length > 1;
+        var multiSelectRequired = repositories.Length > 1;
         if (!multiSelectRequired)
         {
-            singleRepository = repository.FirstOrDefault();
+            singleRepository = repositories.FirstOrDefault();
         }
 
         // load default file
@@ -261,14 +261,14 @@ public class RepositorySpecificConfiguration
 
                 if (multiSelectRequired)
                 {
-                    var actionNotCapableForMultipleRepos = repository.Any(repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
+                    var actionNotCapableForMultipleRepos = repositories.Any(repo => !IsEnabled(action.MultiSelectEnabled, false, repo));
                     if (actionNotCapableForMultipleRepos)
                     {
                         continue;
                     }
                 }
 
-                IEnumerable<RepositoryAction> result = _actionMapper.Map(action, singleRepository ?? repository.First() /*todo*/);
+                IEnumerable<RepositoryAction> result = _actionMapper.Map(action, repositories);
                 if (result == null)
                 {
                     continue;

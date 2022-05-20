@@ -239,7 +239,7 @@ namespace RepoZ.Api.Common.IO
         }
     }
 
-    public class CustomEnvironmentVariableVariableProvider : IVariableProvider<Repository>
+    public class CustomEnvironmentVariableVariableProvider : IVariableProvider<RepositoryContext>
     {
         private static readonly Dictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
         private readonly IFileSystem _fileSystem;
@@ -275,11 +275,17 @@ namespace RepoZ.Api.Common.IO
             return !string.IsNullOrWhiteSpace(envKey);
         }
 
-        public string Provide(Repository context, string key, string arg)
+        public string Provide(RepositoryContext context, string key, string arg)
         {
+            Repository singleContext = context?.Repositories.SingleOrDefault();
+            if (singleContext == null)
+            {
+                return string.Empty;
+            }
+
             var prefixLength = PREFIX.Length;
             var envKey = key.Substring(prefixLength, key.Length - prefixLength);
-            var envVars = GetRepoEnvironmentVariables(context);
+            var envVars = GetRepoEnvironmentVariables(singleContext);
 
             if (envVars != null)
             {

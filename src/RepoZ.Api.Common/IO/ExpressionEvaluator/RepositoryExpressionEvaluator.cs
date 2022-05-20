@@ -13,7 +13,28 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System;
 using System.Linq;
+using System.Threading;
 using RepoZ.Api.Git;
+
+public class RepositoryContext
+{
+    public RepositoryContext()
+    {
+        Repositories = Array.Empty<Repository>();
+    }
+
+    public RepositoryContext(params Repository[] repositories)
+    {
+        Repositories = repositories.ToArray();
+    }
+
+    public RepositoryContext(IEnumerable<Repository> repositories)
+    {
+        Repositories = repositories.ToArray();
+    }
+
+    public Repository[] Repositories { get; }
+}
 
 public class RepositoryExpressionEvaluator
 {
@@ -27,7 +48,12 @@ public class RepositoryExpressionEvaluator
         _expressionExecutor = new ExpressionStringEvaluator.Parser.ExpressionExecutor(v, m);
     }
 
-    public string EvaluateStringExpression(string value, Repository repository)
+    public string EvaluateStringExpression(string value, params Repository[] repository)
+    {
+        return EvaluateStringExpression(value, repository.AsEnumerable());
+    }
+
+    public string EvaluateStringExpression(string value, IEnumerable<Repository> repository)
     {
         if (value == null)
         {
@@ -36,7 +62,7 @@ public class RepositoryExpressionEvaluator
 
         try
         {
-            CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
+            CombinedTypeContainer result = _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repository), value);
             if (result.IsString(out var s))
             {
                 return s;
@@ -59,7 +85,7 @@ public class RepositoryExpressionEvaluator
 
         try
         {
-            CombinedTypeContainer result = _expressionExecutor.Execute<Repository>(repository, value);
+            CombinedTypeContainer result = _expressionExecutor.Execute<RepositoryContext>(new RepositoryContext(repository), value);
             if (result.IsBool(out var b))
             {
                 return b.Value;
