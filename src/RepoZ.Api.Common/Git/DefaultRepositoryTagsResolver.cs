@@ -4,7 +4,7 @@ namespace RepoZ.Api.Common.Git
     using System.IO.Abstractions;
     using System.Linq;
     using RepoZ.Api.Common.IO;
-using RepoZ.Api.Common.IO.ExpressionEvaluator;
+    using RepoZ.Api.Common.IO.ExpressionEvaluator;
     using RepoZ.Api.Git;
 
     public class DefaultRepositoryTagsResolver : IRepositoryTagsResolver
