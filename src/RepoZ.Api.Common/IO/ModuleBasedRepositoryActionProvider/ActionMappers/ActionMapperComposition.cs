@@ -24,11 +24,16 @@ public class ActionMapperComposition
 
     public IEnumerable<RepositoryAction> Map(RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction action, params RepoZ.Api.Git.Repository[] repositories)
     {
-        Repository singleRepository = repositories.SingleOrDefault();
-
+        Repository singleRepository = repositories.Length <= 1 ? repositories.SingleOrDefault() : null;
+        
         List<Variable> EvaluateVariables(IEnumerable<Variable> vars)
         {
             if (vars == null)
+            {
+                return new List<Variable>(0);
+            }
+
+            if (singleRepository == null)
             {
                 return new List<Variable>(0);
             }
@@ -47,10 +52,11 @@ public class ActionMapperComposition
         IActionToRepositoryActionMapper deserializer = _deserializers.FirstOrDefault(x => x.CanMap(action));
 
         using IDisposable disposable = RepoZVariableProviderStore.Push(EvaluateVariables(action.Variables));
-        
+
         IEnumerable<RepositoryAction> result = deserializer?.Map(action, repositories, this);
 
         return result;
+
     }
 
     private string Evaluate(string input, Repository repository)

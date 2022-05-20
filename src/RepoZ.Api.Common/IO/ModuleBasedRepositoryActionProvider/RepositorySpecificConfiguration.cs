@@ -120,30 +120,33 @@ public class RepositorySpecificConfiguration
         }
 
         Redirect redirect = rootFile.Redirect;
-        if (IsEnabled(redirect?.Enabled, true, null))
+        if (!string.IsNullOrWhiteSpace(redirect?.Filename))
         {
-            filename = Evaluate(redirect?.Filename, null);
-            if (_fileSystem.File.Exists(filename))
+            if (IsEnabled(redirect?.Enabled, true, null))
             {
-                exception = null;
-                try
+                filename = Evaluate(redirect?.Filename, null);
+                if (_fileSystem.File.Exists(filename))
                 {
-                    var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
-                    rootFile = _appSettingsDeserializer.Deserialize(content);
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
-
-                if (exception != null)
-                {
-                    foreach (RepositoryAction failingItem in CreateFailing(exception, filename))
+                    exception = null;
+                    try
                     {
-                        yield return failingItem;
+                        var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
+                        rootFile = _appSettingsDeserializer.Deserialize(content);
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
                     }
 
-                    yield break;
+                    if (exception != null)
+                    {
+                        foreach (RepositoryAction failingItem in CreateFailing(exception, filename))
+                        {
+                            yield return failingItem;
+                        }
+
+                        yield break;
+                    }
                 }
             }
         }
