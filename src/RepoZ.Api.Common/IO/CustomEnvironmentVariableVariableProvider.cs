@@ -123,6 +123,7 @@ namespace RepoZ.Api.Common.IO
 
     }
 
+
     public class EvaluatingVariable
     {
         public string Name { get; }
@@ -158,7 +159,6 @@ namespace RepoZ.Api.Common.IO
         // {
         // }
     }
-
 
     public class RepoZVariableProvider : IVariableProvider
     {
@@ -241,14 +241,6 @@ namespace RepoZ.Api.Common.IO
 
     public class CustomEnvironmentVariableVariableProvider : IVariableProvider<RepositoryContext>
     {
-        private static readonly Dictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
-        private readonly IFileSystem _fileSystem;
-
-        public CustomEnvironmentVariableVariableProvider(IFileSystem fileSystem)
-        {
-            _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        }
-
         private const string PREFIX = "Env.";
 
         /// <inheritdoc cref="IVariableProvider.CanProvide"/>
@@ -277,27 +269,24 @@ namespace RepoZ.Api.Common.IO
 
         public string Provide(RepositoryContext context, string key, string arg)
         {
-            Repository singleContext = context?.Repositories.SingleOrDefault();
-            if (singleContext == null)
-            {
-                return string.Empty;
-            }
-
             var prefixLength = PREFIX.Length;
             var envKey = key.Substring(prefixLength, key.Length - prefixLength);
-            var envVars = GetRepoEnvironmentVariables(singleContext);
 
-            if (envVars != null)
+            Repository singleContext = context?.Repositories.SingleOrDefault();
+            if (singleContext != null)
             {
-                if (envVars.ContainsKey(envKey))
+                Dictionary<string, string> envVars = GetRepoEnvironmentVariables(singleContext);
+
+                if (envVars != null)
                 {
-                    return envVars[envKey];
+                    if (envVars.ContainsKey(envKey))
+                    {
+                        return envVars[envKey];
+                    }
                 }
             }
 
-            var result = Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
-
-            return result;
+            return Environment.GetEnvironmentVariable(envKey) ?? string.Empty;
         }
 
         /// <inheritdoc cref="IVariableProvider.Provide"/>
@@ -313,28 +302,5 @@ namespace RepoZ.Api.Common.IO
         {
             return CoenRepoZEnvironmentVarialeStore.Get(context);
         }
-
-        // private Dictionary<string, string> GetRepoEnvironmentVariables(Repository repository)
-        // {
-        //     var repozEnvFile = Path.Combine(repository.Path, ".git", "repoz.env");
-        //
-        //     // todo use FileSystemIFileSystem
-        //     if (!_fileSystem.File.Exists(repozEnvFile))
-        //     {
-        //         return _emptyDictionary;
-        //     }
-        //
-        //     try
-        //     {
-        //         return DotNetEnv.Env.Load(repozEnvFile, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Console.WriteLine(e);
-        //     }
-        //
-        //     return _emptyDictionary;
-        // }
-
     }
 }

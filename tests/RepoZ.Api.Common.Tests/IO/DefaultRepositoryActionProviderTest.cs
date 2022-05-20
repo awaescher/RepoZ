@@ -69,12 +69,11 @@ public class DefaultRepositoryActionProviderTest
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new CustomEnvironmentVariableVariableProvider(_fileSystem),
+                new CustomEnvironmentVariableVariableProvider(),
                 new RepoZVariableProvider(),
                 new RepositoryVariableProvider(),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
-                
             };
 
         _methods = new List<IMethod>

@@ -101,7 +101,7 @@ public class RepositorySpecificConfigurationTest
                 new DateTimeTimeVariableProvider(dateTimeTimeVariableProviderOptions),
                 new DateTimeDateVariableProvider(dateTimeDateVariableProviderOptions),
                 new EmptyVariableProvider(),
-                new CustomEnvironmentVariableVariableProvider(_fileSystem),
+                new CustomEnvironmentVariableVariableProvider(),
                 new RepositoryVariableProvider(),
                 new SlashVariableProvider(),
                 new BackslashVariableProvider(),
