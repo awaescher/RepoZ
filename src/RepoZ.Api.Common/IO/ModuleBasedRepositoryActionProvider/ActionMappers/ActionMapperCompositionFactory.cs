@@ -29,7 +29,7 @@ public static class ActionMapperCompositionFactory
                 new ActionGitPullV1Mapper(expressionEvaluator, translationService, repositoryWriter, errorHandler),
                 new ActionGitPushV1Mapper(expressionEvaluator, translationService, repositoryWriter, errorHandler),
                 new ActionGitV1Mapper(expressionEvaluator, errorHandler),
-                new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, repositoryMonitor, errorHandler),
+                new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, /*repositoryMonitor,*/ errorHandler),
                 new ActionSeparatorV1Mapper(expressionEvaluator),
                 new ActionAssociateFileV1Mapper(expressionEvaluator, translationService, errorHandler)
             };
