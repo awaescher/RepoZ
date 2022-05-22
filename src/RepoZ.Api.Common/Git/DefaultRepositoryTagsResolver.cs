@@ -5,7 +5,23 @@ namespace RepoZ.Api.Common.Git
     using System.Linq;
     using RepoZ.Api.Common.IO;
     using RepoZ.Api.Common.IO.ExpressionEvaluator;
+    using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
     using RepoZ.Api.Git;
+
+    public class NewRepositoryTagsResolver : IRepositoryTagsResolver
+    {
+        private readonly RepositorySpecificConfiguration _configStore;
+
+        public NewRepositoryTagsResolver(RepositorySpecificConfiguration configStore)
+        {
+            _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
+        }
+
+        public void UpdateTags(Repository repository)
+        {
+            repository.Tags =  _configStore.GetTags(repository).ToArray();
+        }
+    }
 
     public class DefaultRepositoryTagsResolver : IRepositoryTagsResolver
     {

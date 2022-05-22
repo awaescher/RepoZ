@@ -56,7 +56,7 @@ namespace RepoZ.Api.Common.IO
 
             try
             {
-                return _repoSpecificConfig.Create(repositories);
+                return _repoSpecificConfig.CreateActions(repositories);
             }
             catch (Exception ex)
             {

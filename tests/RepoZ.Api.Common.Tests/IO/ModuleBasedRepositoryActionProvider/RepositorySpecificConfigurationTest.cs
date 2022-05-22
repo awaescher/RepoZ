@@ -165,7 +165,7 @@ public class RepositorySpecificConfigurationTest
             _errorHandler);
 
         // act
-        IEnumerable<RepositoryAction> result = sut.Create(new Repository(), new Repository());
+        IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository(), new Repository());
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -188,7 +188,7 @@ public class RepositorySpecificConfigurationTest
             _errorHandler);
 
         // act
-        IEnumerable<RepositoryAction> result = sut.Create(new Repository());
+        IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository());
 
         // assert
         await Verifier.Verify(result, _verifySettings);
@@ -211,7 +211,7 @@ public class RepositorySpecificConfigurationTest
             _errorHandler);
 
         // act
-        IEnumerable<RepositoryAction> result = sut.Create(new Repository());
+        IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository());
 
         // assert
         result.Should().BeEmpty();
@@ -234,7 +234,7 @@ public class RepositorySpecificConfigurationTest
             _errorHandler);
 
         // act
-        IEnumerable<RepositoryAction> result = sut.Create(new Repository());
+        IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository());
 
         // assert
         await Verifier.Verify(result, _verifySettings);
