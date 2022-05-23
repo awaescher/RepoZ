@@ -139,13 +139,10 @@ public class DynamicRepositoryActionDeserializer
             return redirectToken.ToObject<Redirect>();
         }
 
-        //todo implement
-
         var value = redirectToken.Value<string>();
         return new Redirect()
             {
                 Filename = value,
-                // Enabled = 
             };
     }
 }
