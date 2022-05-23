@@ -10,9 +10,9 @@ namespace RepoZ.Api.Common.Git
 
     public class NewRepositoryTagsResolver : IRepositoryTagsResolver
     {
-        private readonly RepositorySpecificConfiguration _configStore;
+        private readonly RepositoryTagsConfigurationFactory _configStore;
 
-        public NewRepositoryTagsResolver(RepositorySpecificConfiguration configStore)
+        public NewRepositoryTagsResolver(RepositoryTagsConfigurationFactory configStore)
         {
             _configStore = configStore ?? throw new ArgumentNullException(nameof(configStore));
         }

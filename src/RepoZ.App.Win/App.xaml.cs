@@ -155,6 +155,7 @@ namespace RepoZ.App.Win
 
             // container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>(Lifestyle.Singleton);
             container.Register<IRepositoryTagsResolver, NewRepositoryTagsResolver>(Lifestyle.Singleton);
+            container.Register<RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
 
             container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 

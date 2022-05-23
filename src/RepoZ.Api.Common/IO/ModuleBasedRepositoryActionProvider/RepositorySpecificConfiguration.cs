@@ -15,6 +15,201 @@ using RepoZ.Api.IO;
 using Repository = RepoZ.Api.Git.Repository;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
 
+public class RepositoryTagsConfigurationFactory
+{
+    private readonly IAppDataPathProvider _appDataPathProvider;
+    private readonly IFileSystem _fileSystem;
+    private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
+    private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
+
+    public RepositoryTagsConfigurationFactory(
+        IAppDataPathProvider appDataPathProvider,
+        IFileSystem fileSystem,
+        DynamicRepositoryActionDeserializer appsettingsDeserializer,
+        RepositoryExpressionEvaluator repoExpressionEvaluator)
+    {
+        _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
+        _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
+        _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
+    }
+
+    public IEnumerable<string> GetTags(RepoZ.Api.Git.Repository repository)
+    {
+        if (repository == null)
+        {
+            yield break;
+        }
+
+        // load default file
+        RepositoryActionConfiguration2 rootFile = null;
+        RepositoryActionConfiguration2 repoSpecificConfig = null;
+
+        var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), RepositorySpecificConfiguration.FILENAME);
+        if (!_fileSystem.File.Exists(filename))
+        {
+            yield break;
+        }
+
+        try
+        {
+            var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
+            rootFile = _appSettingsDeserializer.Deserialize(content);
+        }
+        catch (Exception)
+        {
+            yield break;
+        }
+
+
+        Redirect redirect = rootFile.Redirect;
+        if (!string.IsNullOrWhiteSpace(redirect?.Filename))
+        {
+            if (IsEnabled(redirect?.Enabled, true, null))
+            {
+                filename = Evaluate(redirect?.Filename, null);
+                if (_fileSystem.File.Exists(filename))
+                {
+                    try
+                    {
+                        var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
+                        rootFile = _appSettingsDeserializer.Deserialize(content);
+                    }
+                    catch (Exception)
+                    {
+                        yield break;
+                    }
+                }
+            }
+        }
+
+        List<Variable> EvaluateVariables(IEnumerable<Variable> vars)
+        {
+            if (vars == null)
+            {
+                return new List<Variable>(0);
+            }
+
+            return vars
+                   .Where(v => IsEnabled(v.Enabled, true, repository))
+                   .Select(v => new Variable()
+                   {
+                       Name = v.Name,
+                       Enabled = "true",
+                       Value = Evaluate(v.Value, repository),
+                   })
+                   .ToList();
+        }
+
+        using IDisposable rootVariables = RepoZVariableProviderStore.Push(EvaluateVariables(rootFile.Variables));
+
+        Dictionary<string, string> envVars = null;
+
+        // load repo specific environment variables
+        foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles)
+        {
+            if (envVars != null)
+            {
+                continue;
+            }
+
+            if (fileRef == null || !IsEnabled(fileRef.When, true, repository))
+            {
+                continue;
+            }
+
+            var f = Evaluate(fileRef.Filename, repository);
+            if (!_fileSystem.File.Exists(f))
+            {
+                // log warning?
+                continue;
+            }
+
+            try
+            {
+                envVars = DotNetEnv.Env.Load(f, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
+            }
+            catch (Exception e)
+            {
+                // log warning
+            }
+        }
+
+        using IDisposable repoSpecificEnvVariables = CoenRepoZEnvironmentVarialeStore.Set(envVars);
+
+        // load repo specific config
+        foreach (FileReference fileRef in rootFile.RepositorySpecificConfigFiles)
+        {
+            if (repoSpecificConfig != null)
+            {
+                continue;
+            }
+
+            if (fileRef == null || !IsEnabled(fileRef.When, true, repository))
+            {
+                continue;
+            }
+
+            var f = Evaluate(fileRef.Filename, repository);
+            if (!_fileSystem.File.Exists(f))
+            {
+                // warning
+                continue;
+            }
+
+            // todo redirect
+
+            try
+            {
+                var content = _fileSystem.File.ReadAllText(f, Encoding.UTF8);
+                repoSpecificConfig = _appSettingsDeserializer.Deserialize(content);
+            }
+            catch (Exception)
+            {
+                // warning.
+            }
+        }
+
+        using IDisposable repoSepecificVariables = RepoZVariableProviderStore.Push(EvaluateVariables(repoSpecificConfig?.Variables));
+
+        // load variables global
+        foreach (TagsCollection tagsCollection in new[] { rootFile.TagsCollection, repoSpecificConfig?.TagsCollection, })
+        {
+            if (tagsCollection == null)
+            {
+                continue;
+            }
+
+            using IDisposable disposable = RepoZVariableProviderStore.Push(EvaluateVariables(tagsCollection.Variables));
+
+            foreach (RepositoryActionTag action in tagsCollection.Tags)
+            {
+                if (!IsEnabled(action.When, true, repository))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrWhiteSpace(action.Tag))
+                {
+                    yield return action.Tag;
+                }
+            }
+        }
+    }
+
+    private string Evaluate(string input, Repository repository)
+    {
+        return _repoExpressionEvaluator.EvaluateStringExpression(input, repository);
+    }
+
+    private bool IsEnabled(string booleanExpression, bool defaultWhenNullOrEmpty, Repository repository)
+    {
+        return string.IsNullOrWhiteSpace(booleanExpression)
+            ? defaultWhenNullOrEmpty
+            : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
+    }
+}
+
 public class RepositorySpecificConfiguration
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
