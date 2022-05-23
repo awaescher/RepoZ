@@ -166,8 +166,7 @@ public class RepositorySpecificConfigurationTest
                 _appDataPathProvider,
                 _fileSystem,
                 _appsettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                _errorHandler));
+                _repositoryExpressionEvaluator));
 
         // act
         IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository(), new Repository());
@@ -194,8 +193,7 @@ public class RepositorySpecificConfigurationTest
                 _appDataPathProvider,
                 _fileSystem,
                 _appsettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                _errorHandler));
+                _repositoryExpressionEvaluator));
 
         // act
         IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository());
@@ -222,8 +220,7 @@ public class RepositorySpecificConfigurationTest
                 _appDataPathProvider,
                 _fileSystem,
                 _appsettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                _errorHandler));
+                _repositoryExpressionEvaluator));
 
         // act
         IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository());
@@ -250,8 +247,7 @@ public class RepositorySpecificConfigurationTest
                 _appDataPathProvider,
                 _fileSystem,
                 _appsettingsDeserializer,
-                _repositoryExpressionEvaluator,
-                _errorHandler));
+                _repositoryExpressionEvaluator));
 
         // act
         IEnumerable<RepositoryAction> result = sut.CreateActions(new Repository());

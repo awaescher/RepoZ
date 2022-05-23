@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using DotNetEnv;
+using JetBrains.Annotations;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 using RepoZ.Api.IO;
-using static System.Collections.Specialized.BitVector32;
 using Repository = RepoZ.Api.Git.Repository;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
 
@@ -21,13 +22,60 @@ public interface IRepositoryTagsFactory
     IEnumerable<string> GetTags(RepoZ.Api.Git.Repository repository);
 }
 
+public class ConfigurationFileNotFoundException : Exception
+{
+    public ConfigurationFileNotFoundException(string filename)
+    {
+        Filename = filename;
+    }
+
+    protected ConfigurationFileNotFoundException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+    }
+
+    public ConfigurationFileNotFoundException(string filename, string message) : base(message)
+    {
+        Filename = filename;
+    }
+
+    public ConfigurationFileNotFoundException(string filename, string message, Exception innerException) : base(message, innerException)
+    {
+        Filename = filename;
+    }
+
+    public string Filename { get; set; }
+}
+
+public class InvalidConfigurationException : Exception
+{
+    public InvalidConfigurationException(string filename)
+    {
+        Filename = filename;
+    }
+
+    protected InvalidConfigurationException([NotNull] SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+    }
+
+    public InvalidConfigurationException(string filename, string message) : base(message)
+    {
+        Filename = filename;
+    }
+
+    public InvalidConfigurationException(string filename, string message, Exception innerException) : base(message, innerException)
+    {
+        Filename = filename;
+    }
+
+    public string Filename { get; set; }
+}
+
 public class RepositoryConfigurationReader
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
     private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
-    private readonly IErrorHandler _errorHandler;
 
     public const string FILENAME = "RepositoryActionsV2.json";
 
@@ -35,24 +83,23 @@ public class RepositoryConfigurationReader
         IAppDataPathProvider appDataPathProvider,
         IFileSystem fileSystem,
         DynamicRepositoryActionDeserializer appsettingsDeserializer,
-        RepositoryExpressionEvaluator repoExpressionEvaluator,
-        IErrorHandler errorHandler)
+        RepositoryExpressionEvaluator repoExpressionEvaluator
+        )
     {
         _appDataPathProvider = appDataPathProvider ?? throw new ArgumentNullException(nameof(appDataPathProvider));
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
-        _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
     public (Dictionary<string, string> envVars, List<Variable> Variables, List<ActionsCollection> actions, List<TagsCollection> tags) Get(params RepoZ.Api.Git.Repository[] repositories)
     {
-        if (repositories == null)
+        if (repositories == null || !repositories.Any())
         {
             return (null, null, null, null);
         }
 
-        var repository = repositories.FirstOrDefault(); //todo
+        Repository repository = repositories.FirstOrDefault(); //todo
         if (repository == null)
         {
             return (null, null, null, null);
@@ -64,7 +111,6 @@ public class RepositoryConfigurationReader
         {
             singleRepository = repositories.FirstOrDefault();
         }
-
 
         var variables = new List<Variable>();
         Dictionary<string, string> envVars = null;
@@ -78,7 +124,7 @@ public class RepositoryConfigurationReader
         var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
         if (!_fileSystem.File.Exists(filename))
         {
-            // throw, todo
+            throw new ConfigurationFileNotFoundException(filename);
         }
 
         try
@@ -86,12 +132,12 @@ public class RepositoryConfigurationReader
             var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
             rootFile = _appSettingsDeserializer.Deserialize(content);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // throw, todo
+            throw new InvalidConfigurationException(filename, e.Message, e);
         }
         
-        Redirect redirect = rootFile.Redirect;
+        Redirect redirect = rootFile?.Redirect;
         if (!string.IsNullOrWhiteSpace(redirect?.Filename))
         {
             if (IsEnabled(redirect?.Enabled, true, null))
@@ -104,12 +150,17 @@ public class RepositoryConfigurationReader
                         var content = _fileSystem.File.ReadAllText(filename, Encoding.UTF8);
                         rootFile = _appSettingsDeserializer.Deserialize(content);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        // throw, todo
+                        throw new InvalidConfigurationException(filename, e.Message, e);
                     }
                 }
             }
+        }
+
+        if (rootFile == null)
+        {
+            return (null, null, null, null);
         }
 
         List<Variable> EvaluateVariables(IEnumerable<Variable> vars)
@@ -394,9 +445,19 @@ public class RepositorySpecificConfiguration
 
         if (ex != null)
         {
-            foreach (RepositoryAction failingItem in CreateFailing(ex, null))
+            if (ex is ConfigurationFileNotFoundException configurationFileNotFoundException)
             {
-                yield return failingItem;
+                foreach (RepositoryAction failingItem in CreateFailing(configurationFileNotFoundException, configurationFileNotFoundException.Filename))
+                {
+                    yield return failingItem;
+                }
+            }
+            else
+            {
+                foreach (RepositoryAction failingItem in CreateFailing(ex, null))
+                {
+                    yield return failingItem;
+                }
             }
 
             yield break;

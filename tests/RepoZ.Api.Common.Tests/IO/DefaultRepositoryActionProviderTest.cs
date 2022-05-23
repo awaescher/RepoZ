@@ -128,8 +128,7 @@ public class DefaultRepositoryActionProviderTest
                     _appDataPathProvider,
                     _fileSystem,
                     dynamicRepositoryActionDeserializer,
-                    repositoryExpressionEvaluator,
-                    _errorHandler)));
+                    repositoryExpressionEvaluator)));
         // await using Stream stream = await EasyTestFile.LoadAsStream();
         var repository = new Repository()
             {
