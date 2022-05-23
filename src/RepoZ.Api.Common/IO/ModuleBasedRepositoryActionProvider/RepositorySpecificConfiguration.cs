@@ -15,7 +15,12 @@ using RepoZ.Api.IO;
 using Repository = RepoZ.Api.Git.Repository;
 using RepositoryAction = RepoZ.Api.Git.RepositoryAction;
 
-public class RepositoryTagsConfigurationFactory
+public interface IRepositoryTagsFactory
+{
+    IEnumerable<string> GetTags(RepoZ.Api.Git.Repository repository);
+}
+
+public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory 
 {
     private readonly IAppDataPathProvider _appDataPathProvider;
     private readonly IFileSystem _fileSystem;
@@ -35,6 +40,11 @@ public class RepositoryTagsConfigurationFactory
     }
 
     public IEnumerable<string> GetTags(RepoZ.Api.Git.Repository repository)
+    {
+        return GetTagsInner(repository).Distinct();
+    }
+
+    private IEnumerable<string> GetTagsInner(RepoZ.Api.Git.Repository repository)
     {
         if (repository == null)
         {

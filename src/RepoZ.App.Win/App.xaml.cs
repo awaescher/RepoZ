@@ -153,9 +153,7 @@ namespace RepoZ.App.Win
             container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>(Lifestyle.Singleton);
             container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
 
-            // container.Register<IRepositoryTagsResolver, DefaultRepositoryTagsResolver>(Lifestyle.Singleton);
-            container.Register<IRepositoryTagsResolver, NewRepositoryTagsResolver>(Lifestyle.Singleton);
-            container.Register<RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
+            container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
 
             container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
