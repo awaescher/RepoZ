@@ -3,8 +3,6 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Antlr4.Runtime;
-using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionDeserializers;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
@@ -12,6 +10,10 @@ using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 public class DynamicRepositoryActionDeserializer
 {
     private readonly ActionDeserializerComposition _deserializers;
+    private static readonly JsonLoadSettings _jsonLoadSettings = new()
+        {
+            CommentHandling = CommentHandling.Ignore,
+        };
 
     public DynamicRepositoryActionDeserializer(ActionDeserializerComposition deserializers)
     {
@@ -20,16 +22,11 @@ public class DynamicRepositoryActionDeserializer
 
     public RepositoryActionConfiguration Deserialize(string rawContent)
     {
-        var configuration = new RepositoryActionConfiguration();
-
         var value = rawContent.ToString();
 
-        var jsonObject = JObject.Parse(
-            value,
-            new JsonLoadSettings()
-                {
-                    CommentHandling = CommentHandling.Ignore,
-                });
+        var jsonObject = JObject.Parse(value, _jsonLoadSettings);
+
+        var configuration = new RepositoryActionConfiguration();
 
         JToken token = jsonObject["redirect"];
         configuration.Redirect = DeserializeRedirect(token);
@@ -59,7 +56,6 @@ public class DynamicRepositoryActionDeserializer
             return;
         }
 
-        // check if it is style 2
         JToken actions = repositoryActionsToken.SelectToken("actions");
         if (actions != null)
         {
@@ -68,7 +64,6 @@ public class DynamicRepositoryActionDeserializer
             repositoryActionsToken = actions;
         }
 
-        // assume style 1
         IList<JToken> repositoryActions = repositoryActionsToken.Children().ToList();
         foreach (JToken variable in repositoryActions)
         {
@@ -101,18 +96,15 @@ public class DynamicRepositoryActionDeserializer
             return;
         }
 
-        // check style
         JToken tagsToken = repositoryTagsToken.SelectToken("tags");
         if (tagsToken != null)
         {
-            // st
             JToken token = repositoryTagsToken.SelectToken("variables");
             configuration.TagsCollection.Variables.AddRange(TryDeserializeEnumerable<Variable>(token));
             configuration.TagsCollection.Tags.AddRange(TryDeserializeEnumerable<RepositoryActionTag>(tagsToken));
         }
         else
         {
-            // assume style 1
             configuration.TagsCollection.Tags.AddRange(TryDeserializeEnumerable<RepositoryActionTag>(repositoryTagsToken));
         }
     }
@@ -146,6 +138,8 @@ public class DynamicRepositoryActionDeserializer
         {
             return redirectToken.ToObject<Redirect>();
         }
+
+        //todo implement
 
         var value = redirectToken.Value<string>();
         return new Redirect()
