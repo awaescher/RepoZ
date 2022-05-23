@@ -71,7 +71,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
             yield return new Api.Git.RepositoryAction
                 {
                     Name = name,
-                    Action = (_, _) => ProcessHelper.StartProcess(executable, arguments, _errorHandler),
+                    Action = (_, _) => ProcessHelper.StartProcess(normalized, arguments, _errorHandler),
                 };
             found = true;
         }
