@@ -189,14 +189,14 @@ public class RepositoryConfigurationReader
         if (multiSelectRequired)
         {
             // load repo specific environment variables
-            foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles)
+            foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
             {
                 if (envVars != null)
                 {
                     continue;
                 }
 
-                if (fileRef == null || !IsEnabled(fileRef.When, true, repository))
+                if (!IsEnabled(fileRef.When, true, repository))
                 {
                     continue;
                 }
@@ -212,7 +212,7 @@ public class RepositoryConfigurationReader
                 {
                     envVars = DotNetEnv.Env.Load(f, new DotNetEnv.LoadOptions(setEnvVars: false)).ToDictionary();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // log warning
                 }
@@ -341,7 +341,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         {
             (repositoryEnvVars,  variables, _,  tags) = _repoConfigReader.Get(repository);
         }
-        catch (Exception e)
+        catch (Exception)
         {
              // todo, log
              yield break;

@@ -22,9 +22,7 @@ public class DynamicRepositoryActionDeserializer
 
     public RepositoryActionConfiguration Deserialize(string rawContent)
     {
-        var value = rawContent.ToString();
-
-        var jsonObject = JObject.Parse(value, _jsonLoadSettings);
+        var jsonObject = JObject.Parse(rawContent, _jsonLoadSettings);
 
         var configuration = new RepositoryActionConfiguration();
 
