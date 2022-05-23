@@ -294,7 +294,7 @@ public class DynamicRepositoryActionDeserializerTest
         // arrange
 
         // act
-        Func<RepositoryActionConfiguration2> act = () => _ = _sut.Deserialize(string.Empty);
+        Func<RepositoryActionConfiguration> act = () => _ = _sut.Deserialize(string.Empty);
 
         // assert
         _ = act.Should().Throw<JsonReaderException>().WithMessage("Error reading JObject from JsonReader. Path '', line 0, position 0.");

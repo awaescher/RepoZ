@@ -32,7 +32,6 @@ public class DefaultRepositoryActionProviderTest
 {
     private readonly IErrorHandler _errorHandler = A.Fake<IErrorHandler>();
     private readonly IAppDataPathProvider _appDataPathProvider = A.Fake<IAppDataPathProvider>();
-    private readonly IRepositoryActionConfigurationStore _repositoryActionConfigurationStore = A.Fake<IRepositoryActionConfigurationStore>();
     private readonly IRepositoryWriter _repositoryWriter = A.Fake<IRepositoryWriter>();
     private readonly IRepositoryMonitor _repositoryMonitor = A.Fake<IRepositoryMonitor>();
     private readonly ITranslationService _translationService = A.Fake<ITranslationService>();
@@ -107,13 +106,9 @@ public class DefaultRepositoryActionProviderTest
         var repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(_providers, _methods);
         var dynamicRepositoryActionDeserializer = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new List<IActionDeserializer>()));
         var sut = new DefaultRepositoryActionProvider(
-            _repositoryActionConfigurationStore,
-            _translationService,
             _fileSystem,
-            repositoryExpressionEvaluator,
             new RepositorySpecificConfiguration(
                 _fileSystem,
-                dynamicRepositoryActionDeserializer,
                 repositoryExpressionEvaluator,
                 ActionMapperCompositionFactory.Create(
                     repositoryExpressionEvaluator,

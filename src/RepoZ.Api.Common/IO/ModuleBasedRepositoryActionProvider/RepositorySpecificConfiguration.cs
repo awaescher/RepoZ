@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using DotNetEnv;
 using JetBrains.Annotations;
+using LibGit2Sharp;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
@@ -118,8 +119,8 @@ public class RepositoryConfigurationReader
         var tags = new List<TagsCollection>();
 
         // load default file
-        RepositoryActionConfiguration2 rootFile = null;
-        RepositoryActionConfiguration2 repoSpecificConfig = null;
+        RepositoryActionConfiguration rootFile = null;
+        RepositoryActionConfiguration repoSpecificConfig = null;
 
         var filename = Path.Combine(_appDataPathProvider.GetAppDataPath(), FILENAME);
         if (!_fileSystem.File.Exists(filename))
@@ -332,7 +333,20 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
                    .ToList();
         }
 
-        (Dictionary<string, string> repositoryEnvVars, List<Variable> variables, List<ActionsCollection> actions, List<TagsCollection> tags) = _repoConfigReader.Get(repository);
+        Dictionary<string, string> repositoryEnvVars;
+        List< Variable > variables;
+        List<TagsCollection> tags;
+
+        try
+        {
+            (repositoryEnvVars,  variables, _,  tags) = _repoConfigReader.Get(repository);
+        }
+        catch (Exception e)
+        {
+             // todo, log
+             yield break;
+        }
+
         using IDisposable d1 = RepoZVariableProviderStore.Push(EvaluateVariables(variables));
         using IDisposable d2 = CoenRepoZEnvironmentVarialeStore.Set(repositoryEnvVars);
 
@@ -371,7 +385,6 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
 public class RepositorySpecificConfiguration
 {
     private readonly IFileSystem _fileSystem;
-    private readonly DynamicRepositoryActionDeserializer _appSettingsDeserializer;
     private readonly RepositoryExpressionEvaluator _repoExpressionEvaluator;
     private readonly ActionMapperComposition _actionMapper;
     private readonly ITranslationService _translationService;
@@ -380,7 +393,6 @@ public class RepositorySpecificConfiguration
 
     public RepositorySpecificConfiguration(
         IFileSystem fileSystem,
-        DynamicRepositoryActionDeserializer appsettingsDeserializer,
         RepositoryExpressionEvaluator repoExpressionEvaluator,
         ActionMapperComposition actionMapper,
         ITranslationService translationService,
@@ -388,14 +400,12 @@ public class RepositorySpecificConfiguration
         RepositoryConfigurationReader repoConfigReader)
     {
         _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        _appSettingsDeserializer = appsettingsDeserializer ?? throw new ArgumentNullException(nameof(appsettingsDeserializer));
         _repoExpressionEvaluator = repoExpressionEvaluator ?? throw new ArgumentNullException(nameof(repoExpressionEvaluator));
         _actionMapper = actionMapper ?? throw new ArgumentNullException(nameof(actionMapper));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
 
         _repoConfigReader = repoConfigReader ?? throw new ArgumentNullException(nameof(repoConfigReader));
-
     }
 
     public IEnumerable<RepositoryAction> CreateActions(params RepoZ.Api.Git.Repository[] repositories)

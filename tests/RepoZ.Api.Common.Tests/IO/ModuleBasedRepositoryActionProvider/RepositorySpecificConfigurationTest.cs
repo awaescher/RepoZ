@@ -157,7 +157,6 @@ public class RepositorySpecificConfigurationTest
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
-            _appsettingsDeserializer,
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
@@ -184,7 +183,6 @@ public class RepositorySpecificConfigurationTest
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
-            _appsettingsDeserializer,
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
@@ -211,7 +209,6 @@ public class RepositorySpecificConfigurationTest
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
-            _appsettingsDeserializer,
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,
@@ -238,7 +235,6 @@ public class RepositorySpecificConfigurationTest
         _fileSystem.AddFile(Path.Combine(_tempPath, RepositoryConfigurationReader.FILENAME), new MockFileData(content, Encoding.UTF8));
         var sut = new RepositorySpecificConfiguration(
             _fileSystem,
-            _appsettingsDeserializer,
             _repositoryExpressionEvaluator,
             _actionMapperComposition,
             _translationService,

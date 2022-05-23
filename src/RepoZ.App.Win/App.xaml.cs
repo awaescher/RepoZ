@@ -150,7 +150,6 @@ namespace RepoZ.App.Win
             container.Register<IAppSettingsService, FileAppSettingsService>(Lifestyle.Singleton);
             container.Register<IAutoFetchHandler, DefaultAutoFetchHandler>(Lifestyle.Singleton);
             container.Register<IRepositoryIgnoreStore, DefaultRepositoryIgnoreStore>(Lifestyle.Singleton);
-            container.Register<IRepositoryActionConfigurationStore, DefaultRepositoryActionConfigurationStore>(Lifestyle.Singleton);
             container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
 
             container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);

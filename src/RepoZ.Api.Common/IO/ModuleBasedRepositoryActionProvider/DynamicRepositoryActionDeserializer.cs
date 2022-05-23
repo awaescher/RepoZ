@@ -18,9 +18,9 @@ public class DynamicRepositoryActionDeserializer
         _deserializers = deserializers ?? throw new ArgumentNullException(nameof(deserializers));
     }
 
-    public RepositoryActionConfiguration2 Deserialize(string rawContent)
+    public RepositoryActionConfiguration Deserialize(string rawContent)
     {
-        var configuration = new RepositoryActionConfiguration2();
+        var configuration = new RepositoryActionConfiguration();
 
         var value = rawContent.ToString();
 
@@ -52,7 +52,7 @@ public class DynamicRepositoryActionDeserializer
         return configuration;
     }
 
-    private void DeserializeRepositoryActions(JToken repositoryActionsToken, RepositoryActionConfiguration2 configuration)
+    private void DeserializeRepositoryActions(JToken repositoryActionsToken, RepositoryActionConfiguration configuration)
     {
         if (repositoryActionsToken == null)
         {
@@ -94,7 +94,7 @@ public class DynamicRepositoryActionDeserializer
         }
     }
 
-    private static void DeserializeRepositoryTags(JToken repositoryTagsToken, ref RepositoryActionConfiguration2 configuration)
+    private static void DeserializeRepositoryTags(JToken repositoryTagsToken, ref RepositoryActionConfiguration configuration)
     {
         if (repositoryTagsToken == null)
         {

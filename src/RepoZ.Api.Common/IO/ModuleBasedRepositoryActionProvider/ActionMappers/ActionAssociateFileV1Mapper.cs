@@ -9,7 +9,6 @@ using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
 using RepoZ.Api.Git;
-using static RepoZ.Api.Common.Git.RepositoryActionConfiguration;
 using RepositoryAction = RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.RepositoryAction;
 
 public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper

@@ -2,7 +2,7 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
 
 using System.Collections.Generic;
 
-public class RepositoryActionConfiguration2
+public class RepositoryActionConfiguration
 {
     public Redirect Redirect { get; set; }
 
