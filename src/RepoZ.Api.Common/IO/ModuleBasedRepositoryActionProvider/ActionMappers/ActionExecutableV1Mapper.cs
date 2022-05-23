@@ -41,7 +41,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionExecutableV1, repository.First());
     }
 
-    public IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionExecutableV1 action, Repository repository)
+    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionExecutableV1 action, Repository repository)
     {
         if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
         {
@@ -67,7 +67,7 @@ public class ActionExecutableV1Mapper : IActionToRepositoryActionMapper
                 continue;
             }
 
-            var arguments = action.Arguments; //todo
+            var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
             yield return new Api.Git.RepositoryAction
                 {
                     Name = name,

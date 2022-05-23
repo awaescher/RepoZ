@@ -219,7 +219,7 @@ public class RepositoryConfigurationReader
             }
         }
 
-        using IDisposable repoSpecificEnvVariables = CoenRepoZEnvironmentVarialeStore.Set(envVars);
+        using IDisposable repoSpecificEnvVariables = RepoZEnvironmentVariableStore.Set(envVars);
 
         if (multiSelectRequired)
         {
@@ -348,7 +348,7 @@ public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory
         }
 
         using IDisposable d1 = RepoZVariableProviderStore.Push(EvaluateVariables(variables));
-        using IDisposable d2 = CoenRepoZEnvironmentVarialeStore.Set(repositoryEnvVars);
+        using IDisposable d2 = RepoZEnvironmentVariableStore.Set(repositoryEnvVars);
 
         foreach (TagsCollection tagsCollection in tags.Where(t => t != null))
         {
@@ -474,7 +474,7 @@ public class RepositorySpecificConfiguration
         }
 
         using IDisposable d1 = RepoZVariableProviderStore.Push(EvaluateVariables(variables ?? new List<Variable>()));
-        using IDisposable d2 = CoenRepoZEnvironmentVarialeStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
+        using IDisposable d2 = RepoZEnvironmentVariableStore.Set(repositoryEnvVars ?? new Dictionary<string, string>());
 
         // load variables global
         foreach (ActionsCollection actionsCollection in actions.Where(action => action != null))

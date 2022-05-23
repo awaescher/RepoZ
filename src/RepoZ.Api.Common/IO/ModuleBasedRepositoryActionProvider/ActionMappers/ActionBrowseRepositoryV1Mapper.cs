@@ -51,8 +51,7 @@ public class ActionBrowseRepositoryV1Mapper : IActionToRepositoryActionMapper
         }
     }
 
-    //todo
-    public RepositoryAction CreateBrowseRemoteAction(Repository repository, RepositoryActionBrowseRepositoryV1 action = null)
+    private RepositoryAction CreateBrowseRemoteAction(Repository repository, RepositoryActionBrowseRepositoryV1 action = null)
     {
         if (repository.RemoteUrls.Length == 0)
         {

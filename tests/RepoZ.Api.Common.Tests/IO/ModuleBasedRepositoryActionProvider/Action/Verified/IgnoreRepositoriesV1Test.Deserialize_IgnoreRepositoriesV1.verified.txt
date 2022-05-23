@@ -1,0 +1,11 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionIgnoreRepositoriesV1,
+        Type: ignore-repositories@1
+      }
+    ]
+  }
+}

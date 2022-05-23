@@ -48,7 +48,9 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command, repository);
-        var arguments = action.Arguments; //todo
+
+        //todo no arguments needed.
+        // var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository);
 
         yield return CreateFileAssociationSubMenu(
             repository,
@@ -106,5 +108,4 @@ public class ActionAssociateFileV1Mapper : IActionToRepositoryActionMapper
                .Select(f => f.FullName)
                .Where(f => !f.StartsWith("."));
     }
-
 }

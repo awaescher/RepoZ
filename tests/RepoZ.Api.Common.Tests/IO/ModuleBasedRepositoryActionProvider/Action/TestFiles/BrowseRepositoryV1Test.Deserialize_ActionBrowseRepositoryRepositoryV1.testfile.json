@@ -1,0 +1,20 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "browse-repository@1",
+        "name": "fo true",
+        "FirstOnly": true
+      },
+      {
+        "type": "browse-repository@1",
+        "name": "fo false",
+        "FirstOnly": false
+      },
+      {
+        "type": "browse-repository@1",
+        "name": "fo empty"
+      }
+    ]
+  }
+}

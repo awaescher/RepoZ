@@ -32,7 +32,6 @@ public class DynamicRepositoryActionDeserializerTest
                     new ActionBrowserV1Deserializer(),
                     new ActionFolderV1Deserializer(),
                     new ActionSeparatorV1Deserializer(),
-                    new ActionGitV1Deserializer(),
                     new ActionGitCheckoutV1Deserializer(),
                     new ActionGitFetchV1Deserializer(),
                     new ActionGitPushV1Deserializer(),

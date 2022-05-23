@@ -3,9 +3,8 @@
   ActionsCollection: {
     Actions: [
       {
-        $type: RepositoryActionGitV1,
-        Command: Pull,
-        Type: git@1
+        $type: RepositoryActionGitCheckoutV1,
+        Type: git-checkout@1
       }
     ]
   }

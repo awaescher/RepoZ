@@ -1,0 +1,11 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionGitPushV1,
+        Type: git-push@1
+      }
+    ]
+  }
+}

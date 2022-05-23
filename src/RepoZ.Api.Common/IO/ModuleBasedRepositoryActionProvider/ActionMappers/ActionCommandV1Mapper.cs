@@ -46,7 +46,7 @@ public class ActionCommandV1Mapper : IActionToRepositoryActionMapper
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
         var command = _expressionEvaluator.EvaluateStringExpression(action.Command, repository);
-        var arguments = action.Arguments; //todo
+        var arguments = _expressionEvaluator.EvaluateStringExpression(action.Arguments, repository); 
 
         yield return new Api.Git.RepositoryAction
             {

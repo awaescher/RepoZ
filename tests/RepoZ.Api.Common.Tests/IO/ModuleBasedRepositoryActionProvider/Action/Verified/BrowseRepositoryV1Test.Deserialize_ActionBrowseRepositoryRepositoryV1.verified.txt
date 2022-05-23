@@ -1,0 +1,24 @@
+﻿{
+  TagsCollection: {},
+  ActionsCollection: {
+    Actions: [
+      {
+        $type: RepositoryActionBrowseRepositoryV1,
+        FirstOnly: True,
+        Type: browse-repository@1,
+        Name: fo true
+      },
+      {
+        $type: RepositoryActionBrowseRepositoryV1,
+        FirstOnly: False,
+        Type: browse-repository@1,
+        Name: fo false
+      },
+      {
+        $type: RepositoryActionBrowseRepositoryV1,
+        Type: browse-repository@1,
+        Name: fo empty
+      }
+    ]
+  }
+}

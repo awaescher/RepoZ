@@ -1,0 +1,14 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "associate-file@1",
+        "name": "Goto google.com",
+        "active": false,
+        "extension": "*.sln",
+        "command": "the cmd",
+        "arguments": "a b c"
+      }
+    ]
+  }
+}

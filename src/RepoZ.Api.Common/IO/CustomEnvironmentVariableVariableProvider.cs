@@ -12,9 +12,9 @@ namespace RepoZ.Api.Common.IO
     using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data;
     using Repository = RepoZ.Api.Git.Repository;
 
-    public static class CoenRepoZEnvironmentVarialeStore
+    public static class RepoZEnvironmentVariableStore
     {
-        public static AsyncLocal<Dictionary<string, string>> EnvVars = new AsyncLocal<Dictionary<string, string>>();
+        public static readonly AsyncLocal<Dictionary<string, string>> EnvVars = new AsyncLocal<Dictionary<string, string>>();
 
         public static IDisposable Set(Dictionary<string, string> envVars)
         {
@@ -51,11 +51,6 @@ namespace RepoZ.Api.Common.IO
         {
             VariableScope.Value = new Scope(VariableScope.Value, vars);
             return VariableScope.Value;
-        }
-
-        public static List<Variable> Clone()
-        {
-            return VariableScope.Value.Variables.ToList(); //todo
         }
     }
 
@@ -300,7 +295,7 @@ namespace RepoZ.Api.Common.IO
 
         private Dictionary<string, string> GetRepoEnvironmentVariables(Repository context)
         {
-            return CoenRepoZEnvironmentVarialeStore.Get(context);
+            return RepoZEnvironmentVariableStore.Get(context);
         }
     }
 }

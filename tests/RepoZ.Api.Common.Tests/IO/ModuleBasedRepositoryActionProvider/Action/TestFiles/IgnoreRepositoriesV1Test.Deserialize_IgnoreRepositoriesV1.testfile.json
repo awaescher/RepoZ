@@ -1,0 +1,9 @@
+{
+  "repository-actions": {
+    "actions": [
+      {
+        "type": "ignore-repositories@1"
+      }
+    ]
+  }
+}

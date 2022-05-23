@@ -13,13 +13,13 @@ using Xunit;
 
 [UsesEasyTestFile]
 [UsesVerify]
-public class ActionBrowserV1Test
+public class BrowserV1Test
 {
     private readonly DynamicRepositoryActionDeserializer _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 
-    public ActionBrowserV1Test()
+    public BrowserV1Test()
     {
         _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionBrowserV1Deserializer(), }));
 

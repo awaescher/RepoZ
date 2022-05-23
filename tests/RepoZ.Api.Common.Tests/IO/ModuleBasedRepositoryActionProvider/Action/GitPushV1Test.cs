@@ -13,15 +13,15 @@ using Xunit;
 
 [UsesEasyTestFile]
 [UsesVerify]
-public class GitV1Test
+public class GitPushV1Test
 {
     private readonly DynamicRepositoryActionDeserializer _sut;
     private readonly EasyTestFileSettings _testFileSettings;
     private readonly VerifySettings _verifySettings;
 
-    public GitV1Test()
+    public GitPushV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionGitV1Deserializer(), }));
+        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionGitPushV1Deserializer(), }));
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
@@ -32,7 +32,7 @@ public class GitV1Test
     }
 
     [Fact]
-    public async Task Deserialize_GitV1()
+    public async Task Deserialize_GitPushV1()
     {
         // arrange
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
@@ -48,13 +48,13 @@ public class GitV1Test
     public async Task Deserialize_ShouldBeOfExpectedType()
     {
         // arrange
-        _testFileSettings.UseMethodName(nameof(Deserialize_GitV1));
+        _testFileSettings.UseMethodName(nameof(Deserialize_GitPushV1));
         var content = await EasyTestFile.LoadAsText(_testFileSettings);
 
         // act
         var result = _sut.Deserialize(content);
 
         // assert
-        _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionGitV1>();
+        _ = result.ActionsCollection.Actions.Should().AllBeOfType<RepositoryActionGitPushV1>();
     }
 }
