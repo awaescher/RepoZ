@@ -105,17 +105,15 @@ public class DefaultRepositoryActionProviderTest
     {
         // arrange
         var repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(_providers, _methods);
+        var dynamicRepositoryActionDeserializer = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new List<IActionDeserializer>()));
         var sut = new DefaultRepositoryActionProvider(
             _repositoryActionConfigurationStore,
             _translationService,
             _fileSystem,
             repositoryExpressionEvaluator,
             new RepositorySpecificConfiguration(
-                _appDataPathProvider,
                 _fileSystem,
-                new DynamicRepositoryActionDeserializer(
-                    new ActionDeserializerComposition(
-                        new List<IActionDeserializer>())),
+                dynamicRepositoryActionDeserializer,
                 repositoryExpressionEvaluator,
                 ActionMapperCompositionFactory.Create(
                     repositoryExpressionEvaluator,
@@ -125,7 +123,13 @@ public class DefaultRepositoryActionProviderTest
                     _repositoryWriter,
                     _repositoryMonitor),
                 _translationService,
-                _errorHandler));
+                _errorHandler,
+                new RepositoryConfigurationReader(
+                    _appDataPathProvider,
+                    _fileSystem,
+                    dynamicRepositoryActionDeserializer,
+                    repositoryExpressionEvaluator,
+                    _errorHandler)));
         // await using Stream stream = await EasyTestFile.LoadAsStream();
         var repository = new Repository()
             {

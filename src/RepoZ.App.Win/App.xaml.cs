@@ -154,7 +154,7 @@ namespace RepoZ.App.Win
             container.Register<ITranslationService, ResourceDictionaryTranslationService>(Lifestyle.Singleton);
 
             container.Register<IRepositoryTagsFactory, RepositoryTagsConfigurationFactory>(Lifestyle.Singleton);
-
+            container.Register<RepositoryConfigurationReader>(Lifestyle.Singleton);
             container.Collection.Append<ISingleGitRepositoryFinderFactory, GravellGitRepositoryFinderFactory>(Lifestyle.Singleton);
 
             var fileSystem = new FileSystem();
