@@ -21,7 +21,7 @@ public class BrowserV1Test
 
     public BrowserV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionBrowserV1Deserializer(), }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionBrowserV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

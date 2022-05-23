@@ -104,7 +104,7 @@ public class DefaultRepositoryActionProviderTest
     {
         // arrange
         var repositoryExpressionEvaluator = new RepositoryExpressionEvaluator(_providers, _methods);
-        var dynamicRepositoryActionDeserializer = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new List<IActionDeserializer>()));
+        var dynamicRepositoryActionDeserializer = DynamicRepositoryActionDeserializerFactory.Create();
         var sut = new DefaultRepositoryActionProvider(
             _fileSystem,
             new RepositorySpecificConfiguration(

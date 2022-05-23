@@ -21,7 +21,7 @@ public class GitPushV1Test
 
     public GitPushV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionGitPushV1Deserializer(), }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionGitPushV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

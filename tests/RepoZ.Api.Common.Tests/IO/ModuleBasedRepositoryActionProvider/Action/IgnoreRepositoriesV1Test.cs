@@ -21,7 +21,7 @@ public class IgnoreRepositoriesV1Test
 
     public IgnoreRepositoriesV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionIgnoreRepositoriesV1Deserializer(), }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionIgnoreRepositoriesV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

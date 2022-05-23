@@ -21,10 +21,7 @@ public class FolderV1Test
 
     public FolderV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[]
-            {
-                new ActionFolderV1Deserializer(),
-            }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionFolderV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

@@ -21,10 +21,7 @@ public class ExecutableV1Test
 
     public ExecutableV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[]
-            {
-                new ActionExecutableV1Deserializer(),
-            }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionExecutableV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

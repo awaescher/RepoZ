@@ -21,7 +21,7 @@ public class AssociateFileV1Test
 
     public AssociateFileV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(new ActionDeserializerComposition(new IActionDeserializer[] { new ActionAssociateFileV1Deserializer(), }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionAssociateFileV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");

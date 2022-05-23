@@ -21,9 +21,7 @@ public class SeparatorV1Test
 
     public SeparatorV1Test()
     {
-        _sut = new DynamicRepositoryActionDeserializer(
-            new ActionDeserializerComposition(
-                new IActionDeserializer[] { new ActionSeparatorV1Deserializer(), }));
+        _sut = DynamicRepositoryActionDeserializerFactory.CreateWithDeserializer(new ActionSeparatorV1Deserializer());
 
         _testFileSettings = new EasyTestFileSettings();
         _testFileSettings.UseDirectory("TestFiles");
