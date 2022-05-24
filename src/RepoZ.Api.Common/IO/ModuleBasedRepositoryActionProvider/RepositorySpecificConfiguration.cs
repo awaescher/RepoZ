@@ -107,8 +107,8 @@ public class RepositoryConfigurationReader
         }
 
         Repository singleRepository = null;
-        var multiSelectRequired = repositories.Length > 1;
-        if (!multiSelectRequired)
+        var multipleRepositoriesSelected = repositories.Length > 1;
+        if (!multipleRepositoriesSelected)
         {
             singleRepository = repositories.FirstOrDefault();
         }
@@ -186,7 +186,7 @@ public class RepositoryConfigurationReader
         variables.AddRange(list);
         using IDisposable rootVariables = RepoZVariableProviderStore.Push(list);
 
-        if (multiSelectRequired)
+        if (!multipleRepositoriesSelected)
         {
             // load repo specific environment variables
             foreach (FileReference fileRef in rootFile.RepositorySpecificEnvironmentFiles.Where(fileRef => fileRef != null))
@@ -221,7 +221,7 @@ public class RepositoryConfigurationReader
 
         using IDisposable repoSpecificEnvVariables = RepoZEnvironmentVariableStore.Set(envVars);
 
-        if (multiSelectRequired)
+        if (!multipleRepositoriesSelected)
         {
             // load repo specific config
             foreach (FileReference fileRef in rootFile.RepositorySpecificConfigFiles)
