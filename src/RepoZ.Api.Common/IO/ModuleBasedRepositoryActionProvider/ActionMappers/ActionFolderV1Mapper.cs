@@ -3,9 +3,7 @@ namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using JetBrains.Annotations;
-using Newtonsoft.Json.Linq;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.Data.Actions;
@@ -40,23 +38,46 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
         return Map(action as RepositoryActionFolderV1, repository.First(), actionMapperComposition);
     }
 
-    public IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionFolderV1 action, Repository repository, ActionMapperComposition actionMapperComposition)
+    private IEnumerable<Api.Git.RepositoryAction> Map(RepositoryActionFolderV1 action, Repository repository, ActionMapperComposition actionMapperComposition)
     {
         if (!_expressionEvaluator.EvaluateBooleanExpression(action.Active, repository))
         {
             yield break;
         }
 
+        var deferred = true;
+        var deferredString = _expressionEvaluator.EvaluateStringExpression(action.IsDeferred, repository);
+        if (!string.IsNullOrWhiteSpace(deferredString))
+        {
+            deferred = _expressionEvaluator.EvaluateBooleanExpression(deferredString, repository);
+        }
+
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);
-        yield return new Api.Git.RepositoryAction()
-            {
-                Name = name,
-                CanExecute = true,
-                DeferredSubActionsEnumerator = () =>
-                    action.Items
-                          .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
-                          .SelectMany(x => actionMapperComposition.Map(x, repository))
-                          .ToArray(),
-            };
+
+        if (deferred)
+        {
+            yield return new Api.Git.RepositoryAction()
+                {
+                    Name = name,
+                    CanExecute = true,
+                    DeferredSubActionsEnumerator = () =>
+                        action.Items
+                              .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
+                              .SelectMany(x => actionMapperComposition.Map(x, repository))
+                              .ToArray(),
+                };
+        }
+        else
+        {
+            yield return new Api.Git.RepositoryAction()
+                {
+                    Name = name,
+                    CanExecute = true,
+                    SubActions = action.Items
+                                       .Where(x => _expressionEvaluator.EvaluateBooleanExpression(x.Active, repository))
+                                       .SelectMany(x => actionMapperComposition.Map(x, repository))
+                                       .ToArray(),
+                };
+        }
     }
 }

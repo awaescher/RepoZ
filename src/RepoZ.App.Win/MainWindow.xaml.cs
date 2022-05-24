@@ -420,6 +420,13 @@ using RepoZ.Api.IO;
 
                 item.SubmenuOpened += SelfDetachingEventHandler;
             }
+            else if (action.SubActions != null)
+            {
+                foreach (RepositoryAction subAction in action.SubActions)
+                {
+                    item.Items.Add(CreateMenuItem(sender, subAction));
+                }
+            }
 
             return item;
         }

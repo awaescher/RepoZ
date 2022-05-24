@@ -1,6 +1,7 @@
 namespace RepoZ.Api.Git
 {
     using System;
+    using System.Collections.Generic;
 
     public class RepositorySeparatorAction : RepositoryAction/*, RepositoryActionBase*/
     {
@@ -17,6 +18,8 @@ namespace RepoZ.Api.Git
         public bool CanExecute { get; set; } = true;
 
         public Func<RepositoryAction[]> DeferredSubActionsEnumerator { get; set; }
+
+        public IEnumerable<RepositoryAction> SubActions { get; set; }
     }
 
     public abstract class RepositoryActionBase
