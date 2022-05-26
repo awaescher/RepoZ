@@ -25,6 +25,7 @@ using RepoZ.Api.IO;
 using VerifyXunit;
 using Xunit;
 using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+using RepoZ.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 
 [UsesEasyTestFile]
 [UsesVerify]

@@ -1,14 +1,15 @@
-namespace RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
+namespace RepoZ.Api.Common.Tests.IO.ModuleBasedRepositoryActionProvider;
 
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using RepoZ.Api.Common.Common;
 using RepoZ.Api.Common.IO.ExpressionEvaluator;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider;
+using RepoZ.Api.Common.IO.ModuleBasedRepositoryActionProvider.ActionMappers;
 using RepoZ.Api.Git;
 
-public static class ActionMapperCompositionFactory
+internal static class ActionMapperCompositionFactory
 {
-    // test purposes
     public static ActionMapperComposition Create(
         RepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
@@ -30,7 +31,7 @@ public static class ActionMapperCompositionFactory
                 new ActionGitPushV1Mapper(expressionEvaluator, translationService, repositoryWriter, errorHandler),
                 new ActionIgnoreRepositoriesV1Mapper(expressionEvaluator, translationService, repositoryMonitor, errorHandler),
                 new ActionSeparatorV1Mapper(expressionEvaluator),
-                new ActionAssociateFileV1Mapper(expressionEvaluator, translationService, errorHandler)
+                new ActionAssociateFileV1Mapper(expressionEvaluator, translationService, errorHandler),
             };
 
         return new ActionMapperComposition(list, expressionEvaluator);
