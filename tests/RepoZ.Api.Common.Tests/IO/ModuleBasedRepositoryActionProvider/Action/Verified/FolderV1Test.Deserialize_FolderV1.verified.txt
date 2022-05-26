@@ -10,11 +10,13 @@
             Items: [
               {
                 $type: RepositoryActionFolderV1,
+                IsDeferred: True,
                 Type: folder@1,
                 Name: Folder 3,
                 Active: false
               }
             ],
+            IsDeferred: False,
             Type: folder@1,
             Name: Folder 2,
             Active: True

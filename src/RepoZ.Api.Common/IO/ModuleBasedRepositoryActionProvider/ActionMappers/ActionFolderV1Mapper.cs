@@ -45,11 +45,10 @@ public class ActionFolderV1Mapper : IActionToRepositoryActionMapper
             yield break;
         }
 
-        var deferred = true;
-        var deferredString = _expressionEvaluator.EvaluateStringExpression(action.IsDeferred, repository);
-        if (!string.IsNullOrWhiteSpace(deferredString))
+        var deferred = false;
+        if (!string.IsNullOrWhiteSpace(action.IsDeferred))
         {
-            deferred = _expressionEvaluator.EvaluateBooleanExpression(deferredString, repository);
+            deferred = _expressionEvaluator.EvaluateBooleanExpression(action.IsDeferred, repository);
         }
 
         var name = NameHelper.EvaluateName(action.Name, repository, _translationService, _expressionEvaluator);

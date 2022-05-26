@@ -29,6 +29,13 @@ public class ActionFolderV1Deserializer : IActionDeserializer
             return null;
         }
 
+        JToken isDeferredToken = token["is-deferred"];
+
+        if (isDeferredToken != null)
+        {
+            result.IsDeferred = isDeferredToken.Value<string>();
+        }
+
         JToken actions = token.SelectToken("items");
         if (actions == null)
         {

@@ -10,12 +10,13 @@
             "type": "folder@1",
             "name": "Folder 2",
             "active": true,
-            "items": 
-            [
+            "is-deferred": "False",
+            "items": [
               {
                 "type": "folder@1",
                 "name": "Folder 3",
-                "active": "false"
+                "active": "false",
+                "is-deferred": true
               }
             ]
           }

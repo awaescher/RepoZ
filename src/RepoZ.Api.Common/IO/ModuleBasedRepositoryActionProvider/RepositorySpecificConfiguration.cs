@@ -287,7 +287,6 @@ public class RepositoryConfigurationReader
             ? defaultWhenNullOrEmpty
             : _repoExpressionEvaluator.EvaluateBooleanExpression(booleanExpression, repository);
     }
-
 }
 
 public class RepositoryTagsConfigurationFactory : IRepositoryTagsFactory 

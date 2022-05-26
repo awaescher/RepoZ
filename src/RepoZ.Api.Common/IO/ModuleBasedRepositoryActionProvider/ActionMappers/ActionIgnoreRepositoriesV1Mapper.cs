@@ -13,18 +13,18 @@ public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
 {
     private readonly RepositoryExpressionEvaluator _expressionEvaluator;
     private readonly ITranslationService _translationService;
-    // private readonly IRepositoryMonitor _repositoryMonitor;
+    private readonly IRepositoryMonitor _repositoryMonitor;
     private readonly IErrorHandler _errorHandler;
 
     public ActionIgnoreRepositoriesV1Mapper(
         RepositoryExpressionEvaluator expressionEvaluator,
         ITranslationService translationService,
-        // IRepositoryMonitor repositoryMonitor,
+        IRepositoryMonitor repositoryMonitor,
         IErrorHandler errorHandler)
     {
         _expressionEvaluator = expressionEvaluator ?? throw new ArgumentNullException(nameof(expressionEvaluator));
         _translationService = translationService ?? throw new ArgumentNullException(nameof(translationService));
-        // _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
+        _repositoryMonitor = repositoryMonitor ?? throw new ArgumentNullException(nameof(repositoryMonitor));
         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
 
@@ -45,10 +45,10 @@ public class ActionIgnoreRepositoriesV1Mapper : IActionToRepositoryActionMapper
         {
             yield break;
         }
-        //
-        // yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(
-        //     _translationService.Translate("Ignore"),
-        //     repos,
-        //     repository => _repositoryMonitor.IgnoreByPath(repository.Path));
+        
+        yield return MultipleRepositoryActionHelper.CreateActionForMultipleRepositories(
+            _translationService.Translate("Ignore"),
+            repos,
+            repository => _repositoryMonitor.IgnoreByPath(repository.Path));
     }
 }
