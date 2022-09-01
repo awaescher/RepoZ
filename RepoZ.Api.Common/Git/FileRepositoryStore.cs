@@ -20,13 +20,11 @@ namespace RepoZ.Api.Common.Git
 
 		public abstract string GetFileName();
 
-		public IEnumerable<string> Get()
+		public IEnumerable<string> Get(string file)
 		{
 			if (!UseFilePersistence)
-				return new string[0];
-
-			string file = GetFileName();
-
+				return Array.Empty<string>();
+			
 			if (File.Exists(file))
 			{
 				try
@@ -39,7 +37,13 @@ namespace RepoZ.Api.Common.Git
 				}
 			}
 
-			return new string[0];
+			return Array.Empty<string>();
+		}
+
+		public IEnumerable<string> Get()
+		{
+			string file = GetFileName();
+			return Get(file);
 		}
 
 		public void Set(IEnumerable<string> paths)

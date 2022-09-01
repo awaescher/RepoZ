@@ -14,7 +14,9 @@ namespace Tests.Git
 		[OneTimeSetUp]
 		public void Setup()
 		{
-			_store = new DefaultRepositoryIgnoreStore(new Mock<IErrorHandler>().Object, new Mock<IAppDataPathProvider>().Object);
+			var appDataPathProvider = new Mock<IAppDataPathProvider>();
+			appDataPathProvider.Setup(x => x.GetAppDataPath()).Returns(""); //dummy value
+			_store = new DefaultRepositoryIgnoreStore(new Mock<IErrorHandler>().Object, appDataPathProvider.Object);
 			_store.UseFilePersistence = false;
 
 			_store.IgnoreByPath(@"C:\data\repos\first");

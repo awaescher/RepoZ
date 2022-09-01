@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Collections.Generic;
 using RepoZ.Api.Git;
 using System.Linq;
@@ -64,19 +64,62 @@ namespace RepoZ.Api.Common.IO
 				yield return CreateProcessRunnerAction(_translationService.Translate("Fix"), Path.GetDirectoryName(location));
 			}
 
+			// load specific repo config
+			RepositoryActionConfiguration specificConfig = null;
+			if (singleRepository != null)
+			{
+				var tmpConfig = _repositoryActionConfigurationStore.LoadRepositoryConfiguration(singleRepository);
+				specificConfig = tmpConfig;
+
+				if (!string.IsNullOrWhiteSpace(tmpConfig?.RedirectFile))
+				{
+					var filename = ReplaceVariables(tmpConfig.RedirectFile, singleRepository);
+					if (File.Exists(filename))
+					{
+						tmpConfig = _repositoryActionConfigurationStore.LoadRepositoryActionConfiguration(filename);
+
+						if (tmpConfig != null && tmpConfig.State == RepositoryActionConfiguration.LoadState.Ok)
+						{
+							specificConfig = tmpConfig;
+						}
+					}
+				}
+			}
+
 			if (singleRepository != null && _configuration.State == RepositoryActionConfiguration.LoadState.Ok)
 			{
-				foreach (var action in _configuration.RepositoryActions.Where(a => a.Active))
-					yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
+				var repositoryActionConfigurations = new[] {_configuration, specificConfig};
 
-				foreach (var fileAssociaction in _configuration.FileAssociations.Where(a => a.Active))
+				foreach (var config in repositoryActionConfigurations)
 				{
-					yield return CreateFileAssociationSubMenu(
-						singleRepository,
-						ReplaceTranslatables(fileAssociaction.Name),
-						fileAssociaction.Extension);
+					if (config == null || config.State != RepositoryActionConfiguration.LoadState.Ok)
+					{
+						continue;
+					}
+
+					foreach (var action in config.RepositoryActions.Where(a => a.Active))
+					{
+						yield return CreateProcessRunnerAction(action, singleRepository, beginGroup: false);
+					}
+
 				}
 
+				foreach (var config in repositoryActionConfigurations)
+				{
+					if (config == null || config.State != RepositoryActionConfiguration.LoadState.Ok)
+					{
+						continue;
+					}
+
+					foreach (var fileAssociation in config.FileAssociations.Where(a => a.Active))
+					{
+						yield return CreateFileAssociationSubMenu(
+							singleRepository,
+							ReplaceTranslatables(fileAssociation.Name),
+							fileAssociation.Extension);
+					}
+				}
+				
 				yield return CreateBrowseRemoteAction(singleRepository);
 			}
 
@@ -90,39 +133,39 @@ namespace RepoZ.Api.Common.IO
 				{
 					Name = _translationService.Translate("Checkout"),
 					DeferredSubActionsEnumerator = () => singleRepository.LocalBranches
-															 .Take(50)
-															 .Select(branch => new RepositoryAction()
-															 {
-																 Name = branch,
-																 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-																 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-															 })
-															 .Union(new[]
-															 {
-																new RepositoryAction()
-																{
-																	BeginGroup = true,
-																	Name = _translationService.Translate("Remote branches"),
-																	DeferredSubActionsEnumerator = () =>
-																	{
-																		var remoteBranches = singleRepository.ReadAllBranches().Select(branch => new RepositoryAction()
-																		{
-																			 Name = branch,
-																			 Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
-																			 CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
-																		 }).ToArray();
+						.Take(50)
+						.Select(branch => new RepositoryAction()
+						{
+							Name = branch,
+							Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+							CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+						})
+						.Union(new[]
+						{
+							new RepositoryAction()
+							{
+								BeginGroup = true,
+								Name = _translationService.Translate("Remote branches"),
+								DeferredSubActionsEnumerator = () =>
+								{
+									var remoteBranches = singleRepository.ReadAllBranches().Select(branch => new RepositoryAction()
+										{
+											Name = branch,
+											Action = (_, __) => _repositoryWriter.Checkout(singleRepository, branch),
+											CanExecute = !singleRepository.CurrentBranch.Equals(branch, StringComparison.OrdinalIgnoreCase)
+										}).ToArray();
 
-																		if (remoteBranches.Any())
-																			return remoteBranches;
+									if (remoteBranches.Any())
+										return remoteBranches;
 
-																		return new RepositoryAction[]
-																		{
-																			new RepositoryAction() { Name = _translationService.Translate("No remote branches found"), CanExecute = false },
-																			new RepositoryAction() { Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"), CanExecute = false }
-																		};
-																	}
-															 } })
-															 .ToArray()
+									return new RepositoryAction[]
+									{
+										new RepositoryAction() { Name = _translationService.Translate("No remote branches found"), CanExecute = false },
+										new RepositoryAction() { Name = _translationService.Translate("Try to fetch changes if you're expecting remote branches"), CanExecute = false }
+									};
+								}
+							} })
+						.ToArray()
 				};
 			}
 
@@ -136,14 +179,14 @@ namespace RepoZ.Api.Common.IO
 
 			return Environment.ExpandEnvironmentVariables(
 				value
-				.Replace("{Repository.Name}", repository.Name)
-				.Replace("{Repository.Path}", repository.Path)
-				.Replace("{Repository.SafePath}", repository.SafePath)
-				.Replace("{Repository.Location}", repository.Location)
-				.Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
-				.Replace("{Repository.Branches}", string.Join("|", repository.Branches))
-				.Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches))
-				.Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls)));
+					.Replace("{Repository.Name}", repository.Name)
+					.Replace("{Repository.Path}", repository.Path)
+					.Replace("{Repository.SafePath}", repository.SafePath)
+					.Replace("{Repository.Location}", repository.Location)
+					.Replace("{Repository.CurrentBranch}", repository.CurrentBranch)
+					.Replace("{Repository.Branches}", string.Join("|", repository.Branches))
+					.Replace("{Repository.LocalBranches}", string.Join("|", repository.LocalBranches))
+					.Replace("{Repository.RemoteUrls}", string.Join("|", repository.RemoteUrls)));
 		}
 
 		private string ReplaceTranslatables(string value)
@@ -176,7 +219,24 @@ namespace RepoZ.Api.Common.IO
 			var executables = action.Executables.Select(e => ReplaceVariables(e, repository));
 			var arguments = ReplaceVariables(action.Arguments, repository);
 
-			if (string.IsNullOrEmpty(action.Command))
+			if (action.Subfolder.Any())
+			{
+				return new RepositoryAction()
+				{
+					Name = name,
+					DeferredSubActionsEnumerator = () =>
+						action.Subfolder
+							.Select(x => CreateProcessRunnerAction(x, repository, false))
+							.ToArray()
+				};
+			}
+
+			if (command.Equals("browser", StringComparison.CurrentCultureIgnoreCase))
+			{
+				// assume arguments is an url.
+				return CreateProcessRunnerAction(name, arguments);
+			}
+			else if (string.IsNullOrEmpty(action.Command))
 			{
 				foreach (var executable in executables)
 				{
@@ -272,10 +332,10 @@ namespace RepoZ.Api.Common.IO
 				{
 					Name = actionName,
 					DeferredSubActionsEnumerator = () =>
-								GetFiles(repository, filePattern)
-								.Select(solutionFile => ReplaceVariables(solutionFile, repository))
-								.Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
-								.ToArray()
+						GetFiles(repository, filePattern)
+							.Select(solutionFile => ReplaceVariables(solutionFile, repository))
+							.Select(solutionFile => CreateProcessRunnerAction(Path.GetFileName(solutionFile), solutionFile))
+							.ToArray()
 				};
 			}
 
@@ -298,9 +358,9 @@ namespace RepoZ.Api.Common.IO
 			{
 				Name = actionName,
 				DeferredSubActionsEnumerator = () => repository.RemoteUrls
-														 .Take(50)
-														 .Select(url => CreateProcessRunnerAction(url, url))
-														 .ToArray()
+					.Take(50)
+					.Select(url => CreateProcessRunnerAction(url, url))
+					.ToArray()
 			};
 		}
 
