@@ -63,10 +63,10 @@ namespace RepoZ.App.Win
 
 			lstRepositories.ItemsSource = aggregator.Repositories;
 
-			var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
-			((ICollectionView)view).CollectionChanged += View_CollectionChanged;
-			view.Filter = FilterRepositories;
-			view.CustomSort = new CustomRepositoryViewSortBehavior();
+            var view = (ListCollectionView)CollectionViewSource.GetDefaultView(aggregator.Repositories);
+            ((ICollectionView) view).CollectionChanged += View_CollectionChanged;
+            view.Filter = FilterRepositories;
+            view.CustomSort = new CustomRepositoryViewSortBehavior();
 
 			var appName = System.Reflection.Assembly.GetEntryAssembly().GetName();
 			txtHelpCaption.Text = appName.Name + " " + appName.Version.ToString(2);
@@ -143,13 +143,13 @@ namespace RepoZ.App.Win
 				InvokeActionOnCurrentRepository();
 		}
 
-		private void lstRepositories_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-		{
-			if (!LstRepositoriesContextMenuOpening(sender, ((FrameworkElement)e.Source).ContextMenu))
-			{
-				e.Handled = true;
-			}
-		}
+        private void lstRepositories_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (!LstRepositoriesContextMenuOpening(sender, ((FrameworkElement) e.Source).ContextMenu))
+            {
+                e.Handled = true;
+            }
+        }
 
 		private bool LstRepositoriesContextMenuOpening(object sender, ContextMenu ctxMenu)
 		{
@@ -176,22 +176,22 @@ namespace RepoZ.App.Win
 			return true;
 		}
 
-		private void lstRepositories_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Return || e.Key == Key.Enter)
-				InvokeActionOnCurrentRepository();
-			else if (e.Key == Key.Left || e.Key == Key.Right)
-			{
-				// try open context menu.
-				var ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
-				if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
-				{
-					ctxMenu.Placement = PlacementMode.Left;
-					ctxMenu.PlacementTarget = (UIElement)e.OriginalSource;
-					ctxMenu.IsOpen = true;
-				}
-			}
-		}
+        private void lstRepositories_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return || e.Key == Key.Enter)
+                InvokeActionOnCurrentRepository();
+            else if (e.Key == Key.Left || e.Key == Key.Right)
+            {
+                // try open context menu.
+                var ctxMenu = ((FrameworkElement)e.Source).ContextMenu;
+                if (ctxMenu != null && LstRepositoriesContextMenuOpening(sender, ctxMenu))
+                {
+                    ctxMenu.Placement = PlacementMode.Left;
+                    ctxMenu.PlacementTarget = (UIElement) e.OriginalSource;
+                    ctxMenu.IsOpen = true;
+                }
+            }
+        }
 
 		private void InvokeActionOnCurrentRepository()
 		{

@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Hardcodet.Wpf.TaskbarNotification;
 using RepoZ.Api.Common;
 using RepoZ.Api.Common.Git;
 using RepoZ.Api.Common.IO;
@@ -11,6 +12,8 @@ using RepoZ.Api.Git;
 using RepoZ.Api.IO;
 using RepoZ.Api.Win.IO;
 using RepoZ.Api.Win.PInvoke.Explorer;
+using RepoZ.App.Win.i18n;
+using RepoZ.Ipc;
 using TinyIoC;
 using Hardcodet.Wpf.TaskbarNotification;
 using TinySoup.Model;
@@ -58,7 +61,7 @@ namespace RepoZ.App.Win
 
 			Application.Current.Resources.MergedDictionaries[0] = ResourceDictionaryTranslationService.ResourceDictionary;
 
-			_notifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+            _notifyIcon = (TaskbarIcon) FindResource("NotifyIcon");
 
 			var container = TinyIoCContainer.Current;
 
@@ -179,8 +182,8 @@ namespace RepoZ.App.Win
 
 			AvailableUpdate = updates.FirstOrDefault();
 
-			_updateTimer.Change((int)TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
-		}
+            _updateTimer.Change((int) TimeSpan.FromHours(2).TotalMilliseconds, Timeout.Infinite);
+        }
 
 		protected static void RefreshTimerCallback(object state)
 		{
