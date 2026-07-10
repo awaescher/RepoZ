@@ -173,7 +173,7 @@
     [
         {
             "name": "{Open} Visual Studio solutions",
-            "extension": "*.sln",
+            "extension": "*.sln;*.slnx",
             "command": 'start',
             "arguments": '"{FilePath}"',
             "active": "true"
