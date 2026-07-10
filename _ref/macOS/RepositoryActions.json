@@ -129,7 +129,7 @@
     [
         {
             "name": "{Open} Visual Studio solutions",
-            "extension": "*.sln",
+            "extension": "*.sln;*.slnx",
             "command": "open",
             "arguments": '"{FilePath}"',
             "active": "true"
