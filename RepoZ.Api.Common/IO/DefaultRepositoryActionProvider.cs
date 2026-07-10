@@ -331,7 +331,20 @@ namespace RepoZ.Api.Common.IO
 			return patterns
 				.SelectMany(pattern => directory.EnumerateFileSystemInfos(pattern, SearchOption.AllDirectories))
 				.Select(f => f.FullName)
-				.Where(f => !f.StartsWith("."));
+				.Where(f => !IsInsideHiddenDirectory(f, repository.Path))
+				.Distinct();
+		}
+
+		private static bool IsInsideHiddenDirectory(string fullPath, string repositoryPath)
+		{
+			var root = repositoryPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+			var relativePath = fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase)
+				? fullPath.Substring(root.Length)
+				: fullPath;
+
+			var segments = relativePath.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+
+			return segments.Take(segments.Length - 1).Any(segment => segment.StartsWith("."));
 		}
 	}
 }
