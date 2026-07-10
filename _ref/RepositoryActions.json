@@ -73,6 +73,7 @@
 # File associations are different to repository actions. They are not related to the repository itself but define a file pattern
 # like "*.sln" which RepoZ uses to scan for files recursively. Matching files will be listed in a separate sub menu named after
 # the file association itself.
+# Multiple patterns can be combined by separating them with a semicolon, for example "*.sln;*.slnx".
 # File associations don't support the repository placeholders from above. The only placeholder is the path of the matching files
 # which can be referred to as {FilePath}.
 #

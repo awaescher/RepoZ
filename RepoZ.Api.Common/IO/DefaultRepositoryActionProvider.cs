@@ -322,8 +322,14 @@ namespace RepoZ.Api.Common.IO
 			// .app or .xcodeproj on macOS
 
 			var directory = new DirectoryInfo(repository.Path);
-			return directory
-				.EnumerateFileSystemInfos(searchPattern, SearchOption.AllDirectories)
+
+			var patterns = searchPattern
+				.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(p => p.Trim())
+				.Where(p => p.Length > 0);
+
+			return patterns
+				.SelectMany(pattern => directory.EnumerateFileSystemInfos(pattern, SearchOption.AllDirectories))
 				.Select(f => f.FullName)
 				.Where(f => !f.StartsWith("."));
 		}
