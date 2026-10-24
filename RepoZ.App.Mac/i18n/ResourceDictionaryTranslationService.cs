@@ -43,7 +43,7 @@ namespace RepoZ.App.Mac.i18n
 
 		private static Dictionary<string, string> ParseResourceDictionary(string location)
 		{
-			var content = File.ReadAllText(location);
+			var content = File.ReadAllText(Path.Combine(Foundation.NSBundle.MainBundle.ResourcePath, location));
 
 			var root = XElement.Parse(content);
 			return root.Descendants().ToDictionary(d => d.Attributes().Single(a => a.Name.LocalName == "Key").Value, d => d.Value);

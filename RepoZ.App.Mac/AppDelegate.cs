@@ -48,7 +48,7 @@ namespace RepoZ.App.Mac
 			string statusItemImageName = $"StatusBarImage{(isBigSurOrNewer ? "Template" : "")}{(isRetina ? "@2x" : "")}.png";
 
 			_statusItem = NSStatusBar.SystemStatusBar.CreateStatusItem(NSStatusItemLength.Variable);
-			_statusItem.Image = new NSImage(statusItemImageName) { Template = isBigSurOrNewer }; // defining as template will make the icon work in light/dark mode and reduced transparency (see #137)
+			_statusItem.Image = new NSImage(NSBundle.MainBundle.PathForResource(statusItemImageName, null)) { Template = isBigSurOrNewer }; // defining as template will make the icon work in light/dark mode and reduced transparency (see #137)
 			_statusItem.Target = this;
 			_statusItem.Action = new ObjCRuntime.Selector("MenuAction");
 

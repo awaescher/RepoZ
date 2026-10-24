@@ -192,7 +192,7 @@ commit file             master   |  |       |                   |              v
 		{
 			Monitor.Expect(() =>
 			{
-				_cloneB.CurrentBranch.Should().Be("master");
+				_cloneB.CurrentBranch.Should().Be("main");
 				_cloneB.Branch("develop");
 				_cloneB.Checkout("develop");
 				_cloneB.CurrentBranch.Should().Be("develop");
@@ -225,8 +225,8 @@ commit file             master   |  |       |                   |              v
 		public void T5A_Preparation_Checkout_Master()
 		{
 			_cloneB.CurrentBranch.Should().Be("develop");
-			_cloneB.Checkout("master");
-			_cloneB.CurrentBranch.Should().Be("master");
+			_cloneB.Checkout("main");
+			_cloneB.CurrentBranch.Should().Be("main");
 		}
 
 		[Test]
@@ -257,7 +257,7 @@ commit file             master   |  |       |                   |              v
 		[Order(13)]
 		public void T6A_Preparation_Checkout_Develop()
 		{
-			_cloneB.CurrentBranch.Should().Be("master");
+			_cloneB.CurrentBranch.Should().Be("main");
 			_cloneB.Checkout("develop");
 			_cloneB.CurrentBranch.Should().Be("develop");
 		}
@@ -268,7 +268,7 @@ commit file             master   |  |       |                   |              v
 		{
 			Monitor.Expect(() =>
 			{
-				int steps = _cloneB.Rebase("master");
+				int steps = _cloneB.Rebase("main");
 				steps.Should().Be(1);
 			},
 			changes => changes >= 1,
@@ -280,8 +280,8 @@ commit file             master   |  |       |                   |              v
 		public void T7A_Preparation_Checkout_Master()
 		{
 			_cloneB.CurrentBranch.Should().Be("develop");
-			_cloneB.Checkout("master");
-			_cloneB.CurrentBranch.Should().Be("master");
+			_cloneB.Checkout("main");
+			_cloneB.CurrentBranch.Should().Be("main");
 		}
 
 		[Test]
